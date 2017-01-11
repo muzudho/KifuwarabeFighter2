@@ -1,0 +1,3 @@
+Dot Graphic Editor (.edg file)
+    http://takabosoft.com/edge
+
