@@ -3,12 +3,20 @@ Unityで2D格闘を作ろうぜ☆（＾▽＾）  Let's challenge creating 2D f
 
 ライセンス License
 ==================
-**MIT License**  
+(1)プログラムは MITライセンスだぜ☆ ただし、３つの .cs ファイルを除く。
+(2)いくつかのキャラクター画像は二次創作だぜ☆ 画像を差し替えて使ってくれだぜ☆
 
-でも次の３つのファイルはライセンス不明だぜ☆ Except 3 files. The license of this file is unknown. Author: 2dgames_jp  
+(1)Program is **MIT License** But, Except 3 (.cs) files.  
+(2)1 character graphics is fanmade. Nessesory, Change graphics.  
+
+(1')次の３つのプログラム・ファイルはライセンス不明だぜ☆ Except 3 program files. The license of this file is unknown. Author: 2dgames_jp  
 -KifuwarabeFighter2/Assets/Scripts/TakoyakiParticleScript.cs  
 -KifuwarabeFighter2/Assets/Scripts/TakoyakiTokenScript.cs  
 -KifuwarabeFighter2/Assets/Scripts/TakoyakiUtilScript.cs  
+
+(2')次のキャラクターは二次創作だぜ☆ 画像を差し替えてくれだぜ☆  Nessesory to change, The image of this character.  
+(2-1)ろぼりん娘（帽子に入っているキャラクター）
+(2-1)Roborinko(This character is on a hat.)
 
 金くれ☆（任意） I want money (Option)
 ======================================
@@ -22,8 +30,11 @@ http://kifuwarabe.warabenture.com/2017/01/11/lets-create-game%E2%98%8614-lets-ch
 
 進捗 Progress
 =============
-弾は飛ぶ☆ I done create bullet hit.  
-パンチの当たり判定がまだ☆ I was not create punch hit.  
+**できているもの☆ Done.**
+-弾は飛ぶ☆ I done create bullet hit.  
+
+**まだなもの☆ To do.**
+-パンチの当たり判定がまだ☆ I was not create punch hit.  
 
 フォルダーの説明 Folder Explain
 ===============================
@@ -49,7 +60,7 @@ KifuwarabeFighter2_meta
 </pre>
 
 これは半自動当たり判定座標調べツールだぜ☆ PNG画像からテキストデータを出力する。 1024x1024ピクセル画像を128x128ピクセルでスライスした画像に使える。 赤い矩形(R=255,G=0,B=0)から、Offset X,Y、Scale X,Y を算出するぜ☆スケールは（x=2,y=2,z=1 を想定）。  
-使い方 How to use.  
+使い方
 (1) .pngファイルを.exeファイルと同じフォルダーに置けだぜ☆  
 (2) AtarihanteiMaker.exeファイルをダブルクリックしろだぜ☆  
 (3) おわり。同じフォルダに .txt ファイルができてるだろ☆  
