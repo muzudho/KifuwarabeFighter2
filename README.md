@@ -12,12 +12,18 @@ Unityで2D格闘を作ろうぜ☆（＾▽＾）  Let's challenge creating 2D f
 
 金くれ☆（任意） I want money (Option)
 ======================================
-I am poor. You can suport me. Payment is here. https://enty.jp/posts/31990  
+このサイトで振り込めるぜ☆ I am poor. You can suport me. Payment is here.  
+https://enty.jp/posts/31990  
 
 作者のブログ Author Blog
 ========================
 作者 Author: むずでょ Muzudho  
 http://kifuwarabe.warabenture.com/2017/01/11/lets-create-game%E2%98%8614-lets-challenge-creating-2d-fighting-game-like-street-fighter-2-for-unity/  
+
+進捗 Progress
+=============
+弾は飛ぶ☆ I done create bullet hit.
+パンチの当たり判定がまだ☆ I was not create punch hit.
 
 フォルダーの説明 Folder Explain
 ===============================
