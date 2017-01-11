@@ -14,14 +14,14 @@ Unityで2D格闘を作ろうぜ☆（＾▽＾）  Let's challenge creating 2D f
 -KifuwarabeFighter2/Assets/Scripts/TakoyakiTokenScript.cs  
 -KifuwarabeFighter2/Assets/Scripts/TakoyakiUtilScript.cs  
 
-(1'')
-Copyright (c) 2017 Muzudho
-Released under the MIT license
-http://opensource.org/licenses/mit-license.php
+(1'')  
+Copyright (c) 2017 Muzudho(Dojin circle "Grayscale")  
+Released under the MIT license  
+http://opensource.org/licenses/mit-license.php  
 
 (2')次のキャラクターは二次創作だぜ☆ 画像を差し替えてくれだぜ☆  Nessesory to change, The image of this character.  
-(2-1)ろぼりん娘（帽子に入っているキャラクター）
-(2-1)Roborinko(This character is on a hat.)
+(2-1)ろぼりん娘（帽子に入っているキャラクター）  
+(2-1)Roborinko(This character is on a hat.)  
 
 金くれ☆（任意） I want money (Option)
 ======================================
