@@ -22,8 +22,8 @@ http://kifuwarabe.warabenture.com/2017/01/11/lets-create-game%E2%98%8614-lets-ch
 
 進捗 Progress
 =============
-弾は飛ぶ☆ I done create bullet hit.
-パンチの当たり判定がまだ☆ I was not create punch hit.
+弾は飛ぶ☆ I done create bullet hit.  
+パンチの当たり判定がまだ☆ I was not create punch hit.  
 
 フォルダーの説明 Folder Explain
 ===============================
@@ -48,14 +48,17 @@ KifuwarabeFighter2_meta
                         +--AtarihanteiMaker.exe
 </pre>
 
-これは半自動当たり判定座標調べツールだぜ☆ This tool is a semi automatic collider 2D coordinate metrics.  
-PNG画像からテキストデータを出力する。 Png image to text data.  
-1024x1024ピクセル画像を128x128ピクセルでスライスした画像に使える。 Useable 128x128 pixels slices in 1024x1024 pixels image.  
-赤い矩形(R=255,G=0,B=0)から、Offset X,Y、Scale X,Y を算出するぜ☆スケールは（x=2,y=2,z=1 を想定）。 Red(R=255,G=0,B=0) Rectangle to Offset X,Y and Scale X,Y on Unity ( Scale x=2 y=2 z=1 ).  
+これは半自動当たり判定座標調べツールだぜ☆ PNG画像からテキストデータを出力する。 1024x1024ピクセル画像を128x128ピクセルでスライスした画像に使える。 赤い矩形(R=255,G=0,B=0)から、Offset X,Y、Scale X,Y を算出するぜ☆スケールは（x=2,y=2,z=1 を想定）。  
 使い方 How to use.  
-(1) .pngファイルを.exeファイルと同じフォルダーに置けだぜ☆ Put on .png file in AtarihanteiMaker.exe same folder.  
-(2) AtarihanteiMaker.exeファイルをダブルクリックしろだぜ☆ Double click AtarihanteiMaker.exe file.  
-(3) おわり。同じフォルダに .txt ファイルができてるだろ☆ Done. Same name .txt file created.  
+(1) .pngファイルを.exeファイルと同じフォルダーに置けだぜ☆  
+(2) AtarihanteiMaker.exeファイルをダブルクリックしろだぜ☆  
+(3) おわり。同じフォルダに .txt ファイルができてるだろ☆  
+
+This tool is a semi automatic collider 2D coordinate metrics. Png image to text data. Useable 128x128 pixels slices in 1024x1024 pixels image. Red(R=255,G=0,B=0) Rectangle to Offset X,Y and Scale X,Y on Unity ( Scale x=2 y=2 z=1 ).  
+How to use.  
+(1) Put on .png file in AtarihanteiMaker.exe same folder.  
+(2) Double click AtarihanteiMaker.exe file.  
+(3) Done. Same name .txt file created.  
 
 **ドット絵（.edgファイル） Dot image ( .edg files )  
 
@@ -67,6 +70,7 @@ KifuwarabeFighter2_meta
     +-- *.edg
 </pre>
 
-これは EDGEのファイルだぜ☆ This is a binary source file of dot image.  
-EDGEを入手してくれだぜ☆ Please, Get dot editor. http://takabosoft.com/edge  
+これは EDGEのファイルだぜ☆ 下記のサイトからEDGEを入手してくれだぜ☆  
+This is a binary source file of dot image. Please, Get dot editor.  
+http://takabosoft.com/edge  
 
