@@ -1,4 +1,5 @@
-﻿/// 出典 http://qiita.com/2dgames_jp/items/11bb76167fb44bb5af5f
+﻿/// The license of this file is unknown. Author: 2dgames_jp
+/// 出典 http://qiita.com/2dgames_jp/items/11bb76167fb44bb5af5f
 using UnityEngine;
 
 /// 様々なユーティリティ.
@@ -18,8 +19,8 @@ public class TakoyakiUtilScript
     /// 入力方向を取得する.
     public static Vector2 GetInputVector()
     {
-        float x = Input.GetAxisRaw(CommonScript.BUTTON_01_P1_HO);
-        float y = Input.GetAxisRaw(CommonScript.BUTTON_02_P1_VE);
+        float x = Input.GetAxisRaw(CommonScript.BUTTON_01_P0_HO);
+        float y = Input.GetAxisRaw(CommonScript.BUTTON_02_P0_VE);
         return new Vector2(x, y).normalized;
     }
 
@@ -60,15 +61,15 @@ public class TakoyakiUtilScript
         }
     }
 
-    private static Rect _guiRect = new Rect();
+    private static Rect m_guiRect_ = new Rect();
     static Rect GetGUIRect()
     {
-        return _guiRect;
+        return m_guiRect_;
     }
-    private static GUIStyle _guiStyle = null;
+    private static GUIStyle m_guiStyle_ = null;
     static GUIStyle GetGUIStyle()
     {
-        return _guiStyle ?? (_guiStyle = new GUIStyle());
+        return m_guiStyle_ ?? (m_guiStyle_ = new GUIStyle());
     }
     /// フォントサイズを設定.
     public static void SetFontSize(int size)

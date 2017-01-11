@@ -1,4 +1,5 @@
-﻿/// 出典 http://qiita.com/2dgames_jp/items/11bb76167fb44bb5af5f
+﻿/// The license of this file is unknown. Author: 2dgames_jp
+/// 出典 http://qiita.com/2dgames_jp/items/11bb76167fb44bb5af5f
 using UnityEngine;
 using System.Collections;
 
@@ -6,14 +7,14 @@ using System.Collections;
 public class TakoyakiParticleScript : TakoyakiTokenScript
 {
     /// プレハブ
-    static GameObject _prefab = null;
+    static GameObject m_prefab_ = null;
     /// パーティクルの生成
     public static TakoyakiParticleScript Add(float x, float y)
     {
         // プレハブを取得
-        _prefab = GetPrefab(_prefab, "TakoyakiParticle1");
+        m_prefab_ = GetPrefab(m_prefab_, CommonScript.Prefab_TakoyakiParticle0);
         // プレハブからインスタンスを生成
-        return CreateInstance2<TakoyakiParticleScript>(_prefab, x, y);
+        return CreateInstance2<TakoyakiParticleScript>(m_prefab_, x, y);
     }
 
     /// 開始。コルーチンで処理を行う

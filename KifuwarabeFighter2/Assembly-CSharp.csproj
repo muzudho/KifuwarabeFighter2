@@ -46,7 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\AnimatorBehaviours\Char1MiddleBehaviour.cs" />
+     <Compile Include="Assets\Scripts\AnimatorBehaviours\Char0MiddleBehaviour.cs" />
      <Compile Include="Assets\Scripts\BulletScript.cs" />
      <Compile Include="Assets\Scripts\CharacterScript.cs" />
      <Compile Include="Assets\Scripts\CommonScript.cs" />

@@ -20,7 +20,7 @@ public class BulletScript : MonoBehaviour
         mainCamera = GameObject.Find("Main Camera");
         #region 弾作成
         // 味方キャラクター　のオブジェクトを取得
-        GameObject friendChar = GameObject.FindWithTag(CommonScript.PlayerTags[friend]);
+        GameObject friendChar = GameObject.FindWithTag(CommonScript.Player_To_Tag[friend]);
         // 弾のrigidbody2Dコンポーネントを取得
         Rigidbody2D rigidbody2D = GetComponent<Rigidbody2D>();
         // 味方キャラクター　の向いている向きに弾を飛ばす
@@ -37,7 +37,7 @@ public class BulletScript : MonoBehaviour
     void OnTriggerEnter2D(Collider2D col)
     {
         // 相手キャラクター　に当たったら、この弾を消すぜ☆
-        if (col.gameObject.tag == CommonScript.PlayerTags[opponent] )
+        if (col.gameObject.tag == CommonScript.Player_To_Tag[opponent] )
         {
             // 爆発の粒子を作るぜ☆
             TakoyakiParticleScript.Add(this.transform.position.x, this.transform.position.y);

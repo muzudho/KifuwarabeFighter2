@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Text;
 
 /// <summary>
 /// 対局の結果☆
@@ -75,31 +76,35 @@ public class CommonScript
         Teban = PlayerIndex.Player1;
     }
 
-    public const string BUTTON_01_P1_HO = "Horizontal";
-    public const string BUTTON_02_P1_VE = "Vertical";
-    public const string BUTTON_03_P1_LP = "P1LightPunch";
-    public const string BUTTON_04_P1_MP = "P1MediumPunch";
-    public const string BUTTON_05_P1_HP = "P1HardPunch";
-    public const string BUTTON_06_P1_LK = "P1LightKick";
-    public const string BUTTON_07_P1_MK = "P1MediumKick";
-    public const string BUTTON_08_P1_HK = "P1HardKick";
-    public const string BUTTON_09_P1_PA = "P1Pause";
+    /// <summary>
+    /// BUTTON はコンフィグ画面でユーザーの目に触れるので、プレイヤー１はP1、プレイヤー２はP2 だぜ☆（＾～＾）
+    /// </summary>
+    public const string BUTTON_01_P0_HO = "Horizontal";
+    public const string BUTTON_02_P0_VE = "Vertical";
+    public const string BUTTON_03_P0_LP = "P1LightPunch";
+    public const string BUTTON_04_P0_MP = "P1MediumPunch";
+    public const string BUTTON_05_P0_HP = "P1HardPunch";
+    public const string BUTTON_06_P0_LK = "P1LightKick";
+    public const string BUTTON_07_P0_MK = "P1MediumKick";
+    public const string BUTTON_08_P0_HK = "P1HardKick";
+    public const string BUTTON_09_P0_PA = "P1Pause";
     public const string BUTTON_10_CA = "Cancel";
-    public const string BUTTON_11_P2_HO = "P2Horizontal";
-    public const string BUTTON_12_P2_VE = "P2Vertical";
-    public const string BUTTON_13_P2_LP = "P2LightPunch";
-    public const string BUTTON_14_P2_MP = "P2MediumPunch";
-    public const string BUTTON_15_P2_HP = "P2HardPunch";
-    public const string BUTTON_16_P2_LK = "P2LightKick";
-    public const string BUTTON_17_P2_MK = "P2MediumKick";
-    public const string BUTTON_18_P2_HK = "P2HardKick";
-    public const string BUTTON_19_P2_PA = "P2Pause";
+    public const string BUTTON_11_P1_HO = "P2Horizontal";
+    public const string BUTTON_12_P1_VE = "P2Vertical";
+    public const string BUTTON_13_P1_LP = "P2LightPunch";
+    public const string BUTTON_14_P1_MP = "P2MediumPunch";
+    public const string BUTTON_15_P1_HP = "P2HardPunch";
+    public const string BUTTON_16_P1_LK = "P2LightKick";
+    public const string BUTTON_17_P1_MK = "P2MediumKick";
+    public const string BUTTON_18_P1_HK = "P2HardKick";
+    public const string BUTTON_19_P1_PA = "P2Pause";
     /// <summary>
     /// [player,button]
+    /// 内部的には　プレイヤー１はP0、プレイヤー２はP1 だぜ☆（＾▽＾）
     /// </summary>
     public static string[,] PlayerAndButton_To_ButtonName = new string[2, (int)ButtonIndex.Num] {
-        { BUTTON_01_P1_HO, BUTTON_02_P1_VE,BUTTON_03_P1_LP,BUTTON_04_P1_MP,BUTTON_05_P1_HP,BUTTON_06_P1_LK,BUTTON_07_P1_MK,BUTTON_08_P1_HK,BUTTON_09_P1_PA},
-        { BUTTON_11_P2_HO, BUTTON_12_P2_VE,BUTTON_13_P2_LP,BUTTON_14_P2_MP,BUTTON_15_P2_HP,BUTTON_16_P2_LK,BUTTON_17_P2_MK,BUTTON_18_P2_HK,BUTTON_19_P2_PA},
+        { BUTTON_01_P0_HO, BUTTON_02_P0_VE,BUTTON_03_P0_LP,BUTTON_04_P0_MP,BUTTON_05_P0_HP,BUTTON_06_P0_LK,BUTTON_07_P0_MK,BUTTON_08_P0_HK,BUTTON_09_P0_PA},
+        { BUTTON_11_P1_HO, BUTTON_12_P1_VE,BUTTON_13_P1_LP,BUTTON_14_P1_MP,BUTTON_15_P1_HP,BUTTON_16_P1_LK,BUTTON_17_P1_MK,BUTTON_18_P1_HK,BUTTON_19_P1_PA},
     };
 
     public static Result Result { get; set; }
@@ -138,30 +143,53 @@ public class CommonScript
     };
     public static string[] Character_To_AnimationController = new string[]
     {
+        "AnimatorControllers/Middle@Char0",
         "AnimatorControllers/Middle@Char1",
-        "AnimatorControllers/Middle@Char2",
-        "AnimatorControllers/Middle@Char3"
+        "AnimatorControllers/Middle@Char2"
     };
+    /// <summary>
+    /// [character]
+    /// </summary>
+    public static string Character_To_Attack(CharacterIndex character)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("Sprites/Attack");
+        sb.Append((int)character);
+        sb.Append("a");
+        return sb.ToString();
+    }
+    /// <summary>
+    /// [character,スライス番号]
+    /// </summary>
+    public static string CharacterAndSlice_To_AttackSlice(CharacterIndex character, int slice){
+        StringBuilder sb = new StringBuilder();
+        sb.Append("Attack");
+        sb.Append((int)character);
+        sb.Append("a_");
+        sb.Append(slice);
+        return sb.ToString();
+    }
     /// <summary>
     /// [character,スライス番号]
     /// </summary>
     public static string[,] CharacterAndSlice_To_FaceSprites = new string[3,3]{
+        { "Sprites/Face0", "Face0_0", "Face0_1" },
         { "Sprites/Face1", "Face1_0", "Face1_1" },
         { "Sprites/Face2", "Face2_0", "Face2_1" },
-        { "Sprites/Face3", "Face3_0", "Face3_1" },
     };
-    public static string[,] CharacterAndMotion_To_Slice = new string[,]
+    public static string[,] CharacterAndMotion_To_Clip = new string[,]
     {
+        { "Char0_Wait", "Char0_LP", "Char0_MP", "Char0_HP", "Char0_LK", "Char0_MK", "Char0_HK", },
         { "Char1_Wait", "Char1_LP", "Char1_MP", "Char1_HP", "Char1_LK", "Char1_MK", "Char1_HK", },
         { "Char2_Wait", "Char2_LP", "Char2_MP", "Char2_HP", "Char2_LK", "Char2_MK", "Char2_HK", },
-        { "Char3_Wait", "Char3_LP", "Char3_MP", "Char3_HP", "Char3_LK", "Char3_MK", "Char3_HK", },
     };
-    public static string[] PlayerTags = new string[] { "Char1", "Char2" };
+    public static string[] Player_To_Tag = new string[] { "Char0", "Char1" };
+    public static string[] Player_To_CharAttack = new string[] { "Char0Attack", "Char1Attack" };
 
     /// <summary>
-    /// 画像を２倍角にして使っているぜ☆（＾～＾）
+    /// 画像を２．５倍角にして使っているぜ☆（＾～＾）
     /// </summary>
-    public static float GRAPHIC_SCALE = 2.0f;
+    public static float GRAPHIC_SCALE = 2.5f;
 
     /// <summary>
     /// [character]
@@ -172,4 +200,6 @@ public class CommonScript
         "努力あるのみ☆\n",
         "あかごの方が　はごたえがあるのじゃ！\n辱め詰めで追い回してやろう！"
     };
+
+    public static string Prefab_TakoyakiParticle0 = "TakoyakiParticle0";
 }

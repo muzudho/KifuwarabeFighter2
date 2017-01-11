@@ -1,45 +1,137 @@
 fileFormatVersion: 2
-guid: 7b782e56dad3f3441b75f0fdb1cb3b57
-timeCreated: 1484111989
+guid: 0e393bd68a4bcd2419d9c8873b9b57fe
+timeCreated: 1484135399
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Attack2a_0
-    21300002: Attack2a_1
-    21300004: Attack2a_2
-    21300006: Attack2a_3
-    21300008: Attack2a_4
-    21300010: Attack2a_5
-    21300012: Attack2a_6
-    21300014: Attack2a_7
-    21300016: Attack2a_8
-    21300018: Attack2a_9
-    21300020: Attack2a_10
-    21300022: Attack2a_11
-    21300024: Attack2a_12
-    21300026: Attack2a_13
-    21300028: Attack2a_14
-    21300030: Attack2a_15
-    21300032: Attack2a_16
-    21300034: Attack2a_17
-    21300036: Attack2a_18
-    21300038: Attack2a_19
-    21300040: Attack2a_20
-    21300042: Attack2a_21
-    21300044: Attack2a_22
-    21300046: Attack2a_23
-    21300048: Attack2a_24
-    21300050: Attack2a_25
-    21300052: Attack2a_26
-    21300054: Attack2a_27
-    21300056: Attack2a_28
-    21300058: Attack2a_29
-    21300060: Attack2a_30
-    21300062: Attack2a_31
-    21300064: Attack2a_32
-    21300066: Attack2a_33
-    21300068: Attack2a_34
-    21300070: Attack2a_35
+    21300000: Attack3a_0
+    21300002: Attack3a_1
+    21300004: Attack3a_2
+    21300006: Attack3a_3
+    21300008: Attack3a_4
+    21300010: Attack3a_5
+    21300012: Attack3a_6
+    21300014: Attack3a_7
+    21300016: Attack3a_8
+    21300018: Attack3a_9
+    21300020: Attack3a_10
+    21300022: Attack3a_11
+    21300024: Attack3a_12
+    21300026: Attack3a_13
+    21300028: Attack3a_14
+    21300030: Attack3a_15
+    21300032: Attack3a_16
+    21300034: Attack3a_17
+    21300036: Attack3a_18
+    21300038: Attack3a_19
+    21300040: Attack3a_20
+    21300042: Attack3a_21
+    21300044: Attack3a_22
+    21300046: Attack3a_23
+    21300048: Attack3a_24
+    21300050: Attack3a_25
+    21300052: Attack3a_26
+    21300054: Attack3a_27
+    21300056: Attack3a_28
+    21300058: Attack3a_29
+    21300060: Attack3a_30
+    21300062: Attack3a_31
+    21300064: Attack3a_32
+    21300066: Attack3a_33
+    21300068: Attack3a_34
+    21300070: Attack3a_35
+    21300072: Attack3a_36
+    21300074: Attack3a_37
+    21300076: Attack3a_38
+    21300078: Attack3a_39
+    21300080: Attack3a_40
+    21300082: Attack3a_41
+    21300084: Attack3a_42
+    21300086: Attack3a_43
+    21300088: Attack3a_44
+    21300090: Attack3a_45
+    21300092: Attack3a_46
+    21300094: Attack3a_47
+    21300096: Attack3a_48
+    21300098: Attack3a_49
+    21300100: Attack3a_50
+    21300102: Attack3a_51
+    21300104: Attack3a_52
+    21300106: Attack3a_53
+    21300108: Attack3a_54
+    21300110: Attack3a_55
+    21300112: Attack3a_56
+    21300114: Attack3a_57
+    21300116: Attack3a_58
+    21300118: Attack3a_59
+    21300120: Attack3a_60
+    21300122: Attack3a_61
+    21300124: Attack3a_62
+    21300126: Attack3a_63
+    21300128: Attack2a_0
+    21300130: Attack2a_1
+    21300132: Attack2a_2
+    21300134: Attack2a_3
+    21300136: Attack2a_4
+    21300138: Attack2a_5
+    21300140: Attack2a_6
+    21300142: Attack2a_7
+    21300144: Attack2a_8
+    21300146: Attack2a_9
+    21300148: Attack2a_10
+    21300150: Attack2a_11
+    21300152: Attack2a_12
+    21300154: Attack2a_13
+    21300156: Attack2a_14
+    21300158: Attack2a_15
+    21300160: Attack2a_16
+    21300162: Attack2a_17
+    21300164: Attack2a_18
+    21300166: Attack2a_19
+    21300168: Attack2a_20
+    21300170: Attack2a_21
+    21300172: Attack2a_22
+    21300174: Attack2a_23
+    21300176: Attack2a_24
+    21300178: Attack2a_25
+    21300180: Attack2a_26
+    21300182: Attack2a_27
+    21300184: Attack2a_28
+    21300186: Attack2a_29
+    21300188: Attack2a_30
+    21300190: Attack2a_31
+    21300192: Attack2a_32
+    21300194: Attack2a_33
+    21300196: Attack2a_34
+    21300198: Attack2a_35
+    21300200: Attack2a_36
+    21300202: Attack2a_37
+    21300204: Attack2a_38
+    21300206: Attack2a_39
+    21300208: Attack2a_40
+    21300210: Attack2a_41
+    21300212: Attack2a_42
+    21300214: Attack2a_43
+    21300216: Attack2a_44
+    21300218: Attack2a_45
+    21300220: Attack2a_46
+    21300222: Attack2a_47
+    21300224: Attack2a_48
+    21300226: Attack2a_49
+    21300228: Attack2a_50
+    21300230: Attack2a_51
+    21300232: Attack2a_52
+    21300234: Attack2a_53
+    21300236: Attack2a_54
+    21300238: Attack2a_55
+    21300240: Attack2a_56
+    21300242: Attack2a_57
+    21300244: Attack2a_58
+    21300246: Attack2a_59
+    21300248: Attack2a_60
+    21300250: Attack2a_61
+    21300252: Attack2a_62
+    21300254: Attack2a_63
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -118,9 +210,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 800
-        width: 160
-        height: 160
+        y: 896
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -130,10 +222,10 @@ TextureImporter:
       name: Attack2a_1
       rect:
         serializedVersion: 2
-        x: 160
-        y: 800
-        width: 160
-        height: 160
+        x: 128
+        y: 896
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -143,10 +235,10 @@ TextureImporter:
       name: Attack2a_2
       rect:
         serializedVersion: 2
-        x: 320
-        y: 800
-        width: 160
-        height: 160
+        x: 256
+        y: 896
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -156,10 +248,10 @@ TextureImporter:
       name: Attack2a_3
       rect:
         serializedVersion: 2
-        x: 480
-        y: 800
-        width: 160
-        height: 160
+        x: 384
+        y: 896
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -169,10 +261,10 @@ TextureImporter:
       name: Attack2a_4
       rect:
         serializedVersion: 2
-        x: 640
-        y: 800
-        width: 160
-        height: 160
+        x: 512
+        y: 896
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -182,10 +274,10 @@ TextureImporter:
       name: Attack2a_5
       rect:
         serializedVersion: 2
-        x: 800
-        y: 800
-        width: 160
-        height: 160
+        x: 640
+        y: 896
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -195,10 +287,10 @@ TextureImporter:
       name: Attack2a_6
       rect:
         serializedVersion: 2
-        x: 0
-        y: 640
-        width: 160
-        height: 160
+        x: 768
+        y: 896
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -208,10 +300,10 @@ TextureImporter:
       name: Attack2a_7
       rect:
         serializedVersion: 2
-        x: 160
-        y: 640
-        width: 160
-        height: 160
+        x: 896
+        y: 896
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -221,10 +313,10 @@ TextureImporter:
       name: Attack2a_8
       rect:
         serializedVersion: 2
-        x: 320
-        y: 640
-        width: 160
-        height: 160
+        x: 0
+        y: 768
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -234,10 +326,10 @@ TextureImporter:
       name: Attack2a_9
       rect:
         serializedVersion: 2
-        x: 480
-        y: 640
-        width: 160
-        height: 160
+        x: 128
+        y: 768
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -247,10 +339,10 @@ TextureImporter:
       name: Attack2a_10
       rect:
         serializedVersion: 2
-        x: 640
-        y: 640
-        width: 160
-        height: 160
+        x: 256
+        y: 768
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -260,10 +352,10 @@ TextureImporter:
       name: Attack2a_11
       rect:
         serializedVersion: 2
-        x: 800
-        y: 640
-        width: 160
-        height: 160
+        x: 384
+        y: 768
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -273,10 +365,10 @@ TextureImporter:
       name: Attack2a_12
       rect:
         serializedVersion: 2
-        x: 0
-        y: 480
-        width: 160
-        height: 160
+        x: 512
+        y: 768
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -286,10 +378,10 @@ TextureImporter:
       name: Attack2a_13
       rect:
         serializedVersion: 2
-        x: 160
-        y: 480
-        width: 160
-        height: 160
+        x: 640
+        y: 768
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -299,10 +391,10 @@ TextureImporter:
       name: Attack2a_14
       rect:
         serializedVersion: 2
-        x: 320
-        y: 480
-        width: 160
-        height: 160
+        x: 768
+        y: 768
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -312,10 +404,10 @@ TextureImporter:
       name: Attack2a_15
       rect:
         serializedVersion: 2
-        x: 480
-        y: 480
-        width: 160
-        height: 160
+        x: 896
+        y: 768
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -325,10 +417,10 @@ TextureImporter:
       name: Attack2a_16
       rect:
         serializedVersion: 2
-        x: 640
-        y: 480
-        width: 160
-        height: 160
+        x: 0
+        y: 640
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -338,10 +430,10 @@ TextureImporter:
       name: Attack2a_17
       rect:
         serializedVersion: 2
-        x: 800
-        y: 480
-        width: 160
-        height: 160
+        x: 128
+        y: 640
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -351,10 +443,10 @@ TextureImporter:
       name: Attack2a_18
       rect:
         serializedVersion: 2
-        x: 0
-        y: 320
-        width: 160
-        height: 160
+        x: 256
+        y: 640
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -364,10 +456,10 @@ TextureImporter:
       name: Attack2a_19
       rect:
         serializedVersion: 2
-        x: 160
-        y: 320
-        width: 160
-        height: 160
+        x: 384
+        y: 640
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -377,10 +469,10 @@ TextureImporter:
       name: Attack2a_20
       rect:
         serializedVersion: 2
-        x: 320
-        y: 320
-        width: 160
-        height: 160
+        x: 512
+        y: 640
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -390,10 +482,10 @@ TextureImporter:
       name: Attack2a_21
       rect:
         serializedVersion: 2
-        x: 480
-        y: 320
-        width: 160
-        height: 160
+        x: 640
+        y: 640
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -403,10 +495,10 @@ TextureImporter:
       name: Attack2a_22
       rect:
         serializedVersion: 2
-        x: 640
-        y: 320
-        width: 160
-        height: 160
+        x: 768
+        y: 640
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -416,10 +508,10 @@ TextureImporter:
       name: Attack2a_23
       rect:
         serializedVersion: 2
-        x: 800
-        y: 320
-        width: 160
-        height: 160
+        x: 896
+        y: 640
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -430,9 +522,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 160
-        width: 160
-        height: 160
+        y: 512
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -442,10 +534,10 @@ TextureImporter:
       name: Attack2a_25
       rect:
         serializedVersion: 2
-        x: 160
-        y: 160
-        width: 160
-        height: 160
+        x: 128
+        y: 512
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -455,10 +547,10 @@ TextureImporter:
       name: Attack2a_26
       rect:
         serializedVersion: 2
-        x: 320
-        y: 160
-        width: 160
-        height: 160
+        x: 256
+        y: 512
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -468,10 +560,10 @@ TextureImporter:
       name: Attack2a_27
       rect:
         serializedVersion: 2
-        x: 480
-        y: 160
-        width: 160
-        height: 160
+        x: 384
+        y: 512
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -481,10 +573,10 @@ TextureImporter:
       name: Attack2a_28
       rect:
         serializedVersion: 2
-        x: 640
-        y: 160
-        width: 160
-        height: 160
+        x: 512
+        y: 512
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -494,10 +586,10 @@ TextureImporter:
       name: Attack2a_29
       rect:
         serializedVersion: 2
-        x: 800
-        y: 160
-        width: 160
-        height: 160
+        x: 640
+        y: 512
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -507,10 +599,10 @@ TextureImporter:
       name: Attack2a_30
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 160
-        height: 160
+        x: 768
+        y: 512
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -520,10 +612,10 @@ TextureImporter:
       name: Attack2a_31
       rect:
         serializedVersion: 2
-        x: 160
-        y: 0
-        width: 160
-        height: 160
+        x: 896
+        y: 512
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -533,10 +625,10 @@ TextureImporter:
       name: Attack2a_32
       rect:
         serializedVersion: 2
-        x: 320
-        y: 0
-        width: 160
-        height: 160
+        x: 0
+        y: 384
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -546,10 +638,10 @@ TextureImporter:
       name: Attack2a_33
       rect:
         serializedVersion: 2
-        x: 480
-        y: 0
-        width: 160
-        height: 160
+        x: 128
+        y: 384
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -559,10 +651,10 @@ TextureImporter:
       name: Attack2a_34
       rect:
         serializedVersion: 2
-        x: 640
-        y: 0
-        width: 160
-        height: 160
+        x: 256
+        y: 384
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -572,10 +664,374 @@ TextureImporter:
       name: Attack2a_35
       rect:
         serializedVersion: 2
-        x: 800
+        x: 384
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_36
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_37
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_38
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_39
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 384
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_41
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_42
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_43
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_44
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_45
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_46
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_47
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_49
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_50
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_51
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_52
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_53
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_54
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_55
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_56
+      rect:
+        serializedVersion: 2
+        x: 0
         y: 0
-        width: 160
-        height: 160
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_57
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_58
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_59
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_60
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_61
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_62
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Attack2a_63
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

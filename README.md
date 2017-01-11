@@ -5,6 +5,11 @@ License
 =======
 **MIT License**  
 
+Except 3 files. The license of this file is unknown. Author: 2dgames_jp  
+-KifuwarabeFighter2/Assets/Scripts/TakoyakiParticleScript.cs  
+-KifuwarabeFighter2/Assets/Scripts/TakoyakiTokenScript.cs  
+-KifuwarabeFighter2/Assets/Scripts/TakoyakiUtilScript.cs  
+
 I want money (Option)
 =====================
 I am poor. You can suport me. Payment is here. https://enty.jp/posts/31990  
@@ -22,19 +27,19 @@ Folder Explain
 **AtarihanteiMaker.exe**  
 
 <pre>
-> KifuwarabeFighter2_meta  
-> |  
-> +--tool(CSharp)  
->     |  
->     +--AtarihanteiMaker  
->          |  
->          +--AtarihanteiMaker  
->               |  
->               +--bin  
->                    |  
->                    +--Release  
->                         |  
->                         +--AtarihanteiMaker.exe  
+KifuwarabeFighter2_meta
+|
++--tool(CSharp)
+    |
+    +--AtarihanteiMaker
+         |
+         +--AtarihanteiMaker
+              |
+              +--bin
+                   |
+                   +--Release
+                        |
+                        +--AtarihanteiMaker.exe
 </pre>
 
 This is a tool. Png image to text data. 160x160 slice, 960x960 pixels image, Red(R=255,G=0,B=0) Rectangle to Offset X,Y and Scale X,Y on Unity ( Scale x=2 y=2 z=1 ).  
@@ -46,11 +51,11 @@ How to use.
 **Dot image ( .edg files )  
 
 <pre>
-> KifuwarabeFighter2_meta  
-> |  
-> +--source  
->     |  
->     +-- *.edg  
+KifuwarabeFighter2_meta
+|
++--source
+    |
+    +-- *.edg
 </pre>
 
 This is a binary source file of dot image. Please, Get dot editor. http://takabosoft.com/edge  

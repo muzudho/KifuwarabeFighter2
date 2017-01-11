@@ -1,4 +1,5 @@
-﻿/// 出典 http://qiita.com/2dgames_jp/items/11bb76167fb44bb5af5f
+﻿/// The license of this file is unknown. Author: 2dgames_jp
+/// 出典 http://qiita.com/2dgames_jp/items/11bb76167fb44bb5af5f
 using UnityEngine;
 using System.Collections;
 
@@ -30,21 +31,21 @@ public class TakoyakiTokenScript : MonoBehaviour
     }
 
     /// 生存フラグ.
-    bool _exists = false;
+    bool m_exists_ = false;
 
     public bool Exists
     {
-        get { return _exists; }
-        set { _exists = value; }
+        get { return m_exists_; }
+        set { m_exists_ = value; }
     }
 
     /// アクセサ.
     /// レンダラー.
-    SpriteRenderer _renderer = null;
+    SpriteRenderer m_renderer_ = null;
 
     public SpriteRenderer Renderer
     {
-        get { return _renderer ?? (_renderer = gameObject.GetComponent<SpriteRenderer>()); }
+        get { return m_renderer_ ?? (m_renderer_ = gameObject.GetComponent<SpriteRenderer>()); }
     }
 
     /// 描画フラグ.
@@ -172,11 +173,11 @@ public class TakoyakiTokenScript : MonoBehaviour
     }
 
     /// 剛体.
-    Rigidbody2D _rigidbody2D = null;
+    Rigidbody2D m_rigidbody2D_ = null;
 
     public Rigidbody2D RigidBody
     {
-        get { return _rigidbody2D ?? (_rigidbody2D = gameObject.GetComponent<Rigidbody2D>()); }
+        get { return m_rigidbody2D_ ?? (m_rigidbody2D_ = gameObject.GetComponent<Rigidbody2D>()); }
     }
 
     /// 移動量を設定.
@@ -232,7 +233,7 @@ public class TakoyakiTokenScript : MonoBehaviour
     {
         get
         {
-            Vector2 v = _rigidbody2D.velocity;
+            Vector2 v = m_rigidbody2D_.velocity;
             return Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
         }
     }
@@ -242,7 +243,7 @@ public class TakoyakiTokenScript : MonoBehaviour
     {
         get
         {
-            Vector2 v = _rigidbody2D.velocity;
+            Vector2 v = m_rigidbody2D_.velocity;
             return Mathf.Sqrt(v.x * v.x + v.y * v.y);
         }
     }
@@ -322,11 +323,11 @@ public class TakoyakiTokenScript : MonoBehaviour
     }
 
     /// コリジョン（円）.
-    CircleCollider2D _circleCollider = null;
+    CircleCollider2D m_circleCollider_ = null;
 
     public CircleCollider2D CircleCollider
     {
-        get { return _circleCollider ?? (_circleCollider = GetComponent<CircleCollider2D>()); }
+        get { return m_circleCollider_ ?? (m_circleCollider_ = GetComponent<CircleCollider2D>()); }
     }
     // 円コリジョンの半径.
     public float CollisionRadius
@@ -342,11 +343,11 @@ public class TakoyakiTokenScript : MonoBehaviour
     }
 
     /// コリジョン（矩形）.
-    BoxCollider2D _boxCollider = null;
+    BoxCollider2D m_boxCollider_ = null;
 
     public BoxCollider2D BoxCollider
     {
-        get { return _boxCollider ?? (_boxCollider = GetComponent<BoxCollider2D>()); }
+        get { return m_boxCollider_ ?? (m_boxCollider_ = GetComponent<BoxCollider2D>()); }
     }
 
     /// 矩形コリジョンの幅.

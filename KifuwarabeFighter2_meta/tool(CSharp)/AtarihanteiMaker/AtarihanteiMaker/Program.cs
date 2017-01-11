@@ -31,10 +31,10 @@ namespace AtarihanteiMaker
     /// </summary>
     class Program
     {
-        private const int GRID_WIDTH = 10;
-        private const int GRID_HEIGHT = 10;
-        private const int SLICE_WIDTH = 160;
-        private const int SLICE_HEIGHT = 160;
+        private const int GRID_WIDTH = 8;
+        private const int GRID_HEIGHT = 8;
+        private const int SLICE_WIDTH = 128;
+        private const int SLICE_HEIGHT = 128;
 
         static void Main(string[] args)
         {
@@ -43,6 +43,9 @@ namespace AtarihanteiMaker
             {
                 Program.Execute(file);
             }
+
+            System.Console.WriteLine("Please, push any key.");
+            System.Console.ReadKey();
         }
 
         private static bool ContainsLocation(int x, int y, List<RectangleEx> rectList)
@@ -79,7 +82,6 @@ namespace AtarihanteiMaker
 
             System.Console.WriteLine(Path.GetFileNameWithoutExtension(file) + ".txt");
             System.Console.WriteLine(sb.ToString());
-            System.Console.ReadKey();
 
             File.WriteAllText(Path.GetFileNameWithoutExtension(file) + ".txt", sb.ToString());
         }
