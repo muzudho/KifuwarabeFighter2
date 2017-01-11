@@ -20,6 +20,8 @@ Folder Explain
 **KifuwarabeFighter2_meta** This folder is not include release game. This is a source material or tool.  
 
 **AtarihanteiMaker.exe**  
+
+<pre>
 > KifuwarabeFighter2_meta  
 > |  
 > +--tool(CSharp)  
@@ -33,6 +35,7 @@ Folder Explain
 >                    +--Release  
 >                         |  
 >                         +--AtarihanteiMaker.exe  
+</pre>
 
 This is a tool. Png image to text data. 160x160 slice, 960x960 pixels image, Red(R=255,G=0,B=0) Rectangle to Offset X,Y and Scale X,Y on Unity ( Scale x=2 y=2 z=1 ).  
 How to use.  
@@ -41,11 +44,14 @@ How to use.
 (3) Done. Same name .txt file created.  
 
 **Dot image ( .edg files )  
+
+<pre>
 > KifuwarabeFighter2_meta  
 > |  
 > +--source  
 >     |  
 >     +-- *.edg  
+</pre>
 
 This is a binary source file of dot image. Please, Get dot editor. http://takabosoft.com/edge  
 
