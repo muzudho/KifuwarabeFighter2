@@ -133,7 +133,7 @@ public class SelectCameraScript : MonoBehaviour {
     private void ChangeCharacter(int iPlayerIndex)
     {
         // 選択キャラクター変更
-        PlayerCharacter character = CommonScript.X_To_CharacterInSelectMenu[player_to_cursorColumn[iPlayerIndex]];
+        CharacterIndex character = CommonScript.X_To_CharacterInSelectMenu[player_to_cursorColumn[iPlayerIndex]];
         CommonScript.Player_To_UseCharacter[iPlayerIndex] = character;
         // 顔変更
         Sprite[] sprites1 = Resources.LoadAll<Sprite>(CommonScript.CharacterAndSlice_To_FaceSprites[(int)character, (int)PlayerCharacterSpritesIndex.All]);

@@ -22,7 +22,7 @@ public enum PlayerIndex
 /// <summary>
 /// 使用キャラクター。
 /// </summary>
-public enum PlayerCharacter
+public enum CharacterIndex
 {
     Kifuwarabe,
     Ponahiko,
@@ -53,6 +53,16 @@ public enum WeightIndex
     Medium,
     Hard
 }
+public enum MotionIndex
+{
+    Wait,
+    LP,
+    MP,
+    HP,
+    LK,
+    MK,
+    HK,
+}
 
 // どこからでも使われるぜ☆
 public class CommonScript
@@ -61,7 +71,7 @@ public class CommonScript
     static CommonScript()
     {
         Result = Result.None;
-        Player_To_UseCharacter = new PlayerCharacter[] { PlayerCharacter.Kifuwarabe, PlayerCharacter.Kifuwarabe };
+        Player_To_UseCharacter = new CharacterIndex[] { CharacterIndex.Kifuwarabe, CharacterIndex.Kifuwarabe };
         Teban = PlayerIndex.Player1;
     }
 
@@ -96,7 +106,7 @@ public class CommonScript
     /// <summary>
     /// [Player] プレイヤーの使用キャラクター。
     /// </summary>
-    public static PlayerCharacter[] Player_To_UseCharacter { get; set; }
+    public static CharacterIndex[] Player_To_UseCharacter { get; set; }
     public static PlayerIndex Teban { get; set; }
     public static PlayerIndex ReverseTeban(PlayerIndex player)
     {
@@ -111,20 +121,20 @@ public class CommonScript
     /// <summary>
     /// [x] キャラクター選択画面での並び順 
     /// </summary>
-    public static PlayerCharacter[] X_To_CharacterInSelectMenu = new PlayerCharacter[]
+    public static CharacterIndex[] X_To_CharacterInSelectMenu = new CharacterIndex[]
     {
-        PlayerCharacter.Kifuwarabe, PlayerCharacter.Roborinko, PlayerCharacter.Ponahiko
+        CharacterIndex.Kifuwarabe, CharacterIndex.Roborinko, CharacterIndex.Ponahiko
     };
     /// <summary>
     /// [character]
     /// </summary>
     public static string[] Character_To_Name = new string[]
     {
-        "きふわらべ", "ポナ彦", "ろぼりん娘"
+        "きふわらべ", "パナ彦", "ろぼりん娘"
     };
     public static string[] Character_To_NameRoma = new string[]
     {
-        "KifuWarabe", "Ponahiko", "Roborinko"
+        "KifuWarabe", "Panahiko", "Roborinko"
     };
     public static string[] Character_To_AnimationController = new string[]
     {
@@ -136,9 +146,15 @@ public class CommonScript
     /// [character,スライス番号]
     /// </summary>
     public static string[,] CharacterAndSlice_To_FaceSprites = new string[3,3]{
-        { "Sprites/顔１_きふわらべ", "顔１_きふわらべ_0", "顔１_きふわらべ_1" },
-        { "Sprites/顔２_ポナ彦", "顔２_ポナ彦_0", "顔２_ポナ彦_1" },
-        { "Sprites/顔３_らぶりんこ", "顔３_らぶりんこ_0", "顔３_らぶりんこ_1" },
+        { "Sprites/Face1", "Face1_0", "Face1_1" },
+        { "Sprites/Face2", "Face2_0", "Face2_1" },
+        { "Sprites/Face3", "Face3_0", "Face3_1" },
+    };
+    public static string[,] CharacterAndMotion_To_Slice = new string[,]
+    {
+        { "Char1_Wait", "Char1_LP", "Char1_MP", "Char1_HP", "Char1_LK", "Char1_MK", "Char1_HK", },
+        { "Char2_Wait", "Char2_LP", "Char2_MP", "Char2_HP", "Char2_LK", "Char2_MK", "Char2_HK", },
+        { "Char3_Wait", "Char3_LP", "Char3_MP", "Char3_HP", "Char3_LK", "Char3_MK", "Char3_HK", },
     };
     public static string[] PlayerTags = new string[] { "Char1", "Char2" };
 

@@ -15,8 +15,10 @@ public class MainCameraScript : MonoBehaviour {
     public GameObject char1;
     public GameObject char2;
     private GameObject[] player_to_char;//[プレイヤー番号]
-    public Animator anim1;
-    public Animator anim2;
+    Animator anim1;
+    Animator anim2;
+    //public Animator anim1;
+    //public Animator anim2;
     private Animator[] player_to_anime;//[プレイヤー番号]
     GameObject char1Attack;
     GameObject char2Attack;
@@ -56,15 +58,16 @@ public class MainCameraScript : MonoBehaviour {
         #region 選択キャラクター
         player_to_name = new Text[] { name1, name2 };
         player_to_char = new GameObject[] { char1, char2 };
+        player_to_anime = new Animator[] { char1.GetComponent<Animator>(), char2.GetComponent<Animator>() };
+        //player_to_anime = new Animator[] { anim1, anim2 };
         player_to_charAttack = new GameObject[] { GameObject.Find("Char1Attack"), GameObject.Find("Char2Attack") };
         player_to_charAttackSpriteRenderer = new SpriteRenderer[] { player_to_charAttack[(int)PlayerIndex.Player1].GetComponent<SpriteRenderer>(), player_to_charAttack[(int)PlayerIndex.Player2].GetComponent<SpriteRenderer>() };
         player_to_charAttackBoxCollider2D = new BoxCollider2D[] { player_to_charAttack[(int)PlayerIndex.Player1].GetComponent<BoxCollider2D>(), player_to_charAttack[(int)PlayerIndex.Player2].GetComponent<BoxCollider2D>() };
-        player_to_anime = new Animator[] { anim1, anim2 };
         for (int iPlayer = (int)PlayerIndex.Player1; iPlayer<(int)PlayerIndex.Num; iPlayer++)
         {
             //player_to_attacking[iPlayer] = 0;
 
-            PlayerCharacter character = CommonScript.Player_To_UseCharacter[iPlayer];
+            CharacterIndex character = CommonScript.Player_To_UseCharacter[iPlayer];
             // 名前
             player_to_name[iPlayer].text = CommonScript.Character_To_NameRoma[(int)character];
 
@@ -109,12 +112,13 @@ public class MainCameraScript : MonoBehaviour {
         #endregion
     }
 
+    private const int READY_TIME_LENGTH = 20;
     // Update is called once per frame
     void Update()
     {
         #region 対局開始表示
         readyTime++;
-        if (60==readyTime)
+        if (READY_TIME_LENGTH == readyTime)
         {
             fight1.SetActive(false);
             fight2.SetActive(false);
@@ -122,98 +126,107 @@ public class MainCameraScript : MonoBehaviour {
         #endregion
 
         #region 当たり判定
+        if(READY_TIME_LENGTH < readyTime)
         {
-            for (int iPlayerIndex = (int)PlayerIndex.Player1; iPlayerIndex < (int)PlayerIndex.Num; iPlayerIndex++)
+            for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
             {
                 // 位置合わせ
-                player_to_charAttack[(int)iPlayerIndex].transform.position = player_to_char[(int)iPlayerIndex].transform.position;
+                player_to_charAttack[(int)iPlayer].transform.position = player_to_char[(int)iPlayer].transform.position;
 
                 // クリップ名取得
-                AnimationClip clip = player_to_anime[(int)iPlayerIndex].GetCurrentAnimatorClipInfo(0)[0].clip;
+                Animator anime = player_to_anime[(int)iPlayer];
+                AnimationClip clip = anime.GetCurrentAnimatorClipInfo(0)[0].clip;
                 string clipName = clip.name;
 
                 // 正規化時間取得
-                float normalizedTime = player_to_anime[(int)iPlayerIndex].GetCurrentAnimatorStateInfo(0).normalizedTime;
+                float normalizedTime = player_to_anime[(int)iPlayer].GetCurrentAnimatorStateInfo(0).normalizedTime;
 
                 // モーション・フレーム要素数取得
                 int motionFrames = Mathf.CeilToInt(clip.length * clip.frameRate); // 2 = Ceil(0.133333 * 15)
                 int currentMotionFrame = Mathf.FloorToInt( (normalizedTime % 1.0f) * motionFrames); // 1 = Floor( 0.5 * 2)
 
 
+                CharacterIndex character = CommonScript.Player_To_UseCharacter[iPlayer];
+
                 // 当たり判定くん　画像差し替え
-                Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/Attack1_KifuWarabe_A");
+                Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/Attack1a");
                 string sliceName = "";
-                switch (clipName)
+                if (CommonScript.CharacterAndMotion_To_Slice[(int)character, (int)MotionIndex.Wait] == clipName)
                 {
-                    case "Kifuwarabe_Taiki":
-                        switch (currentMotionFrame)
-                        {
-                            case 0: sliceName = "Attack1_KifuWarabe_A_0"; break;
-                            case 1: sliceName = "Attack1_KifuWarabe_A_1"; break;
-                            case 2: sliceName = "Attack1_KifuWarabe_A_2"; break;
-                            case 3: sliceName = "Attack1_KifuWarabe_A_3"; break;
-                        }
-                        break;
-                    case "Kifuwarabe_LP":// Light Punch
-                        switch (currentMotionFrame)
-                        {
-                            case 0: sliceName = "Attack1_KifuWarabe_A_6"; break;
-                            case 1: sliceName = "Attack1_KifuWarabe_A_7"; break;
-                        }
-                        break;
-                    case "Kifuwarabe_MP":
-                        switch (currentMotionFrame)
-                        {
-                            case 0: sliceName = "Attack1_KifuWarabe_A_6"; break;
-                            case 1: sliceName = "Attack1_KifuWarabe_A_7"; break;
-                            case 2: sliceName = "Attack1_KifuWarabe_A_8"; break;
-                        }
-                        break;
-                    case "Kifuwarabe_HP":
-                        switch (currentMotionFrame)
-                        {
-                            case 0: sliceName = "Attack1_KifuWarabe_A_6"; break;
-                            case 1: sliceName = "Attack1_KifuWarabe_A_7"; break;
-                            case 2: sliceName = "Attack1_KifuWarabe_A_8"; break;
-                            case 3: sliceName = "Attack1_KifuWarabe_A_9"; break;
-                            case 4: sliceName = "Attack1_KifuWarabe_A_7"; break;
-                        }
-                        break;
-                    case "Kifuwarabe_LK":
-                        switch (currentMotionFrame)
-                        {
-                            case 0: sliceName = "Attack1_KifuWarabe_A_13"; break;
-                            case 1: sliceName = "Attack1_KifuWarabe_A_14"; break;
-                        }
-                        break;
-                    case "Kifuwarabe_MK":
-                        switch (currentMotionFrame)
-                        {
-                            case 0: sliceName = "Attack1_KifuWarabe_A_13"; break;
-                            case 1: sliceName = "Attack1_KifuWarabe_A_14"; break;
-                            case 2: sliceName = "Attack1_KifuWarabe_A_15"; break;
-                        }
-                        break;
-                    case "Kifuwarabe_HK":
-                        switch (currentMotionFrame)
-                        {
-                            case 0: sliceName = "Attack1_KifuWarabe_A_13"; break;
-                            case 1: sliceName = "Attack1_KifuWarabe_A_14"; break;
-                            case 2: sliceName = "Attack1_KifuWarabe_A_15"; break;
-                            case 3: sliceName = "Attack1_KifuWarabe_A_16"; break;
-                            case 4: sliceName = "Attack1_KifuWarabe_A_14"; break;
-                        }
-                        break;
+                    switch (currentMotionFrame)
+                    {
+                        case 0: sliceName = "Attack1a_0"; break;
+                        case 1: sliceName = "Attack1a_1"; break;
+                        case 2: sliceName = "Attack1a_2"; break;
+                        case 3: sliceName = "Attack1a_3"; break;
+                    }
                 }
+                else if (CommonScript.CharacterAndMotion_To_Slice[(int)character, (int)MotionIndex.LP] == clipName)
+                {
+                    switch (currentMotionFrame)
+                    {
+                        case 0: sliceName = "Attack1a_6"; break;
+                        case 1: sliceName = "Attack1a_7"; break;
+                    }
+                }
+                else if (CommonScript.CharacterAndMotion_To_Slice[(int)character, (int)MotionIndex.MP] == clipName)
+                {
+                    switch (currentMotionFrame)
+                    {
+                        case 0: sliceName = "Attack1a_6"; break;
+                        case 1: sliceName = "Attack1a_7"; break;
+                        case 2: sliceName = "Attack1a_8"; break;
+                    }
+                }
+                else if (CommonScript.CharacterAndMotion_To_Slice[(int)character, (int)MotionIndex.HP] == clipName)
+                {
+                    switch (currentMotionFrame)
+                    {
+                        case 0: sliceName = "Attack1a_6"; break;
+                        case 1: sliceName = "Attack1a_7"; break;
+                        case 2: sliceName = "Attack1a_8"; break;
+                        case 3: sliceName = "Attack1a_9"; break;
+                        case 4: sliceName = "Attack1a_7"; break;
+                    }
+                }
+                else if (CommonScript.CharacterAndMotion_To_Slice[(int)character, (int)MotionIndex.LK] == clipName)
+                {
+                    switch (currentMotionFrame)
+                    {
+                        case 0: sliceName = "Attack1a_13"; break;
+                        case 1: sliceName = "Attack1a_14"; break;
+                    }
+                }
+                else if (CommonScript.CharacterAndMotion_To_Slice[(int)character, (int)MotionIndex.MK] == clipName)
+                {
+                    switch (currentMotionFrame)
+                    {
+                        case 0: sliceName = "Attack1a_13"; break;
+                        case 1: sliceName = "Attack1a_14"; break;
+                        case 2: sliceName = "Attack1a_15"; break;
+                    }
+                }
+                else if (CommonScript.CharacterAndMotion_To_Slice[(int)character, (int)MotionIndex.HK] == clipName)
+                {
+                    switch (currentMotionFrame)
+                    {
+                        case 0: sliceName = "Attack1a_13"; break;
+                        case 1: sliceName = "Attack1a_14"; break;
+                        case 2: sliceName = "Attack1a_15"; break;
+                        case 3: sliceName = "Attack1a_16"; break;
+                        case 4: sliceName = "Attack1a_14"; break;
+                    }
+                }
+
                 if(""!= sliceName)
                 {
-                    player_to_charAttackSpriteRenderer[(int)iPlayerIndex].sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(sliceName));
+                    player_to_charAttackSpriteRenderer[(int)iPlayer].sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(sliceName));
 
-                    player_to_charAttackBoxCollider2D[(int)iPlayerIndex].offset.Set( 0.25f, 0.05f );
-                    player_to_charAttackBoxCollider2D[(int)iPlayerIndex].size.Set(0.3f, 0.3f);
+                    player_to_charAttackBoxCollider2D[(int)iPlayer].offset.Set( 0.25f, 0.05f );
+                    player_to_charAttackBoxCollider2D[(int)iPlayer].size.Set(0.3f, 0.3f);
                 }
 
-                Debug.Log("iPlayerIndex = " + iPlayerIndex + " clip = " + clipName + " currentMotionFrame = " + currentMotionFrame + " motionFrames = " + motionFrames + " normalizedTime = " + normalizedTime + " length = " + clip.length + " frameRate = " + clip.frameRate + " sliceName = " + sliceName);
+                Debug.Log("iPlayerIndex = " + iPlayer + " clip = " + clipName + " currentMotionFrame = " + currentMotionFrame + " motionFrames = " + motionFrames + " normalizedTime = " + normalizedTime + " length = " + clip.length + " frameRate = " + clip.frameRate + " sliceName = " + sliceName);
             }
         }
         #endregion
@@ -279,9 +292,9 @@ public class MainCameraScript : MonoBehaviour {
                         result[(int)PlayerIndex.Player1, round].SetActive(true);
                         result[(int)PlayerIndex.Player2, round].SetActive(true);
 
-                        Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/勝ち星");
-                        result[(int)PlayerIndex.Player1, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("勝ち星_0"));
-                        result[(int)PlayerIndex.Player2, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("勝ち星_1"));
+                        Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/ResultMark1");
+                        result[(int)PlayerIndex.Player1, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark1_0"));
+                        result[(int)PlayerIndex.Player2, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark1_1"));
 
                         InitBar();
                     }
@@ -299,9 +312,9 @@ public class MainCameraScript : MonoBehaviour {
                         result[(int)PlayerIndex.Player1, round].SetActive(true);
                         result[(int)PlayerIndex.Player2, round].SetActive(true);
 
-                        Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/勝ち星");
-                        result[(int)PlayerIndex.Player1, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("勝ち星_1"));
-                        result[(int)PlayerIndex.Player2, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("勝ち星_0"));
+                        Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/ResultMark1");
+                        result[(int)PlayerIndex.Player1, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark1_1"));
+                        result[(int)PlayerIndex.Player2, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark1_0"));
 
                         InitBar();
                     }

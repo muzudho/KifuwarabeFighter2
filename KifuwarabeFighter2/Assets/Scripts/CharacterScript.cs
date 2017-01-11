@@ -52,24 +52,24 @@ public class CharacterScript : MonoBehaviour {
             // 弾の画像を差し替えたいぜ☆（＾～＾）
             {
                 int r = Random.Range(0, 14);
-                Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/弾１_将棋の駒");
+                Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/Bullet1");
                 Sprite sprite2;
                 switch (r)
                 {
-                    case 0: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_0")); break;//歩
-                    case 1: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_1")); break;//香
-                    case 2: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_2")); break;//桂
-                    case 3: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_3")); break;//銀
-                    case 4: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_4")); break;//金
-                    case 5: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_5")); break;//角
-                    case 6: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_6")); break;//飛
-                    case 7: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_7")); break;//玉
-                    case 8: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_8")); break;//と
-                    case 9: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_9")); break;//杏
-                    case 10: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_10")); break;//圭
-                    case 11: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_11")); break;//全
-                    case 12: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_12")); break;//馬
-                    default: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("弾１_将棋の駒_13")); break;//竜
+                    case 0: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_0")); break;//歩
+                    case 1: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_1")); break;//香
+                    case 2: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_2")); break;//桂
+                    case 3: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_3")); break;//銀
+                    case 4: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_4")); break;//金
+                    case 5: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_5")); break;//角
+                    case 6: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_6")); break;//飛
+                    case 7: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_7")); break;//玉
+                    case 8: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_8")); break;//と
+                    case 9: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_9")); break;//杏
+                    case 10: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_10")); break;//圭
+                    case 11: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_11")); break;//全
+                    case 12: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_12")); break;//馬
+                    default: sprite2 = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("Bullet1_13")); break;//竜
                 }
                 newBulletSpriteRenderer.sprite = sprite2;
             }

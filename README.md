@@ -13,4 +13,4 @@ http://kifuwarabe.warabenture.com/2017/01/11/lets-create-game%E2%98%8614-lets-ch
 Folder Explain
 ==============
 *KifuwarabeFighter2* This folder is all files for Unity.  
-*KifuwarabeFighter2_meta* This folder is not include release game. This is source material.  
+*KifuwarabeFighter2_meta* This folder is not include release game. This is a source material or tool.  
