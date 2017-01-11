@@ -3,8 +3,8 @@ Unityで2D格闘を作ろうぜ☆（＾▽＾）  Let's challenge creating 2D f
 
 ライセンス License
 ==================
-(1)プログラムは MITライセンスだぜ☆ ただし、３つの .cs ファイルを除く。
-(2)いくつかのキャラクター画像は二次創作だぜ☆ 画像を差し替えて使ってくれだぜ☆
+(1)プログラムは **MITライセンス** だぜ☆ ただし、３つの .cs ファイルを除く。  
+(2)いくつかのキャラクター画像は二次創作だぜ☆ 画像を差し替えて使ってくれだぜ☆  
 
 (1)Program is **MIT License** But, Except 3 (.cs) files.  
 (2)1 character graphics is fanmade. Nessesory, Change graphics.  
@@ -13,6 +13,11 @@ Unityで2D格闘を作ろうぜ☆（＾▽＾）  Let's challenge creating 2D f
 -KifuwarabeFighter2/Assets/Scripts/TakoyakiParticleScript.cs  
 -KifuwarabeFighter2/Assets/Scripts/TakoyakiTokenScript.cs  
 -KifuwarabeFighter2/Assets/Scripts/TakoyakiUtilScript.cs  
+
+(1'')
+Copyright (c) 2017 Muzudho
+Released under the MIT license
+http://opensource.org/licenses/mit-license.php
 
 (2')次のキャラクターは二次創作だぜ☆ 画像を差し替えてくれだぜ☆  Nessesory to change, The image of this character.  
 (2-1)ろぼりん娘（帽子に入っているキャラクター）
