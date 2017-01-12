@@ -7,17 +7,21 @@ public class BulletScript : MonoBehaviour
     /// この弾を発射したプレイヤー☆ １プレイヤーは 0 と指定☆
     /// </summary>
     public int friend;
+    private int speed = 10;
+    #endregion
+    #region 当たり判定
     /// <summary>
     /// この弾が当たるプレイヤー☆ １プレイヤーは 0 と指定☆
     /// </summary>
     public int opponent;
-    private int speed = 10;
+    //GameObject mainCamera;
     #endregion
-    GameObject mainCamera;
 
     void Start()
     {
-        mainCamera = GameObject.Find("Main Camera");
+        #region 当たり判定
+        //mainCamera = GameObject.Find("Main Camera");
+        #endregion
         #region 弾作成
         // 味方キャラクター　のオブジェクトを取得
         GameObject friendChar = GameObject.FindWithTag(CommonScript.Player_To_Tag[friend]);
@@ -40,27 +44,27 @@ public class BulletScript : MonoBehaviour
         if (col.gameObject.tag == CommonScript.Player_To_Tag[opponent] )
         {
             // 爆発の粒子を作るぜ☆
-            TakoyakiParticleScript.Add(this.transform.position.x, this.transform.position.y);
+            //TakoyakiParticleScript.Add(this.transform.position.x, this.transform.position.y);
 
-            MainCameraScript script = mainCamera.GetComponent<MainCameraScript>();
+            //MainCameraScript script = mainCamera.GetComponent<MainCameraScript>();
 
-            // ＨＰメーター
-            {
-                float damage;
-                switch ((PlayerIndex)opponent)
-                {
-                    case PlayerIndex.Player1: damage = -50.0f; break; // １プレイヤーにダメージの場合マイナス☆
-                    case PlayerIndex.Player2: damage = 50.0f; break;
-                    default: Debug.LogError("Bullet / HP meter / opponent"); damage = 0.0f; break;
-                }
-                script.OffsetBar(damage);
-            }
+            //// ＨＰメーター
+            //{
+            //    float damage;
+            //    switch ((PlayerIndex)opponent)
+            //    {
+            //        case PlayerIndex.Player1: damage = -50.0f; break; // １プレイヤーにダメージの場合マイナス☆
+            //        case PlayerIndex.Player2: damage = 50.0f; break;
+            //        default: Debug.LogError("Bullet / HP meter / opponent"); damage = 0.0f; break;
+            //    }
+            //    script.OffsetBar(damage);
+            //}
 
-            // 手番
-            {
-                // 攻撃を受けた方の手番に変わるぜ☆（＾▽＾）
-                script.SetTeban((PlayerIndex)opponent);
-            }
+            //// 手番
+            //{
+            //    // 攻撃を受けた方の手番に変わるぜ☆（＾▽＾）
+            //    script.SetTeban((PlayerIndex)opponent);
+            //}
 
             // この弾を消すぜ☆
             Destroy(gameObject);

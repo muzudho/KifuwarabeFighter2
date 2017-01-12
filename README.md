@@ -5,9 +5,11 @@ Unityで2D格闘を作ろうぜ☆（＾▽＾）  Let's challenge creating 2D f
 ==================
 (1)プログラムは **MITライセンス** だぜ☆ ただし、３つの .cs ファイルを除く。  
 (2)いくつかのキャラクター画像は二次創作だぜ☆ 画像を差し替えて使ってくれだぜ☆  
+(3)音楽は 魔王魂のを使用☆  著作の表記必須。
 
 (1)Program is **MIT License** But, Except 3 (.cs) files.  
 (2)1 character graphics is fanmade. Nessesory, Change graphics.  
+(3)Music Author : Maoudamashii (Neccessory, Write copyright)
 
 (1')次の３つのプログラム・ファイルはライセンス不明だぜ☆ Except 3 program files. The license of this file is unknown. Author: 2dgames_jp  
 -KifuwarabeFighter2/Assets/Scripts/TakoyakiParticleScript.cs  
@@ -22,6 +24,11 @@ http://opensource.org/licenses/mit-license.php
 (2')次のキャラクターは二次創作だぜ☆ 画像を差し替えてくれだぜ☆  Nessesory to change, The image of this character.  
 (2-1)ろぼりん娘（帽子に入っているキャラクター）  
 (2-1)Roborinko(This character is on a hat.)  
+
+(3')
+音楽：魔王魂  
+フリー音楽素材/魔王魂 http://maoudamashii.jokersounds.com/
+Music: Maoudamashii
 
 金くれ☆（任意） I want money (Option)
 ======================================

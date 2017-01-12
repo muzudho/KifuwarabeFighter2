@@ -59,7 +59,7 @@ public class MainCameraScript : MonoBehaviour {
         player_to_char = new GameObject[] { char0, char1 };
         player_to_anime = new Animator[] { char0.GetComponent<Animator>(), char1.GetComponent<Animator>() };
         //player_to_charAttack = new GameObject[] { GameObject.Find(CommonScript.Player_To_CharAttack[(int)PlayerIndex.Player1]), GameObject.Find(CommonScript.Player_To_CharAttack[(int)PlayerIndex.Player2]) };
-        player_to_charAttackImg = new GameObject[] { GameObject.Find(CommonScript.Player_To_CharAttackImg[(int)PlayerIndex.Player1]), GameObject.Find(CommonScript.Player_To_CharAttackImg[(int)PlayerIndex.Player2]) };
+        player_to_charAttackImg = new GameObject[] { GameObject.Find(CommonScript.Player_To_Attacker[(int)PlayerIndex.Player1]), GameObject.Find(CommonScript.Player_To_Attacker[(int)PlayerIndex.Player2]) };
         //player_to_charAttackSpriteRenderer = new SpriteRenderer[] { player_to_charAttack[(int)PlayerIndex.Player1].GetComponent<SpriteRenderer>(), player_to_charAttack[(int)PlayerIndex.Player2].GetComponent<SpriteRenderer>() };
         player_to_charAttackImgSpriteRenderer = new SpriteRenderer[] { player_to_charAttackImg[(int)PlayerIndex.Player1].GetComponent<SpriteRenderer>(), player_to_charAttackImg[(int)PlayerIndex.Player2].GetComponent<SpriteRenderer>() };
         //player_to_charAttackBoxCollider2D = new BoxCollider2D[] { player_to_charAttack[(int)PlayerIndex.Player1].GetComponent<BoxCollider2D>(), player_to_charAttack[(int)PlayerIndex.Player2].GetComponent<BoxCollider2D>() };
@@ -247,7 +247,7 @@ public class MainCameraScript : MonoBehaviour {
                         sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, slice);
                     }
                 }
-                Debug.Log("collider clipName = " + clipName + " currentMotionFrame = " + currentMotionFrame + " sliceName = " + sliceName);
+                //Debug.Log("collider clipName = " + clipName + " currentMotionFrame = " + currentMotionFrame + " sliceName = " + sliceName);
 
                 if (""!= sliceName)
                 {

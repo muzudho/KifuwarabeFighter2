@@ -2,14 +2,31 @@
 
 public class CharacterScript : MonoBehaviour {
 
-    public int playerNumber;
+    public int playerIndex;
     public GameObject bullet;
+    #region 当たり判定
+    private GameObject mainCamera;
+    #endregion
+    #region 効果音
+    private AudioSource audioSource;
+    #endregion
+
+    void Start()
+    {
+        #region 当たり判定
+        mainCamera = GameObject.Find("Main Camera");
+        #endregion
+        #region 効果音
+        audioSource = this.GetComponent<AudioSource>();
+        #endregion
+    }
+
 
     void Update()
     {
         // 弾を撃つぜ☆
         if (
-            (playerNumber==1&&(
+            (playerIndex == (int)PlayerIndex.Player1 &&(
                 Input.GetButton(CommonScript.BUTTON_03_P0_LP) ||
                 Input.GetButton(CommonScript.BUTTON_04_P0_MP) ||
                 Input.GetButton(CommonScript.BUTTON_05_P0_HP) ||
@@ -18,7 +35,7 @@ public class CharacterScript : MonoBehaviour {
                 Input.GetButton(CommonScript.BUTTON_08_P0_HK)
             ))
             ||
-            (playerNumber == 2 && (
+            (playerIndex == (int)PlayerIndex.Player2 && (
                 Input.GetButton(CommonScript.BUTTON_13_P1_LP) ||
                 Input.GetButton(CommonScript.BUTTON_14_P1_MP) ||
                 Input.GetButton(CommonScript.BUTTON_15_P1_HP) ||
@@ -74,6 +91,47 @@ public class CharacterScript : MonoBehaviour {
                 newBulletSpriteRenderer.sprite = sprite2;
             }
         }
+    }
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        #region 当たり判定
+        if (
+            (playerIndex == (int)PlayerIndex.Player1 && col.tag == CommonScript.Player_To_AttackerTag[(int)PlayerIndex.Player2])
+            ||
+            (playerIndex == (int)PlayerIndex.Player2 && col.tag == CommonScript.Player_To_AttackerTag[(int)PlayerIndex.Player1])
+            )
+        {
+            // 攻撃の当たり判定に体が入ったとき。
+            PlayerIndex opponent = CommonScript.ReverseTeban((PlayerIndex)playerIndex);
+
+            // 効果音を鳴らすぜ☆
+            audioSource.PlayOneShot(audioSource.clip);
+
+            // 爆発の粒子を作るぜ☆
+            TakoyakiParticleScript.Add(this.transform.position.x, this.transform.position.y);
+
+            MainCameraScript script = mainCamera.GetComponent<MainCameraScript>();
+
+            // ＨＰメーター
+            {
+                float damage;
+                switch (opponent)
+                {
+                    case PlayerIndex.Player1: damage = -50.0f; break; // １プレイヤーにダメージの場合マイナス☆
+                    case PlayerIndex.Player2: damage = 50.0f; break;
+                    default: Debug.LogError("Bullet / HP meter / opponent"); damage = 0.0f; break;
+                }
+                script.OffsetBar(damage);
+            }
+
+            // 手番
+            {
+                // 攻撃を受けた方の手番に変わるぜ☆（＾▽＾）
+                script.SetTeban(opponent);
+            }
+        }
+        #endregion
     }
 
 }
