@@ -18,11 +18,12 @@ public class MainCameraScript : MonoBehaviour {
     Animator anim0;
     Animator anim1;
     private Animator[] player_to_anime;//[プレイヤー番号]
-    GameObject char0Attack;
-    GameObject char1Attack;
-    private GameObject[] player_to_charAttack;//[プレイヤー番号]
-    private SpriteRenderer[] player_to_charAttackSpriteRenderer;//[プレイヤー番号]
-    private BoxCollider2D[] player_to_charAttackBoxCollider2D;//[プレイヤー番号]
+    //private GameObject[] player_to_charAttack;//[プレイヤー番号]
+    private GameObject[] player_to_charAttackImg;//[プレイヤー番号]
+    //private SpriteRenderer[] player_to_charAttackSpriteRenderer;//[プレイヤー番号]
+    private SpriteRenderer[] player_to_charAttackImgSpriteRenderer;//[プレイヤー番号]
+    //private BoxCollider2D[] player_to_charAttackBoxCollider2D;//[プレイヤー番号]
+    private BoxCollider2D[] player_to_charAttackImgBoxCollider2D;//[プレイヤー番号]
     ///// <summary>
     ///// [プレイヤー番号] 連射防止用。0 以下なら行動可能☆
     ///// </summary>
@@ -57,9 +58,12 @@ public class MainCameraScript : MonoBehaviour {
         player_to_name = new Text[] { name0, name1 };
         player_to_char = new GameObject[] { char0, char1 };
         player_to_anime = new Animator[] { char0.GetComponent<Animator>(), char1.GetComponent<Animator>() };
-        player_to_charAttack = new GameObject[] { GameObject.Find(CommonScript.Player_To_CharAttack[(int)PlayerIndex.Player1]), GameObject.Find(CommonScript.Player_To_CharAttack[(int)PlayerIndex.Player2]) };
-        player_to_charAttackSpriteRenderer = new SpriteRenderer[] { player_to_charAttack[(int)PlayerIndex.Player1].GetComponent<SpriteRenderer>(), player_to_charAttack[(int)PlayerIndex.Player2].GetComponent<SpriteRenderer>() };
-        player_to_charAttackBoxCollider2D = new BoxCollider2D[] { player_to_charAttack[(int)PlayerIndex.Player1].GetComponent<BoxCollider2D>(), player_to_charAttack[(int)PlayerIndex.Player2].GetComponent<BoxCollider2D>() };
+        //player_to_charAttack = new GameObject[] { GameObject.Find(CommonScript.Player_To_CharAttack[(int)PlayerIndex.Player1]), GameObject.Find(CommonScript.Player_To_CharAttack[(int)PlayerIndex.Player2]) };
+        player_to_charAttackImg = new GameObject[] { GameObject.Find(CommonScript.Player_To_CharAttackImg[(int)PlayerIndex.Player1]), GameObject.Find(CommonScript.Player_To_CharAttackImg[(int)PlayerIndex.Player2]) };
+        //player_to_charAttackSpriteRenderer = new SpriteRenderer[] { player_to_charAttack[(int)PlayerIndex.Player1].GetComponent<SpriteRenderer>(), player_to_charAttack[(int)PlayerIndex.Player2].GetComponent<SpriteRenderer>() };
+        player_to_charAttackImgSpriteRenderer = new SpriteRenderer[] { player_to_charAttackImg[(int)PlayerIndex.Player1].GetComponent<SpriteRenderer>(), player_to_charAttackImg[(int)PlayerIndex.Player2].GetComponent<SpriteRenderer>() };
+        //player_to_charAttackBoxCollider2D = new BoxCollider2D[] { player_to_charAttack[(int)PlayerIndex.Player1].GetComponent<BoxCollider2D>(), player_to_charAttack[(int)PlayerIndex.Player2].GetComponent<BoxCollider2D>() };
+        player_to_charAttackImgBoxCollider2D = new BoxCollider2D[] { player_to_charAttackImg[(int)PlayerIndex.Player1].GetComponent<BoxCollider2D>(), player_to_charAttackImg[(int)PlayerIndex.Player2].GetComponent<BoxCollider2D>() };
         for (int iPlayer = (int)PlayerIndex.Player1; iPlayer<(int)PlayerIndex.Num; iPlayer++)
         {
             //player_to_attacking[iPlayer] = 0;
@@ -128,7 +132,7 @@ public class MainCameraScript : MonoBehaviour {
             for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
             {
                 // 位置合わせ
-                player_to_charAttack[(int)iPlayer].transform.position = player_to_char[(int)iPlayer].transform.position;
+                //player_to_charAttack[(int)iPlayer].transform.position = player_to_char[(int)iPlayer].transform.position;
 
                 // クリップ名取得
                 Animator anime = player_to_anime[(int)iPlayer];
@@ -147,71 +151,100 @@ public class MainCameraScript : MonoBehaviour {
 
                 // 当たり判定くん　画像差し替え
                 Sprite[] sprites = Resources.LoadAll<Sprite>(CommonScript.Character_To_Attack(character));
+                int slice = -1;
                 string sliceName = "";
                 if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.Wait] == clipName)
                 {
                     switch (currentMotionFrame)
                     {
-                        case 0: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 0); break;
-                        case 1: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 1); break;
-                        case 2: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 2); break;
-                        case 3: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 3); break;
+                        case 0: slice = 0; break;
+                        case 1: slice = 1; break;
+                        case 2: slice = 2; break;
+                        case 3: slice = 3; break;
+                    }
+                    if (-1 != slice)
+                    {
+                        sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, slice);
                     }
                 }
                 else if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.LP] == clipName)
                 {
                     switch (currentMotionFrame)
                     {
-                        case 0: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 8); break;
-                        case 1: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 9); break;
+                        case 0: slice = 8; break;
+                        case 1: slice = 9; break;
+                    }
+                    if (-1 != slice)
+                    {
+                        sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, slice);
                     }
                 }
                 else if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.MP] == clipName)
                 {
                     switch (currentMotionFrame)
                     {
-                        case 0: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 8); break;
-                        case 1: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 9); break;
-                        case 2: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 10); break;
+                        case 0: slice = 8; break;
+                        case 1: slice = 9; break;
+                        case 2: slice = 10; break;
+                    }
+                    if (-1 != slice)
+                    {
+                        sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, slice);
                     }
                 }
                 else if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.HP] == clipName)
                 {
                     switch (currentMotionFrame)
                     {
-                        case 0: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 8); break;
-                        case 1: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 9); break;
-                        case 2: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 10); break;
-                        case 3: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 11); break;
-                        case 4: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 9); break;
+                        case 0: slice = 8; break;
+                        case 1: slice = 9; break;
+                        case 2: slice = 10; break;
+                        case 3: slice = 11; break;
+                        case 4: slice = 9; break;
+                    }
+                    if (-1 != slice)
+                    {
+                        sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, slice);
                     }
                 }
                 else if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.LK] == clipName)
                 {
                     switch (currentMotionFrame)
                     {
-                        case 0: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 16); break;
-                        case 1: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 17); break;
+                        case 0: slice = 16; break;
+                        case 1: slice = 17; break;
+                    }
+                    if (-1 != slice)
+                    {
+                        sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, slice);
                     }
                 }
                 else if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.MK] == clipName)
                 {
                     switch (currentMotionFrame)
                     {
-                        case 0: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 16); break;
-                        case 1: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 17); break;
-                        case 2: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 18); break;
+                        case 0: slice = 16; break;
+                        case 1: slice = 17; break;
+                        case 2: slice = 18; break;
+                    }
+                    if (-1 != slice)
+                    {
+                        sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, slice);
                     }
                 }
                 else if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.HK] == clipName)
                 {
                     switch (currentMotionFrame)
                     {
-                        case 0: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 16); break;
-                        case 1: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 17); break;
-                        case 2: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 18); break;
-                        case 3: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 19); break;
-                        case 4: sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, 17); break;
+                        case 0: slice = 16; break;
+                        case 1: slice = 17; break;
+                        case 2: slice = 18; break;
+                        case 3: slice = 19; break;
+                        case 4: slice = 17; break;
+                    }
+                    if (-1 != slice)
+                    {
+                        sliceName = CommonScript.CharacterAndSlice_To_AttackSlice(character, slice);
                     }
                 }
                 Debug.Log("collider clipName = " + clipName + " currentMotionFrame = " + currentMotionFrame + " sliceName = " + sliceName);
@@ -219,11 +252,30 @@ public class MainCameraScript : MonoBehaviour {
                 if (""!= sliceName)
                 {
                     // 当たり判定くん 画像差し替え
-                    player_to_charAttackSpriteRenderer[iPlayer].sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(sliceName));
+                    //player_to_charAttackSpriteRenderer[iPlayer].sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(sliceName));
 
-                    // TODO: 当たり判定
-                    player_to_charAttackBoxCollider2D[iPlayer].offset.Set( 0.25f, 0.05f );
-                    player_to_charAttackBoxCollider2D[iPlayer].size.Set(0.3f, 0.3f);
+                    if (-1 != slice)
+                    {
+                        // TODO: 当たり判定
+                        //player_to_charAttackBoxCollider2D[iPlayer].offset.Set(CommonScript.CharacterAndSlice_To_OffsetX[(int)character, slice], CommonScript.CharacterAndSlice_To_OffsetY[(int)character, slice]);
+                        //player_to_charAttackBoxCollider2D[iPlayer].size.Set(CommonScript.CharacterAndSlice_To_ScaleX[(int)character, slice], CommonScript.CharacterAndSlice_To_ScaleY[(int)character, slice]);
+
+                        // 新・当たり判定くん
+                        player_to_charAttackImgSpriteRenderer[iPlayer].transform.position = new Vector3(
+                            player_to_char[iPlayer].transform.position.x +
+                            (player_to_char[iPlayer].transform.localScale.x < 0.0f ? -1.0f : 1.0f) *
+                            CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.CharacterAndSlice_To_OffsetX[(int)character, slice],
+                            player_to_char[iPlayer].transform.position.y + CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.CharacterAndSlice_To_OffsetY[(int)character, slice]
+                            );
+                        //Debug.Log("player_to_char[iPlayer].transform.localScale.x = " + player_to_char[iPlayer].transform.localScale.x);
+                        player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale = new Vector3(
+
+                            CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.CharacterAndSlice_To_ScaleX[(int)character, slice],
+                            CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.CharacterAndSlice_To_ScaleY[(int)character, slice]
+                            );
+                        //player_to_charAttackImgBoxCollider2D[iPlayer].offset.Set(CommonScript.CharacterAndSlice_To_OffsetX[(int)character, slice], CommonScript.CharacterAndSlice_To_OffsetY[(int)character, slice]);
+                        //player_to_charAttackImgBoxCollider2D[iPlayer].size.Set(CommonScript.CharacterAndSlice_To_ScaleX[(int)character, slice], CommonScript.CharacterAndSlice_To_ScaleY[(int)character, slice]);
+                    }
                 }
 
                 //Debug.Log("iPlayerIndex = " + iPlayer + " clip = " + clipName + " currentMotionFrame = " + currentMotionFrame + " motionFrames = " + motionFrames + " normalizedTime = " + normalizedTime + " length = " + clip.length + " frameRate = " + clip.frameRate + " sliceName = " + sliceName);

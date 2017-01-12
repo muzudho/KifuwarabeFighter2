@@ -30,8 +30,11 @@ https://enty.jp/posts/31990
 
 作者のブログ Author Blog
 ========================
-作者 Author: むずでょ Muzudho  
+作者むずでょブログ Author Muzudho Blog  
 http://kifuwarabe.warabenture.com/2017/01/11/lets-create-game%E2%98%8614-lets-challenge-creating-2d-fighting-game-like-street-fighter-2-for-unity/  
+
+きふわらべファイター２技術ブログ Kifuwarabe Fighter Technical writing blog  
+http://qiita.com/muzudho1/items/aed45f72c9f0175376cc
 
 進捗 Progress
 =============
@@ -64,17 +67,17 @@ KifuwarabeFighter2_meta
                         +--AtarihanteiMaker.exe
 </pre>
 
-これは半自動当たり判定座標調べツールだぜ☆ PNG画像からテキストデータを出力する。 1024x1024ピクセル画像を128x128ピクセルでスライスした画像に使える。 赤い矩形(R=255,G=0,B=0)から、Offset X,Y、Scale X,Y を算出するぜ☆スケールは（x=2,y=2,z=1 を想定）。  
+これは半自動当たり判定座標調べツールだぜ☆ PNG画像からテキストデータを出力する。 1024x1024ピクセル画像を128x128ピクセルでスライスした画像に使える。 スライス１つにつき赤い矩形(R=255,G=0,B=0)１つから、Offset X,Y、Scale X,Y を算出するぜ☆スケールは（x=2,y=2,z=1 を想定）。  
 使い方
 (1) .pngファイルを.exeファイルと同じフォルダーに置けだぜ☆  
 (2) AtarihanteiMaker.exeファイルをダブルクリックしろだぜ☆  
-(3) おわり。同じフォルダに .txt ファイルができてるだろ☆  
+(3) おわり。同じフォルダに AttackCollider2DScript.cs ファイルができてるだろ☆  
 
-This tool is a semi automatic collider 2D coordinate metrics. Png image to text data. Useable 128x128 pixels slices in 1024x1024 pixels image. Red(R=255,G=0,B=0) Rectangle to Offset X,Y and Scale X,Y on Unity ( Scale x=2 y=2 z=1 ).  
+This tool is a semi automatic collider 2D coordinate metrics. Png image to text data. Useable 128x128 pixels slices in 1024x1024 pixels image. One Red(R=255,G=0,B=0) Rectangle by one slice image to Offset X,Y and Scale X,Y on Unity ( Scale x=2 y=2 z=1 ).  
 How to use.  
 (1) Put on .png file in AtarihanteiMaker.exe same folder.  
 (2) Double click AtarihanteiMaker.exe file.  
-(3) Done. Same name .txt file created.  
+(3) Done. AttackCollider2DScript.cs file created.  
 
 **ドット絵（.edgファイル） Dot image ( .edg files )  
 
