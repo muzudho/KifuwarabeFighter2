@@ -10,6 +10,9 @@ public class CharacterScript : MonoBehaviour {
     #region 効果音
     private AudioSource audioSource;
     #endregion
+    #region 歩行
+    float speedX = 4.0f; // 歩行速度☆
+    #endregion
     #region ジャンプ
     /// <summary>
     /// 地面のレイヤー。
@@ -127,27 +130,99 @@ public class CharacterScript : MonoBehaviour {
 
     void FixedUpdate()
     {
+        #region 歩行
+        if (isGrounded)// 接地していれば
+        {
+            //左キー: -1、右キー: 1
+            float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Horizontal]);
+
+            if (leverX != 0)//左か右を入力したら
+            {
+                //Debug.Log("lever x = " + x.ToString());
+
+                //入力方向へ移動
+                Rigidbody2D.velocity = new Vector2(leverX * speedX, Rigidbody2D.velocity.y);
+                //localScale.xを-1にすると画像が反転する
+                Vector2 temp = transform.localScale;
+                temp.x = leverX * CommonScript.GRAPHIC_SCALE;
+                transform.localScale = temp;
+                //Wait→Dash
+                //anim.SetBool("Dash", true);
+            }
+            else//左も右も入力していなかったら
+            {
+                //横移動の速度を0にしてピタッと止まるようにする
+                Rigidbody2D.velocity = new Vector2(0, Rigidbody2D.velocity.y);
+                //Dash→Wait
+                //anim.SetBool("Dash", false);
+            }
+        }
+        #endregion
+
         #region ジャンプ
+        if (isGrounded)// 接地していれば
         {
             // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
             float leverY = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Vertical]);
             //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
 
+            float velocityX = Rigidbody2D.velocity.x;
+            float velocityY = Rigidbody2D.velocity.y;
             if (0<leverY)// 上キーを入力したら
             {
-                if (isGrounded)// 接地していれば
+                // ジャンプするぜ☆
+                // 上方向へ移動
+                velocityY = speedY;
+
+                //左キー: -1、右キー: 1
+                float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Horizontal]);
+
+                if (leverX != 0)//左か右を入力したら
                 {
-                    // 上方向へ移動
-                    Rigidbody2D.velocity = new Vector2(Rigidbody2D.velocity.x,
-                        speedY
-                        //leverY * speedY
-                        );
+                    //Debug.Log("lever x = " + x.ToString());
+
+                    //入力方向へ移動
+                    velocityX = speedX;
+
+                    //localScale.xを-1にすると画像が反転する
+                    Vector2 temp = transform.localScale;
+                    temp.x = leverX * CommonScript.GRAPHIC_SCALE;
+                    transform.localScale = temp;
                 }
             }
             else if (leverY<0)// 下キーを入力したら
             {
             }
             else // 下も上も入力していなかったら
+            {
+            }
+
+            Rigidbody2D.velocity = new Vector2(velocityX, velocityY);
+        }
+        else // 空中なら
+        {
+            //左キー: -1、右キー: 1
+            float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Horizontal]);
+
+            if (0 < leverX) // 右を入力したら
+            {
+                //Debug.Log("lever x = " + x.ToString());
+
+                if (Rigidbody2D.velocity.x < 0)//左方向のベロシティーだったのなら
+                {
+                    // ベロシティーを少し減らして、右方向へ
+                    Rigidbody2D.velocity = new Vector2(Mathf.Abs(Rigidbody2D.velocity.x * 0.8f), Rigidbody2D.velocity.y);
+                }
+            }
+            else if (leverX < 0) // 左を入力したら
+            {
+                if (0 < Rigidbody2D.velocity.x)//右方向のベロシティーだったのなら
+                {
+                    // ベロシティーを少し減らして、左方向へ
+                    Rigidbody2D.velocity = new Vector2(-Mathf.Abs(Rigidbody2D.velocity.x * 0.8f), Rigidbody2D.velocity.y);
+                }
+            }
+            else//左も右も入力していなかったら
             {
             }
         }
@@ -170,7 +245,7 @@ public class CharacterScript : MonoBehaviour {
             audioSource.PlayOneShot(audioSource.clip);
 
             // 爆発の粒子を作るぜ☆
-            TakoyakiParticleScript.Add(this.transform.position.x, this.transform.position.y);
+            TakoyakiParticleScript.Add(transform.position.x, transform.position.y);
 
             MainCameraScript script = mainCamera.GetComponent<MainCameraScript>();
 
