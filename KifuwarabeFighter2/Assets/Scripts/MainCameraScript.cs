@@ -270,7 +270,6 @@ public class MainCameraScript : MonoBehaviour {
                             );
                         //Debug.Log("player_to_char[iPlayer].transform.localScale.x = " + player_to_char[iPlayer].transform.localScale.x);
                         player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale = new Vector3(
-
                             CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.CharacterAndSlice_To_ScaleX[(int)character, slice],
                             CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.CharacterAndSlice_To_ScaleY[(int)character, slice]
                             );
@@ -458,40 +457,6 @@ public class MainCameraScript : MonoBehaviour {
         }
         //}
         #endregion
-    }
-
-    void FixedUpdate()
-    {
-        //for (int iPlayer=(int)PlayerIndex.Player1; iPlayer< (int)PlayerIndex.Num; iPlayer++)
-        //{
-        //    // 歩行
-        //    {
-        //        //左キー: -1、右キー: 1
-        //        float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.Horizontal]);
-
-        //        if (leverX != 0)//左か右を入力したら
-        //        {
-        //            //Debug.Log("lever x = " + x.ToString());
-
-        //            //入力方向へ移動
-        //            player_to_rigidbody2D[iPlayer].velocity = new Vector2(leverX * speedX, player_to_rigidbody2D[iPlayer].velocity.y);
-        //            //localScale.xを-1にすると画像が反転する
-        //            Vector2 temp = player_to_char[iPlayer].transform.localScale;
-        //            temp.x = leverX * CommonScript.GRAPHIC_SCALE;
-        //            player_to_char[iPlayer].transform.localScale = temp;
-        //            //Wait→Dash
-        //            //anim.SetBool("Dash", true);
-        //        }
-        //        else//左も右も入力していなかったら
-        //        {
-        //            //横移動の速度を0にしてピタッと止まるようにする
-        //            player_to_rigidbody2D[iPlayer].velocity = new Vector2(0, player_to_rigidbody2D[iPlayer].velocity.y);
-        //            //Dash→Wait
-        //            //anim.SetBool("Dash", false);
-        //        }
-        //    }
-
-        //}
     }
 
     //private static int TEKITO_WAIT = 10;//適当に操作不能時間☆

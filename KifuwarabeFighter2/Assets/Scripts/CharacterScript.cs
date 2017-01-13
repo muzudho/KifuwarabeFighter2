@@ -22,6 +22,11 @@ public class CharacterScript : MonoBehaviour {
     private bool isGrounded;
     private Rigidbody2D Rigidbody2D { get; set; }
     float speedY = 7.0f; // ジャンプ速度☆
+    private Animator anim;
+    /// <summary>
+    /// ジャンプの屈伸モーション中なら真。
+    /// </summary>
+    public bool IsJump1Motion { get; set; }
     #endregion
 
     void Start()
@@ -35,6 +40,7 @@ public class CharacterScript : MonoBehaviour {
         #region ジャンプ
         groundLayer = LayerMask.GetMask("Ground");
         Rigidbody2D = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
         #endregion
     }
 
@@ -50,11 +56,12 @@ public class CharacterScript : MonoBehaviour {
                 transform.position - transform.up * 1.1f, // 足元を少しはみ出すぐらい
                 groundLayer // Linecastが判定するレイヤー // LayerMask.GetMask("Water")// 
                 );
-            if ((int)PlayerIndex.Player1 == playerIndex)
-            {
-                Debug.Log("B playerIndex = " + playerIndex + " isGrounded = " + isGrounded + " transform.position.y = " + transform.position.y + " Rigidbody2D.velocity.y = " + Rigidbody2D.velocity.y);
-            }
+            //if ((int)PlayerIndex.Player1 == playerIndex)
+            //{
+            //    Debug.Log("B playerIndex = " + playerIndex + " isGrounded = " + isGrounded + " transform.position.y = " + transform.position.y + " Rigidbody2D.velocity.y = " + Rigidbody2D.velocity.y);
+            //}
         }
+        UpdateAnim();
         #endregion
 
         #region 弾を撃つ
@@ -133,47 +140,8 @@ public class CharacterScript : MonoBehaviour {
         #region 歩行
         if (isGrounded)// 接地していれば
         {
-            //左キー: -1、右キー: 1
-            float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Horizontal]);
-
-            if (leverX != 0)//左か右を入力したら
+            if (!this.IsJump1Motion)//ジャンプ時の屈伸中ではないなら
             {
-                //Debug.Log("lever x = " + x.ToString());
-
-                //入力方向へ移動
-                Rigidbody2D.velocity = new Vector2(leverX * speedX, Rigidbody2D.velocity.y);
-                //localScale.xを-1にすると画像が反転する
-                Vector2 temp = transform.localScale;
-                temp.x = leverX * CommonScript.GRAPHIC_SCALE;
-                transform.localScale = temp;
-                //Wait→Dash
-                //anim.SetBool("Dash", true);
-            }
-            else//左も右も入力していなかったら
-            {
-                //横移動の速度を0にしてピタッと止まるようにする
-                Rigidbody2D.velocity = new Vector2(0, Rigidbody2D.velocity.y);
-                //Dash→Wait
-                //anim.SetBool("Dash", false);
-            }
-        }
-        #endregion
-
-        #region ジャンプ
-        if (isGrounded)// 接地していれば
-        {
-            // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
-            float leverY = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Vertical]);
-            //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
-
-            float velocityX = Rigidbody2D.velocity.x;
-            float velocityY = Rigidbody2D.velocity.y;
-            if (0<leverY)// 上キーを入力したら
-            {
-                // ジャンプするぜ☆
-                // 上方向へ移動
-                velocityY = speedY;
-
                 //左キー: -1、右キー: 1
                 float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Horizontal]);
 
@@ -182,22 +150,46 @@ public class CharacterScript : MonoBehaviour {
                     //Debug.Log("lever x = " + x.ToString());
 
                     //入力方向へ移動
-                    velocityX = speedX;
-
+                    Rigidbody2D.velocity = new Vector2(leverX * speedX, Rigidbody2D.velocity.y);
                     //localScale.xを-1にすると画像が反転する
                     Vector2 temp = transform.localScale;
                     temp.x = leverX * CommonScript.GRAPHIC_SCALE;
                     transform.localScale = temp;
+                    //Wait→Dash
+                    //anim.SetBool("Dash", true);
+                }
+                else//左も右も入力していなかったら
+                {
+                    //横移動の速度を0にしてピタッと止まるようにする
+                    Rigidbody2D.velocity = new Vector2(0, Rigidbody2D.velocity.y);
+                    //Dash→Wait
+                    //anim.SetBool("Dash", false);
                 }
             }
-            else if (leverY<0)// 下キーを入力したら
-            {
-            }
-            else // 下も上も入力していなかったら
-            {
-            }
+        }
+        #endregion
 
-            Rigidbody2D.velocity = new Vector2(velocityX, velocityY);
+        #region ジャンプ
+        if (isGrounded)// 接地していれば
+        {
+            if (!this.IsJump1Motion)//ジャンプ時の屈伸中ではないなら
+            {
+                // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
+                float leverY = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Vertical]);
+                //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
+
+                if (0 < leverY)// 上キーを入力したら
+                {
+                    // ジャンプするぜ☆
+                    Jump1();
+                }
+                else if (leverY < 0)// 下キーを入力したら
+                {
+                }
+                else // 下も上も入力していなかったら
+                {
+                }
+            }
         }
         else // 空中なら
         {
@@ -270,4 +262,52 @@ public class CharacterScript : MonoBehaviour {
         #endregion
     }
 
+    #region ジャンプ
+    void Jump1()
+    {
+        this.IsJump1Motion = true;
+        Debug.Log("this.IsJump1Motion = true");
+
+        //ジャンプアニメーションの開始
+        anim.SetTrigger("jump");
+    }
+    public void Jump1Exit()
+    {
+        this.IsJump1Motion = false;
+        Debug.Log("this.IsJump1Motion = false");
+    }
+
+    public void Jump2()
+    {
+        float velocityX = Rigidbody2D.velocity.x;
+        float velocityY = Rigidbody2D.velocity.y;
+        // 上方向へ移動
+        velocityY = speedY;
+
+        //左キー: -1、右キー: 1
+        float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Horizontal]);
+
+        if (leverX != 0)//左か右を入力したら
+        {
+            //Debug.Log("lever x = " + x.ToString());
+
+            //入力方向へ移動
+            velocityX = speedX;
+
+            ////localScale.xを-1にすると画像が反転する
+            //Vector2 temp = transform.localScale;
+            //temp.x = leverX * CommonScript.GRAPHIC_SCALE;
+            //transform.localScale = temp;
+        }
+
+        Rigidbody2D.velocity = new Vector2(velocityX, velocityY);
+    }
+
+    void UpdateAnim()
+    {
+        //Animatorへパラメーターを送る
+        anim.SetFloat("velY", Rigidbody2D.velocity.y); // y方向へかかる速度単位,上へいくとプラス、下へいくとマイナス
+        anim.SetBool("isGrounded", isGrounded);
+    }
+    #endregion
 }
