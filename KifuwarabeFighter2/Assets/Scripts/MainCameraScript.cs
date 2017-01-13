@@ -48,7 +48,8 @@ public class MainCameraScript : MonoBehaviour {
     private float[] player_to_timeCount;
     #endregion
     #region 歩行
-    float speed = 4.0f; //歩行速度☆
+    float speedX = 4.0f; // 歩行速度☆
+    //float speedY = 2.0f; // ジャンプ速度☆
     private Rigidbody2D[] player_to_rigidbody2D;//[プレイヤー番号]
     #endregion
 
@@ -461,31 +462,49 @@ public class MainCameraScript : MonoBehaviour {
 
     void FixedUpdate()
     {
-        for (int iPlayerIndex=(int)PlayerIndex.Player1; iPlayerIndex< (int)PlayerIndex.Num; iPlayerIndex++)
+        for (int iPlayer=(int)PlayerIndex.Player1; iPlayer< (int)PlayerIndex.Num; iPlayer++)
         {
-            //左キー: -1、右キー: 1
-            float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[iPlayerIndex,(int)ButtonIndex.Horizontal]);
-
-            if (leverX != 0)//左か右を入力したら
             {
-                //Debug.Log("lever x = " + x.ToString());
+                //左キー: -1、右キー: 1
+                float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.Horizontal]);
 
-                //入力方向へ移動
-                player_to_rigidbody2D[iPlayerIndex].velocity = new Vector2(leverX * speed, player_to_rigidbody2D[iPlayerIndex].velocity.y);
-                //localScale.xを-1にすると画像が反転する
-                Vector2 temp = player_to_char[iPlayerIndex].transform.localScale;
-                temp.x = leverX * CommonScript.GRAPHIC_SCALE;
-                player_to_char[iPlayerIndex].transform.localScale = temp;
-                //Wait→Dash
-                //anim.SetBool("Dash", true);
+                if (leverX != 0)//左か右を入力したら
+                {
+                    //Debug.Log("lever x = " + x.ToString());
+
+                    //入力方向へ移動
+                    player_to_rigidbody2D[iPlayer].velocity = new Vector2(leverX * speedX, player_to_rigidbody2D[iPlayer].velocity.y);
+                    //localScale.xを-1にすると画像が反転する
+                    Vector2 temp = player_to_char[iPlayer].transform.localScale;
+                    temp.x = leverX * CommonScript.GRAPHIC_SCALE;
+                    player_to_char[iPlayer].transform.localScale = temp;
+                    //Wait→Dash
+                    //anim.SetBool("Dash", true);
+                }
+                else//左も右も入力していなかったら
+                {
+                    //横移動の速度を0にしてピタッと止まるようにする
+                    player_to_rigidbody2D[iPlayer].velocity = new Vector2(0, player_to_rigidbody2D[iPlayer].velocity.y);
+                    //Dash→Wait
+                    //anim.SetBool("Dash", false);
+                }
             }
-            else//左も右も入力していなかったら
-            {
-                //横移動の速度を0にしてピタッと止まるようにする
-                player_to_rigidbody2D[iPlayerIndex].velocity = new Vector2(0, player_to_rigidbody2D[iPlayerIndex].velocity.y);
-                //Dash→Wait
-                //anim.SetBool("Dash", false);
-            }
+
+            //{
+            //    // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
+            //    float leverY = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.Vertical]);
+            //    //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
+
+            //    if (leverY != 0)// 下か上を入力したら
+            //    {
+            //        // 入力方向へ移動
+            //        player_to_rigidbody2D[iPlayer].velocity = new Vector2( player_to_rigidbody2D[iPlayer].velocity.x, leverY * speedY);
+            //    }
+            //    else // 下も上も入力していなかったら
+            //    {
+            //    }
+            //}
+
         }
     }
 

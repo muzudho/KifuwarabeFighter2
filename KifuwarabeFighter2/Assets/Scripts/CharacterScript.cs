@@ -10,6 +10,16 @@ public class CharacterScript : MonoBehaviour {
     #region 効果音
     private AudioSource audioSource;
     #endregion
+    #region ジャンプ
+    /// <summary>
+    /// 地面のレイヤー。
+    /// 備考： public LayerMask にしておくと、UnityのGUI上でレイヤー選択用のドロップダウン・リストになる。
+    /// </summary>
+    LayerMask groundLayer;
+    private bool isGrounded;
+    private Rigidbody2D Rigidbody2D { get; set; }
+    float speedY = 7.0f; // ジャンプ速度☆
+    #endregion
 
     void Start()
     {
@@ -17,13 +27,34 @@ public class CharacterScript : MonoBehaviour {
         mainCamera = GameObject.Find("Main Camera");
         #endregion
         #region 効果音
-        audioSource = this.GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
+        #endregion
+        #region ジャンプ
+        groundLayer = LayerMask.GetMask("Ground");
+        Rigidbody2D = GetComponent<Rigidbody2D>();
         #endregion
     }
 
 
     void Update()
     {
+        #region ジャンプ
+        {
+            // キャラクターの下半身に、接地判定用の垂直線を引く
+            // transform.up が -1 のとき、方眼紙の１マス分ぐらい下に相当？
+            isGrounded = Physics2D.Linecast(
+                transform.position + transform.up * 0, // スプライトの中央
+                transform.position - transform.up * 1.1f, // 足元を少しはみ出すぐらい
+                groundLayer // Linecastが判定するレイヤー // LayerMask.GetMask("Water")// 
+                );
+            if ((int)PlayerIndex.Player1 == playerIndex)
+            {
+                Debug.Log("B playerIndex = " + playerIndex + " isGrounded = " + isGrounded + " transform.position.y = " + transform.position.y + " Rigidbody2D.velocity.y = " + Rigidbody2D.velocity.y);
+            }
+        }
+        #endregion
+
+        #region 弾を撃つ
         // 弾を撃つぜ☆
         if (
             (playerIndex == (int)PlayerIndex.Player1 &&(
@@ -91,6 +122,36 @@ public class CharacterScript : MonoBehaviour {
                 newBulletSpriteRenderer.sprite = sprite2;
             }
         }
+        #endregion
+    }
+
+    void FixedUpdate()
+    {
+        #region ジャンプ
+        {
+            // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
+            float leverY = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Vertical]);
+            //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
+
+            if (0<leverY)// 上キーを入力したら
+            {
+                if (isGrounded)// 接地していれば
+                {
+                    // 上方向へ移動
+                    Rigidbody2D.velocity = new Vector2(Rigidbody2D.velocity.x,
+                        speedY
+                        //leverY * speedY
+                        );
+                }
+            }
+            else if (leverY<0)// 下キーを入力したら
+            {
+            }
+            else // 下も上も入力していなかったら
+            {
+            }
+        }
+        #endregion
     }
 
     void OnTriggerEnter2D(Collider2D col)
