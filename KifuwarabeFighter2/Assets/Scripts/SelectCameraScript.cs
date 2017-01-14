@@ -93,10 +93,6 @@ public class SelectCameraScript : MonoBehaviour {
             }
         }
 
-    }
-
-    void FixedUpdate()
-    {
         #region カーソル移動
         for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
         {

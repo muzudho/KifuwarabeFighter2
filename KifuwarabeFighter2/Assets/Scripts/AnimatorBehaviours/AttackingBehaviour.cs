@@ -17,6 +17,32 @@ public class AttackingBehaviour : StateMachineBehaviour {
             ) // 攻撃が始まった時
         {
             animator.SetBool("attacking", true);
+
+            // 連打防止のフラグ立て。
+            if (stateInfo.IsName("LightPunch"))
+            {
+                animator.SetBool("pushingLP", true);
+            }
+            else if (stateInfo.IsName("MediumPunch"))
+            {
+                animator.SetBool("pushingMP", true);
+            }
+            else if (stateInfo.IsName("HardPunch"))
+            {
+                animator.SetBool("pushingHP", true);
+            }
+            else if (stateInfo.IsName("LightKick"))
+            {
+                animator.SetBool("pushingLK", true);
+            }
+            else if (stateInfo.IsName("MediumKick"))
+            {
+                animator.SetBool("pushingMK", true);
+            }
+            else if (stateInfo.IsName("HardKick"))
+            {
+                animator.SetBool("pushingHK", true);
+            }
         }
     }
 

@@ -50,28 +50,38 @@ public class CharacterScript : MonoBehaviour {
 
     void Update()
     {
-    }
-
-    void FixedUpdate()
-    {
         // 入力受付
         float leverX;
         float leverY;
-        bool buttonLP = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.LightPunch]);
-        bool buttonMP = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.MediumPunch]);
-        bool buttonHP = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.HardPunch]);
-        bool buttonLK = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.LightKick]);
-        bool buttonMK = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.MediumKick]);
-        bool buttonHK = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.HardKick]);
-        bool buttonPA = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Pause]);
+        bool buttonDownLP = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.LightPunch]);
+        bool buttonDownMP = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.MediumPunch]);
+        bool buttonDownHP = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.HardPunch]);
+        bool buttonDownLK = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.LightKick]);
+        bool buttonDownMK = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.MediumKick]);
+        bool buttonDownHK = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.HardKick]);
+        bool buttonDownPA = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Pause]);
+        bool buttonUpLP = Input.GetButtonUp(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.LightPunch]);
+        bool buttonUpMP = Input.GetButtonUp(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.MediumPunch]);
+        bool buttonUpHP = Input.GetButtonUp(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.HardPunch]);
+        bool buttonUpLK = Input.GetButtonUp(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.LightKick]);
+        bool buttonUpMK = Input.GetButtonUp(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.MediumKick]);
+        bool buttonUpHK = Input.GetButtonUp(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.HardKick]);
+        bool buttonUpPA = Input.GetButtonUp(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Pause]);
         if (isComputer)
         {
-            if (buttonLP || buttonMP || buttonHP || buttonLK || buttonMK || buttonHK || buttonPA)
+            if (buttonDownLP || buttonDownMP || buttonDownHP || buttonDownLK || buttonDownMK || buttonDownHK || buttonDownPA)
             {
                 // 人間プレイヤーの乱入☆ 次のフレームから☆
                 isComputer = false;
                 leverX = 0;
                 leverY = 0;
+                anim.SetBool("pushingLP", false);
+                anim.SetBool("pushingMP", false);
+                anim.SetBool("pushingHP", false);
+                anim.SetBool("pushingLK", false);
+                anim.SetBool("pushingMK", false);
+                anim.SetBool("pushingHK", false);
+                anim.SetBool("pushingPA", false);
             }
             else
             {
@@ -89,13 +99,68 @@ public class CharacterScript : MonoBehaviour {
                     // ジャンプばっかりするので落ち着かせるぜ☆（＾～＾）
                     leverY = 0.0f;
                 }
-                buttonLP = (0.900f < Random.Range(0.0f, 1.0f));
-                buttonMP = (0.990f < Random.Range(0.0f, 1.0f));
-                buttonHP = (0.995f < Random.Range(0.0f, 1.0f));
-                buttonLK = (0.900f < Random.Range(0.0f, 1.0f));
-                buttonMK = (0.990f < Random.Range(0.0f, 1.0f));
-                buttonHK = (0.995f < Random.Range(0.0f, 1.0f));
-                buttonPA = (0.999f < Random.Range(0.0f, 1.0f));
+
+                if (anim.GetBool("pushingLP"))
+                {
+                    buttonUpLP = (0.900f < Random.Range(0.0f, 1.0f));
+                }
+                else
+                {
+                    buttonUpLP = false;
+                    buttonDownLP = (0.900f < Random.Range(0.0f, 1.0f));
+                }
+
+                if (anim.GetBool("pushingMP"))
+                {
+                    buttonUpMP = (0.990f < Random.Range(0.0f, 1.0f));
+                }
+                else
+                {
+                    buttonUpMP = false;
+                    buttonDownMP = (0.990f < Random.Range(0.0f, 1.0f));
+                }
+
+                if (anim.GetBool("pushingHP"))
+                {
+                    buttonUpHP = (0.995f < Random.Range(0.0f, 1.0f));
+                }
+                else
+                {
+                    buttonUpHP = false;
+                    buttonDownHP = (0.995f < Random.Range(0.0f, 1.0f));
+                }
+
+                if (anim.GetBool("pushingLK"))
+                {
+                    buttonUpLK = (0.900f < Random.Range(0.0f, 1.0f));
+                }
+                else
+                {
+                    buttonUpLK = false;
+                    buttonDownLK = (0.900f < Random.Range(0.0f, 1.0f));
+                }
+
+                if (anim.GetBool("pushingMK"))
+                {
+                    buttonUpMK = (0.990f < Random.Range(0.0f, 1.0f));
+                }
+                else
+                {
+                    buttonUpMK = false;
+                    buttonDownMK = (0.990f < Random.Range(0.0f, 1.0f));
+                }
+
+                if (anim.GetBool("pushingHK"))
+                {
+                    buttonUpHK = (0.995f < Random.Range(0.0f, 1.0f));
+                }
+                else
+                {
+                    buttonUpHK = false;
+                    buttonDownHK = (0.995f < Random.Range(0.0f, 1.0f));
+                }
+                //buttonUpPA = (0.999f < Random.Range(0.0f, 1.0f));
+                //buttonDownPA = (0.999f < Random.Range(0.0f, 1.0f));
             }
         }
         else
@@ -104,6 +169,34 @@ public class CharacterScript : MonoBehaviour {
             leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Horizontal]);
             // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
             leverY = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Vertical]);
+        }
+
+        // 連打防止のフラグ解除
+        {
+            if (buttonUpLP)
+            {
+                anim.SetBool("pushingLP", false);
+            }
+            if (buttonUpMP)
+            {
+                anim.SetBool("pushingMP", false);
+            }
+            if (buttonUpHP)
+            {
+                anim.SetBool("pushingHP", false);
+            }
+            if (buttonUpLK)
+            {
+                anim.SetBool("pushingLK", false);
+            }
+            if (buttonUpMK)
+            {
+                anim.SetBool("pushingMK", false);
+            }
+            if (buttonUpHK)
+            {
+                anim.SetBool("pushingHK", false);
+            }
         }
 
         #region ジャンプ
@@ -129,12 +222,12 @@ public class CharacterScript : MonoBehaviour {
             (3 == anim.GetInteger("leverNeutral") % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
             &&
             (
-                buttonLP ||
-                buttonMP ||
-                buttonHP ||
-                buttonLK ||
-                buttonMK ||
-                buttonHK
+                buttonDownLP ||
+                buttonDownMP ||
+                buttonDownHP ||
+                buttonDownLK ||
+                buttonDownMK ||
+                buttonDownHK
             )
         )
         {
@@ -303,37 +396,37 @@ public class CharacterScript : MonoBehaviour {
         #endregion
 
         #region 行動
-        if (buttonLP)
+        if (buttonDownLP)
         {
             //Debug.Log("button BUTTON_03_P1_LP");
             LightPunch((PlayerIndex)playerIndex);
         }
-        else if (buttonMP)
+        else if (buttonDownMP)
         {
             //Debug.Log("button BUTTON_04_P1_MP");
             MediumPunch((PlayerIndex)playerIndex);
         }
-        else if (buttonHP)
+        else if (buttonDownHP)
         {
             //Debug.Log("button BUTTON_05_P1_HP");
             HardPunch((PlayerIndex)playerIndex);
         }
-        else if (buttonLK)
+        else if (buttonDownLK)
         {
             //Debug.Log("button BUTTON_06_P1_LK");
             LightKick((PlayerIndex)playerIndex);
         }
-        else if (buttonMK)
+        else if (buttonDownMK)
         {
             //Debug.Log("button BUTTON_07_P1_MK");
             MediumKick((PlayerIndex)playerIndex);
         }
-        else if (buttonHK)
+        else if (buttonDownHK)
         {
             //Debug.Log("button BUTTON_08_P1_HK");
             HardKick((PlayerIndex)playerIndex);
         }
-        else if (buttonPA)
+        else if (buttonDownPA)
         {
             //Debug.Log("button BUTTON_09_P1_PA");
         }
@@ -384,7 +477,7 @@ public class CharacterScript : MonoBehaviour {
     void Jump1()
     {
         this.IsJump1Motion = true;
-        Debug.Log("this.IsJump1Motion = true");
+        //Debug.Log("this.IsJump1Motion = true");
 
         //ジャンプアニメーションの開始
         anim.SetTrigger("jump");
