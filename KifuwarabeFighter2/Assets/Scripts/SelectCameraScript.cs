@@ -47,25 +47,40 @@ public class SelectCameraScript : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        // 何かボタンを押したらメイン画面へ遷移
-        if (Input.GetButton(CommonScript.BUTTON_03_P0_LP) ||
-            Input.GetButton(CommonScript.BUTTON_04_P0_MP) ||
-            Input.GetButton(CommonScript.BUTTON_05_P0_HP) ||
-            Input.GetButton(CommonScript.BUTTON_06_P0_LK) ||
-            Input.GetButton(CommonScript.BUTTON_07_P0_MK) ||
-            Input.GetButton(CommonScript.BUTTON_08_P0_HK) ||
-            Input.GetButton(CommonScript.BUTTON_09_P0_PA) ||
-            Input.GetButton(CommonScript.BUTTON_10_CA) ||
-            Input.GetButton(CommonScript.BUTTON_13_P1_LP) ||
-            Input.GetButton(CommonScript.BUTTON_14_P1_MP) ||
-            Input.GetButton(CommonScript.BUTTON_15_P1_HP) ||
-            Input.GetButton(CommonScript.BUTTON_16_P1_LK) ||
-            Input.GetButton(CommonScript.BUTTON_17_P1_MK) ||
-            Input.GetButton(CommonScript.BUTTON_18_P1_HK) ||
-            Input.GetButton(CommonScript.BUTTON_19_P1_PA)
-            )
+        for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
         {
-            transitionTime = 1;
+            if (
+                !CommonScript.Player_To_Computer[iPlayer] &&
+                (
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.LightPunch]) ||
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.MediumPunch]) ||
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.HardPunch]) ||
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.LightKick]) ||
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.MediumKick]) ||
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.HardKick]) ||
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.Pause]) ||
+                Input.GetButton(CommonScript.BUTTON_10_CA)
+                ))
+            {
+                // 人間プレイヤーが、何かボタンを押したらメイン画面へ遷移
+                transitionTime = 1;
+            }
+            else if (
+                CommonScript.Player_To_Computer[iPlayer] &&
+                (
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.LightPunch]) ||
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.MediumPunch]) ||
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.HardPunch]) ||
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.LightKick]) ||
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.MediumKick]) ||
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.HardKick]) ||
+                Input.GetButton(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.Pause]) ||
+                Input.GetButton(CommonScript.BUTTON_10_CA)
+                ))
+            {
+                // コンピューター・プレイヤー側のゲームパッドで、何かボタンを押したら、人間の参入。
+                CommonScript.Player_To_Computer[iPlayer] = false;
+            }
         }
 
         if (0< transitionTime)
@@ -85,11 +100,20 @@ public class SelectCameraScript : MonoBehaviour {
         #region カーソル移動
         for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
         {
-            if (!player_to_cursorMoving[iPlayer])
+            // 入力
+            //左キー: -1、右キー: 1
+            float leverX;
+            if (CommonScript.Player_To_Computer[iPlayer])
             {
-                //左キー: -1、右キー: 1
-                float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.Horizontal]);
+                leverX = Random.Range(-1.0f, 1.0f);
+            }
+            else
+            {
+                leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[iPlayer, (int)ButtonIndex.Horizontal]);
+            }
 
+            if (!player_to_cursorMoving[iPlayer])//カーソル移動中でなければ。
+            {
                 if (leverX != 0.0f)//左か右を入力したら
                 {
                     player_to_cursorMoving[iPlayer] = true;

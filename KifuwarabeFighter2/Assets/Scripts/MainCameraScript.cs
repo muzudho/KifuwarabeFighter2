@@ -24,10 +24,6 @@ public class MainCameraScript : MonoBehaviour {
     private SpriteRenderer[] player_to_charAttackImgSpriteRenderer;//[プレイヤー番号]
     //private BoxCollider2D[] player_to_charAttackBoxCollider2D;//[プレイヤー番号]
     private BoxCollider2D[] player_to_charAttackImgBoxCollider2D;//[プレイヤー番号]
-    ///// <summary>
-    ///// [プレイヤー番号] 連射防止用。0 以下なら行動可能☆
-    ///// </summary>
-    //private int[] player_to_attacking;
     #endregion
     public GameObject bar0;
     public GameObject bar1;
@@ -67,8 +63,6 @@ public class MainCameraScript : MonoBehaviour {
         player_to_charAttackImgBoxCollider2D = new BoxCollider2D[] { player_to_charAttackImg[(int)PlayerIndex.Player1].GetComponent<BoxCollider2D>(), player_to_charAttackImg[(int)PlayerIndex.Player2].GetComponent<BoxCollider2D>() };
         for (int iPlayer = (int)PlayerIndex.Player1; iPlayer<(int)PlayerIndex.Num; iPlayer++)
         {
-            //player_to_attacking[iPlayer] = 0;
-
             CharacterIndex character = CommonScript.Player_To_UseCharacter[iPlayer];
             // 名前
             player_to_name[iPlayer].text = CommonScript.Character_To_NameRoma[(int)character];
@@ -111,6 +105,11 @@ public class MainCameraScript : MonoBehaviour {
         #region リセット（配列やスプライト等の初期設定が終わってから）
         readyTime = 0;
         SetTeban(PlayerIndex.Player1);
+        // コンピューターかどうか。
+        for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
+        {
+            player_to_char[iPlayer].GetComponent<CharacterScript>().isComputer = CommonScript.Player_To_Computer[iPlayer];
+        }
         #endregion
     }
 
@@ -374,145 +373,6 @@ public class MainCameraScript : MonoBehaviour {
             }
         }
         #endregion
-
-        #region 行動
-        //for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
-        //{
-        //    player_to_attacking[iPlayer]--;
-        //}
-        //// １プレイヤー
-        //if (player_to_attacking[(int)PlayerIndex.Player1] < 1)
-        //{
-        if (Input.GetButtonDown(CommonScript.BUTTON_03_P0_LP))
-        {
-            //Debug.Log("button BUTTON_03_P1_LP");
-            LightPunch(PlayerIndex.Player1);
-        }
-        else if (Input.GetButtonDown(CommonScript.BUTTON_04_P0_MP))
-        {
-            //Debug.Log("button BUTTON_04_P1_MP");
-            MediumPunch(PlayerIndex.Player1);
-        }
-        else if (Input.GetButtonDown(CommonScript.BUTTON_05_P0_HP))
-        {
-            //Debug.Log("button BUTTON_05_P1_HP");
-            HardPunch(PlayerIndex.Player1);
-        }
-        else if (Input.GetButtonDown(CommonScript.BUTTON_06_P0_LK))
-        {
-            //Debug.Log("button BUTTON_06_P1_LK");
-            LightKick(PlayerIndex.Player1);
-        }
-        else if (Input.GetButtonDown(CommonScript.BUTTON_07_P0_MK))
-        {
-            //Debug.Log("button BUTTON_07_P1_MK");
-            MediumKick(PlayerIndex.Player1);
-        }
-        else if (Input.GetButtonDown(CommonScript.BUTTON_08_P0_HK))
-        {
-            //Debug.Log("button BUTTON_08_P1_HK");
-            HardKick(PlayerIndex.Player1);
-        }
-        else if (Input.GetButtonDown(CommonScript.BUTTON_09_P0_PA))
-        {
-            //Debug.Log("button BUTTON_09_P1_PA");
-        }
-        //}
-        //// ２プレイヤー
-        //if (player_to_attacking[(int)PlayerIndex.Player2] < 1)
-        //{
-        if (Input.GetButtonDown(CommonScript.BUTTON_13_P1_LP))
-        {
-            //Debug.Log("button BUTTON_13_P2_LP");
-            LightPunch(PlayerIndex.Player2);
-        }
-        else if (Input.GetButtonDown(CommonScript.BUTTON_14_P1_MP))
-        {
-            //Debug.Log("button BUTTON_14_P2_MP");
-            MediumPunch(PlayerIndex.Player2);
-        }
-        else if (Input.GetButtonDown(CommonScript.BUTTON_15_P1_HP))
-        {
-            //Debug.Log("button BUTTON_15_P2_HP");
-            HardPunch(PlayerIndex.Player2);
-        }
-        else if (Input.GetButtonDown(CommonScript.BUTTON_16_P1_LK))
-        {
-            //Debug.Log("button BUTTON_16_P2_LK");
-            LightKick(PlayerIndex.Player2);
-        }
-        else if (Input.GetButtonDown(CommonScript.BUTTON_17_P1_MK))
-        {
-            //Debug.Log("button BUTTON_17_P2_MK");
-            MediumKick(PlayerIndex.Player2);
-        }
-        else if (Input.GetButtonDown(CommonScript.BUTTON_18_P1_HK))
-        {
-            //Debug.Log("button BUTTON_18_P2_HK");
-            HardKick(PlayerIndex.Player2);
-        }
-        else if (Input.GetButtonDown(CommonScript.BUTTON_19_P1_PA))
-        {
-            //Debug.Log("button BUTTON_19_P2_PA");
-        }
-        //}
-        #endregion
-    }
-
-    //private static int TEKITO_WAIT = 10;//適当に操作不能時間☆
-    void LightPunch(PlayerIndex player)
-    {
-        // アニメーションの開始
-        player_to_anime[(int)player].SetInteger("weight", (int)WeightIndex.Light);
-        player_to_anime[(int)player].SetTrigger("punch");
-
-        OffsetBar(-1.0f);
-        //player_to_attacking[(int)player] = TEKITO_WAIT;
-    }
-    void MediumPunch(PlayerIndex player)
-    {
-        // アニメーションの開始
-        player_to_anime[(int)player].SetInteger("weight", (int)WeightIndex.Medium);
-        player_to_anime[(int)player].SetTrigger("punch");
-
-        OffsetBar(-10.0f);
-        //player_to_attacking[(int)player] = TEKITO_WAIT;
-    }
-    void HardPunch(PlayerIndex player)
-    {
-        // アニメーションの開始
-        player_to_anime[(int)player].SetInteger("weight", (int)WeightIndex.Hard);
-        player_to_anime[(int)player].SetTrigger("punch");
-
-        OffsetBar(-100.0f);
-        //player_to_attacking[(int)player] = TEKITO_WAIT;
-    }
-    void LightKick(PlayerIndex player)
-    {
-        // アニメーションの開始
-        player_to_anime[(int)player].SetInteger("weight", (int)WeightIndex.Light);
-        player_to_anime[(int)player].SetTrigger("kick");
-
-        OffsetBar(1.0f);
-        //player_to_attacking[(int)player] = TEKITO_WAIT;
-    }
-    void MediumKick(PlayerIndex player)
-    {
-        // アニメーションの開始
-        player_to_anime[(int)player].SetInteger("weight", (int)WeightIndex.Medium);
-        player_to_anime[(int)player].SetTrigger("kick");
-
-        OffsetBar(10.0f);
-        //player_to_attacking[(int)player] = TEKITO_WAIT;
-    }
-    void HardKick(PlayerIndex player)
-    {
-        // アニメーションの開始
-        player_to_anime[(int)player].SetInteger("weight", (int)WeightIndex.Hard);
-        player_to_anime[(int)player].SetTrigger("kick");
-
-        OffsetBar(100.0f);
-        //player_to_attacking[(int)player] = TEKITO_WAIT;
     }
 
     /// <summary>

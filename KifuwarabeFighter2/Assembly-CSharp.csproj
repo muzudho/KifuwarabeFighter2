@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\AnimatorBehaviours\AttackingBehaviour.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\Char0MiddleBehaviour.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\JumpBehaviour.cs" />
      <Compile Include="Assets\Scripts\AttackCollider2DScript.cs" />

@@ -3,6 +3,7 @@
 public class CharacterScript : MonoBehaviour {
 
     public int playerIndex;
+    public bool isComputer;
     public GameObject bullet;
     #region 当たり判定
     private GameObject mainCamera;
@@ -28,11 +29,13 @@ public class CharacterScript : MonoBehaviour {
     /// </summary>
     public bool IsJump1Motion { get; set; }
     #endregion
+    MainCameraScript mainCameraScript;
 
     void Start()
     {
         #region 当たり判定
         mainCamera = GameObject.Find("Main Camera");
+        mainCameraScript = mainCamera.GetComponent<MainCameraScript>();
         #endregion
         #region 効果音
         audioSource = GetComponent<AudioSource>();
@@ -47,6 +50,62 @@ public class CharacterScript : MonoBehaviour {
 
     void Update()
     {
+    }
+
+    void FixedUpdate()
+    {
+        // 入力受付
+        float leverX;
+        float leverY;
+        bool buttonLP = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.LightPunch]);
+        bool buttonMP = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.MediumPunch]);
+        bool buttonHP = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.HardPunch]);
+        bool buttonLK = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.LightKick]);
+        bool buttonMK = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.MediumKick]);
+        bool buttonHK = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.HardKick]);
+        bool buttonPA = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Pause]);
+        if (isComputer)
+        {
+            if (buttonLP || buttonMP || buttonHP || buttonLK || buttonMK || buttonHK || buttonPA)
+            {
+                // 人間プレイヤーの乱入☆ 次のフレームから☆
+                isComputer = false;
+                leverX = 0;
+                leverY = 0;
+            }
+            else
+            {
+                // コンピューター・プレイヤーの場合。
+                leverX = Random.Range(-1.0f, 1.0f);
+                leverY = Random.Range(-1.0f, 1.0f);
+                if (-0.980f < leverX && leverX < 0.980f)
+                {
+                    // きょろきょろするので落ち着かせるぜ☆（＾～＾）
+                    leverX = 0.0f;
+                }
+
+                if (-0.995f < leverY && leverY < 0.995f)
+                {
+                    // ジャンプばっかりするので落ち着かせるぜ☆（＾～＾）
+                    leverY = 0.0f;
+                }
+                buttonLP = (0.900f < Random.Range(0.0f, 1.0f));
+                buttonMP = (0.990f < Random.Range(0.0f, 1.0f));
+                buttonHP = (0.995f < Random.Range(0.0f, 1.0f));
+                buttonLK = (0.900f < Random.Range(0.0f, 1.0f));
+                buttonMK = (0.990f < Random.Range(0.0f, 1.0f));
+                buttonHK = (0.995f < Random.Range(0.0f, 1.0f));
+                buttonPA = (0.999f < Random.Range(0.0f, 1.0f));
+            }
+        }
+        else
+        {
+            //左キー: -1、右キー: 1
+            leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Horizontal]);
+            // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
+            leverY = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Vertical]);
+        }
+
         #region ジャンプ
         {
             // キャラクターの下半身に、接地判定用の垂直線を引く
@@ -67,27 +126,18 @@ public class CharacterScript : MonoBehaviour {
         #region 弾を撃つ
         // 弾を撃つぜ☆
         if (
-            (playerIndex == (int)PlayerIndex.Player1 &&(
-                Input.GetButton(CommonScript.BUTTON_03_P0_LP) ||
-                Input.GetButton(CommonScript.BUTTON_04_P0_MP) ||
-                Input.GetButton(CommonScript.BUTTON_05_P0_HP) ||
-                Input.GetButton(CommonScript.BUTTON_06_P0_LK) ||
-                Input.GetButton(CommonScript.BUTTON_07_P0_MK) ||
-                Input.GetButton(CommonScript.BUTTON_08_P0_HK)
-            ))
-            ||
-            (playerIndex == (int)PlayerIndex.Player2 && (
-                Input.GetButton(CommonScript.BUTTON_13_P1_LP) ||
-                Input.GetButton(CommonScript.BUTTON_14_P1_MP) ||
-                Input.GetButton(CommonScript.BUTTON_15_P1_HP) ||
-                Input.GetButton(CommonScript.BUTTON_16_P1_LK) ||
-                Input.GetButton(CommonScript.BUTTON_17_P1_MK) ||
-                Input.GetButton(CommonScript.BUTTON_18_P1_HK)
-            ))
+            (3 == anim.GetInteger("leverNeutral") % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
+            &&
+            (
+                buttonLP ||
+                buttonMP ||
+                buttonHP ||
+                buttonLK ||
+                buttonMK ||
+                buttonHK
+            )
         )
         {
-            // 下キー: -1、上キー: 1
-            float leverY = Input.GetAxisRaw(CommonScript.BUTTON_02_P0_VE);
             float startY;
 
             if (0 < leverY)// 上段だぜ☆
@@ -133,27 +183,22 @@ public class CharacterScript : MonoBehaviour {
             }
         }
         #endregion
-    }
 
-    void FixedUpdate()
-    {
         #region 歩行
         if (isGrounded)// 接地していれば
         {
             if (!this.IsJump1Motion)//ジャンプ時の屈伸中ではないなら
             {
-                //左キー: -1、右キー: 1
-                float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Horizontal]);
-
                 if (leverX != 0)//左か右を入力したら
                 {
                     //Debug.Log("lever x = " + x.ToString());
 
                     //入力方向へ移動
                     Rigidbody2D.velocity = new Vector2(leverX * speedX, Rigidbody2D.velocity.y);
+
                     //localScale.xを-1にすると画像が反転する
                     Vector2 temp = transform.localScale;
-                    temp.x = leverX * CommonScript.GRAPHIC_SCALE;
+                    temp.x = Mathf.Sign(leverX) * CommonScript.GRAPHIC_SCALE;
                     transform.localScale = temp;
 
                     if (leverX < 0)
@@ -197,10 +242,10 @@ public class CharacterScript : MonoBehaviour {
                     {
                         //横移動の速度を0にしてピタッと止まるようにする
                         Rigidbody2D.velocity = new Vector2(0, Rigidbody2D.velocity.y);
-                        if ((int)PlayerIndex.Player1 == playerIndex)
-                        {
-                            Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ストップ!");
-                        }
+                        //if ((int)PlayerIndex.Player1 == playerIndex)
+                        //{
+                        //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ストップ!");
+                        //}
 
                         anim.SetBool("dashing", false);
                         anim.SetBool("escaping", false);
@@ -216,8 +261,6 @@ public class CharacterScript : MonoBehaviour {
         {
             if (!this.IsJump1Motion)//ジャンプ時の屈伸中ではないなら
             {
-                // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
-                float leverY = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Vertical]);
                 //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
 
                 if (0 < leverY)// 上キーを入力したら
@@ -235,9 +278,6 @@ public class CharacterScript : MonoBehaviour {
         }
         else // 空中なら
         {
-            //左キー: -1、右キー: 1
-            float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Horizontal]);
-
             if (0 < leverX) // 右を入力したら
             {
                 //Debug.Log("lever x = " + x.ToString());
@@ -261,6 +301,43 @@ public class CharacterScript : MonoBehaviour {
             }
         }
         #endregion
+
+        #region 行動
+        if (buttonLP)
+        {
+            //Debug.Log("button BUTTON_03_P1_LP");
+            LightPunch((PlayerIndex)playerIndex);
+        }
+        else if (buttonMP)
+        {
+            //Debug.Log("button BUTTON_04_P1_MP");
+            MediumPunch((PlayerIndex)playerIndex);
+        }
+        else if (buttonHP)
+        {
+            //Debug.Log("button BUTTON_05_P1_HP");
+            HardPunch((PlayerIndex)playerIndex);
+        }
+        else if (buttonLK)
+        {
+            //Debug.Log("button BUTTON_06_P1_LK");
+            LightKick((PlayerIndex)playerIndex);
+        }
+        else if (buttonMK)
+        {
+            //Debug.Log("button BUTTON_07_P1_MK");
+            MediumKick((PlayerIndex)playerIndex);
+        }
+        else if (buttonHK)
+        {
+            //Debug.Log("button BUTTON_08_P1_HK");
+            HardKick((PlayerIndex)playerIndex);
+        }
+        else if (buttonPA)
+        {
+            //Debug.Log("button BUTTON_09_P1_PA");
+        }
+        #endregion
     }
 
     void OnTriggerEnter2D(Collider2D col)
@@ -281,7 +358,6 @@ public class CharacterScript : MonoBehaviour {
             // 爆発の粒子を作るぜ☆
             TakoyakiParticleScript.Add(transform.position.x, transform.position.y);
 
-            MainCameraScript script = mainCamera.GetComponent<MainCameraScript>();
 
             // ＨＰメーター
             {
@@ -292,13 +368,13 @@ public class CharacterScript : MonoBehaviour {
                     case PlayerIndex.Player2: damage = 50.0f; break;
                     default: Debug.LogError("Bullet / HP meter / opponent"); damage = 0.0f; break;
                 }
-                script.OffsetBar(damage);
+                mainCameraScript.OffsetBar(damage);
             }
 
             // 手番
             {
                 // 攻撃を受けた方の手番に変わるぜ☆（＾▽＾）
-                script.SetTeban(opponent);
+                mainCameraScript.SetTeban(opponent);
             }
         }
         #endregion
@@ -316,7 +392,7 @@ public class CharacterScript : MonoBehaviour {
     public void Jump1Exit()
     {
         this.IsJump1Motion = false;
-        Debug.Log("this.IsJump1Motion = false");
+        //Debug.Log("this.IsJump1Motion = false");
     }
 
     public void Jump2()
@@ -352,4 +428,41 @@ public class CharacterScript : MonoBehaviour {
         anim.SetBool("isGrounded", isGrounded);
     }
     #endregion
+
+    void LightPunch(PlayerIndex player)
+    {
+        // アニメーションの開始
+        anim.SetInteger("weight", (int)WeightIndex.Light);
+        anim.SetTrigger("punch");
+    }
+    void MediumPunch(PlayerIndex player)
+    {
+        // アニメーションの開始
+        anim.SetInteger("weight", (int)WeightIndex.Medium);
+        anim.SetTrigger("punch");
+    }
+    void HardPunch(PlayerIndex player)
+    {
+        // アニメーションの開始
+        anim.SetInteger("weight", (int)WeightIndex.Hard);
+        anim.SetTrigger("punch");
+    }
+    void LightKick(PlayerIndex player)
+    {
+        // アニメーションの開始
+        anim.SetInteger("weight", (int)WeightIndex.Light);
+        anim.SetTrigger("kick");
+    }
+    void MediumKick(PlayerIndex player)
+    {
+        // アニメーションの開始
+        anim.SetInteger("weight", (int)WeightIndex.Medium);
+        anim.SetTrigger("kick");
+    }
+    void HardKick(PlayerIndex player)
+    {
+        // アニメーションの開始
+        anim.SetInteger("weight", (int)WeightIndex.Hard);
+        anim.SetTrigger("kick");
+    }
 }

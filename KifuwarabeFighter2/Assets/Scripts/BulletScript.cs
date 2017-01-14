@@ -14,13 +14,19 @@ public class BulletScript : MonoBehaviour
     /// この弾が当たるプレイヤー☆ １プレイヤーは 0 と指定☆
     /// </summary>
     public int opponent;
-    //GameObject mainCamera;
+    GameObject mainCamera;
+    MainCameraScript mainCameraScript;
     #endregion
 
     void Start()
     {
         #region 当たり判定
-        //mainCamera = GameObject.Find("Main Camera");
+        mainCamera = GameObject.Find("Main Camera");
+        mainCameraScript = mainCamera.GetComponent<MainCameraScript>();
+        //if (null==mainCameraScript)
+        //{
+        //    throw new UnityException("メインカメラのスクリプトが取れない☆");
+        //}
         #endregion
         #region 弾作成
         // 味方キャラクター　のオブジェクトを取得
@@ -43,31 +49,34 @@ public class BulletScript : MonoBehaviour
         // 相手キャラクター　に当たったら、この弾を消すぜ☆
         if (col.gameObject.tag == CommonScript.Player_To_Tag[opponent] )
         {
-            // 爆発の粒子を作るぜ☆
-            //TakoyakiParticleScript.Add(this.transform.position.x, this.transform.position.y);
+            if (mainCameraScript!=null)// なぜかヌルになっていることがあるぜ☆（＾～＾）
+            {
+                // 爆発の粒子を作るぜ☆
+                TakoyakiParticleScript.Add(this.transform.position.x, this.transform.position.y);
 
-            //MainCameraScript script = mainCamera.GetComponent<MainCameraScript>();
+                // ＨＰメーター
+                {
+                    float damage;
+                    switch ((PlayerIndex)opponent)
+                    {
+                        case PlayerIndex.Player1: damage = -50.0f; break; // １プレイヤーにダメージの場合マイナス☆
+                        case PlayerIndex.Player2: damage = 50.0f; break;
+                        default: Debug.LogError("Bullet / HP meter / opponent"); damage = 0.0f; break;
+                    }
 
-            //// ＨＰメーター
-            //{
-            //    float damage;
-            //    switch ((PlayerIndex)opponent)
-            //    {
-            //        case PlayerIndex.Player1: damage = -50.0f; break; // １プレイヤーにダメージの場合マイナス☆
-            //        case PlayerIndex.Player2: damage = 50.0f; break;
-            //        default: Debug.LogError("Bullet / HP meter / opponent"); damage = 0.0f; break;
-            //    }
-            //    script.OffsetBar(damage);
-            //}
+                    // コンピューターが連射をしていると、mainCameraScript がヌルになっていることがあるようだ。
+                    mainCameraScript.OffsetBar(damage);
+                }
 
-            //// 手番
-            //{
-            //    // 攻撃を受けた方の手番に変わるぜ☆（＾▽＾）
-            //    script.SetTeban((PlayerIndex)opponent);
-            //}
+                // 手番
+                {
+                    // 攻撃を受けた方の手番に変わるぜ☆（＾▽＾）
+                    mainCameraScript.SetTeban((PlayerIndex)opponent);
+                }
 
-            // この弾を消すぜ☆
-            Destroy(gameObject);
+                // この弾を消すぜ☆
+                Destroy(gameObject);
+            }
         }
     }
 }

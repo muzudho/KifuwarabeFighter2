@@ -72,6 +72,7 @@ public class CommonScript
     static CommonScript()
     {
         Result = Result.None;
+        Player_To_Computer = new bool[] { true, true };
         Player_To_UseCharacter = new CharacterIndex[] { CharacterIndex.Kifuwarabe, CharacterIndex.Kifuwarabe };
         Teban = PlayerIndex.Player1;
     }
@@ -108,6 +109,10 @@ public class CommonScript
     };
 
     public static Result Result { get; set; }
+    /// <summary>
+    /// 人間か、コンピューターか。
+    /// </summary>
+    public static bool[] Player_To_Computer { get; set; }
     /// <summary>
     /// [Player] プレイヤーの使用キャラクター。
     /// </summary>
