@@ -155,15 +155,57 @@ public class CharacterScript : MonoBehaviour {
                     Vector2 temp = transform.localScale;
                     temp.x = leverX * CommonScript.GRAPHIC_SCALE;
                     transform.localScale = temp;
-                    //Wait→Dash
-                    //anim.SetBool("Dash", true);
+
+                    if (leverX < 0)
+                    {
+                        if (!anim.GetBool("dashing"))
+                        {
+                            // ダッシュ・アニメーションの開始
+                            anim.SetInteger("leverNeutral", 0);
+                            anim.SetBool("escaping", false);
+                            anim.SetBool("dashing", true);
+                            //if ((int)PlayerIndex.Player1 == playerIndex)
+                            //{
+                            //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ダッシュ!");
+                            //}
+                            anim.SetTrigger("dash");
+                        }
+                    }
+                    else if (0 < leverX)
+                    {
+                        if (!anim.GetBool("escaping"))
+                        {
+                            // エスケープ・アニメーションの開始
+                            anim.SetInteger("leverNeutral", 0);
+                            anim.SetBool("dashing", false);
+                            anim.SetBool("escaping", true);
+                            //if ((int)PlayerIndex.Player1 == playerIndex)
+                            //{
+                            //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " エスケープ!");
+                            //}
+                            anim.SetTrigger("escape");
+                        }
+                    }
                 }
                 else//左も右も入力していなかったら
                 {
-                    //横移動の速度を0にしてピタッと止まるようにする
-                    Rigidbody2D.velocity = new Vector2(0, Rigidbody2D.velocity.y);
-                    //Dash→Wait
-                    //anim.SetBool("Dash", false);
+                    // 感覚的に、左から右に隙間なく切り替えたと思っていても、
+                    // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
+                    anim.SetInteger("leverNeutral", anim.GetInteger("leverNeutral")+1);
+
+                    if ( 8 < anim.GetInteger("leverNeutral") )// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
+                    {
+                        //横移動の速度を0にしてピタッと止まるようにする
+                        Rigidbody2D.velocity = new Vector2(0, Rigidbody2D.velocity.y);
+                        if ((int)PlayerIndex.Player1 == playerIndex)
+                        {
+                            Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ストップ!");
+                        }
+
+                        anim.SetBool("dashing", false);
+                        anim.SetBool("escaping", false);
+                    }
+
                 }
             }
         }
