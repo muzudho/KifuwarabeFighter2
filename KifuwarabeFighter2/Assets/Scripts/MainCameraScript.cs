@@ -43,10 +43,8 @@ public class MainCameraScript : MonoBehaviour {
     private Outline[] player_to_timeOutline;
     private float[] player_to_timeCount;
     #endregion
-    #region 歩行
-    //float speedX = 4.0f; // 歩行速度☆
-    //float speedY = 2.0f; // ジャンプ速度☆
-    //private Rigidbody2D[] player_to_rigidbody2D;//[プレイヤー番号]
+    #region 攻撃力
+    public float[] player_to_attackPower;
     #endregion
 
     void Start()
@@ -84,9 +82,9 @@ public class MainCameraScript : MonoBehaviour {
         player_to_timeCount = new float[] { 60.0f, 60.0f };
         #endregion
 
-        //#region 歩行
-        //player_to_rigidbody2D = new Rigidbody2D[] { char0.GetComponent<Rigidbody2D>(), char1.GetComponent<Rigidbody2D>() };
-        //#endregion
+        #region 攻撃力
+        player_to_attackPower = new float[] { 0.0f, 0.0f };
+        #endregion
 
         #region ラウンド
         playerAndRound_to_result = new GameObject[,] {

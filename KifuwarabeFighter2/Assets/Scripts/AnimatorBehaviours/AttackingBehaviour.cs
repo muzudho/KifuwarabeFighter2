@@ -8,38 +8,38 @@ public class AttackingBehaviour : StateMachineBehaviour {
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (
-            stateInfo.IsName("LightPunch") ||
-            stateInfo.IsName("MediumPunch") ||
-            stateInfo.IsName("HardPunch") ||
-            stateInfo.IsName("LightKick") ||
-            stateInfo.IsName("MediumKick") ||
-            stateInfo.IsName("HardKick")
+            stateInfo.IsName(CommonScript.MOTION_LIGHT_PUNCH0) ||
+            stateInfo.IsName(CommonScript.MOTION_MEDIUM_PUNCH0) ||
+            stateInfo.IsName(CommonScript.MOTION_HARD_PUNCH0) ||
+            stateInfo.IsName(CommonScript.MOTION_LIGHT_KICK0) ||
+            stateInfo.IsName(CommonScript.MOTION_MEDIUM_KICK0) ||
+            stateInfo.IsName(CommonScript.MOTION_HARD_KICK0)
             ) // 攻撃が始まった時
         {
             animator.SetBool("attacking", true);
 
             // 連打防止のフラグ立て。
-            if (stateInfo.IsName("LightPunch"))
+            if (stateInfo.IsName(CommonScript.MOTION_LIGHT_PUNCH0))
             {
                 animator.SetBool("pushingLP", true);
             }
-            else if (stateInfo.IsName("MediumPunch"))
+            else if (stateInfo.IsName(CommonScript.MOTION_MEDIUM_PUNCH0))
             {
                 animator.SetBool("pushingMP", true);
             }
-            else if (stateInfo.IsName("HardPunch"))
+            else if (stateInfo.IsName(CommonScript.MOTION_HARD_PUNCH0))
             {
                 animator.SetBool("pushingHP", true);
             }
-            else if (stateInfo.IsName("LightKick"))
+            else if (stateInfo.IsName(CommonScript.MOTION_LIGHT_KICK0))
             {
                 animator.SetBool("pushingLK", true);
             }
-            else if (stateInfo.IsName("MediumKick"))
+            else if (stateInfo.IsName(CommonScript.MOTION_MEDIUM_KICK0))
             {
                 animator.SetBool("pushingMK", true);
             }
-            else if (stateInfo.IsName("HardKick"))
+            else if (stateInfo.IsName(CommonScript.MOTION_HARD_KICK0))
             {
                 animator.SetBool("pushingHK", true);
             }
@@ -55,12 +55,12 @@ public class AttackingBehaviour : StateMachineBehaviour {
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (
-            stateInfo.IsName("LightPunch") ||
-            stateInfo.IsName("MediumPunch") ||
-            stateInfo.IsName("HardPunch") ||
-            stateInfo.IsName("LightKick") ||
-            stateInfo.IsName("MediumKick") ||
-            stateInfo.IsName("HardKick")
+            stateInfo.IsName(CommonScript.MOTION_LIGHT_PUNCH0) ||
+            stateInfo.IsName(CommonScript.MOTION_MEDIUM_PUNCH0) ||
+            stateInfo.IsName(CommonScript.MOTION_HARD_PUNCH0) ||
+            stateInfo.IsName(CommonScript.MOTION_LIGHT_KICK0) ||
+            stateInfo.IsName(CommonScript.MOTION_MEDIUM_KICK0) ||
+            stateInfo.IsName(CommonScript.MOTION_HARD_KICK0)
             ) // 攻撃が終わった時
         {
             animator.SetBool("attacking", false);

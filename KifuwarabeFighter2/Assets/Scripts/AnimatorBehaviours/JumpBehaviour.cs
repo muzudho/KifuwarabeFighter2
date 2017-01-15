@@ -7,10 +7,10 @@ public class JumpBehaviour : StateMachineBehaviour {
     // OnStateEnter is called before OnStateEnter is called on any state inside this state machine
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (stateInfo.IsName("Jump2")) // 上昇
+        if (stateInfo.IsName(CommonScript.MOTION_JUMP1)) // 上昇
         {
             CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
-            script.Jump2();
+            script.Jump1();
         }
     }
 
@@ -22,10 +22,10 @@ public class JumpBehaviour : StateMachineBehaviour {
     // OnStateExit is called before OnStateExit is called on any state inside this state machine
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (stateInfo.IsName("Jump1")) // 屈伸が終わった時
+        if (stateInfo.IsName(CommonScript.MOTION_JUMP0)) // 屈伸が終わった時
         {
             CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
-            script.Jump1Exit();
+            script.Jump0Exit();
         }
     }
 

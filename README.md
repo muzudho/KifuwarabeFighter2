@@ -47,9 +47,10 @@ http://qiita.com/muzudho1/items/aed45f72c9f0175376cc
 =============
 **できているもの☆ Done.**
 -弾は飛ぶ☆ I done create bullet hit.  
+-パンチの当たり判定あり☆ I done create punch hit.  
 
 **まだなもの☆ To do.**
--パンチの当たり判定がまだ☆ I was not create punch hit.  
+-ダウンがまだ☆ I was not create down.  
 
 フォルダーの説明 Folder Explain
 ===============================

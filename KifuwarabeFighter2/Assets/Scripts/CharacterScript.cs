@@ -2,11 +2,16 @@
 
 public class CharacterScript : MonoBehaviour {
 
+    #region 敵味方判定
     public int playerIndex;
+    PlayerIndex opponent;
+    #endregion
+
     public bool isComputer;
     public GameObject bullet;
     #region 当たり判定
     private GameObject mainCamera;
+    private string opponentAttackerTag;
     #endregion
     #region 効果音
     private AudioSource audioSource;
@@ -27,7 +32,7 @@ public class CharacterScript : MonoBehaviour {
     /// <summary>
     /// ジャンプの屈伸モーション中なら真。
     /// </summary>
-    public bool IsJump1Motion { get; set; }
+    public bool IsJump0Motion { get; set; }
     #endregion
     MainCameraScript mainCameraScript;
 
@@ -36,6 +41,8 @@ public class CharacterScript : MonoBehaviour {
         #region 当たり判定
         mainCamera = GameObject.Find("Main Camera");
         mainCameraScript = mainCamera.GetComponent<MainCameraScript>();
+        opponent = CommonScript.ReverseTeban((PlayerIndex)playerIndex);
+        opponentAttackerTag = CommonScript.Player_To_AttackerTag[(int)opponent];
         #endregion
         #region 効果音
         audioSource = GetComponent<AudioSource>();
@@ -280,7 +287,7 @@ public class CharacterScript : MonoBehaviour {
         #region 歩行
         if (isGrounded)// 接地していれば
         {
-            if (!this.IsJump1Motion)//ジャンプ時の屈伸中ではないなら
+            if (!this.IsJump0Motion)//ジャンプ時の屈伸中ではないなら
             {
                 if (leverX != 0)//左か右を入力したら
                 {
@@ -306,7 +313,7 @@ public class CharacterScript : MonoBehaviour {
                             //{
                             //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ダッシュ!");
                             //}
-                            anim.SetTrigger("dash");
+                            anim.SetTrigger(CommonScript.TRIGGER_DASH);
                         }
                     }
                     else if (0 < leverX)
@@ -321,7 +328,7 @@ public class CharacterScript : MonoBehaviour {
                             //{
                             //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " エスケープ!");
                             //}
-                            anim.SetTrigger("escape");
+                            anim.SetTrigger(CommonScript.TRIGGER_ESCAPE);
                         }
                     }
                 }
@@ -352,14 +359,14 @@ public class CharacterScript : MonoBehaviour {
         #region ジャンプ
         if (isGrounded)// 接地していれば
         {
-            if (!this.IsJump1Motion)//ジャンプ時の屈伸中ではないなら
+            if (!this.IsJump0Motion)//ジャンプ時の屈伸中ではないなら
             {
                 //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
 
                 if (0 < leverY)// 上キーを入力したら
                 {
                     // ジャンプするぜ☆
-                    Jump1();
+                    Jump0();
                 }
                 else if (leverY < 0)// 下キーを入力したら
                 {
@@ -436,32 +443,35 @@ public class CharacterScript : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D col)
     {
         #region 当たり判定
-        if (
-            (playerIndex == (int)PlayerIndex.Player1 && col.tag == CommonScript.Player_To_AttackerTag[(int)PlayerIndex.Player2])
-            ||
-            (playerIndex == (int)PlayerIndex.Player2 && col.tag == CommonScript.Player_To_AttackerTag[(int)PlayerIndex.Player1])
-            )
+        if (col.tag == opponentAttackerTag)// 相手の　攻撃当たり判定くん　が重なった時
         {
-            // 攻撃の当たり判定に体が入ったとき。
-            PlayerIndex opponent = CommonScript.ReverseTeban((PlayerIndex)playerIndex);
-
             // 効果音を鳴らすぜ☆
             audioSource.PlayOneShot(audioSource.clip);
 
             // 爆発の粒子を作るぜ☆
             TakoyakiParticleScript.Add(transform.position.x, transform.position.y);
 
-
             // ＨＰメーター
             {
-                float damage;
-                switch (opponent)
+                float damage = mainCameraScript.player_to_attackPower[(int)opponent];
+                if (100.0f <= damage)
                 {
-                    case PlayerIndex.Player1: damage = -50.0f; break; // １プレイヤーにダメージの場合マイナス☆
-                    case PlayerIndex.Player2: damage = 50.0f; break;
-                    default: Debug.LogError("Bullet / HP meter / opponent"); damage = 0.0f; break;
+                    // ダメージ・アニメーションの開始
+                    anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_H);
                 }
-                mainCameraScript.OffsetBar(damage);
+                else if (50.0f <= damage)
+                {
+                    // ダメージ・アニメーションの開始
+                    anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_M);
+                }
+                else
+                {
+                    // ダメージ・アニメーションの開始
+                    anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_L);
+                }
+
+                float value = damage * (playerIndex == (int)PlayerIndex.Player1 ? -1 : 1);
+                mainCameraScript.OffsetBar(value);
             }
 
             // 手番
@@ -474,21 +484,21 @@ public class CharacterScript : MonoBehaviour {
     }
 
     #region ジャンプ
-    void Jump1()
+    void Jump0()
     {
-        this.IsJump1Motion = true;
-        //Debug.Log("this.IsJump1Motion = true");
+        this.IsJump0Motion = true;
+        //Debug.Log("this.IsJump0Motion = true");
 
         //ジャンプアニメーションの開始
-        anim.SetTrigger("jump");
+        anim.SetTrigger(CommonScript.TRIGGER_JUMP);
     }
-    public void Jump1Exit()
+    public void Jump0Exit()
     {
-        this.IsJump1Motion = false;
-        //Debug.Log("this.IsJump1Motion = false");
+        this.IsJump0Motion = false;
+        //Debug.Log("this.IsJump0Motion = false");
     }
 
-    public void Jump2()
+    public void Jump1()
     {
         float velocityX = Rigidbody2D.velocity.x;
         float velocityY = Rigidbody2D.velocity.y;
@@ -524,38 +534,50 @@ public class CharacterScript : MonoBehaviour {
 
     void LightPunch(PlayerIndex player)
     {
+        mainCameraScript.player_to_attackPower[playerIndex] = 10.0f;
+
         // アニメーションの開始
         anim.SetInteger("weight", (int)WeightIndex.Light);
-        anim.SetTrigger("punch");
+        anim.SetTrigger(CommonScript.TRIGGER_PUNCH);
     }
     void MediumPunch(PlayerIndex player)
     {
+        mainCameraScript.player_to_attackPower[playerIndex] = 50.0f;
+
         // アニメーションの開始
         anim.SetInteger("weight", (int)WeightIndex.Medium);
-        anim.SetTrigger("punch");
+        anim.SetTrigger(CommonScript.TRIGGER_PUNCH);
     }
     void HardPunch(PlayerIndex player)
     {
+        mainCameraScript.player_to_attackPower[playerIndex] = 100.0f;
+
         // アニメーションの開始
         anim.SetInteger("weight", (int)WeightIndex.Hard);
-        anim.SetTrigger("punch");
+        anim.SetTrigger(CommonScript.TRIGGER_PUNCH);
     }
     void LightKick(PlayerIndex player)
     {
+        mainCameraScript.player_to_attackPower[playerIndex] = 10.0f;
+
         // アニメーションの開始
         anim.SetInteger("weight", (int)WeightIndex.Light);
-        anim.SetTrigger("kick");
+        anim.SetTrigger(CommonScript.TRIGGER_KICK);
     }
     void MediumKick(PlayerIndex player)
     {
+        mainCameraScript.player_to_attackPower[playerIndex] = 50.0f;
+
         // アニメーションの開始
         anim.SetInteger("weight", (int)WeightIndex.Medium);
-        anim.SetTrigger("kick");
+        anim.SetTrigger(CommonScript.TRIGGER_KICK);
     }
     void HardKick(PlayerIndex player)
     {
+        mainCameraScript.player_to_attackPower[playerIndex] = 100.0f;
+
         // アニメーションの開始
         anim.SetInteger("weight", (int)WeightIndex.Hard);
-        anim.SetTrigger("kick");
+        anim.SetTrigger(CommonScript.TRIGGER_KICK);
     }
 }

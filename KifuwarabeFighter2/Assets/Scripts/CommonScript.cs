@@ -99,6 +99,28 @@ public class CommonScript
     public const string BUTTON_17_P1_MK = "P2MediumKick";
     public const string BUTTON_18_P1_HK = "P2HardKick";
     public const string BUTTON_19_P1_PA = "P2Pause";
+
+    public const string MOTION_LIGHT_PUNCH0 = "LightPunch0";
+    public const string MOTION_MEDIUM_PUNCH0 = "MediumPunch0";
+    public const string MOTION_HARD_PUNCH0 = "HardPunch0";
+    public const string MOTION_LIGHT_KICK0 = "LightKick0";
+    public const string MOTION_MEDIUM_KICK0 = "MediumKick0";
+    public const string MOTION_HARD_KICK0 = "HardKick0";
+    public const string MOTION_JUMP0 = "Jump0";
+    public const string MOTION_JUMP1 = "Jump1";
+    public const string MOTION_JUMP2 = "Jump2";
+    public const string MOTION_JUMP3 = "Jump3";
+    public const string MOTION_JUMP4 = "Jump4";
+
+    public const string TRIGGER_PUNCH = "punch";
+    public const string TRIGGER_KICK = "kick";
+    public const string TRIGGER_DASH = "dash";
+    public const string TRIGGER_ESCAPE = "escape";
+    public const string TRIGGER_JUMP = "jump";
+    public const string TRIGGER_DAMAGE_L = "damageL";
+    public const string TRIGGER_DAMAGE_M = "damageM";
+    public const string TRIGGER_DAMAGE_H = "damageH";
+
     /// <summary>
     /// [player,button]
     /// 内部的には　プレイヤー１はP0、プレイヤー２はP1 だぜ☆（＾▽＾）
@@ -184,12 +206,11 @@ public class CommonScript
     };
     public static string[,] CharacterAndMotion_To_Clip = new string[,]
     {
-        { "Char0_Wait", "Char0_LP", "Char0_MP", "Char0_HP", "Char0_LK", "Char0_MK", "Char0_HK", },
-        { "Char1_Wait", "Char1_LP", "Char1_MP", "Char1_HP", "Char1_LK", "Char1_MK", "Char1_HK", },
-        { "Char2_Wait", "Char2_LP", "Char2_MP", "Char2_HP", "Char2_LK", "Char2_MK", "Char2_HK", },
+        { "Char0@Wait0", "Char0@LP0", "Char0@MP0", "Char0@HP0", "Char0@LK0", "Char0@MK0", "Char0@HK0", },
+        { "Char1@Wait0", "Char1@LP0", "Char1@MP0", "Char1@HP0", "Char1@LK0", "Char1@MK0", "Char1@HK0", },
+        { "Char2@Wait0", "Char2@LP0", "Char2@MP0", "Char2@HP0", "Char2@LK0", "Char2@MK0", "Char2@HK0", },
     };
     public static string[] Player_To_Tag = new string[] { "Char0", "Char1" };
-    //public static string[] Player_To_CharAttack = new string[] { "Char0Attack", "Char1Attack" };
     public static string[] Player_To_Attacker = new string[] { "Attacker0", "Attacker1" };
     public static string[] Player_To_AttackerTag = new string[] { "Attacker0", "Attacker1" };
 
