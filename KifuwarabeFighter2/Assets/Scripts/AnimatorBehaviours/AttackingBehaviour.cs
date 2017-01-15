@@ -44,6 +44,22 @@ public class AttackingBehaviour : StateMachineBehaviour {
                 animator.SetBool("pushingHK", true);
             }
         }
+        
+        if (stateInfo.IsName(CommonScript.MOTION_DOWN_DAMAGE2))
+        {
+            // ダウンに入る時。
+            animator.SetBool(CommonScript.BOOL_DOWNING, true);
+            animator.SetBool(CommonScript.BOOL_INVINCIBLE,true);// 攻撃が当たらない状態になる。
+            //CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
+            //script.isInvincible = true; // 攻撃が当たらない状態になる。
+        }
+
+        if (stateInfo.IsName(CommonScript.MOTION_GIVEUP0))
+        {
+            // 投了モーションに入る時。
+            animator.SetBool(CommonScript.BOOL_GIVEUPING, true);
+            animator.SetBool(CommonScript.BOOL_INVINCIBLE, true);// 攻撃が当たらない状態になる。
+        }
     }
 
     // OnStateUpdate is called before OnStateUpdate is called on any state inside this state machine
@@ -64,6 +80,22 @@ public class AttackingBehaviour : StateMachineBehaviour {
             ) // 攻撃が終わった時
         {
             animator.SetBool("attacking", false);
+        }
+
+        if (stateInfo.IsName(CommonScript.MOTION_STANDUP0))//起き上がりから抜けたとき。
+        {
+            animator.SetBool(CommonScript.BOOL_DOWNING, false);
+            animator.SetBool(CommonScript.BOOL_INVINCIBLE, false);// 攻撃が当たる状態になる。
+            //CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
+            //script.isInvincible = false; // 攻撃が当たる状態になる。
+        }
+
+        if (stateInfo.IsName(CommonScript.MOTION_GIVEUP0))
+        {
+            // 投了モーションが終わった時。
+            animator.SetBool(CommonScript.BOOL_GIVEUPING, false);
+            CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
+            script.isResign = true;
         }
     }
 

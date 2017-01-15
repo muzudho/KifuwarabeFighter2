@@ -89,7 +89,7 @@ public class SelectCameraScript : MonoBehaviour {
 
             if (5==transitionTime)
             {
-                SceneManager.LoadScene("Main");
+                SceneManager.LoadScene(CommonScript.SCENE_MAIN);
             }
         }
 

@@ -21,7 +21,7 @@ public class TitleCameraScript : MonoBehaviour {
             )
             {
                 CommonScript.Player_To_Computer[iPlayer] = false;
-                SceneManager.LoadScene("Select");
+                SceneManager.LoadScene(CommonScript.SCENE_SELECT);
             }
         }
 

@@ -91,7 +91,7 @@ public class ResultCameraScript : MonoBehaviour {
             Input.GetButton(CommonScript.BUTTON_19_P1_PA)
             )
         {
-            SceneManager.LoadScene("Select");
+            SceneManager.LoadScene(CommonScript.SCENE_SELECT);
         }
 
     }

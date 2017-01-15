@@ -12,6 +12,11 @@ public class CharacterScript : MonoBehaviour {
     #region 当たり判定
     private GameObject mainCamera;
     private string opponentAttackerTag;
+    /// <summary>
+    /// 攻撃を受けた回数。１０回溜まるとダウン☆
+    /// </summary>
+    private int damageHitCount;
+    //public bool invincible;// 攻撃を受けない状態なら真。
     #endregion
     #region 効果音
     private AudioSource audioSource;
@@ -35,6 +40,9 @@ public class CharacterScript : MonoBehaviour {
     public bool IsJump0Motion { get; set; }
     #endregion
     MainCameraScript mainCameraScript;
+    #region 勝敗判定
+    public bool isResign;
+    #endregion
 
     void Start()
     {
@@ -443,8 +451,12 @@ public class CharacterScript : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D col)
     {
         #region 当たり判定
-        if (col.tag == opponentAttackerTag)// 相手の　攻撃当たり判定くん　が重なった時
+        if (!anim.GetBool(CommonScript.BOOL_INVINCIBLE) // 攻撃が当たらない状態ではなく。
+            &&
+            col.tag == opponentAttackerTag)// 相手の　攻撃当たり判定くん　が重なった時
         {
+            this.damageHitCount++;// 攻撃を受けた回数。
+
             // 効果音を鳴らすぜ☆
             audioSource.PlayOneShot(audioSource.clip);
 
@@ -454,7 +466,17 @@ public class CharacterScript : MonoBehaviour {
             // ＨＰメーター
             {
                 float damage = mainCameraScript.player_to_attackPower[(int)opponent];
-                if (100.0f <= damage)
+
+                float value = damage * (playerIndex == (int)PlayerIndex.Player1 ? -1 : 1);
+                mainCameraScript.OffsetBar(value);
+
+                if (10<=damageHitCount)
+                {
+                    // ダメージ・アニメーションの開始
+                    anim.SetTrigger(CommonScript.TRIGGER_DOWN);
+                    damageHitCount = 0;
+                }
+                else if (100.0f <= damage)
                 {
                     // ダメージ・アニメーションの開始
                     anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_H);
@@ -469,9 +491,6 @@ public class CharacterScript : MonoBehaviour {
                     // ダメージ・アニメーションの開始
                     anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_L);
                 }
-
-                float value = damage * (playerIndex == (int)PlayerIndex.Player1 ? -1 : 1);
-                mainCameraScript.OffsetBar(value);
             }
 
             // 手番
@@ -579,5 +598,13 @@ public class CharacterScript : MonoBehaviour {
         // アニメーションの開始
         anim.SetInteger("weight", (int)WeightIndex.Hard);
         anim.SetTrigger(CommonScript.TRIGGER_KICK);
+    }
+
+    /// <summary>
+    /// Animation の Event で呼び出す関数。何もしたくない。
+    /// </summary>
+    public void DoNothing()
+    {
+
     }
 }

@@ -77,6 +77,11 @@ public class CommonScript
         Teban = PlayerIndex.Player1;
     }
 
+    public const string SCENE_TITLE = "Title";
+    public const string SCENE_SELECT = "Select";
+    public const string SCENE_MAIN = "Main";
+    public const string SCENE_RESULT = "Result";
+
     /// <summary>
     /// BUTTON はコンフィグ画面でユーザーの目に触れるので、プレイヤー１はP1、プレイヤー２はP2 だぜ☆（＾～＾）
     /// </summary>
@@ -100,6 +105,8 @@ public class CommonScript
     public const string BUTTON_18_P1_HK = "P2HardKick";
     public const string BUTTON_19_P1_PA = "P2Pause";
 
+    public const string MOTION_DOWN_DAMAGE2 = "Down_Damage2";
+    public const string MOTION_STANDUP0 = "Standup0";
     public const string MOTION_LIGHT_PUNCH0 = "LightPunch0";
     public const string MOTION_MEDIUM_PUNCH0 = "MediumPunch0";
     public const string MOTION_HARD_PUNCH0 = "HardPunch0";
@@ -111,15 +118,22 @@ public class CommonScript
     public const string MOTION_JUMP2 = "Jump2";
     public const string MOTION_JUMP3 = "Jump3";
     public const string MOTION_JUMP4 = "Jump4";
+    public const string MOTION_GIVEUP0 = "Giveup0";
 
     public const string TRIGGER_PUNCH = "punch";
     public const string TRIGGER_KICK = "kick";
     public const string TRIGGER_DASH = "dash";
     public const string TRIGGER_ESCAPE = "escape";
     public const string TRIGGER_JUMP = "jump";
+    public const string TRIGGER_DOWN = "down";
     public const string TRIGGER_DAMAGE_L = "damageL";
     public const string TRIGGER_DAMAGE_M = "damageM";
     public const string TRIGGER_DAMAGE_H = "damageH";
+    public const string TRIGGER_GIVEUP = "giveup";
+
+    public const string BOOL_DOWNING = "downing";
+    public const string BOOL_INVINCIBLE = "invincible";
+    public const string BOOL_GIVEUPING = "giveuping";
 
     /// <summary>
     /// [player,button]
