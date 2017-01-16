@@ -9,3 +9,4 @@ C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\AtarihanteiMaker\AtarihanteiMaker\obj\Release\AtarihanteiMaker.exe
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\AtarihanteiMaker\AtarihanteiMaker\obj\Release\AtarihanteiMaker.pdb
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\AtarihanteiMaker\AtarihanteiMaker\bin\Release\AtarihanteiMaker.pdb
+C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\AtarihanteiMaker\AtarihanteiMaker\obj\Release\AtarihanteiMaker.csprojResolveAssemblyReference.cache

@@ -40,6 +40,9 @@ https://enty.jp/posts/31990
 作者むずでょブログ Author Muzudho Blog  
 http://kifuwarabe.warabenture.com/2017/01/11/lets-create-game%E2%98%8614-lets-challenge-creating-2d-fighting-game-like-street-fighter-2-for-unity/  
 
+ニコニコ生配信 Japanese private web camera live(SNS)
+http://com.nicovideo.jp/community/co3353928
+
 きふわらべファイター２技術ブログ Kifuwarabe Fighter Technical writing blog  
 http://qiita.com/muzudho1/items/aed45f72c9f0175376cc
 

@@ -84,7 +84,7 @@ namespace AtarihanteiMaker
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("public abstract class AttackCollider2DScript");
             sb.AppendLine("{");
-            sb.AppendLine("    public static float[,] CharacterAndSlice_To_OffsetX = new float[,]");
+            sb.AppendLine("    public static float[,] imageAndSlice_To_OffsetX = new float[,]");
             sb.AppendLine("    {");
             foreach (List<RectangleEx> sliceList in imageList)
             {
@@ -111,7 +111,7 @@ namespace AtarihanteiMaker
                 sb.AppendLine(" },");
             }
             sb.AppendLine("    };");
-            sb.AppendLine("    public static float[,] CharacterAndSlice_To_OffsetY = new float[,]");
+            sb.AppendLine("    public static float[,] imageAndSlice_To_OffsetY = new float[,]");
             sb.AppendLine("    {");
             foreach (List<RectangleEx> sliceList in imageList)
             {
@@ -138,7 +138,7 @@ namespace AtarihanteiMaker
                 sb.AppendLine(" },");
             }
             sb.AppendLine("    };");
-            sb.AppendLine("    public static float[,] CharacterAndSlice_To_ScaleX = new float[,]");
+            sb.AppendLine("    public static float[,] imageAndSlice_To_ScaleX = new float[,]");
             sb.AppendLine("    {");
             foreach (List<RectangleEx> sliceList in imageList)
             {
@@ -165,7 +165,7 @@ namespace AtarihanteiMaker
                 sb.AppendLine(" },");
             }
             sb.AppendLine("    };");
-            sb.AppendLine("    public static float[,] CharacterAndSlice_To_ScaleY = new float[,]");
+            sb.AppendLine("    public static float[,] imageAndSlice_To_ScaleY = new float[,]");
             sb.AppendLine("    {");
             foreach (List<RectangleEx> sliceList in imageList)
             {

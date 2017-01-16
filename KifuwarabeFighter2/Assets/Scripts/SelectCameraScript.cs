@@ -80,6 +80,7 @@ public class SelectCameraScript : MonoBehaviour {
             {
                 // コンピューター・プレイヤー側のゲームパッドで、何かボタンを押したら、人間の参入。
                 CommonScript.Player_To_Computer[iPlayer] = false;
+                // FIXME: 硬直時間を入れたい。
             }
         }
 

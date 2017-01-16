@@ -27,7 +27,20 @@ public enum CharacterIndex
 {
     Kifuwarabe,
     Ponahiko,
-    Roborinko
+    Roborinko,
+    TofuMan,
+}
+public enum CharacterImageIndex
+{
+    Stand,
+    Jump,
+    Dash,
+    Crouch,
+    Other,
+    /// <summary>
+    /// 列挙型の要素数、または未使用の値として使用。
+    /// </summary>
+    Num
 }
 public enum PlayerCharacterSpritesIndex
 {
@@ -56,13 +69,14 @@ public enum WeightIndex
 }
 public enum MotionIndex
 {
-    Wait,
-    LP,
-    MP,
-    HP,
-    LK,
-    MK,
-    HK,
+    StandWait,
+    StandLP,
+    StandMP,
+    StandHP,
+    StandLK,
+    StandMK,
+    StandHK,
+    Num
 }
 
 // どこからでも使われるぜ☆
@@ -147,6 +161,8 @@ public class CommonScript
 
     public const string INTEGER_LEVER_NEUTRAL = "leverNeutral";
 
+    public const string SPRITE_FIGHT0 = "Canvas/Fight0";
+    public const string SPRITE_FIGHT1 = "Canvas/Fight1";
     public const string SPRITE_RESIGN0 = "Canvas/Resign0";
 
     /// <summary>
@@ -183,24 +199,25 @@ public class CommonScript
     /// </summary>
     public static CharacterIndex[] X_To_CharacterInSelectMenu = new CharacterIndex[]
     {
-        CharacterIndex.Kifuwarabe, CharacterIndex.Roborinko, CharacterIndex.Ponahiko
+        CharacterIndex.Kifuwarabe, CharacterIndex.Roborinko, CharacterIndex.Ponahiko, CharacterIndex.TofuMan,
     };
     /// <summary>
     /// [character]
     /// </summary>
     public static string[] Character_To_Name = new string[]
     {
-        "きふわらべ", "パナ彦", "ろぼりん娘"
+        "きふわらべ", "パナ彦", "ろぼりん娘", "豆腐マン"
     };
     public static string[] Character_To_NameRoma = new string[]
     {
-        "KifuWarabe", "Panahiko", "Roborinko"
+        "KifuWarabe", "Panahiko", "Roborinko", "TofuMan"
     };
     public static string[] Character_To_AnimationController = new string[]
     {
-        "AnimatorControllers/Middle@Char0",
-        "AnimatorControllers/Middle@Char1",
-        "AnimatorControllers/Middle@Char2"
+        "AnimatorControllers/AniCon@Char0",
+        "AnimatorControllers/AniCon@Char1",
+        "AnimatorControllers/AniCon@Char2",
+        "AnimatorControllers/AniCon@Char3",
     };
     /// <summary>
     /// [character]
@@ -227,16 +244,18 @@ public class CommonScript
     /// <summary>
     /// [character,スライス番号]
     /// </summary>
-    public static string[,] CharacterAndSlice_To_FaceSprites = new string[3,3]{
+    public static string[,] CharacterAndSlice_To_FaceSprites = new string[,]{
         { "Sprites/Face0", "Face0_0", "Face0_1" },
         { "Sprites/Face1", "Face1_0", "Face1_1" },
         { "Sprites/Face2", "Face2_0", "Face2_1" },
+        { "Sprites/Face3", "Face3_0", "Face3_1" },
     };
     public static string[,] CharacterAndMotion_To_Clip = new string[,]
     {
-        { "Char0@Wait0", "Char0@LP0", "Char0@MP0", "Char0@HP0", "Char0@LK0", "Char0@MK0", "Char0@HK0", },
-        { "Char1@Wait0", "Char1@LP0", "Char1@MP0", "Char1@HP0", "Char1@LK0", "Char1@MK0", "Char1@HK0", },
-        { "Char2@Wait0", "Char2@LP0", "Char2@MP0", "Char2@HP0", "Char2@LK0", "Char2@MK0", "Char2@HK0", },
+        { "Char0@SWait", "Char0@SAtkLP", "Char0@SAtkMP", "Char0@SAtkHP", "Char0@SAtkLK", "Char0@SAtkMK", "Char0@SAtkHK", },
+        { "Char1@SWait", "Char1@SAtkLP", "Char1@SAtkMP", "Char1@SAtkHP", "Char1@SAtkLK", "Char1@SAtkMK", "Char1@SAtkHK", },
+        { "Char2@SWait", "Char2@SAtkLP", "Char2@SAtkMP", "Char2@SAtkHP", "Char2@SAtkLK", "Char2@SAtkMK", "Char2@SAtkHK", },
+        { "Char3@SWait", "Char3@SAtkLP", "Char3@SAtkMP", "Char3@SAtkHP", "Char3@SAtkLK", "Char3@SAtkMK", "Char3@SAtkHK", },
     };
     public static string[] Player_To_Tag = new string[] { "Char0", "Char1" };
     public static string[] Player_To_Attacker = new string[] { "Attacker0", "Attacker1" };
@@ -248,13 +267,25 @@ public class CommonScript
     public static float GRAPHIC_SCALE = 2.5f;
 
     /// <summary>
-    /// [character]
+    /// 開始台詞
+    /// </summary>
+    public static string[] Character_To_FightMessage = new string[]
+    {
+        "定刻になりましたので\nきふわらべ３３位の先手で\n始めてください",
+        "定刻になりましたので\nパナ彦１位の先手で\n始めてください",
+        "定刻になりましたので\nろぼりん娘２９位の先手で\n始めてください",
+        "定刻になりましたので\n豆腐マン失格の先手で\n始めてください",
+    };
+
+    /// <summary>
+    /// 勝利台詞
     /// </summary>
     public static string[] Character_To_WinMessage = new string[]
     {
         "公園（くに）へ帰れだぜ☆！\nお前にもお父んがいるだろう☆",
         "努力あるのみ☆\n",
-        "あかごの方が　はごたえがあるのじゃ！\n辱め詰めで追い回してやろう！"
+        "あかごの方が　はごたえがあるのじゃ！\n辱め詰めで追い回してやろう！",
+        "妥協の産物！\n",
     };
 
     public static string Prefab_TakoyakiParticle0 = "TakoyakiParticle0";

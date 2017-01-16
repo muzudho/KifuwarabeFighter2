@@ -6,9 +6,9 @@ using UnityEngine.UI;
 // メインシーンのメインカメラのスクリプトだぜ☆
 public class MainCameraScript : MonoBehaviour {
 
-    int readyTime;
-    public GameObject fight0;
-    public GameObject fight1;
+    int readyingTime;
+    GameObject fight0;
+    GameObject fight1;
     GameObject resign0;
     #region 選択キャラクター
     public Text name0;
@@ -50,13 +50,16 @@ public class MainCameraScript : MonoBehaviour {
     #endregion
     #region ラウンド
     int[] player_to_winCount;
-    private const int READY_TIME_LENGTH = 20;
+    private const int READY_TIME_LENGTH = 60;
     bool isRoundFinished;
     public bool IsResignCalled { get; set; }
     #endregion
 
     void Start()
     {
+        fight0 = GameObject.Find(CommonScript.SPRITE_FIGHT0);
+        fight0.GetComponent<Text>().text = CommonScript.Character_To_FightMessage[(int)CommonScript.Player_To_UseCharacter[(int)PlayerIndex.Player1]];
+        fight1 = GameObject.Find(CommonScript.SPRITE_FIGHT1);
         resign0 = GameObject.Find(CommonScript.SPRITE_RESIGN0);
         resign0.SetActive(false);
         #region 選択キャラクター
@@ -109,7 +112,7 @@ public class MainCameraScript : MonoBehaviour {
         #endregion
 
         #region リセット（配列やスプライト等の初期設定が終わってから）
-        readyTime = 0;
+        readyingTime = 0;
         SetTeban(PlayerIndex.Player1);
         // コンピューターかどうか。
         for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
@@ -123,8 +126,8 @@ public class MainCameraScript : MonoBehaviour {
     void Update()
     {
         #region 対局開始表示
-        readyTime++;
-        if (READY_TIME_LENGTH == readyTime)
+        readyingTime++;
+        if (READY_TIME_LENGTH == readyingTime)
         {
             fight0.SetActive(false);
             fight1.SetActive(false);
@@ -200,13 +203,18 @@ public class MainCameraScript : MonoBehaviour {
                     isRoundFinished = false;
                     IsResignCalled = false;
                     resign0.SetActive(false);
+                    player_to_char[(int)PlayerIndex.Player1].transform.position = new Vector3( 2.52f, 0.0f);
+                    player_to_char[(int)PlayerIndex.Player2].transform.position = new Vector3( -2.52f, 0.0f);
+                    readyingTime = 0;
+                    fight0.SetActive(true);
+                    fight1.SetActive(true);
                 }
             }
         }
         #endregion
 
         #region 当たり判定くん
-        if (READY_TIME_LENGTH < readyTime)
+        if (READY_TIME_LENGTH < readyingTime)
         {
             for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
             {
@@ -214,6 +222,11 @@ public class MainCameraScript : MonoBehaviour {
                 Animator anime = player_to_anime[(int)iPlayer];
 
                 // クリップ名取得
+                if (anime.GetCurrentAnimatorClipInfo(0).Length<1)
+                {
+                    Debug.LogError("クリップインフォの配列の範囲外エラー☆ iPlayer = "+ iPlayer);
+                    continue;
+                }
                 AnimationClip clip = anime.GetCurrentAnimatorClipInfo(0)[0].clip;
                 string clipName = clip.name;
 
@@ -246,76 +259,18 @@ public class MainCameraScript : MonoBehaviour {
 
                 int currentMotionFrame = Mathf.FloorToInt((normalizedTime % 1.0f) * clip.frameRate);
 
-                CharacterIndex character = CommonScript.Player_To_UseCharacter[iPlayer];
-
-                #region スライス番号取得
+                #region 画像分類　スライス番号　取得
+                int serialImage;
                 int slice = -1;
-                if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.Wait] == clipName)
-                {
-                    switch (currentMotionFrame)
-                    {
-                        case 0: slice = 0; break;
-                        case 1: slice = 1; break;
-                        case 2: slice = 2; break;
-                        case 3: slice = 3; break;
-                    }
-                }
-                else if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.LP] == clipName)
-                {
-                    switch (currentMotionFrame)
-                    {
-                        case 0: slice = 8; break;
-                        case 1: slice = 9; break;
-                    }
-                }
-                else if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.MP] == clipName)
-                {
-                    switch (currentMotionFrame)
-                    {
-                        case 0: slice = 8; break;
-                        case 1: slice = 9; break;
-                        case 2: slice = 10; break;
-                    }
-                }
-                else if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.HP] == clipName)
-                {
-                    switch (currentMotionFrame)
-                    {
-                        case 0: slice = 8; break;
-                        case 1: slice = 9; break;
-                        case 2: slice = 10; break;
-                        case 3: slice = 11; break;
-                        case 4: slice = 9; break;
-                    }
-                }
-                else if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.LK] == clipName)
-                {
-                    switch (currentMotionFrame)
-                    {
-                        case 0: slice = 16; break;
-                        case 1: slice = 17; break;
-                    }
-                }
-                else if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.MK] == clipName)
-                {
-                    switch (currentMotionFrame)
-                    {
-                        case 0: slice = 16; break;
-                        case 1: slice = 17; break;
-                        case 2: slice = 18; break;
-                    }
-                }
-                else if (CommonScript.CharacterAndMotion_To_Clip[(int)character, (int)MotionIndex.HK] == clipName)
-                {
-                    switch (currentMotionFrame)
-                    {
-                        case 0: slice = 16; break;
-                        case 1: slice = 17; break;
-                        case 2: slice = 18; break;
-                        case 3: slice = 19; break;
-                        case 4: slice = 17; break;
-                    }
-                }
+                CharacterIndex character = CommonScript.Player_To_UseCharacter[iPlayer];
+                AttackCollider2DDatabaseScript.Select(
+                    out serialImage,
+                    out slice,
+                    character, // キャラクター番号
+                    AttackCollider2DDatabaseScript.ClipName_to_Motion(character, clipName), // モーション番号
+                    currentMotionFrame
+                    );
+                //Debug.Log("serialImage = " + serialImage + " slice = " + slice);
                 #endregion
 
                 if (-1 != slice)
@@ -324,23 +279,23 @@ public class MainCameraScript : MonoBehaviour {
                     player_to_charAttackImgSpriteRenderer[iPlayer].transform.position = new Vector3(
                         player_to_char[iPlayer].transform.position.x +
                         Mathf.Sign(player_to_char[iPlayer].transform.localScale.x) *
-                        CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.CharacterAndSlice_To_OffsetX[(int)character, slice],
-                        player_to_char[iPlayer].transform.position.y + CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.CharacterAndSlice_To_OffsetY[(int)character, slice]
+                        CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.imageAndSlice_To_OffsetX[serialImage, slice],
+                        player_to_char[iPlayer].transform.position.y + CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.imageAndSlice_To_OffsetY[serialImage, slice]
                         );
                     player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale = new Vector3(
-                        CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.CharacterAndSlice_To_ScaleX[(int)character, slice],
-                        CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.CharacterAndSlice_To_ScaleY[(int)character, slice]
+                        CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.imageAndSlice_To_ScaleX[serialImage, slice],
+                        CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.imageAndSlice_To_ScaleY[serialImage, slice]
                         );
 
-                    if ((int)PlayerIndex.Player1 == iPlayer)
-                    {
-                        //Debug.Log("stateSpeed = " + stateSpeed + " clip.frameRate = " + clip.frameRate + " normalizedTime = " + normalizedTime + " currentMotionFrame = " + currentMotionFrame + " 当たり判定くん.position.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.x + " 当たり判定くん.position.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.y + " scale.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.x + " scale.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.y);
-                        //" clip.length = " + clip.length +
-                        //" motionFrames = " + motionFrames +
-                        //" lastKeyframeTime = "+ lastKeyframeTime +
-                        //" clip.length = "+ clip.length +
-                        //" motionFrames = "+ motionFrames +
-                    }
+                    //if ((int)PlayerIndex.Player1 == iPlayer)
+                    //{
+                    //Debug.Log("stateSpeed = " + stateSpeed + " clip.frameRate = " + clip.frameRate + " normalizedTime = " + normalizedTime + " currentMotionFrame = " + currentMotionFrame + " 当たり判定くん.position.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.x + " 当たり判定くん.position.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.y + " scale.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.x + " scale.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.y);
+                    //    //" clip.length = " + clip.length +
+                    //    //" motionFrames = " + motionFrames +
+                    //    //" lastKeyframeTime = "+ lastKeyframeTime +
+                    //    //" clip.length = "+ clip.length +
+                    //    //" motionFrames = "+ motionFrames +
+                    //}
                 }
             }
         }

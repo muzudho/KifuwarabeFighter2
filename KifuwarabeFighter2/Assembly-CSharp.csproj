@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\AnimatorBehaviours\AttackingBehaviour.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\Char0MiddleBehaviour.cs" />
+     <Compile Include="Assets\Scripts\AttackCollider2DDatabaseScript.cs" />
      <Compile Include="Assets\Scripts\AttackCollider2DScript.cs" />
      <Compile Include="Assets\Scripts\BulletScript.cs" />
      <Compile Include="Assets\Scripts\CharacterScript.cs" />
