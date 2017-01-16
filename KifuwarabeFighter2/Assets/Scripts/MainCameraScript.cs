@@ -9,6 +9,7 @@ public class MainCameraScript : MonoBehaviour {
     int readyTime;
     public GameObject fight0;
     public GameObject fight1;
+    GameObject resign0;
     #region 選択キャラクター
     public Text name0;
     public Text name1;
@@ -47,19 +48,25 @@ public class MainCameraScript : MonoBehaviour {
     #region 攻撃力
     public float[] player_to_attackPower;
     #endregion
+    #region ラウンド
+    int[] player_to_winCount;
+    private const int READY_TIME_LENGTH = 20;
+    bool isRoundFinished;
+    public bool IsResignCalled { get; set; }
+    #endregion
 
     void Start()
     {
+        resign0 = GameObject.Find(CommonScript.SPRITE_RESIGN0);
+        resign0.SetActive(false);
         #region 選択キャラクター
         player_to_name = new Text[] { name0, name1 };
         player_to_char = new GameObject[] { char0, char1 };
         player_to_anime = new Animator[] { char0.GetComponent<Animator>(), char1.GetComponent<Animator>() };
-        //player_to_charAttack = new GameObject[] { GameObject.Find(CommonScript.Player_To_CharAttack[(int)PlayerIndex.Player1]), GameObject.Find(CommonScript.Player_To_CharAttack[(int)PlayerIndex.Player2]) };
         player_to_charAttackImg = new GameObject[] { GameObject.Find(CommonScript.Player_To_Attacker[(int)PlayerIndex.Player1]), GameObject.Find(CommonScript.Player_To_Attacker[(int)PlayerIndex.Player2]) };
-        //player_to_charAttackSpriteRenderer = new SpriteRenderer[] { player_to_charAttack[(int)PlayerIndex.Player1].GetComponent<SpriteRenderer>(), player_to_charAttack[(int)PlayerIndex.Player2].GetComponent<SpriteRenderer>() };
         player_to_charAttackImgSpriteRenderer = new SpriteRenderer[] { player_to_charAttackImg[(int)PlayerIndex.Player1].GetComponent<SpriteRenderer>(), player_to_charAttackImg[(int)PlayerIndex.Player2].GetComponent<SpriteRenderer>() };
-        //player_to_charAttackBoxCollider2D = new BoxCollider2D[] { player_to_charAttack[(int)PlayerIndex.Player1].GetComponent<BoxCollider2D>(), player_to_charAttack[(int)PlayerIndex.Player2].GetComponent<BoxCollider2D>() };
         player_to_charAttackImgBoxCollider2D = new BoxCollider2D[] { player_to_charAttackImg[(int)PlayerIndex.Player1].GetComponent<BoxCollider2D>(), player_to_charAttackImg[(int)PlayerIndex.Player2].GetComponent<BoxCollider2D>() };
+        player_to_winCount = new int[] { 0, 0 };
         for (int iPlayer = (int)PlayerIndex.Player1; iPlayer<(int)PlayerIndex.Num; iPlayer++)
         {
             CharacterIndex character = CommonScript.Player_To_UseCharacter[iPlayer];
@@ -80,8 +87,7 @@ public class MainCameraScript : MonoBehaviour {
         player_to_time = new Text[] { time0, time1 };
         player_to_turnOutline = new Outline[] { turn0.GetComponent<Outline>(), turn1.GetComponent<Outline>() };
         player_to_timeOutline = new Outline[] { time0.GetComponent<Outline>(), time1.GetComponent<Outline>() };
-        //player_to_timeCount = new float[] { 5.0f, 5.0f };
-        player_to_timeCount = new float[] { 60.0f, 60.0f };
+        InitTime();
         #endregion
 
         #region 攻撃力
@@ -113,7 +119,6 @@ public class MainCameraScript : MonoBehaviour {
         #endregion
     }
 
-    private const int READY_TIME_LENGTH = 20;
     // Update is called once per frame
     void Update()
     {
@@ -127,16 +132,23 @@ public class MainCameraScript : MonoBehaviour {
         #endregion
 
         #region 投了判定
-        for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
+        for (int iLoser = (int)PlayerIndex.Player1; iLoser < (int)PlayerIndex.Num; iLoser++)
         {
-            if (player_to_char[iPlayer].GetComponent<CharacterScript>().isResign)
+            if (player_to_char[iLoser].GetComponent<CharacterScript>().isResign)
             {
-                if ((int)PlayerIndex.Player1==iPlayer)
+                player_to_char[iLoser].GetComponent<CharacterScript>().isResign = false;
+
+                PlayerIndex winner = CommonScript.ReverseTeban((PlayerIndex)iLoser);
+                player_to_winCount[(int)winner]++;
+
+                if ((int)PlayerIndex.Player1==iLoser)
                 {
+                    // １プレイヤーの投了
                     CommonScript.Result = Result.Player2_Win;
                 }
-                else if ((int)PlayerIndex.Player2 == iPlayer)
+                else if ((int)PlayerIndex.Player2 == iLoser)
                 {
+                    // ２プレイヤーの投了
                     CommonScript.Result = Result.Player1_Win;
                 }
                 else
@@ -144,9 +156,51 @@ public class MainCameraScript : MonoBehaviour {
                     throw new UnityException("どっちが勝ったんだぜ☆？");
                 }
 
-                player_to_char[iPlayer].GetComponent<CharacterScript>().isResign = false;
-                SceneManager.LoadScene(CommonScript.SCENE_RESULT);
-                return;
+                // 現在、何ラウンドか☆
+                int round;
+                if (!playerAndRound_to_result[iLoser, 0].activeSelf)//１ラウンド目の星が表示されていないとき。
+                {
+                    round = 0;
+                }
+                else if (!playerAndRound_to_result[iLoser, 1].activeSelf)//２ラウンド目の星が表示されていないとき。
+                {
+                    round = 1;
+                    if (1<player_to_winCount[(int)winner])//2本先取
+                    {
+                        SceneManager.LoadScene(CommonScript.SCENE_RESULT);
+                        return;
+                    }
+                }
+                else//星が２ラウンド目まで表示されているとき☆
+                {
+                    round = 2;
+                    SceneManager.LoadScene(CommonScript.SCENE_RESULT);
+                    return;
+                }
+
+                //if (round < 2)
+                {
+                    playerAndRound_to_result[(int)PlayerIndex.Player1, round].SetActive(true);
+                    playerAndRound_to_result[(int)PlayerIndex.Player2, round].SetActive(true);
+
+                    Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/ResultMark0");
+                    if (PlayerIndex.Player1 == winner)
+                    {
+                        playerAndRound_to_result[(int)PlayerIndex.Player1, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_0"));
+                        playerAndRound_to_result[(int)PlayerIndex.Player2, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_1"));
+                    }
+                    else if (PlayerIndex.Player2 == winner)
+                    {
+                        playerAndRound_to_result[(int)PlayerIndex.Player1, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_1"));
+                        playerAndRound_to_result[(int)PlayerIndex.Player2, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_0"));
+                    }
+
+                    InitTime();
+                    InitBar();
+                    isRoundFinished = false;
+                    IsResignCalled = false;
+                    resign0.SetActive(false);
+                }
             }
         }
         #endregion
@@ -280,7 +334,7 @@ public class MainCameraScript : MonoBehaviour {
 
                     if ((int)PlayerIndex.Player1 == iPlayer)
                     {
-                        Debug.Log("stateSpeed = " + stateSpeed + " clip.frameRate = " + clip.frameRate + " normalizedTime = " + normalizedTime + " currentMotionFrame = " + currentMotionFrame + " 当たり判定くん.position.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.x + " 当たり判定くん.position.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.y + " scale.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.x + " scale.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.y);
+                        //Debug.Log("stateSpeed = " + stateSpeed + " clip.frameRate = " + clip.frameRate + " normalizedTime = " + normalizedTime + " currentMotionFrame = " + currentMotionFrame + " 当たり判定くん.position.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.x + " 当たり判定くん.position.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.y + " scale.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.x + " scale.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.y);
                         //" clip.length = " + clip.length +
                         //" motionFrames = " + motionFrames +
                         //" lastKeyframeTime = "+ lastKeyframeTime +
@@ -293,6 +347,7 @@ public class MainCameraScript : MonoBehaviour {
         #endregion
 
         #region 時間制限
+        if(!isRoundFinished)
         {
             // カウントダウン
             player_to_timeCount[(int)CommonScript.Teban] -= Time.deltaTime; // 前のフレームからの経過時間を引くぜ☆
@@ -301,91 +356,31 @@ public class MainCameraScript : MonoBehaviour {
         #endregion
 
         #region HP、残り時間判定
+        if(!isRoundFinished)
         {
             //if (bar1_rt.sizeDelta.x <= 0 && bar2_rt.sizeDelta.x <= 0)
             //{
             //    // ダブル・ノックアウト
-            //    CommonScript.Result = Result.Double_KnockOut;
-            //    SceneManager.LoadScene("Result");
             //}
             //else
-            PlayerIndex winner = PlayerIndex.Num;
+            PlayerIndex loser = PlayerIndex.Num;
             if (bar1_rt.sizeDelta.x <= bar0_rt.sizeDelta.x
                 || player_to_timeCount[(int)PlayerIndex.Player2] < 1.0f)
             {
                 // １プレイヤーの勝ち
-                winner = PlayerIndex.Player1;
+                loser = PlayerIndex.Player2;
             }
             else if (bar0_rt.sizeDelta.x <= 0
                 || player_to_timeCount[(int)PlayerIndex.Player1] < 1.0f)
             {
                 // ２プレイヤーの勝ち
-                winner = PlayerIndex.Player2;
+                loser = (int)PlayerIndex.Player1;
             }
 
-            if (PlayerIndex.Num != winner)
+            if (PlayerIndex.Num != loser)
             {
-                // 現在、何ラウンドか☆
-                int round;
-                if (!playerAndRound_to_result[(int)PlayerIndex.Player1, 0].activeSelf)
-                {
-                    round = 0;
-                }
-                else if (!playerAndRound_to_result[(int)PlayerIndex.Player1, 1].activeSelf)
-                {
-                    round = 1;
-                }
-                else
-                {
-                    round = 2;
-                }
-
-                if (PlayerIndex.Player1 == winner)
-                {
-                    if (2 == round)
-                    {
-                        // 時間切れ決着☆
-                        //player_to_char[(int)PlayerIndex.Player2].GetComponent<CharacterScript>().isResign = true;
-                        CommonScript.Result = Result.Player1_Win;
-                        player_to_anime[(int)PlayerIndex.Player2].SetTrigger(CommonScript.TRIGGER_GIVEUP);
-                        return;
-                        //SceneManager.LoadScene(CommonScript.SCENE_RESULT);
-                    }
-                    else
-                    {
-                        playerAndRound_to_result[(int)PlayerIndex.Player1, round].SetActive(true);
-                        playerAndRound_to_result[(int)PlayerIndex.Player2, round].SetActive(true);
-
-                        Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/ResultMark0");
-                        playerAndRound_to_result[(int)PlayerIndex.Player1, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_0"));
-                        playerAndRound_to_result[(int)PlayerIndex.Player2, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_1"));
-
-                        InitBar();
-                    }
-                }
-                else if (PlayerIndex.Player2 == winner)
-                {
-                    if (2 == round)
-                    {
-                        // 時間切れ決着☆
-                        //player_to_char[(int)PlayerIndex.Player1].GetComponent<CharacterScript>().isResign = true;
-                        CommonScript.Result = Result.Player2_Win;
-                        player_to_anime[(int)PlayerIndex.Player1].SetTrigger(CommonScript.TRIGGER_GIVEUP);
-                        return;
-                        //SceneManager.LoadScene(CommonScript.SCENE_RESULT);
-                    }
-                    else
-                    {
-                        playerAndRound_to_result[(int)PlayerIndex.Player1, round].SetActive(true);
-                        playerAndRound_to_result[(int)PlayerIndex.Player2, round].SetActive(true);
-
-                        Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/ResultMark0");
-                        playerAndRound_to_result[(int)PlayerIndex.Player1, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_1"));
-                        playerAndRound_to_result[(int)PlayerIndex.Player2, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_0"));
-
-                        InitBar();
-                    }
-                }
+                isRoundFinished = true;
+                player_to_anime[(int)loser].SetTrigger(CommonScript.TRIGGER_GIVEUP);
             }
         }
         #endregion
@@ -432,6 +427,10 @@ public class MainCameraScript : MonoBehaviour {
         }
     }
 
+    public void InitTime()
+    {
+        player_to_timeCount = new float[] { 60.0f, 60.0f };
+    }
     public void InitBar()
     {
         bar0_rt.sizeDelta = new Vector2(
@@ -474,5 +473,13 @@ public class MainCameraScript : MonoBehaviour {
             value0.color = Color.red;
             value1.color = Color.white;
         }
+    }
+    /// <summary>
+    /// 参りましたの発声。
+    /// </summary>
+    public void ResignCall()
+    {
+        IsResignCalled = true;
+        resign0.SetActive(true);
     }
 }

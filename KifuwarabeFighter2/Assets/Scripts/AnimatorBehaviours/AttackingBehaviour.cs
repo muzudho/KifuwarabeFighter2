@@ -7,7 +7,20 @@ public class AttackingBehaviour : StateMachineBehaviour {
     // OnStateEnter is called before OnStateEnter is called on any state inside this state machine
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (
+        if (stateInfo.IsName(CommonScript.MOTION_JUMP1)) // 上昇
+        {
+            CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
+            script.Jump1();
+        }
+        else if (stateInfo.IsName(CommonScript.MOTION_GIVEUP0))
+        {
+            // 投了モーションに入る時。
+            //Debug.Log("投了モーション始まり☆ layerIndex = " + layerIndex + " stateInfo.fullPathHash = " + stateInfo.fullPathHash + " animator.name = " + animator.name);
+
+            animator.SetBool(CommonScript.BOOL_GIVEUPING, true);
+            animator.SetBool(CommonScript.BOOL_INVINCIBLE, true);// 攻撃が当たらない状態になる。
+        }
+        else if (
             stateInfo.IsName(CommonScript.MOTION_LIGHT_PUNCH0) ||
             stateInfo.IsName(CommonScript.MOTION_MEDIUM_PUNCH0) ||
             stateInfo.IsName(CommonScript.MOTION_HARD_PUNCH0) ||
@@ -16,36 +29,35 @@ public class AttackingBehaviour : StateMachineBehaviour {
             stateInfo.IsName(CommonScript.MOTION_HARD_KICK0)
             ) // 攻撃が始まった時
         {
-            animator.SetBool("attacking", true);
+            animator.SetBool(CommonScript.BOOL_ATTACKING, true);
 
             // 連打防止のフラグ立て。
             if (stateInfo.IsName(CommonScript.MOTION_LIGHT_PUNCH0))
             {
-                animator.SetBool("pushingLP", true);
+                animator.SetBool(CommonScript.BOOL_PUSHING_LP, true);
             }
             else if (stateInfo.IsName(CommonScript.MOTION_MEDIUM_PUNCH0))
             {
-                animator.SetBool("pushingMP", true);
+                animator.SetBool(CommonScript.BOOL_PUSHING_MP, true);
             }
             else if (stateInfo.IsName(CommonScript.MOTION_HARD_PUNCH0))
             {
-                animator.SetBool("pushingHP", true);
+                animator.SetBool(CommonScript.BOOL_PUSHING_HP, true);
             }
             else if (stateInfo.IsName(CommonScript.MOTION_LIGHT_KICK0))
             {
-                animator.SetBool("pushingLK", true);
+                animator.SetBool(CommonScript.BOOL_PUSHING_LK, true);
             }
             else if (stateInfo.IsName(CommonScript.MOTION_MEDIUM_KICK0))
             {
-                animator.SetBool("pushingMK", true);
+                animator.SetBool(CommonScript.BOOL_PUSHING_MK, true);
             }
             else if (stateInfo.IsName(CommonScript.MOTION_HARD_KICK0))
             {
-                animator.SetBool("pushingHK", true);
+                animator.SetBool(CommonScript.BOOL_PUSHING_HK, true);
             }
         }
-        
-        if (stateInfo.IsName(CommonScript.MOTION_DOWN_DAMAGE2))
+        else if (stateInfo.IsName(CommonScript.MOTION_DOWN_DAMAGE2))
         {
             // ダウンに入る時。
             animator.SetBool(CommonScript.BOOL_DOWNING, true);
@@ -53,24 +65,45 @@ public class AttackingBehaviour : StateMachineBehaviour {
             //CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
             //script.isInvincible = true; // 攻撃が当たらない状態になる。
         }
-
-        if (stateInfo.IsName(CommonScript.MOTION_GIVEUP0))
-        {
-            // 投了モーションに入る時。
-            animator.SetBool(CommonScript.BOOL_GIVEUPING, true);
-            animator.SetBool(CommonScript.BOOL_INVINCIBLE, true);// 攻撃が当たらない状態になる。
-        }
     }
 
     // OnStateUpdate is called before OnStateUpdate is called on any state inside this state machine
-    //override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-    //
-    //}
+    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        if (stateInfo.IsName(CommonScript.MOTION_GIVEUP0))
+        {
+            // 投了モーション中
+            if(2.0f<=stateInfo.normalizedTime % 1 * animator.GetCurrentAnimatorClipInfo(0)[0].clip.frameRate)
+            {
+                CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
+                if (!script.mainCameraScript.IsResignCalled)
+                {
+                    script.ResignCall();
+                }
+            }
+        }
+    }
 
     // OnStateExit is called before OnStateExit is called on any state inside this state machine
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (
+        if (stateInfo.IsName(CommonScript.MOTION_JUMP0)) // 屈伸が終わった時
+        {
+            CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
+            script.Jump0Exit();
+        }
+        else if (stateInfo.IsName(CommonScript.MOTION_GIVEUP0))
+        {
+            //Debug.Log("投了モーション終わり☆ layerIndex = " + layerIndex + " stateInfo.fullPathHash = " + stateInfo.fullPathHash + " animator.name = " + animator.name);
+
+            // 投了モーションが終わった時。
+            animator.SetBool(CommonScript.BOOL_GIVEUPING, false);
+            animator.SetBool(CommonScript.BOOL_INVINCIBLE, false);// 攻撃が当たらない状態を解除☆
+
+            CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
+            script.isResign = true;
+        }
+        else if (
             stateInfo.IsName(CommonScript.MOTION_LIGHT_PUNCH0) ||
             stateInfo.IsName(CommonScript.MOTION_MEDIUM_PUNCH0) ||
             stateInfo.IsName(CommonScript.MOTION_HARD_PUNCH0) ||
@@ -79,23 +112,14 @@ public class AttackingBehaviour : StateMachineBehaviour {
             stateInfo.IsName(CommonScript.MOTION_HARD_KICK0)
             ) // 攻撃が終わった時
         {
-            animator.SetBool("attacking", false);
+            animator.SetBool(CommonScript.BOOL_ATTACKING, false);
         }
-
-        if (stateInfo.IsName(CommonScript.MOTION_STANDUP0))//起き上がりから抜けたとき。
+        else if (stateInfo.IsName(CommonScript.MOTION_STANDUP0))//起き上がりから抜けたとき。
         {
             animator.SetBool(CommonScript.BOOL_DOWNING, false);
             animator.SetBool(CommonScript.BOOL_INVINCIBLE, false);// 攻撃が当たる状態になる。
             //CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
             //script.isInvincible = false; // 攻撃が当たる状態になる。
-        }
-
-        if (stateInfo.IsName(CommonScript.MOTION_GIVEUP0))
-        {
-            // 投了モーションが終わった時。
-            animator.SetBool(CommonScript.BOOL_GIVEUPING, false);
-            CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
-            script.isResign = true;
         }
     }
 

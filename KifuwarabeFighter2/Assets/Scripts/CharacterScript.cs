@@ -39,7 +39,7 @@ public class CharacterScript : MonoBehaviour {
     /// </summary>
     public bool IsJump0Motion { get; set; }
     #endregion
-    MainCameraScript mainCameraScript;
+    public MainCameraScript mainCameraScript;
     #region 勝敗判定
     public bool isResign;
     #endregion
@@ -90,13 +90,13 @@ public class CharacterScript : MonoBehaviour {
                 isComputer = false;
                 leverX = 0;
                 leverY = 0;
-                anim.SetBool("pushingLP", false);
-                anim.SetBool("pushingMP", false);
-                anim.SetBool("pushingHP", false);
-                anim.SetBool("pushingLK", false);
-                anim.SetBool("pushingMK", false);
-                anim.SetBool("pushingHK", false);
-                anim.SetBool("pushingPA", false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_LP, false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_MP, false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_HP, false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_LK, false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_MK, false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_HK, false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_PA, false);
             }
             else
             {
@@ -115,7 +115,7 @@ public class CharacterScript : MonoBehaviour {
                     leverY = 0.0f;
                 }
 
-                if (anim.GetBool("pushingLP"))
+                if (anim.GetBool(CommonScript.BOOL_PUSHING_LP))
                 {
                     buttonUpLP = (0.900f < Random.Range(0.0f, 1.0f));
                 }
@@ -125,7 +125,7 @@ public class CharacterScript : MonoBehaviour {
                     buttonDownLP = (0.900f < Random.Range(0.0f, 1.0f));
                 }
 
-                if (anim.GetBool("pushingMP"))
+                if (anim.GetBool(CommonScript.BOOL_PUSHING_MP))
                 {
                     buttonUpMP = (0.990f < Random.Range(0.0f, 1.0f));
                 }
@@ -135,7 +135,7 @@ public class CharacterScript : MonoBehaviour {
                     buttonDownMP = (0.990f < Random.Range(0.0f, 1.0f));
                 }
 
-                if (anim.GetBool("pushingHP"))
+                if (anim.GetBool(CommonScript.BOOL_PUSHING_HP))
                 {
                     buttonUpHP = (0.995f < Random.Range(0.0f, 1.0f));
                 }
@@ -145,7 +145,7 @@ public class CharacterScript : MonoBehaviour {
                     buttonDownHP = (0.995f < Random.Range(0.0f, 1.0f));
                 }
 
-                if (anim.GetBool("pushingLK"))
+                if (anim.GetBool(CommonScript.BOOL_PUSHING_LK))
                 {
                     buttonUpLK = (0.900f < Random.Range(0.0f, 1.0f));
                 }
@@ -155,7 +155,7 @@ public class CharacterScript : MonoBehaviour {
                     buttonDownLK = (0.900f < Random.Range(0.0f, 1.0f));
                 }
 
-                if (anim.GetBool("pushingMK"))
+                if (anim.GetBool(CommonScript.BOOL_PUSHING_MK))
                 {
                     buttonUpMK = (0.990f < Random.Range(0.0f, 1.0f));
                 }
@@ -165,7 +165,7 @@ public class CharacterScript : MonoBehaviour {
                     buttonDownMK = (0.990f < Random.Range(0.0f, 1.0f));
                 }
 
-                if (anim.GetBool("pushingHK"))
+                if (anim.GetBool(CommonScript.BOOL_PUSHING_HK))
                 {
                     buttonUpHK = (0.995f < Random.Range(0.0f, 1.0f));
                 }
@@ -190,27 +190,27 @@ public class CharacterScript : MonoBehaviour {
         {
             if (buttonUpLP)
             {
-                anim.SetBool("pushingLP", false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_LP, false);
             }
             if (buttonUpMP)
             {
-                anim.SetBool("pushingMP", false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_MP, false);
             }
             if (buttonUpHP)
             {
-                anim.SetBool("pushingHP", false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_HP, false);
             }
             if (buttonUpLK)
             {
-                anim.SetBool("pushingLK", false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_LK, false);
             }
             if (buttonUpMK)
             {
-                anim.SetBool("pushingMK", false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_MK, false);
             }
             if (buttonUpHK)
             {
-                anim.SetBool("pushingHK", false);
+                anim.SetBool(CommonScript.BOOL_PUSHING_HK, false);
             }
         }
 
@@ -234,7 +234,7 @@ public class CharacterScript : MonoBehaviour {
         #region 弾を撃つ
         // 弾を撃つぜ☆
         if (
-            (3 == anim.GetInteger("leverNeutral") % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
+            (3 == anim.GetInteger(CommonScript.INTEGER_LEVER_NEUTRAL) % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
             &&
             (
                 buttonDownLP ||
@@ -311,12 +311,12 @@ public class CharacterScript : MonoBehaviour {
 
                     if (leverX < 0)
                     {
-                        if (!anim.GetBool("dashing"))
+                        if (!anim.GetBool(CommonScript.BOOL_DASHING))
                         {
                             // ダッシュ・アニメーションの開始
-                            anim.SetInteger("leverNeutral", 0);
-                            anim.SetBool("escaping", false);
-                            anim.SetBool("dashing", true);
+                            anim.SetInteger(CommonScript.INTEGER_LEVER_NEUTRAL, 0);
+                            anim.SetBool(CommonScript.BOOL_ESCAPING, false);
+                            anim.SetBool(CommonScript.BOOL_DASHING, true);
                             //if ((int)PlayerIndex.Player1 == playerIndex)
                             //{
                             //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ダッシュ!");
@@ -326,12 +326,12 @@ public class CharacterScript : MonoBehaviour {
                     }
                     else if (0 < leverX)
                     {
-                        if (!anim.GetBool("escaping"))
+                        if (!anim.GetBool(CommonScript.BOOL_ESCAPING))
                         {
                             // エスケープ・アニメーションの開始
-                            anim.SetInteger("leverNeutral", 0);
-                            anim.SetBool("dashing", false);
-                            anim.SetBool("escaping", true);
+                            anim.SetInteger(CommonScript.INTEGER_LEVER_NEUTRAL, 0);
+                            anim.SetBool(CommonScript.BOOL_DASHING, false);
+                            anim.SetBool(CommonScript.BOOL_ESCAPING, true);
                             //if ((int)PlayerIndex.Player1 == playerIndex)
                             //{
                             //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " エスケープ!");
@@ -344,9 +344,9 @@ public class CharacterScript : MonoBehaviour {
                 {
                     // 感覚的に、左から右に隙間なく切り替えたと思っていても、
                     // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
-                    anim.SetInteger("leverNeutral", anim.GetInteger("leverNeutral")+1);
+                    anim.SetInteger(CommonScript.INTEGER_LEVER_NEUTRAL, anim.GetInteger(CommonScript.INTEGER_LEVER_NEUTRAL) +1);
 
-                    if ( 8 < anim.GetInteger("leverNeutral") )// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
+                    if ( 8 < anim.GetInteger(CommonScript.INTEGER_LEVER_NEUTRAL) )// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
                     {
                         //横移動の速度を0にしてピタッと止まるようにする
                         Rigidbody2D.velocity = new Vector2(0, Rigidbody2D.velocity.y);
@@ -355,8 +355,8 @@ public class CharacterScript : MonoBehaviour {
                         //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ストップ!");
                         //}
 
-                        anim.SetBool("dashing", false);
-                        anim.SetBool("escaping", false);
+                        anim.SetBool(CommonScript.BOOL_DASHING, false);
+                        anim.SetBool(CommonScript.BOOL_ESCAPING, false);
                     }
 
                 }
@@ -411,35 +411,41 @@ public class CharacterScript : MonoBehaviour {
         #endregion
 
         #region 行動
+        //if (buttonDownHP && buttonDownHK)
+        //{
+        //    Debug.Log("投了☆！");
+        //    Resign();
+        //}
+        //else
         if (buttonDownLP)
         {
             //Debug.Log("button BUTTON_03_P1_LP");
-            LightPunch((PlayerIndex)playerIndex);
+            LightPunch();
         }
         else if (buttonDownMP)
         {
             //Debug.Log("button BUTTON_04_P1_MP");
-            MediumPunch((PlayerIndex)playerIndex);
+            MediumPunch();
         }
         else if (buttonDownHP)
         {
             //Debug.Log("button BUTTON_05_P1_HP");
-            HardPunch((PlayerIndex)playerIndex);
+            HardPunch();
         }
         else if (buttonDownLK)
         {
             //Debug.Log("button BUTTON_06_P1_LK");
-            LightKick((PlayerIndex)playerIndex);
+            LightKick();
         }
         else if (buttonDownMK)
         {
             //Debug.Log("button BUTTON_07_P1_MK");
-            MediumKick((PlayerIndex)playerIndex);
+            MediumKick();
         }
         else if (buttonDownHK)
         {
             //Debug.Log("button BUTTON_08_P1_HK");
-            HardKick((PlayerIndex)playerIndex);
+            HardKick();
         }
         else if (buttonDownPA)
         {
@@ -551,7 +557,7 @@ public class CharacterScript : MonoBehaviour {
     }
     #endregion
 
-    void LightPunch(PlayerIndex player)
+    void LightPunch()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 10.0f;
 
@@ -559,7 +565,7 @@ public class CharacterScript : MonoBehaviour {
         anim.SetInteger("weight", (int)WeightIndex.Light);
         anim.SetTrigger(CommonScript.TRIGGER_PUNCH);
     }
-    void MediumPunch(PlayerIndex player)
+    void MediumPunch()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 50.0f;
 
@@ -567,7 +573,7 @@ public class CharacterScript : MonoBehaviour {
         anim.SetInteger("weight", (int)WeightIndex.Medium);
         anim.SetTrigger(CommonScript.TRIGGER_PUNCH);
     }
-    void HardPunch(PlayerIndex player)
+    void HardPunch()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 100.0f;
 
@@ -575,7 +581,7 @@ public class CharacterScript : MonoBehaviour {
         anim.SetInteger("weight", (int)WeightIndex.Hard);
         anim.SetTrigger(CommonScript.TRIGGER_PUNCH);
     }
-    void LightKick(PlayerIndex player)
+    void LightKick()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 10.0f;
 
@@ -583,7 +589,7 @@ public class CharacterScript : MonoBehaviour {
         anim.SetInteger("weight", (int)WeightIndex.Light);
         anim.SetTrigger(CommonScript.TRIGGER_KICK);
     }
-    void MediumKick(PlayerIndex player)
+    void MediumKick()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 50.0f;
 
@@ -591,7 +597,7 @@ public class CharacterScript : MonoBehaviour {
         anim.SetInteger("weight", (int)WeightIndex.Medium);
         anim.SetTrigger(CommonScript.TRIGGER_KICK);
     }
-    void HardKick(PlayerIndex player)
+    void HardKick()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 100.0f;
 
@@ -599,12 +605,19 @@ public class CharacterScript : MonoBehaviour {
         anim.SetInteger("weight", (int)WeightIndex.Hard);
         anim.SetTrigger(CommonScript.TRIGGER_KICK);
     }
-
     /// <summary>
-    /// Animation の Event で呼び出す関数。何もしたくない。
+    /// お辞儀の開始。
     /// </summary>
-    public void DoNothing()
+    void Resign()
     {
-
+        //Debug.Log("トリガー　投了Ａ");
+        anim.SetTrigger(CommonScript.TRIGGER_GIVEUP);
+    }
+    /// <summary>
+    /// 参りましたの発声。
+    /// </summary>
+    public void ResignCall()
+    {
+        mainCameraScript.ResignCall();
     }
 }

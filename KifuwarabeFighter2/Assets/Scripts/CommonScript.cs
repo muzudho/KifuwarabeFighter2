@@ -131,9 +131,23 @@ public class CommonScript
     public const string TRIGGER_DAMAGE_H = "damageH";
     public const string TRIGGER_GIVEUP = "giveup";
 
+    public const string BOOL_ATTACKING = "attacking";
+    public const string BOOL_DASHING = "dashing";
+    public const string BOOL_ESCAPING = "escaping";
+    public const string BOOL_PUSHING_LP = "pushingLP";
+    public const string BOOL_PUSHING_MP = "pushingMP";
+    public const string BOOL_PUSHING_HP = "pushingHP";
+    public const string BOOL_PUSHING_LK = "pushingLK";
+    public const string BOOL_PUSHING_MK = "pushingMK";
+    public const string BOOL_PUSHING_HK = "pushingHK";
+    public const string BOOL_PUSHING_PA = "pushingPA";
     public const string BOOL_DOWNING = "downing";
     public const string BOOL_INVINCIBLE = "invincible";
     public const string BOOL_GIVEUPING = "giveuping";
+
+    public const string INTEGER_LEVER_NEUTRAL = "leverNeutral";
+
+    public const string SPRITE_RESIGN0 = "Canvas/Resign0";
 
     /// <summary>
     /// [player,button]
