@@ -16,7 +16,8 @@ public class MainCameraScript : MonoBehaviour {
     private Text[] player_to_name;
     public GameObject char0;
     public GameObject char1;
-    private GameObject[] player_to_char;//[プレイヤー番号]
+    private GameObject[] player_to_char;
+    private CharacterScript[] player_to_charScript;
     Animator anim0;
     Animator anim1;
     private Animator[] player_to_anime;//[プレイヤー番号]
@@ -26,6 +27,10 @@ public class MainCameraScript : MonoBehaviour {
     private SpriteRenderer[] player_to_charAttackImgSpriteRenderer;//[プレイヤー番号]
     //private BoxCollider2D[] player_to_charAttackBoxCollider2D;//[プレイヤー番号]
     private BoxCollider2D[] player_to_charAttackImgBoxCollider2D;//[プレイヤー番号]
+    /// <summary>
+    /// 相手と向かい合うために使うぜ☆（＾▽＾）
+    /// </summary>
+    public float[] player_to_x;
     #endregion
     public GameObject bar0;
     public GameObject bar1;
@@ -65,6 +70,7 @@ public class MainCameraScript : MonoBehaviour {
         #region 選択キャラクター
         player_to_name = new Text[] { name0, name1 };
         player_to_char = new GameObject[] { char0, char1 };
+        player_to_charScript = new CharacterScript[] { char0.GetComponent<CharacterScript>(), char1.GetComponent<CharacterScript>() };
         player_to_anime = new Animator[] { char0.GetComponent<Animator>(), char1.GetComponent<Animator>() };
         player_to_charAttackImg = new GameObject[] { GameObject.Find(CommonScript.Player_To_Attacker[(int)PlayerIndex.Player1]), GameObject.Find(CommonScript.Player_To_Attacker[(int)PlayerIndex.Player2]) };
         player_to_charAttackImgSpriteRenderer = new SpriteRenderer[] { player_to_charAttackImg[(int)PlayerIndex.Player1].GetComponent<SpriteRenderer>(), player_to_charAttackImg[(int)PlayerIndex.Player2].GetComponent<SpriteRenderer>() };
@@ -79,6 +85,7 @@ public class MainCameraScript : MonoBehaviour {
             // アニメーター
             player_to_anime[iPlayer].runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(CommonScript.Character_To_AnimationController[(int)character]));
         }
+        player_to_x = new float[] { 0.0f, 0.0f };
         #endregion
 
         //bar1のRectTransformコンポーネントをキャッシュ
@@ -117,7 +124,7 @@ public class MainCameraScript : MonoBehaviour {
         // コンピューターかどうか。
         for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
         {
-            player_to_char[iPlayer].GetComponent<CharacterScript>().isComputer = CommonScript.Player_To_Computer[iPlayer];
+            player_to_charScript[iPlayer].isComputer = CommonScript.Player_To_Computer[iPlayer];
         }
         #endregion
     }
@@ -137,9 +144,9 @@ public class MainCameraScript : MonoBehaviour {
         #region 投了判定
         for (int iLoser = (int)PlayerIndex.Player1; iLoser < (int)PlayerIndex.Num; iLoser++)
         {
-            if (player_to_char[iLoser].GetComponent<CharacterScript>().isResign)
+            if (player_to_charScript[iLoser].isResign)
             {
-                player_to_char[iLoser].GetComponent<CharacterScript>().isResign = false;
+                player_to_charScript[iLoser].isResign = false;
 
                 PlayerIndex winner = CommonScript.ReverseTeban((PlayerIndex)iLoser);
                 player_to_winCount[(int)winner]++;
@@ -263,11 +270,11 @@ public class MainCameraScript : MonoBehaviour {
                 int serialImage;
                 int slice = -1;
                 CharacterIndex character = CommonScript.Player_To_UseCharacter[iPlayer];
-                AttackCollider2DDatabaseScript.Select(
+                Hitbox2DDatabaseScript.Select(
                     out serialImage,
                     out slice,
                     character, // キャラクター番号
-                    AttackCollider2DDatabaseScript.ClipName_to_Motion(character, clipName), // モーション番号
+                    Hitbox2DDatabaseScript.ClipName_to_Motion(character, clipName), // モーション番号
                     currentMotionFrame
                     );
                 //Debug.Log("serialImage = " + serialImage + " slice = " + slice);
@@ -279,12 +286,12 @@ public class MainCameraScript : MonoBehaviour {
                     player_to_charAttackImgSpriteRenderer[iPlayer].transform.position = new Vector3(
                         player_to_char[iPlayer].transform.position.x +
                         Mathf.Sign(player_to_char[iPlayer].transform.localScale.x) *
-                        CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.imageAndSlice_To_OffsetX[serialImage, slice],
-                        player_to_char[iPlayer].transform.position.y + CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.imageAndSlice_To_OffsetY[serialImage, slice]
+                        CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_OffsetX[serialImage, slice],
+                        player_to_char[iPlayer].transform.position.y + CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_OffsetY[serialImage, slice]
                         );
                     player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale = new Vector3(
-                        CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.imageAndSlice_To_ScaleX[serialImage, slice],
-                        CommonScript.GRAPHIC_SCALE * AttackCollider2DScript.imageAndSlice_To_ScaleY[serialImage, slice]
+                        CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_ScaleX[serialImage, slice],
+                        CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_ScaleY[serialImage, slice]
                         );
 
                     //if ((int)PlayerIndex.Player1 == iPlayer)
@@ -335,7 +342,7 @@ public class MainCameraScript : MonoBehaviour {
             if (PlayerIndex.Num != loser)
             {
                 isRoundFinished = true;
-                player_to_anime[(int)loser].SetTrigger(CommonScript.TRIGGER_GIVEUP);
+                player_to_charScript[(int)loser].Pull_ResignByLose();
             }
         }
         #endregion

@@ -16,7 +16,6 @@ public class CharacterScript : MonoBehaviour {
     /// 攻撃を受けた回数。１０回溜まるとダウン☆
     /// </summary>
     private int damageHitCount;
-    //public bool invincible;// 攻撃を受けない状態なら真。
     #endregion
     #region 効果音
     private AudioSource audioSource;
@@ -34,10 +33,6 @@ public class CharacterScript : MonoBehaviour {
     private Rigidbody2D Rigidbody2D { get; set; }
     float speedY = 7.0f; // ジャンプ速度☆
     private Animator anim;
-    /// <summary>
-    /// ジャンプの屈伸モーション中なら真。
-    /// </summary>
-    public bool IsJump0Motion { get; set; }
     #endregion
     public MainCameraScript mainCameraScript;
     #region 勝敗判定
@@ -65,6 +60,10 @@ public class CharacterScript : MonoBehaviour {
 
     void Update()
     {
+        #region キャラクター同士が向き合うために
+        mainCameraScript.player_to_x[playerIndex] = transform.position.x;
+        #endregion
+
         // 入力受付
         float leverX;
         float leverY;
@@ -295,7 +294,7 @@ public class CharacterScript : MonoBehaviour {
         #region 歩行
         if (isGrounded)// 接地していれば
         {
-            if (!this.IsJump0Motion)//ジャンプ時の屈伸中ではないなら
+            if (!anim.GetBool(CommonScript.BOOL_JMOVE0))//ジャンプ時の屈伸中ではないなら
             {
                 if (leverX != 0)//左か右を入力したら
                 {
@@ -309,34 +308,46 @@ public class CharacterScript : MonoBehaviour {
                     temp.x = Mathf.Sign(leverX) * CommonScript.GRAPHIC_SCALE;
                     transform.localScale = temp;
 
-                    if (leverX < 0)
+                    // 自分と相手の位置（相手が右側にいるとき正となるようにする）
+                    float distanceX = mainCameraScript.player_to_x[(int)CommonScript.ReverseTeban((PlayerIndex)playerIndex)] - transform.position.x;
+
+                    if (Mathf.Sign(leverX) == Mathf.Sign(distanceX))
                     {
-                        if (!anim.GetBool(CommonScript.BOOL_DASHING))
+                        // 相手に向かって走るとき
+                        anim.SetBool(CommonScript.BOOL_BACKSTEPING, false);
+
+                        if ((int)ActioningIndex.Dash != anim.GetInteger(CommonScript.INTEGER_ACTIONING))
                         {
                             // ダッシュ・アニメーションの開始
                             anim.SetInteger(CommonScript.INTEGER_LEVER_NEUTRAL, 0);
-                            anim.SetBool(CommonScript.BOOL_ESCAPING, false);
-                            anim.SetBool(CommonScript.BOOL_DASHING, true);
                             //if ((int)PlayerIndex.Player1 == playerIndex)
                             //{
                             //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ダッシュ!");
                             //}
-                            anim.SetTrigger(CommonScript.TRIGGER_DASH);
+                            Pull_Dash();
+                        }
+                        else
+                        {
+                            // 既にダッシュ中なら何もしない
                         }
                     }
-                    else if (0 < leverX)
+                    else
                     {
-                        if (!anim.GetBool(CommonScript.BOOL_ESCAPING))
+                        // 相手と反対の方向に移動するとき（バックステップ）
+                        if (!anim.GetBool(CommonScript.BOOL_BACKSTEPING))
                         {
                             // エスケープ・アニメーションの開始
                             anim.SetInteger(CommonScript.INTEGER_LEVER_NEUTRAL, 0);
-                            anim.SetBool(CommonScript.BOOL_DASHING, false);
-                            anim.SetBool(CommonScript.BOOL_ESCAPING, true);
+                            //anim.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Other);
                             //if ((int)PlayerIndex.Player1 == playerIndex)
                             //{
                             //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " エスケープ!");
                             //}
-                            anim.SetTrigger(CommonScript.TRIGGER_ESCAPE);
+                            Pull_Backstep();
+                        }
+                        else
+                        {
+                            // 既にバックステップ中なら何もしない
                         }
                     }
                 }
@@ -355,10 +366,9 @@ public class CharacterScript : MonoBehaviour {
                         //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ストップ!");
                         //}
 
-                        anim.SetBool(CommonScript.BOOL_DASHING, false);
-                        anim.SetBool(CommonScript.BOOL_ESCAPING, false);
+                        anim.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
+                        anim.SetBool(CommonScript.BOOL_BACKSTEPING, false);
                     }
-
                 }
             }
         }
@@ -367,14 +377,14 @@ public class CharacterScript : MonoBehaviour {
         #region ジャンプ
         if (isGrounded)// 接地していれば
         {
-            if (!this.IsJump0Motion)//ジャンプ時の屈伸中ではないなら
+            if (!anim.GetBool(CommonScript.BOOL_JMOVE0))//ジャンプ時の屈伸中ではないなら
             {
                 //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
 
                 if (0 < leverY)// 上キーを入力したら
                 {
                     // ジャンプするぜ☆
-                    Jump0();
+                    Pull_Jump();
                 }
                 else if (leverY < 0)// 下キーを入力したら
                 {
@@ -420,32 +430,32 @@ public class CharacterScript : MonoBehaviour {
         if (buttonDownLP)
         {
             //Debug.Log("button BUTTON_03_P1_LP");
-            LightPunch();
+            Pull_LightPunch();
         }
         else if (buttonDownMP)
         {
             //Debug.Log("button BUTTON_04_P1_MP");
-            MediumPunch();
+            Pull_MediumPunch();
         }
         else if (buttonDownHP)
         {
             //Debug.Log("button BUTTON_05_P1_HP");
-            HardPunch();
+            Pull_HardPunch();
         }
         else if (buttonDownLK)
         {
             //Debug.Log("button BUTTON_06_P1_LK");
-            LightKick();
+            Pull_LightKick();
         }
         else if (buttonDownMK)
         {
             //Debug.Log("button BUTTON_07_P1_MK");
-            MediumKick();
+            Pull_MediumKick();
         }
         else if (buttonDownHK)
         {
             //Debug.Log("button BUTTON_08_P1_HK");
-            HardKick();
+            Pull_HardKick();
         }
         else if (buttonDownPA)
         {
@@ -478,24 +488,23 @@ public class CharacterScript : MonoBehaviour {
 
                 if (10<=damageHitCount)
                 {
-                    // ダメージ・アニメーションの開始
-                    anim.SetTrigger(CommonScript.TRIGGER_DOWN);
-                    damageHitCount = 0;
+                    // ダウン・アニメーションの開始
+                    Pull_Down();
                 }
                 else if (100.0f <= damage)
                 {
                     // ダメージ・アニメーションの開始
-                    anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_H);
+                    Pull_DamageH();
                 }
                 else if (50.0f <= damage)
                 {
                     // ダメージ・アニメーションの開始
-                    anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_M);
+                    Pull_DamageM();
                 }
                 else
                 {
                     // ダメージ・アニメーションの開始
-                    anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_L);
+                    Pull_DamageL();
                 }
             }
 
@@ -509,18 +518,9 @@ public class CharacterScript : MonoBehaviour {
     }
 
     #region ジャンプ
-    void Jump0()
+    public void JMove0Exit()
     {
-        this.IsJump0Motion = true;
-        //Debug.Log("this.IsJump0Motion = true");
-
-        //ジャンプアニメーションの開始
-        anim.SetTrigger(CommonScript.TRIGGER_JUMP);
-    }
-    public void Jump0Exit()
-    {
-        this.IsJump0Motion = false;
-        //Debug.Log("this.IsJump0Motion = false");
+        anim.SetBool(CommonScript.BOOL_JMOVE0, false);
     }
 
     public void Jump1()
@@ -557,7 +557,45 @@ public class CharacterScript : MonoBehaviour {
     }
     #endregion
 
-    void LightPunch()
+    #region トリガーを引く
+    void Pull_DamageH()
+    {
+        anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_H);
+    }
+    void Pull_DamageM()
+    {
+        anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_M);
+    }
+    void Pull_DamageL()
+    {
+        anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_L);
+    }
+    void Pull_Down()
+    {
+        damageHitCount = 0;
+        anim.SetTrigger(CommonScript.TRIGGER_DOWN);
+    }
+    void Pull_Dash()
+    {
+        anim.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Dash);
+        anim.SetTrigger(CommonScript.TRIGGER_DASH);
+    }
+    void Pull_Backstep()
+    {
+        anim.SetBool(CommonScript.BOOL_BACKSTEPING, true);
+        anim.SetTrigger(CommonScript.TRIGGER_BACKSTEP);
+    }
+    void Pull_Jump()
+    {
+        if ((int)ActioningIndex.Stand ==anim.GetInteger(CommonScript.INTEGER_ACTIONING))
+        {
+            // とりあえず、立ちアクション中だけジャンプできるようにしておくぜ☆
+
+            //ジャンプアニメーションの開始
+            anim.SetTrigger(CommonScript.TRIGGER_JUMP);
+        }
+    }
+    void Pull_LightPunch()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 10.0f;
 
@@ -565,7 +603,7 @@ public class CharacterScript : MonoBehaviour {
         anim.SetInteger("weight", (int)WeightIndex.Light);
         anim.SetTrigger(CommonScript.TRIGGER_PUNCH);
     }
-    void MediumPunch()
+    void Pull_MediumPunch()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 50.0f;
 
@@ -573,7 +611,7 @@ public class CharacterScript : MonoBehaviour {
         anim.SetInteger("weight", (int)WeightIndex.Medium);
         anim.SetTrigger(CommonScript.TRIGGER_PUNCH);
     }
-    void HardPunch()
+    void Pull_HardPunch()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 100.0f;
 
@@ -581,7 +619,7 @@ public class CharacterScript : MonoBehaviour {
         anim.SetInteger("weight", (int)WeightIndex.Hard);
         anim.SetTrigger(CommonScript.TRIGGER_PUNCH);
     }
-    void LightKick()
+    void Pull_LightKick()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 10.0f;
 
@@ -589,7 +627,7 @@ public class CharacterScript : MonoBehaviour {
         anim.SetInteger("weight", (int)WeightIndex.Light);
         anim.SetTrigger(CommonScript.TRIGGER_KICK);
     }
-    void MediumKick()
+    void Pull_MediumKick()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 50.0f;
 
@@ -597,7 +635,7 @@ public class CharacterScript : MonoBehaviour {
         anim.SetInteger("weight", (int)WeightIndex.Medium);
         anim.SetTrigger(CommonScript.TRIGGER_KICK);
     }
-    void HardKick()
+    void Pull_HardKick()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 100.0f;
 
@@ -608,11 +646,21 @@ public class CharacterScript : MonoBehaviour {
     /// <summary>
     /// お辞儀の開始。
     /// </summary>
-    void Resign()
+    void Pull_Resign()
     {
         //Debug.Log("トリガー　投了Ａ");
         anim.SetTrigger(CommonScript.TRIGGER_GIVEUP);
     }
+    /// <summary>
+    /// お辞儀の開始。
+    /// </summary>
+    public void Pull_ResignByLose()
+    {
+        //Debug.Log("トリガー　投了Ｘ");
+        anim.SetTrigger(CommonScript.TRIGGER_GIVEUP);
+    }
+    #endregion
+
     /// <summary>
     /// 参りましたの発声。
     /// </summary>

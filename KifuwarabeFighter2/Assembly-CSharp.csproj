@@ -46,13 +46,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\AnimatorBehaviours\AttackingBehaviour.cs" />
-     <Compile Include="Assets\Scripts\AnimatorBehaviours\Char0MiddleBehaviour.cs" />
-     <Compile Include="Assets\Scripts\AttackCollider2DDatabaseScript.cs" />
-     <Compile Include="Assets\Scripts\AttackCollider2DScript.cs" />
+     <Compile Include="Assets\Scripts\AnimatorBehaviours\AniConChar3Behaviour.cs" />
+     <Compile Include="Assets\Scripts\AnimatorBehaviours\SampleBehaviour.cs" />
      <Compile Include="Assets\Scripts\BulletScript.cs" />
      <Compile Include="Assets\Scripts\CharacterScript.cs" />
      <Compile Include="Assets\Scripts\CommonScript.cs" />
+     <Compile Include="Assets\Scripts\Hitbox2DDatabaseScript.cs" />
+     <Compile Include="Assets\Scripts\Hitbox2DScript.cs" />
      <Compile Include="Assets\Scripts\MainCameraScript.cs" />
      <Compile Include="Assets\Scripts\ResultCameraScript.cs" />
      <Compile Include="Assets\Scripts\SelectCameraScript.cs" />
