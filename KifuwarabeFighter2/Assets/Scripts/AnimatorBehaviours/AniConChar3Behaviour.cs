@@ -7,27 +7,10 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
     // OnStateEnter is called before OnStateEnter is called on any state inside this state machine
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        #region 立ち
         if (stateInfo.IsName(CommonScript.MOTION_S_WAIT)) // 立ち待機
         {
             animator.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
-        }
-        else if (stateInfo.IsName(CommonScript.MOTION_J_MOVE0)) // ジャンプに着手した。
-        {
-            animator.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Jump);
-            animator.SetBool(CommonScript.BOOL_JMOVE0, true);
-        }
-        else if (stateInfo.IsName(CommonScript.MOTION_J_MOVE1)) // 上昇
-        {
-            CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
-            script.Jump1();
-        }
-        else if (stateInfo.IsName(CommonScript.MOTION_O_GIVEUP))
-        {
-            // 投了モーションに入る時。
-            //Debug.Log("投了モーション始まり☆ layerIndex = " + layerIndex + " stateInfo.fullPathHash = " + stateInfo.fullPathHash + " animator.name = " + animator.name);
-
-            animator.SetBool(CommonScript.BOOL_GIVEUPING, true);
-            animator.SetBool(CommonScript.BOOL_INVINCIBLE, true);// 攻撃が当たらない状態になる。
         }
         else if (
             stateInfo.IsName(CommonScript.MOTION_S_ATK_LP) ||
@@ -66,14 +49,49 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
                 animator.SetBool(CommonScript.BOOL_PUSHING_HK, true);
             }
         }
+        #endregion
+        #region ジャンプ
+        else if (stateInfo.IsName(CommonScript.MOTION_J_MOVE0)) // ジャンプに着手した。
+        {
+            animator.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Jump);
+            animator.SetBool(CommonScript.BOOL_JMOVE0, true);
+        }
+        else if (stateInfo.IsName(CommonScript.MOTION_J_MOVE1)) // 上昇
+        {
+            CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
+            script.Jump1();
+        }
+        #endregion
+        #region 走り
+        #endregion
+        #region 屈み
+        else if (stateInfo.IsName(CommonScript.MOTION_C_WAIT)) // かがみ待機
+        {
+            animator.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Crouch);
+        }
+        #endregion
+        #region その他
+        else if (stateInfo.IsName(CommonScript.MOTION_O_BACKSTEP)) // バックステップ
+        {
+            animator.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
+        }
+        else if (stateInfo.IsName(CommonScript.MOTION_O_GIVEUP))
+        {
+            // 投了モーションに入る時。
+            //Debug.Log("投了モーション始まり☆ layerIndex = " + layerIndex + " stateInfo.fullPathHash = " + stateInfo.fullPathHash + " animator.name = " + animator.name);
+
+            animator.SetBool(CommonScript.BOOL_GIVEUPING, true);
+            animator.SetBool(CommonScript.BOOL_INVINCIBLE, true);// 攻撃が当たらない状態になる。
+        }
         else if (stateInfo.IsName(CommonScript.MOTION_O_DOWN_DAMAGE_H))
         {
             // ダウンに入る時。
             animator.SetBool(CommonScript.BOOL_DOWNING, true);
-            animator.SetBool(CommonScript.BOOL_INVINCIBLE,true);// 攻撃が当たらない状態になる。
+            animator.SetBool(CommonScript.BOOL_INVINCIBLE, true);// 攻撃が当たらない状態になる。
             //CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
             //script.isInvincible = true; // 攻撃が当たらない状態になる。
         }
+        #endregion
     }
 
     // OnStateUpdate is called before OnStateUpdate is called on any state inside this state machine

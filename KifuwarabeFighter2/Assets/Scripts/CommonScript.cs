@@ -71,12 +71,12 @@ public enum ButtonIndex
     Pause,
     Num
 }
-public enum WeightIndex
-{
-    Light,
-    Medium,
-    Hard
-}
+//public enum WeightIndex
+//{
+//    Light,
+//    Medium,
+//    Hard
+//}
 public enum MotionIndex
 {
     StandWait,
@@ -94,6 +94,8 @@ public enum MotionIndex
     JMove3,
     JMove4,
     OGiveup,
+    CWaite,
+    OBackstep,
     Num,
 }
 
@@ -167,6 +169,8 @@ public class CommonScript
     public const string MOTION_J_MOVE3 = "JMove3";
     public const string MOTION_J_MOVE4 = "JMove4";
     public const string MOTION_O_GIVEUP = "OGiveup";
+    public const string MOTION_C_WAIT = "CWait";
+    public const string MOTION_O_BACKSTEP = "OBackstep";
     public static string[] MotionNames = new string[]
     {
         MOTION_S_WAIT,
@@ -184,13 +188,21 @@ public class CommonScript
         MOTION_J_MOVE3,
         MOTION_J_MOVE4,
         MOTION_O_GIVEUP,
+        MOTION_C_WAIT,
+        MOTION_O_BACKSTEP,
     };
 
-    public const string TRIGGER_PUNCH = "punch";
-    public const string TRIGGER_KICK = "kick";
-    public const string TRIGGER_DASH = "dash";
-    public const string TRIGGER_BACKSTEP = "backstep";
+    public const string TRIGGER_MOVE_X = "moveX";
+    public const string TRIGGER_MOVE_X_FORWARD = "moveXForward";
+    public const string TRIGGER_MOVE_X_BACK = "moveXBack";
     public const string TRIGGER_JUMP = "jump";
+    public const string TRIGGER_CROUCH = "crouch";
+    public const string TRIGGER_ATK_LP = "atkLP";
+    public const string TRIGGER_ATK_MP = "atkMP";
+    public const string TRIGGER_ATK_HP = "atkHP";
+    public const string TRIGGER_ATK_LK = "atkLK";
+    public const string TRIGGER_ATK_MK = "atkMK";
+    public const string TRIGGER_ATK_HK = "atkHK";
     public const string TRIGGER_DOWN = "down";
     public const string TRIGGER_DAMAGE_L = "damageL";
     public const string TRIGGER_DAMAGE_M = "damageM";
@@ -211,7 +223,12 @@ public class CommonScript
     public const string BOOL_GIVEUPING = "giveuping";
     public const string BOOL_JMOVE0 = "jmove0";
 
-    public const string INTEGER_LEVER_NEUTRAL = "leverNeutral";
+    public const string INTEGER_LEVER_X_PRESSING = "leverXPressing";
+    public const string INTEGER_LEVER_X_NEUTRAL = "leverXNeutral";
+    public const string INTEGER_LEVER_X_IDOL = "leverXIdol";
+    public const string INTEGER_LEVER_Y_PRESSING = "leverYPressing";
+    public const string INTEGER_LEVER_Y_NEUTRAL = "leverYNeutral";
+    public const string INTEGER_LEVER_Y_IDOL = "leverYIdol";
     public const string INTEGER_ACTIONING = "actioning";
 
     public const string SPRITE_FIGHT0 = "Canvas/Fight0";

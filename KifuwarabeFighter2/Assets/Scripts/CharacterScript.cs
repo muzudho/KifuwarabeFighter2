@@ -233,7 +233,7 @@ public class CharacterScript : MonoBehaviour {
         #region 弾を撃つ
         // 弾を撃つぜ☆
         if (
-            (3 == anim.GetInteger(CommonScript.INTEGER_LEVER_NEUTRAL) % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
+            (3 == anim.GetInteger(CommonScript.INTEGER_LEVER_X_NEUTRAL) % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
             &&
             (
                 buttonDownLP ||
@@ -291,15 +291,58 @@ public class CharacterScript : MonoBehaviour {
         }
         #endregion
 
-        #region 歩行
+        #region レバーの押下時間の更新
+        // レバー・ニュートラル時間と、レバー・プレッシング時間は、8フレームほど重複する部分がある。
+        if (leverX != 0)//左か右を入力したら
+        {
+            anim.SetInteger(CommonScript.INTEGER_LEVER_X_PRESSING, anim.GetInteger(CommonScript.INTEGER_LEVER_X_PRESSING) + 1);
+            anim.SetInteger(CommonScript.INTEGER_LEVER_X_NEUTRAL, 0);
+            anim.SetInteger(CommonScript.INTEGER_LEVER_X_IDOL, 0);
+        }
+        else //左も右も入力していなかったら
+        {            
+            // 感覚的に、左から右に隙間なく切り替えたと思っていても、
+            // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
+            if (8 < anim.GetInteger(CommonScript.INTEGER_LEVER_X_IDOL))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
+            {
+                anim.SetInteger(CommonScript.INTEGER_LEVER_X_PRESSING, 0);
+                anim.SetInteger(CommonScript.INTEGER_LEVER_X_NEUTRAL, anim.GetInteger(CommonScript.INTEGER_LEVER_X_NEUTRAL) + 1);
+            }
+            else
+            {
+                anim.SetInteger(CommonScript.INTEGER_LEVER_X_IDOL, anim.GetInteger(CommonScript.INTEGER_LEVER_X_IDOL) + 1);
+            }
+        }
+
+        if (0 != leverY)// 上か下キーを入力していたら
+        {
+            anim.SetInteger(CommonScript.INTEGER_LEVER_Y_PRESSING, anim.GetInteger(CommonScript.INTEGER_LEVER_Y_PRESSING) + 1);
+            anim.SetInteger(CommonScript.INTEGER_LEVER_Y_NEUTRAL, 0);
+            anim.SetInteger(CommonScript.INTEGER_LEVER_Y_IDOL, 0);
+        }
+        else // 下も上も入力していなかったら
+        {
+            // 感覚的に、左から右に隙間なく切り替えたと思っていても、
+            // 入力装置的には、下から上（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
+            if (8 < anim.GetInteger(CommonScript.INTEGER_LEVER_Y_IDOL))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
+            {
+                anim.SetInteger(CommonScript.INTEGER_LEVER_Y_PRESSING, 0);
+                anim.SetInteger(CommonScript.INTEGER_LEVER_Y_NEUTRAL, anim.GetInteger(CommonScript.INTEGER_LEVER_Y_NEUTRAL) + 1);
+            }
+            else
+            {
+                anim.SetInteger(CommonScript.INTEGER_LEVER_Y_IDOL, anim.GetInteger(CommonScript.INTEGER_LEVER_Y_IDOL) + 1);
+            }
+        }
+        #endregion
+
+        #region レバー操作によるアクション
         if (isGrounded)// 接地していれば
         {
             if (!anim.GetBool(CommonScript.BOOL_JMOVE0))//ジャンプ時の屈伸中ではないなら
             {
                 if (leverX != 0)//左か右を入力したら
                 {
-                    //Debug.Log("lever x = " + x.ToString());
-
                     //入力方向へ移動
                     Rigidbody2D.velocity = new Vector2(leverX * speedX, Rigidbody2D.velocity.y);
 
@@ -319,12 +362,11 @@ public class CharacterScript : MonoBehaviour {
                         if ((int)ActioningIndex.Dash != anim.GetInteger(CommonScript.INTEGER_ACTIONING))
                         {
                             // ダッシュ・アニメーションの開始
-                            anim.SetInteger(CommonScript.INTEGER_LEVER_NEUTRAL, 0);
                             //if ((int)PlayerIndex.Player1 == playerIndex)
                             //{
                             //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ダッシュ!");
                             //}
-                            Pull_Dash();
+                            Pull_Forward();
                         }
                         else
                         {
@@ -337,13 +379,12 @@ public class CharacterScript : MonoBehaviour {
                         if (!anim.GetBool(CommonScript.BOOL_BACKSTEPING))
                         {
                             // エスケープ・アニメーションの開始
-                            anim.SetInteger(CommonScript.INTEGER_LEVER_NEUTRAL, 0);
                             //anim.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Other);
                             //if ((int)PlayerIndex.Player1 == playerIndex)
                             //{
                             //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " エスケープ!");
                             //}
-                            Pull_Backstep();
+                            Pull_Back();
                         }
                         else
                         {
@@ -355,9 +396,7 @@ public class CharacterScript : MonoBehaviour {
                 {
                     // 感覚的に、左から右に隙間なく切り替えたと思っていても、
                     // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
-                    anim.SetInteger(CommonScript.INTEGER_LEVER_NEUTRAL, anim.GetInteger(CommonScript.INTEGER_LEVER_NEUTRAL) +1);
-
-                    if ( 8 < anim.GetInteger(CommonScript.INTEGER_LEVER_NEUTRAL) )// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
+                    if ( 8 < anim.GetInteger(CommonScript.INTEGER_LEVER_X_NEUTRAL) )// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
                     {
                         //横移動の速度を0にしてピタッと止まるようにする
                         Rigidbody2D.velocity = new Vector2(0, Rigidbody2D.velocity.y);
@@ -370,24 +409,21 @@ public class CharacterScript : MonoBehaviour {
                         anim.SetBool(CommonScript.BOOL_BACKSTEPING, false);
                     }
                 }
-            }
-        }
-        #endregion
 
-        #region ジャンプ
-        if (isGrounded)// 接地していれば
-        {
-            if (!anim.GetBool(CommonScript.BOOL_JMOVE0))//ジャンプ時の屈伸中ではないなら
-            {
                 //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
 
-                if (0 < leverY)// 上キーを入力したら
+                if (0 != leverY)// 上か下キーを入力していたら
                 {
-                    // ジャンプするぜ☆
-                    Pull_Jump();
-                }
-                else if (leverY < 0)// 下キーを入力したら
-                {
+                    if (0 < leverY)// 上キーを入力したら
+                    {
+                        // ジャンプするぜ☆
+                        Pull_Jump();
+                    }
+                    else if (leverY < 0)// 下キーを入力したら
+                    {
+                        // 屈むぜ☆
+                        Pull_Crouch();
+                    }
                 }
                 else // 下も上も入力していなかったら
                 {
@@ -575,15 +611,17 @@ public class CharacterScript : MonoBehaviour {
         damageHitCount = 0;
         anim.SetTrigger(CommonScript.TRIGGER_DOWN);
     }
-    void Pull_Dash()
+    void Pull_Forward()
     {
-        anim.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Dash);
-        anim.SetTrigger(CommonScript.TRIGGER_DASH);
+        //anim.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Dash);
+        anim.SetTrigger(CommonScript.TRIGGER_MOVE_X);
+        anim.SetTrigger(CommonScript.TRIGGER_MOVE_X_FORWARD);
     }
-    void Pull_Backstep()
+    void Pull_Back()
     {
         anim.SetBool(CommonScript.BOOL_BACKSTEPING, true);
-        anim.SetTrigger(CommonScript.TRIGGER_BACKSTEP);
+        anim.SetTrigger(CommonScript.TRIGGER_MOVE_X);
+        anim.SetTrigger(CommonScript.TRIGGER_MOVE_X_BACK);
     }
     void Pull_Jump()
     {
@@ -595,53 +633,52 @@ public class CharacterScript : MonoBehaviour {
             anim.SetTrigger(CommonScript.TRIGGER_JUMP);
         }
     }
+    void Pull_Crouch()
+    {
+        // 屈みアニメーションの開始
+        anim.SetTrigger(CommonScript.TRIGGER_CROUCH);
+    }
     void Pull_LightPunch()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 10.0f;
 
         // アニメーションの開始
-        anim.SetInteger("weight", (int)WeightIndex.Light);
-        anim.SetTrigger(CommonScript.TRIGGER_PUNCH);
+        anim.SetTrigger(CommonScript.TRIGGER_ATK_LP);
     }
     void Pull_MediumPunch()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 50.0f;
 
         // アニメーションの開始
-        anim.SetInteger("weight", (int)WeightIndex.Medium);
-        anim.SetTrigger(CommonScript.TRIGGER_PUNCH);
+        anim.SetTrigger(CommonScript.TRIGGER_ATK_MP);
     }
     void Pull_HardPunch()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 100.0f;
 
         // アニメーションの開始
-        anim.SetInteger("weight", (int)WeightIndex.Hard);
-        anim.SetTrigger(CommonScript.TRIGGER_PUNCH);
+        anim.SetTrigger(CommonScript.TRIGGER_ATK_HP);
     }
     void Pull_LightKick()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 10.0f;
 
         // アニメーションの開始
-        anim.SetInteger("weight", (int)WeightIndex.Light);
-        anim.SetTrigger(CommonScript.TRIGGER_KICK);
+        anim.SetTrigger(CommonScript.TRIGGER_ATK_LK);
     }
     void Pull_MediumKick()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 50.0f;
 
         // アニメーションの開始
-        anim.SetInteger("weight", (int)WeightIndex.Medium);
-        anim.SetTrigger(CommonScript.TRIGGER_KICK);
+        anim.SetTrigger(CommonScript.TRIGGER_ATK_MK);
     }
     void Pull_HardKick()
     {
         mainCameraScript.player_to_attackPower[playerIndex] = 100.0f;
 
         // アニメーションの開始
-        anim.SetInteger("weight", (int)WeightIndex.Hard);
-        anim.SetTrigger(CommonScript.TRIGGER_KICK);
+        anim.SetTrigger(CommonScript.TRIGGER_ATK_HK);
     }
     /// <summary>
     /// お辞儀の開始。
