@@ -16,6 +16,7 @@ public class CharacterScript : MonoBehaviour {
     /// 攻撃を受けた回数。１０回溜まるとダウン☆
     /// </summary>
     private int damageHitCount;
+    private SpriteRenderer attackImgSpriteRenderer;
     #endregion
     #region 効果音
     private AudioSource audioSource;
@@ -46,6 +47,8 @@ public class CharacterScript : MonoBehaviour {
         mainCameraScript = mainCamera.GetComponent<MainCameraScript>();
         opponent = CommonScript.ReverseTeban((PlayerIndex)playerIndex);
         opponentAttackerTag = CommonScript.Player_To_AttackerTag[(int)opponent];
+        GameObject charAttackImg = GameObject.Find(CommonScript.Player_To_Attacker[playerIndex]);
+        attackImgSpriteRenderer = charAttackImg.GetComponent<SpriteRenderer>();
         #endregion
         #region 効果音
         audioSource = GetComponent<AudioSource>();
@@ -64,7 +67,12 @@ public class CharacterScript : MonoBehaviour {
         mainCameraScript.player_to_x[playerIndex] = transform.position.x;
         #endregion
 
-        // 入力受付
+        // 現在のアニメーション・クリップに紐づいたデータ
+        //AclipTypeRecord aclipTypeRecord = GetCurrentAclipTypeRecord();
+        // 現在のアニメーター・ステートに紐づいたデータ
+        AstateRecord astateRecord = GetCurrentAstateRecord();
+
+        #region 入力受付
         float leverX;
         float leverY;
         bool buttonDownLP = Input.GetButtonDown(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.LightPunch]);
@@ -212,6 +220,7 @@ public class CharacterScript : MonoBehaviour {
                 anim.SetBool(CommonScript.BOOL_PUSHING_HK, false);
             }
         }
+        #endregion
 
         #region ジャンプ
         {
@@ -343,8 +352,11 @@ public class CharacterScript : MonoBehaviour {
             {
                 if (leverX != 0)//左か右を入力したら
                 {
-                    //入力方向へ移動
-                    Rigidbody2D.velocity = new Vector2(leverX * speedX, Rigidbody2D.velocity.y);
+                    if (!astateRecord.attribute.HasFlag(AstateAttribute.BusyX))
+                    {
+                        //入力方向へ移動
+                        Rigidbody2D.velocity = new Vector2(leverX * speedX, Rigidbody2D.velocity.y);
+                    }
 
                     bool leftSideOfOpponent = IsLeftSideOfOpponent();
                     FacingOpponent(leftSideOfOpponent);//相手の方を向く。
@@ -360,8 +372,8 @@ public class CharacterScript : MonoBehaviour {
                             Debug.Log("相手に向かって走っているぜ☆");
                         }
 
-                            // 相手に向かって走るとき
-                            anim.SetBool(CommonScript.BOOL_BACKSTEPING, false);
+                        // 相手に向かって走るとき
+                        anim.SetBool(CommonScript.BOOL_BACKSTEPING, false);
 
                         if ((int)ActioningIndex.Dash != anim.GetInteger(CommonScript.INTEGER_ACTIONING))
                         {
@@ -403,12 +415,13 @@ public class CharacterScript : MonoBehaviour {
                 }
                 else//左も右も入力していなかったら
                 {
+                    //横移動の速度を0にしてピタッと止まるようにする
+                    Rigidbody2D.velocity = new Vector2(0, Rigidbody2D.velocity.y);
+
                     // 感覚的に、左から右に隙間なく切り替えたと思っていても、
                     // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
                     if ( 8 < anim.GetInteger(CommonScript.INTEGER_LEVER_X_NEUTRAL) )// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
                     {
-                        //横移動の速度を0にしてピタッと止まるようにする
-                        Rigidbody2D.velocity = new Vector2(0, Rigidbody2D.velocity.y);
                         //if ((int)PlayerIndex.Player1 == playerIndex)
                         //{
                         //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ストップ!");
@@ -507,6 +520,154 @@ public class CharacterScript : MonoBehaviour {
             //Debug.Log("button BUTTON_09_P1_PA");
         }
         #endregion
+
+        // 当たり判定くん
+        UpdateHitbox2D();
+    }
+
+    /// <summary>
+    /// 現在のアニメーション・クリップに対応したデータを取得。
+    /// </summary>
+    /// <returns></returns>
+    public AclipTypeRecord GetCurrentAclipTypeRecord()
+    {
+        AnimatorStateInfo animeStateInfo = anim.GetCurrentAnimatorStateInfo(0);
+        if (!MotionDatabaseScript.astateHash_to_aclipType.ContainsKey(animeStateInfo.fullPathHash))
+        {
+            throw new UnityException("フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆");
+        }
+
+        MotionDatabaseScript.AclipTypeIndex aclipType = MotionDatabaseScript.astateHash_to_aclipType[animeStateInfo.fullPathHash];
+
+        if (MotionDatabaseScript.aclipType_to_record.ContainsKey(aclipType))
+        {
+            return MotionDatabaseScript.aclipType_to_record[aclipType];
+        }
+
+        throw new UnityException("aclipType = [" + aclipType + "]に対応するアニメーション・クリップのレコードが無いぜ☆");
+    }
+    /// <summary>
+    /// 現在のアニメーター・ステートに対応したデータを取得。
+    /// </summary>
+    /// <returns></returns>
+    public AstateRecord GetCurrentAstateRecord()
+    {
+        AnimatorStateInfo animeStateInfo = anim.GetCurrentAnimatorStateInfo(0);
+        if (!MotionDatabaseScript.astateHash_to_aclipType.ContainsKey(animeStateInfo.fullPathHash))
+        {
+            throw new UnityException("フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆");
+        }
+
+        MotionDatabaseScript.AstateIndex astate = MotionDatabaseScript.astateHash_to_astate[animeStateInfo.fullPathHash];
+
+        if (MotionDatabaseScript.astate_to_record.ContainsKey(astate))
+        {
+            return MotionDatabaseScript.astate_to_record[astate];
+        }
+
+        throw new UnityException("aclipType = [" + astate + "]に対応するアニメーター・ステートのレコードが無いぜ☆");
+    }
+
+    /// <summary>
+    /// 当たり判定くん☆
+    /// </summary>
+    /// <param name="player"></param>
+    public void UpdateHitbox2D()
+    {
+        if (MainCameraScript.READY_TIME_LENGTH < mainCameraScript.readyingTime)
+        {
+            // クリップ名取得
+            if (anim.GetCurrentAnimatorClipInfo(0).Length < 1)
+            {
+                Debug.LogError("クリップインフォの配列の範囲外エラー☆ playerIndex = " + playerIndex);
+                return;
+            }
+            AnimationClip clip = anim.GetCurrentAnimatorClipInfo(0)[0].clip;
+
+            // FIXME: bug? クリップ名は、Animator Controller Override を使っている場合、継承しているアニメーション・クリップは名前を取れない？
+            // string clipName = clip.name;
+
+            // ステートのスピードを取得したい。
+            AnimatorStateInfo animeStateInfo = anim.GetCurrentAnimatorStateInfo(0);
+            float stateSpeed = animeStateInfo.speed;
+
+            // ステートのハッシュから、アニメーション・クリップの種類を取得。
+            if (!MotionDatabaseScript.astateHash_to_aclipType.ContainsKey(animeStateInfo.fullPathHash))
+            {
+                throw new UnityException("フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆");
+            }
+
+            AclipTypeRecord aclipTypeRecord = GetCurrentAclipTypeRecord();
+
+            // 正規化時間取得（0～1 の数倍。時間経過で 1以上になる）
+            float normalizedTime = animeStateInfo.normalizedTime;
+            // ループするモーションでなければ、少しの誤差を除いて、1.0 より大きくはならないはず。
+
+            // Samples、Frame rate は、キー・フレームの数と同じにしている前提。
+            // クリップ・レングスは１になる。
+            // 全てのモーションは１秒として作っておき、Speed を利用して　表示フレーム数 を調整するものとする。
+
+            // Speed の使い方。
+            // 60 / モーション画像枚数 / 表示したいフレーム数
+            //
+            // 例：　弱パンチは画像２枚として、5フレーム表示したい場合。
+            // 60 / 2 / 5 = 6
+            //
+            // 例：　中パンチは画像３枚として、7フレーム表示したい場合。
+            // 60 / 3 / 7 = 約 2.8571
+            //
+            // 例：　強パンチは画像５枚として、9フレーム表示したい場合。
+            // 60 / 5 / 9 = 約 1.3333
+            //
+            // 例：　投了は画像４枚として、１２０フレーム表示したい場合。
+            // 60 / 4 / 120 = 約 0.125
+
+            int currentMotionFrame = Mathf.FloorToInt((normalizedTime % 1.0f) * clip.frameRate);
+
+            #region 画像分類　スライス番号　取得
+            int serialImage;
+            int slice;
+            CharacterIndex character = CommonScript.Player_To_UseCharacter[playerIndex];
+            MotionDatabaseScript.Select(
+                out serialImage,
+                out slice,
+                character, // キャラクター番号
+                aclipTypeRecord,
+                currentMotionFrame
+                );
+            //if((int)PlayerIndex.Player1==iPlayer && MotionDatabaseScript.AclipTypeIndex.Num != aclipType)
+            //{
+            //    Debug.Log( " iPlayer = " + iPlayer + " character = " + character + " aclipType = "+ aclipType + " currentMotionFrame = " + currentMotionFrame + " / serialImage = " + serialImage + " slice = " + slice);
+            //    // + " motion = " + motion
+            //    // "anime.GetCurrentAnimatorClipInfo(0).Length = " + anime.GetCurrentAnimatorClipInfo(0).Length+
+            //}
+            #endregion
+
+            if (-1 != slice)
+            {
+                // 新・当たり判定くん
+                attackImgSpriteRenderer.transform.position = new Vector3(
+                    transform.position.x +
+                    Mathf.Sign(transform.localScale.x) *
+                    CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_OffsetX[serialImage, slice],
+                    transform.position.y + CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_OffsetY[serialImage, slice]
+                    );
+                attackImgSpriteRenderer.transform.localScale = new Vector3(
+                    CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_ScaleX[serialImage, slice],
+                    CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_ScaleY[serialImage, slice]
+                    );
+
+                //if ((int)PlayerIndex.Player1 == iPlayer)
+                //{
+                //Debug.Log("stateSpeed = " + stateSpeed + " clip.frameRate = " + clip.frameRate + " normalizedTime = " + normalizedTime + " currentMotionFrame = " + currentMotionFrame + " 当たり判定くん.position.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.x + " 当たり判定くん.position.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.y + " scale.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.x + " scale.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.y);
+                //    //" clip.length = " + clip.length +
+                //    //" motionFrames = " + motionFrames +
+                //    //" lastKeyframeTime = "+ lastKeyframeTime +
+                //    //" clip.length = "+ clip.length +
+                //    //" motionFrames = "+ motionFrames +
+                //}
+            }
+        }
     }
 
     void OnTriggerEnter2D(Collider2D col)

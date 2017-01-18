@@ -15,9 +15,9 @@
 ￥　  
 ￥　 https://enty.jp/posts/31990  
 ￥　  
-￥　 Special Thanks
+￥　 Special Thanks  
 ￥　  
-￥　 2017-01-15 Yasuhiro Ike 様 \100
+￥　 2017-01-15 Yasuhiro Ike 様 ￥100  
 ￥　  
 ￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥  
 

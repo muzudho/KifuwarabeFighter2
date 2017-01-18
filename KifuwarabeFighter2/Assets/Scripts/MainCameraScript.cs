@@ -6,7 +6,7 @@ using UnityEngine.UI;
 // メインシーンのメインカメラのスクリプトだぜ☆
 public class MainCameraScript : MonoBehaviour {
 
-    int readyingTime;
+    public int readyingTime;
     GameObject fight0;
     GameObject fight1;
     GameObject resign0;
@@ -21,12 +21,7 @@ public class MainCameraScript : MonoBehaviour {
     Animator anim0;
     Animator anim1;
     private Animator[] player_to_anime;//[プレイヤー番号]
-    //private GameObject[] player_to_charAttack;//[プレイヤー番号]
-    private GameObject[] player_to_charAttackImg;//[プレイヤー番号]
-    //private SpriteRenderer[] player_to_charAttackSpriteRenderer;//[プレイヤー番号]
-    private SpriteRenderer[] player_to_charAttackImgSpriteRenderer;//[プレイヤー番号]
-    //private BoxCollider2D[] player_to_charAttackBoxCollider2D;//[プレイヤー番号]
-    private BoxCollider2D[] player_to_charAttackImgBoxCollider2D;//[プレイヤー番号]
+    //private BoxCollider2D[] player_to_charAttackImgBoxCollider2D;//[プレイヤー番号]
     /// <summary>
     /// 相手と向かい合うために使うぜ☆（＾▽＾）
     /// </summary>
@@ -55,7 +50,7 @@ public class MainCameraScript : MonoBehaviour {
     #endregion
     #region ラウンド
     int[] player_to_winCount;
-    private const int READY_TIME_LENGTH = 60;
+    public const int READY_TIME_LENGTH = 60;
     bool isRoundFinished;
     public bool IsResignCalled { get; set; }
     #endregion
@@ -72,9 +67,7 @@ public class MainCameraScript : MonoBehaviour {
         player_to_char = new GameObject[] { char0, char1 };
         player_to_charScript = new CharacterScript[] { char0.GetComponent<CharacterScript>(), char1.GetComponent<CharacterScript>() };
         player_to_anime = new Animator[] { char0.GetComponent<Animator>(), char1.GetComponent<Animator>() };
-        player_to_charAttackImg = new GameObject[] { GameObject.Find(CommonScript.Player_To_Attacker[(int)PlayerIndex.Player1]), GameObject.Find(CommonScript.Player_To_Attacker[(int)PlayerIndex.Player2]) };
-        player_to_charAttackImgSpriteRenderer = new SpriteRenderer[] { player_to_charAttackImg[(int)PlayerIndex.Player1].GetComponent<SpriteRenderer>(), player_to_charAttackImg[(int)PlayerIndex.Player2].GetComponent<SpriteRenderer>() };
-        player_to_charAttackImgBoxCollider2D = new BoxCollider2D[] { player_to_charAttackImg[(int)PlayerIndex.Player1].GetComponent<BoxCollider2D>(), player_to_charAttackImg[(int)PlayerIndex.Player2].GetComponent<BoxCollider2D>() };
+        //player_to_charAttackImgBoxCollider2D = new BoxCollider2D[] { player_to_charAttackImg[(int)PlayerIndex.Player1].GetComponent<BoxCollider2D>(), player_to_charAttackImg[(int)PlayerIndex.Player2].GetComponent<BoxCollider2D>() };
         player_to_winCount = new int[] { 0, 0 };
         for (int iPlayer = (int)PlayerIndex.Player1; iPlayer<(int)PlayerIndex.Num; iPlayer++)
         {
@@ -222,114 +215,14 @@ public class MainCameraScript : MonoBehaviour {
         }
         #endregion
 
-        #region 当たり判定くん
-        if (READY_TIME_LENGTH < readyingTime)
-        {
-            for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
-            {
-                // アニメーター取得
-                Animator anime = player_to_anime[(int)iPlayer];
-
-                // クリップ名取得
-                if (anime.GetCurrentAnimatorClipInfo(0).Length<1)
-                {
-                    Debug.LogError("クリップインフォの配列の範囲外エラー☆ iPlayer = "+ iPlayer);
-                    continue;
-                }
-                AnimationClip clip = anime.GetCurrentAnimatorClipInfo(0)[0].clip;
-
-                // FIXME: bug? クリップ名は、Animator Controller Override を使っている場合、継承しているアニメーション・クリップは名前を取れない？
-                // string clipName = clip.name;
-
-                // ステートのスピードを取得したい。
-                AnimatorStateInfo animeStateInfo = anime.GetCurrentAnimatorStateInfo(0);
-                float stateSpeed = animeStateInfo.speed;
-
-                // ステートのハッシュから、アニメーション・クリップの種類を取得。
-                if (!MotionDatabaseScript.astateHash_to_aclipType.ContainsKey(animeStateInfo.fullPathHash))
-                {
-                    string msg = "フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆";
-                    //Debug.LogError(msg);
-                    //continue;
-                    throw new UnityException( msg);
-                }
-
-                MotionDatabaseScript.AclipTypeIndex aclipType = MotionDatabaseScript.astateHash_to_aclipType[animeStateInfo.fullPathHash];
-
-                // 正規化時間取得（0～1 の数倍。時間経過で 1以上になる）
-                float normalizedTime = animeStateInfo.normalizedTime;
-                // ループするモーションでなければ、少しの誤差を除いて、1.0 より大きくはならないはず。
-
-                // Samples、Frame rate は、キー・フレームの数と同じにしている前提。
-                // クリップ・レングスは１になる。
-                // 全てのモーションは１秒として作っておき、Speed を利用して　表示フレーム数 を調整するものとする。
-
-                // Speed の使い方。
-                // 60 / モーション画像枚数 / 表示したいフレーム数
-                //
-                // 例：　弱パンチは画像２枚として、5フレーム表示したい場合。
-                // 60 / 2 / 5 = 6
-                //
-                // 例：　中パンチは画像３枚として、7フレーム表示したい場合。
-                // 60 / 3 / 7 = 約 2.8571
-                //
-                // 例：　強パンチは画像５枚として、9フレーム表示したい場合。
-                // 60 / 5 / 9 = 約 1.3333
-                //
-                // 例：　投了は画像４枚として、１２０フレーム表示したい場合。
-                // 60 / 4 / 120 = 約 0.125
-
-                int currentMotionFrame = Mathf.FloorToInt((normalizedTime % 1.0f) * clip.frameRate);
-
-                #region 画像分類　スライス番号　取得
-                int serialImage;
-                int slice;
-                CharacterIndex character = CommonScript.Player_To_UseCharacter[iPlayer];
-                MotionDatabaseScript.Select(
-                    out serialImage,
-                    out slice,
-                    character, // キャラクター番号
-                    aclipType, // モーション番号
-                    currentMotionFrame
-                    );
-                //if((int)PlayerIndex.Player1==iPlayer && MotionDatabaseScript.AclipTypeIndex.Num != aclipType)
-                //{
-                //    Debug.Log( " iPlayer = " + iPlayer + " character = " + character + " aclipType = "+ aclipType + " currentMotionFrame = " + currentMotionFrame + " / serialImage = " + serialImage + " slice = " + slice);
-                //    // + " motion = " + motion
-                //    // "anime.GetCurrentAnimatorClipInfo(0).Length = " + anime.GetCurrentAnimatorClipInfo(0).Length+
-                //}
-                #endregion
-
-                if (-1 != slice)
-                {
-                    // 新・当たり判定くん
-                    player_to_charAttackImgSpriteRenderer[iPlayer].transform.position = new Vector3(
-                        player_to_char[iPlayer].transform.position.x +
-                        Mathf.Sign(player_to_char[iPlayer].transform.localScale.x) *
-                        CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_OffsetX[serialImage, slice],
-                        player_to_char[iPlayer].transform.position.y + CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_OffsetY[serialImage, slice]
-                        );
-                    player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale = new Vector3(
-                        CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_ScaleX[serialImage, slice],
-                        CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_ScaleY[serialImage, slice]
-                        );
-
-                    //if ((int)PlayerIndex.Player1 == iPlayer)
-                    //{
-                    //Debug.Log("stateSpeed = " + stateSpeed + " clip.frameRate = " + clip.frameRate + " normalizedTime = " + normalizedTime + " currentMotionFrame = " + currentMotionFrame + " 当たり判定くん.position.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.x + " 当たり判定くん.position.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.y + " scale.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.x + " scale.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.y);
-                    //    //" clip.length = " + clip.length +
-                    //    //" motionFrames = " + motionFrames +
-                    //    //" lastKeyframeTime = "+ lastKeyframeTime +
-                    //    //" clip.length = "+ clip.length +
-                    //    //" motionFrames = "+ motionFrames +
-                    //}
-                }
-            }
-        }
-        #endregion
+        //// 当たり判定くん
+        //for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
+        //{
+        //    UpdateHitbox2D((PlayerIndex)iPlayer);
+        //}
 
         #region 時間制限
-        if(!isRoundFinished)
+        if (!isRoundFinished)
         {
             // カウントダウン
             player_to_timeCount[(int)CommonScript.Teban] -= Time.deltaTime; // 前のフレームからの経過時間を引くぜ☆

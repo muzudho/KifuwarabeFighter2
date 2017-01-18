@@ -1,7 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// アニメーション・クリップの種類
+/// （キャラクター＠モーション名　となっているとして、モーション名の部分）
+/// </summary>
 public struct AclipTypeRecord
 {
     public int[] slices;
@@ -13,18 +18,32 @@ public struct AclipTypeRecord
         this.actioning = actioning;
     }
 }
+/// <summary>
+/// アニメーターのステート
+/// </summary>
 public struct AstateRecord
 {
     public MotionDatabaseScript.AclipTypeIndex aclipType;
     public string breadCrumb;
     public string name;
+    public AstateAttribute attribute;
 
-    public AstateRecord(MotionDatabaseScript.AclipTypeIndex aclipType, string breadCrumb, string name)
+    public AstateRecord(MotionDatabaseScript.AclipTypeIndex aclipType, string breadCrumb, string name, AstateAttribute attribute)
     {
         this.aclipType = aclipType;
         this.breadCrumb = breadCrumb;
         this.name = name;
+        this.attribute = attribute;
     }
+}
+[Flags]
+public enum AstateAttribute
+{
+    None = 0,
+    /// <summary>
+    /// キャラクターが、レバーのＸ軸の入力を受け取れる状態でないとき。
+    /// </summary>
+    BusyX = 0x01,
 }
 
 public abstract class MotionDatabaseScript {
@@ -105,86 +124,86 @@ public abstract class MotionDatabaseScript {
         #region アニメーターのステート
         astate_to_record = new Dictionary<AstateIndex, AstateRecord>()
         {
-            {AstateIndex.SWait, new AstateRecord( AclipTypeIndex.SWait, "Base Layer.", "SWait")},
-            {AstateIndex.SMove,  new AstateRecord( AclipTypeIndex.SMove, "Base Layer.", "SMove")},
-            {AstateIndex.SBlockL,  new AstateRecord( AclipTypeIndex.SBlockL, "Base Layer.", "SBlockL")},
-            {AstateIndex.SBlockM,  new AstateRecord( AclipTypeIndex.SBlockM, "Base Layer.", "SBlockM")},
-            {AstateIndex.SBlockH,  new AstateRecord( AclipTypeIndex.SBlockH, "Base Layer.", "SBlockH")},
-            {AstateIndex.SAtkLP,  new AstateRecord( AclipTypeIndex.SAtkLP, "Base Layer.", "SAtkLP")},
-            {AstateIndex.SAtkMP,  new AstateRecord( AclipTypeIndex.SAtkMP, "Base Layer.", "SAtkMP")},
-            {AstateIndex.SAtkHP,  new AstateRecord( AclipTypeIndex.SAtkHP, "Base Layer.", "SAtkHP")},
-            {AstateIndex.SAtkLK,  new AstateRecord( AclipTypeIndex.SAtkLK, "Base Layer.", "SAtkLK")},
-            {AstateIndex.SAtkMK,  new AstateRecord( AclipTypeIndex.SAtkMK, "Base Layer.", "SAtkMK")},
-            {AstateIndex.SAtkHK,  new AstateRecord( AclipTypeIndex.SAtkHK, "Base Layer.", "SAtkHK")},
+            {AstateIndex.SWait, new AstateRecord( AclipTypeIndex.SWait, "Base Layer.", "SWait", AstateAttribute.None)},
+            {AstateIndex.SMove,  new AstateRecord( AclipTypeIndex.SMove, "Base Layer.", "SMove", AstateAttribute.None)},
+            {AstateIndex.SBlockL,  new AstateRecord( AclipTypeIndex.SBlockL, "Base Layer.", "SBlockL", AstateAttribute.None)},
+            {AstateIndex.SBlockM,  new AstateRecord( AclipTypeIndex.SBlockM, "Base Layer.", "SBlockM", AstateAttribute.None)},
+            {AstateIndex.SBlockH,  new AstateRecord( AclipTypeIndex.SBlockH, "Base Layer.", "SBlockH", AstateAttribute.None)},
+            {AstateIndex.SAtkLP,  new AstateRecord( AclipTypeIndex.SAtkLP, "Base Layer.", "SAtkLP", AstateAttribute.BusyX)},
+            {AstateIndex.SAtkMP,  new AstateRecord( AclipTypeIndex.SAtkMP, "Base Layer.", "SAtkMP", AstateAttribute.BusyX)},
+            {AstateIndex.SAtkHP,  new AstateRecord( AclipTypeIndex.SAtkHP, "Base Layer.", "SAtkHP", AstateAttribute.BusyX)},
+            {AstateIndex.SAtkLK,  new AstateRecord( AclipTypeIndex.SAtkLK, "Base Layer.", "SAtkLK", AstateAttribute.BusyX)},
+            {AstateIndex.SAtkMK,  new AstateRecord( AclipTypeIndex.SAtkMK, "Base Layer.", "SAtkMK", AstateAttribute.BusyX)},
+            {AstateIndex.SAtkHK,  new AstateRecord( AclipTypeIndex.SAtkHK, "Base Layer.", "SAtkHK", AstateAttribute.BusyX)},
 
-            {AstateIndex.OBackstep,  new AstateRecord( AclipTypeIndex.OBackstep, "Base Layer.", "OBackstep")},
+            {AstateIndex.OBackstep,  new AstateRecord( AclipTypeIndex.OBackstep, "Base Layer.", "OBackstep", AstateAttribute.None)},
 
-            {AstateIndex.JBlockL,  new AstateRecord( AclipTypeIndex.JBlockL, "Base Layer.", "JBlockL")},
-            {AstateIndex.JBlockM,  new AstateRecord( AclipTypeIndex.JBlockM, "Base Layer.", "JBlockM")},
-            {AstateIndex.JBlockH,  new AstateRecord( AclipTypeIndex.JBlockH, "Base Layer.", "JBlockH")},
-            {AstateIndex.JAtkLP,  new AstateRecord( AclipTypeIndex.JAtkLP, "Base Layer.", "JAtkLP")},
-            {AstateIndex.JAtkMP,  new AstateRecord( AclipTypeIndex.JAtkMP, "Base Layer.", "JAtkMP")},
-            {AstateIndex.JAtkHP,  new AstateRecord( AclipTypeIndex.JAtkHP, "Base Layer.", "JAtkHP")},
-            {AstateIndex.JAtkLK,  new AstateRecord( AclipTypeIndex.JAtkLK, "Base Layer.", "JAtkLK")},
-            {AstateIndex.JAtkMK,  new AstateRecord( AclipTypeIndex.JAtkMK, "Base Layer.", "JAtkMK")},
-            {AstateIndex.JAtkHK,  new AstateRecord( AclipTypeIndex.JAtkHK, "Base Layer.", "JAtkHK")},
+            {AstateIndex.JBlockL,  new AstateRecord( AclipTypeIndex.JBlockL, "Base Layer.", "JBlockL", AstateAttribute.None)},
+            {AstateIndex.JBlockM,  new AstateRecord( AclipTypeIndex.JBlockM, "Base Layer.", "JBlockM", AstateAttribute.None)},
+            {AstateIndex.JBlockH,  new AstateRecord( AclipTypeIndex.JBlockH, "Base Layer.", "JBlockH", AstateAttribute.None)},
+            {AstateIndex.JAtkLP,  new AstateRecord( AclipTypeIndex.JAtkLP, "Base Layer.", "JAtkLP", AstateAttribute.None)},
+            {AstateIndex.JAtkMP,  new AstateRecord( AclipTypeIndex.JAtkMP, "Base Layer.", "JAtkMP", AstateAttribute.None)},
+            {AstateIndex.JAtkHP,  new AstateRecord( AclipTypeIndex.JAtkHP, "Base Layer.", "JAtkHP", AstateAttribute.None)},
+            {AstateIndex.JAtkLK,  new AstateRecord( AclipTypeIndex.JAtkLK, "Base Layer.", "JAtkLK", AstateAttribute.None)},
+            {AstateIndex.JAtkMK,  new AstateRecord( AclipTypeIndex.JAtkMK, "Base Layer.", "JAtkMK", AstateAttribute.None)},
+            {AstateIndex.JAtkHK,  new AstateRecord( AclipTypeIndex.JAtkHK, "Base Layer.", "JAtkHK", AstateAttribute.None)},
 
-            {AstateIndex.JMove0,  new AstateRecord( AclipTypeIndex.JMove0, "Base Layer.JMove.", "JMove0")},
-            {AstateIndex.JMove1,  new AstateRecord( AclipTypeIndex.JMove1, "Base Layer.JMove.", "JMove1")},
-            {AstateIndex.JMove2,  new AstateRecord( AclipTypeIndex.JMove2, "Base Layer.JMove.", "JMove2")},
-            {AstateIndex.JMove3,  new AstateRecord( AclipTypeIndex.JMove3, "Base Layer.JMove.", "JMove3")},
-            {AstateIndex.JMove4,  new AstateRecord( AclipTypeIndex.JMove4, "Base Layer.JMove.", "JMove4")},
+            {AstateIndex.JMove0,  new AstateRecord( AclipTypeIndex.JMove0, "Base Layer.JMove.", "JMove0", AstateAttribute.BusyX)},
+            {AstateIndex.JMove1,  new AstateRecord( AclipTypeIndex.JMove1, "Base Layer.JMove.", "JMove1", AstateAttribute.None)},
+            {AstateIndex.JMove2,  new AstateRecord( AclipTypeIndex.JMove2, "Base Layer.JMove.", "JMove2", AstateAttribute.None)},
+            {AstateIndex.JMove3,  new AstateRecord( AclipTypeIndex.JMove3, "Base Layer.JMove.", "JMove3", AstateAttribute.None)},
+            {AstateIndex.JMove4,  new AstateRecord( AclipTypeIndex.JMove4, "Base Layer.JMove.", "JMove4", AstateAttribute.BusyX)},
 
-            {AstateIndex.DBlockL,  new AstateRecord( AclipTypeIndex.DBlockL, "Base Layer.", "DBlockL")},
-            {AstateIndex.DBlockM,  new AstateRecord( AclipTypeIndex.DBlockM, "Base Layer.", "DBlockM")},
-            {AstateIndex.DBlockH,  new AstateRecord( AclipTypeIndex.DBlockH, "Base Layer.", "DBlockH")},
-            {AstateIndex.DAtkLP,  new AstateRecord( AclipTypeIndex.DAtkLP, "Base Layer.", "DAtkLP")},
-            {AstateIndex.DAtkMP,  new AstateRecord( AclipTypeIndex.DAtkMP, "Base Layer.", "DAtkMP")},
-            {AstateIndex.DAtkHP,  new AstateRecord( AclipTypeIndex.DAtkHP, "Base Layer.", "DAtkHP")},
-            {AstateIndex.DAtkLK,  new AstateRecord( AclipTypeIndex.DAtkLK, "Base Layer.", "DAtkLK")},
-            {AstateIndex.DAtkMK,  new AstateRecord( AclipTypeIndex.DAtkMK, "Base Layer.", "DAtkMK")},
-            {AstateIndex.DAtkHK,  new AstateRecord( AclipTypeIndex.DAtkHK, "Base Layer.", "DAtkHK")},
+            {AstateIndex.DBlockL,  new AstateRecord( AclipTypeIndex.DBlockL, "Base Layer.", "DBlockL", AstateAttribute.None)},
+            {AstateIndex.DBlockM,  new AstateRecord( AclipTypeIndex.DBlockM, "Base Layer.", "DBlockM", AstateAttribute.None)},
+            {AstateIndex.DBlockH,  new AstateRecord( AclipTypeIndex.DBlockH, "Base Layer.", "DBlockH", AstateAttribute.None)},
+            {AstateIndex.DAtkLP,  new AstateRecord( AclipTypeIndex.DAtkLP, "Base Layer.", "DAtkLP", AstateAttribute.None)},
+            {AstateIndex.DAtkMP,  new AstateRecord( AclipTypeIndex.DAtkMP, "Base Layer.", "DAtkMP", AstateAttribute.None)},
+            {AstateIndex.DAtkHP,  new AstateRecord( AclipTypeIndex.DAtkHP, "Base Layer.", "DAtkHP", AstateAttribute.None)},
+            {AstateIndex.DAtkLK,  new AstateRecord( AclipTypeIndex.DAtkLK, "Base Layer.", "DAtkLK", AstateAttribute.None)},
+            {AstateIndex.DAtkMK,  new AstateRecord( AclipTypeIndex.DAtkMK, "Base Layer.", "DAtkMK", AstateAttribute.None)},
+            {AstateIndex.DAtkHK,  new AstateRecord( AclipTypeIndex.DAtkHK, "Base Layer.", "DAtkHK", AstateAttribute.None)},
 
-            {AstateIndex.DMove,  new AstateRecord( AclipTypeIndex.DMove, "Base Layer.", "DMove")},
+            {AstateIndex.DMove,  new AstateRecord( AclipTypeIndex.DMove, "Base Layer.", "DMove", AstateAttribute.None)},
 
-            {AstateIndex.CBlockL,  new AstateRecord( AclipTypeIndex.CBlockL, "Base Layer.", "CBlockL")},
-            {AstateIndex.CBlockM,  new AstateRecord( AclipTypeIndex.CBlockM, "Base Layer.", "CBlockM")},
-            {AstateIndex.CBlockH,  new AstateRecord( AclipTypeIndex.CBlockH, "Base Layer.", "CBlockH")},
-            {AstateIndex.CAtkLP,  new AstateRecord( AclipTypeIndex.CAtkLP, "Base Layer.", "CAtkLP")},
-            {AstateIndex.CAtkMP,  new AstateRecord( AclipTypeIndex.CAtkMP, "Base Layer.", "CAtkMP")},
-            {AstateIndex.CAtkHP,  new AstateRecord( AclipTypeIndex.CAtkHP, "Base Layer.", "CAtkHP")},
-            {AstateIndex.CAtkLK,  new AstateRecord( AclipTypeIndex.CAtkLK, "Base Layer.", "CAtkLK")},
-            {AstateIndex.CAtkMK,  new AstateRecord( AclipTypeIndex.CAtkMK, "Base Layer.", "CAtkMK")},
-            {AstateIndex.CAtkHK,  new AstateRecord( AclipTypeIndex.CAtkHK, "Base Layer.", "CAtkHK")},
+            {AstateIndex.CBlockL,  new AstateRecord( AclipTypeIndex.CBlockL, "Base Layer.", "CBlockL", AstateAttribute.None)},
+            {AstateIndex.CBlockM,  new AstateRecord( AclipTypeIndex.CBlockM, "Base Layer.", "CBlockM", AstateAttribute.None)},
+            {AstateIndex.CBlockH,  new AstateRecord( AclipTypeIndex.CBlockH, "Base Layer.", "CBlockH", AstateAttribute.None)},
+            {AstateIndex.CAtkLP,  new AstateRecord( AclipTypeIndex.CAtkLP, "Base Layer.", "CAtkLP", AstateAttribute.BusyX)},
+            {AstateIndex.CAtkMP,  new AstateRecord( AclipTypeIndex.CAtkMP, "Base Layer.", "CAtkMP", AstateAttribute.BusyX)},
+            {AstateIndex.CAtkHP,  new AstateRecord( AclipTypeIndex.CAtkHP, "Base Layer.", "CAtkHP", AstateAttribute.BusyX)},
+            {AstateIndex.CAtkLK,  new AstateRecord( AclipTypeIndex.CAtkLK, "Base Layer.", "CAtkLK", AstateAttribute.BusyX)},
+            {AstateIndex.CAtkMK,  new AstateRecord( AclipTypeIndex.CAtkMK, "Base Layer.", "CAtkMK", AstateAttribute.BusyX)},
+            {AstateIndex.CAtkHK,  new AstateRecord( AclipTypeIndex.CAtkHK, "Base Layer.", "CAtkHK", AstateAttribute.BusyX)},
 
-            {AstateIndex.CWait,  new AstateRecord( AclipTypeIndex.CWait, "Base Layer.", "CWait")},
-            {AstateIndex.CMove,  new AstateRecord( AclipTypeIndex.CMove, "Base Layer.", "CMove")},
+            {AstateIndex.CWait,  new AstateRecord( AclipTypeIndex.CWait, "Base Layer.", "CWait", AstateAttribute.None)},
+            {AstateIndex.CMove,  new AstateRecord( AclipTypeIndex.CMove, "Base Layer.", "CMove", AstateAttribute.None)},
 
-            {AstateIndex.OGiveup,  new AstateRecord( AclipTypeIndex.OGiveup, "Base Layer.", "OGiveup")},
-            {AstateIndex.ODown_SDamageH,  new AstateRecord( AclipTypeIndex.SDamageH, "Base Layer.", "ODown_SDamageH")},
-            {AstateIndex.ODown,  new AstateRecord( AclipTypeIndex.ODown, "Base Layer.", "ODown")},
-            {AstateIndex.OStandup,  new AstateRecord( AclipTypeIndex.OStandup, "Base Layer.", "OStandup")},
+            {AstateIndex.OGiveup,  new AstateRecord( AclipTypeIndex.OGiveup, "Base Layer.", "OGiveup", AstateAttribute.None)},
+            {AstateIndex.ODown_SDamageH,  new AstateRecord( AclipTypeIndex.SDamageH, "Base Layer.", "ODown_SDamageH", AstateAttribute.BusyX)},
+            {AstateIndex.ODown,  new AstateRecord( AclipTypeIndex.ODown, "Base Layer.", "ODown", AstateAttribute.BusyX)},
+            {AstateIndex.OStandup,  new AstateRecord( AclipTypeIndex.OStandup, "Base Layer.", "OStandup", AstateAttribute.None)},
 
-            {AstateIndex.SDamageL,  new AstateRecord( AclipTypeIndex.SDamageL, "Base Layer.", "SDamageL")},
-            {AstateIndex.SDamageM,  new AstateRecord( AclipTypeIndex.SDamageM, "Base Layer.", "SDamageM")},
-            {AstateIndex.SDamageH,  new AstateRecord( AclipTypeIndex.SDamageH, "Base Layer.", "SDamageH")},
+            {AstateIndex.SDamageL,  new AstateRecord( AclipTypeIndex.SDamageL, "Base Layer.", "SDamageL", AstateAttribute.None)},
+            {AstateIndex.SDamageM,  new AstateRecord( AclipTypeIndex.SDamageM, "Base Layer.", "SDamageM", AstateAttribute.None)},
+            {AstateIndex.SDamageH,  new AstateRecord( AclipTypeIndex.SDamageH, "Base Layer.", "SDamageH", AstateAttribute.None)},
 
-            {AstateIndex.JDamageL,  new AstateRecord( AclipTypeIndex.JDamageL, "Base Layer.", "JDamageL")},
-            {AstateIndex.JDamageM,  new AstateRecord( AclipTypeIndex.JDamageM, "Base Layer.", "JDamageM")},
-            {AstateIndex.JDamageH,  new AstateRecord( AclipTypeIndex.JDamageH, "Base Layer.", "JDamageH")},
+            {AstateIndex.JDamageL,  new AstateRecord( AclipTypeIndex.JDamageL, "Base Layer.", "JDamageL", AstateAttribute.None)},
+            {AstateIndex.JDamageM,  new AstateRecord( AclipTypeIndex.JDamageM, "Base Layer.", "JDamageM", AstateAttribute.None)},
+            {AstateIndex.JDamageH,  new AstateRecord( AclipTypeIndex.JDamageH, "Base Layer.", "JDamageH", AstateAttribute.None)},
 
-            {AstateIndex.DDamageL,  new AstateRecord( AclipTypeIndex.DDamageL, "Base Layer.", "DDamageL")},
-            {AstateIndex.DDamageM,  new AstateRecord( AclipTypeIndex.DDamageM, "Base Layer.", "DDamageM")},
-            {AstateIndex.DDamageH,  new AstateRecord( AclipTypeIndex.DDamageH, "Base Layer.", "DDamageH")},
+            {AstateIndex.DDamageL,  new AstateRecord( AclipTypeIndex.DDamageL, "Base Layer.", "DDamageL", AstateAttribute.None)},
+            {AstateIndex.DDamageM,  new AstateRecord( AclipTypeIndex.DDamageM, "Base Layer.", "DDamageM", AstateAttribute.None)},
+            {AstateIndex.DDamageH,  new AstateRecord( AclipTypeIndex.DDamageH, "Base Layer.", "DDamageH", AstateAttribute.None)},
 
-            {AstateIndex.CDamageL,  new AstateRecord( AclipTypeIndex.CDamageL, "Base Layer.", "CDamageL")},
-            {AstateIndex.CDamageM,  new AstateRecord( AclipTypeIndex.CDamageM, "Base Layer.", "CDamageM")},
-            {AstateIndex.CDamageH,  new AstateRecord( AclipTypeIndex.CDamageH, "Base Layer.", "CDamageH")},
+            {AstateIndex.CDamageL,  new AstateRecord( AclipTypeIndex.CDamageL, "Base Layer.", "CDamageL", AstateAttribute.None)},
+            {AstateIndex.CDamageM,  new AstateRecord( AclipTypeIndex.CDamageM, "Base Layer.", "CDamageM", AstateAttribute.None)},
+            {AstateIndex.CDamageH,  new AstateRecord( AclipTypeIndex.CDamageH, "Base Layer.", "CDamageH", AstateAttribute.None)},
         };
         #endregion
     }
 
-    private static Dictionary<AclipTypeIndex, AclipTypeRecord> aclipType_to_record;
+    public static Dictionary<AclipTypeIndex, AclipTypeRecord> aclipType_to_record;
     #region アニメーターのステート名
     /// <summary>
     /// Animator の State に一対一対応☆
@@ -351,11 +370,16 @@ public abstract class MotionDatabaseScript {
     /// </summary>
     public static Dictionary<int, AclipTypeIndex> astateHash_to_aclipType;
     /// <summary>
+    /// Animator の state の hash を、state番号に変換☆
+    /// </summary>
+    public static Dictionary<int, AstateIndex> astateHash_to_astate;
+    /// <summary>
     /// シーンの Start( )メソッドで呼び出してください。
     /// </summary>
     public static void ReadAstateHashs()
     {
         astateHash_to_aclipType = new Dictionary<int, AclipTypeIndex>();
+        astateHash_to_astate = new Dictionary<int, AstateIndex>();
 
         for (int iAstate = 0; iAstate <(int)AstateIndex.Num; iAstate++)
         {
@@ -366,6 +390,8 @@ public abstract class MotionDatabaseScript {
             string breadCrumb = astate_to_record[(AstateIndex)iAstate].breadCrumb;
             string name = astate_to_record[(AstateIndex)iAstate].name;
             int hash = Animator.StringToHash(breadCrumb + name);
+            astateHash_to_astate.Add(hash, (AstateIndex)iAstate);
+
             AclipTypeIndex aclipType = astate_to_record[(AstateIndex)iAstate].aclipType;
             astateHash_to_aclipType.Add(hash, aclipType);
             Debug.Log("ReadAstateHashs: iAstate = " + iAstate + " breadCrumb = " + breadCrumb + " name = " + name + " hash = " + hash + " aclipType = " + aclipType );
@@ -381,16 +407,11 @@ public abstract class MotionDatabaseScript {
     /// <param name="character"></param>
     /// <param name="motion"></param>
     /// <param name="currentMotionFrame"></param>
-    public static void Select(out int serialImageIndex, out int slice, CharacterIndex character, AclipTypeIndex aclipType, int currentMotionFrame)
+    public static void Select(out int serialImageIndex, out int slice, CharacterIndex character, AclipTypeRecord aclipTypeRecord, int currentMotionFrame)
     {
-        slice = -1;
+        slice = aclipTypeRecord.slices[currentMotionFrame];
 
-        if (aclipType_to_record.ContainsKey(aclipType))
-        {
-            slice = aclipType_to_record[aclipType].slices[currentMotionFrame];
-        }
-
-        serialImageIndex = Hitbox2DDatabaseScript.GetSerialImageIndex(character, aclipType_to_record[aclipType].actioning);
+        serialImageIndex = Hitbox2DDatabaseScript.GetSerialImageIndex(character, aclipTypeRecord.actioning);
     }
 
 }
