@@ -118,6 +118,8 @@ public class MainCameraScript : MonoBehaviour {
         }
         #endregion
 
+        MotionDatabaseScript.ReadAstateHashs();
+
         #region リセット（配列やスプライト等の初期設定が終わってから）
         readyingTime = 0;
         SetTeban(PlayerIndex.Player1);
@@ -235,11 +237,24 @@ public class MainCameraScript : MonoBehaviour {
                     continue;
                 }
                 AnimationClip clip = anime.GetCurrentAnimatorClipInfo(0)[0].clip;
-                string clipName = clip.name;
+
+                // FIXME: bug? クリップ名は、Animator Controller Override を使っている場合、継承しているアニメーション・クリップは名前を取れない？
+                // string clipName = clip.name;
 
                 // ステートのスピードを取得したい。
                 AnimatorStateInfo animeStateInfo = anime.GetCurrentAnimatorStateInfo(0);
                 float stateSpeed = animeStateInfo.speed;
+
+                // ステートのハッシュから、アニメーション・クリップの種類を取得。
+                if (!MotionDatabaseScript.astateHash_to_aclipType.ContainsKey(animeStateInfo.fullPathHash))
+                {
+                    string msg = "フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆";
+                    //Debug.LogError(msg);
+                    //continue;
+                    throw new UnityException( msg);
+                }
+
+                MotionDatabaseScript.AclipTypeIndex aclipType = MotionDatabaseScript.astateHash_to_aclipType[animeStateInfo.fullPathHash];
 
                 // 正規化時間取得（0～1 の数倍。時間経過で 1以上になる）
                 float normalizedTime = animeStateInfo.normalizedTime;
@@ -268,16 +283,21 @@ public class MainCameraScript : MonoBehaviour {
 
                 #region 画像分類　スライス番号　取得
                 int serialImage;
-                int slice = -1;
+                int slice;
                 CharacterIndex character = CommonScript.Player_To_UseCharacter[iPlayer];
-                Hitbox2DDatabaseScript.Select(
+                MotionDatabaseScript.Select(
                     out serialImage,
                     out slice,
                     character, // キャラクター番号
-                    Hitbox2DDatabaseScript.ClipName_to_Motion(character, clipName), // モーション番号
+                    aclipType, // モーション番号
                     currentMotionFrame
                     );
-                //Debug.Log("serialImage = " + serialImage + " slice = " + slice);
+                if((int)PlayerIndex.Player1==iPlayer && MotionDatabaseScript.AclipTypeIndex.Num != aclipType)
+                {
+                    Debug.Log( " iPlayer = " + iPlayer + " character = " + character + " aclipType = "+ aclipType + " currentMotionFrame = " + currentMotionFrame + " / serialImage = " + serialImage + " slice = " + slice);
+                    // + " motion = " + motion
+                    // "anime.GetCurrentAnimatorClipInfo(0).Length = " + anime.GetCurrentAnimatorClipInfo(0).Length+
+                }
                 #endregion
 
                 if (-1 != slice)

@@ -1,8 +1,21 @@
 金くれ☆（任意） I want money (Option)
 ======================================
-開発資金がもらえると思ってオープンソースにしている☆（＾～＾）１月末までにくれだぜ☆ 次のサイトで振り込めるぜ☆  
-I am poor. You can suport me. Payment is here.  
-https://enty.jp/posts/31990  
+￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥  
+￥　  
+￥　金集め！  
+￥　Crowd funding!  
+￥　  
+￥　私は　最も難しいゲーム・ジャンルの１つ、２Ｄ対戦格闘ゲーム　をUnityで作ることに挑戦している☆（＾～＾）  
+￥　I challenge create 2D FIGHTING GAME by Unity. It is very difficult game creation genre!
+￥　  
+￥　開発資金がもらえると思ってオープンソースにしている☆（＾～＾）  
+￥　面白いと思ったら、まずは１月末までにくれだぜ☆ 次のサイトで振り込めるぜ☆  
+￥　I want monery. You can payment me, If you think that it is enjoy.  
+￥　This program is open source. Payment is here.  2017 Jan.
+￥　  
+￥　 https://enty.jp/posts/31990  
+￥　  
+￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥  
 
 KifuwarabeFighter2
 ==================

@@ -8,55 +8,55 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         #region 立ち
-        if (stateInfo.IsName(CommonScript.MOTION_S_WAIT)) // 立ち待機
+        if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SWait].name)) // 立ち待機
         {
             animator.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
         }
         else if (
-            stateInfo.IsName(CommonScript.MOTION_S_ATK_LP) ||
-            stateInfo.IsName(CommonScript.MOTION_S_ATK_MP) ||
-            stateInfo.IsName(CommonScript.MOTION_S_ATK_HP) ||
-            stateInfo.IsName(CommonScript.MOTION_S_ATK_LK) ||
-            stateInfo.IsName(CommonScript.MOTION_S_ATK_MK) ||
-            stateInfo.IsName(CommonScript.MOTION_S_ATK_HK)
+            stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkLP].name) ||
+            stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkMP].name) ||
+            stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkHP].name) ||
+            stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkLK].name) ||
+            stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkMK].name) ||
+            stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkHK].name)
             ) // 攻撃が始まった時
         {
             animator.SetBool(CommonScript.BOOL_ATTACKING, true);
 
             // 連打防止のフラグ立て。
-            if (stateInfo.IsName(CommonScript.MOTION_S_ATK_LP))
+            if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkLP].name))
             {
                 animator.SetBool(CommonScript.BOOL_PUSHING_LP, true);
             }
-            else if (stateInfo.IsName(CommonScript.MOTION_S_ATK_MP))
+            else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkMP].name))
             {
                 animator.SetBool(CommonScript.BOOL_PUSHING_MP, true);
             }
-            else if (stateInfo.IsName(CommonScript.MOTION_S_ATK_HP))
+            else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkHP].name))
             {
                 animator.SetBool(CommonScript.BOOL_PUSHING_HP, true);
             }
-            else if (stateInfo.IsName(CommonScript.MOTION_S_ATK_LK))
+            else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkLK].name))
             {
                 animator.SetBool(CommonScript.BOOL_PUSHING_LK, true);
             }
-            else if (stateInfo.IsName(CommonScript.MOTION_S_ATK_MK))
+            else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkMK].name))
             {
                 animator.SetBool(CommonScript.BOOL_PUSHING_MK, true);
             }
-            else if (stateInfo.IsName(CommonScript.MOTION_S_ATK_HK))
+            else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkHK].name))
             {
                 animator.SetBool(CommonScript.BOOL_PUSHING_HK, true);
             }
         }
         #endregion
         #region ジャンプ
-        else if (stateInfo.IsName(CommonScript.MOTION_J_MOVE0)) // ジャンプに着手した。
+        else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.JMove0].name)) // ジャンプに着手した。
         {
             animator.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Jump);
             animator.SetBool(CommonScript.BOOL_JMOVE0, true);
         }
-        else if (stateInfo.IsName(CommonScript.MOTION_J_MOVE1)) // 上昇
+        else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.JMove1].name)) // 上昇
         {
             CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
             script.Jump1();
@@ -65,17 +65,17 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
         #region 走り
         #endregion
         #region 屈み
-        else if (stateInfo.IsName(CommonScript.MOTION_C_WAIT)) // かがみ待機
+        else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.CWait].name)) // かがみ待機
         {
             animator.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Crouch);
         }
         #endregion
         #region その他
-        else if (stateInfo.IsName(CommonScript.MOTION_O_BACKSTEP)) // バックステップ
+        else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.OBackstep].name)) // バックステップ
         {
             animator.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
         }
-        else if (stateInfo.IsName(CommonScript.MOTION_O_GIVEUP))
+        else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.OGiveup].name))
         {
             // 投了モーションに入る時。
             //Debug.Log("投了モーション始まり☆ layerIndex = " + layerIndex + " stateInfo.fullPathHash = " + stateInfo.fullPathHash + " animator.name = " + animator.name);
@@ -83,7 +83,7 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
             animator.SetBool(CommonScript.BOOL_GIVEUPING, true);
             animator.SetBool(CommonScript.BOOL_INVINCIBLE, true);// 攻撃が当たらない状態になる。
         }
-        else if (stateInfo.IsName(CommonScript.MOTION_O_DOWN_DAMAGE_H))
+        else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.ODown_SDamageH].name))
         {
             // ダウンに入る時。
             animator.SetBool(CommonScript.BOOL_DOWNING, true);
@@ -97,7 +97,7 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
     // OnStateUpdate is called before OnStateUpdate is called on any state inside this state machine
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (stateInfo.IsName(CommonScript.MOTION_O_GIVEUP))
+        if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.OGiveup].name))
         {
             // 投了モーション中
             if(2.0f<=stateInfo.normalizedTime % 1 * animator.GetCurrentAnimatorClipInfo(0)[0].clip.frameRate)
@@ -114,12 +114,12 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
     // OnStateExit is called before OnStateExit is called on any state inside this state machine
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (stateInfo.IsName(CommonScript.MOTION_J_MOVE0)) // 屈伸が終わった時
+        if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.JMove0].name)) // 屈伸が終わった時
         {
             CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
             script.JMove0Exit();
         }
-        else if (stateInfo.IsName(CommonScript.MOTION_O_GIVEUP))
+        else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.OGiveup].name))
         {
             //Debug.Log("投了モーション終わり☆ layerIndex = " + layerIndex + " stateInfo.fullPathHash = " + stateInfo.fullPathHash + " animator.name = " + animator.name);
 
@@ -131,17 +131,17 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
             script.isResign = true;
         }
         else if (
-            stateInfo.IsName(CommonScript.MOTION_S_ATK_LP) ||
-            stateInfo.IsName(CommonScript.MOTION_S_ATK_MP) ||
-            stateInfo.IsName(CommonScript.MOTION_S_ATK_HP) ||
-            stateInfo.IsName(CommonScript.MOTION_S_ATK_LK) ||
-            stateInfo.IsName(CommonScript.MOTION_S_ATK_MK) ||
-            stateInfo.IsName(CommonScript.MOTION_S_ATK_HK)
+            stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkLP].name) ||
+            stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkMP].name) ||
+            stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkHP].name) ||
+            stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkLK].name) ||
+            stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkMK].name) ||
+            stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkHK].name)
             ) // 攻撃が終わった時
         {
             animator.SetBool(CommonScript.BOOL_ATTACKING, false);
         }
-        else if (stateInfo.IsName(CommonScript.MOTION_O_STANDUP))//起き上がりから抜けたとき。
+        else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.OStandup].name))//起き上がりから抜けたとき。
         {
             animator.SetBool(CommonScript.BOOL_DOWNING, false);
             animator.SetBool(CommonScript.BOOL_INVINCIBLE, false);// 攻撃が当たる状態になる。

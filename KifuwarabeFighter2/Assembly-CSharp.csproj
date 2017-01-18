@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\Hitbox2DDatabaseScript.cs" />
      <Compile Include="Assets\Scripts\Hitbox2DScript.cs" />
      <Compile Include="Assets\Scripts\MainCameraScript.cs" />
+     <Compile Include="Assets\Scripts\MotionDatabase\MotionDatabaseScript.cs" />
      <Compile Include="Assets\Scripts\ResultCameraScript.cs" />
      <Compile Include="Assets\Scripts\SelectCameraScript.cs" />
      <Compile Include="Assets\Scripts\TakoyakiParticleScript.cs" />

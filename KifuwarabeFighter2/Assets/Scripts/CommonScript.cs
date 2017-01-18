@@ -77,27 +77,6 @@ public enum ButtonIndex
 //    Medium,
 //    Hard
 //}
-public enum MotionIndex
-{
-    StandWait,
-    StandLP,
-    StandMP,
-    StandHP,
-    StandLK,
-    StandMK,
-    StandHK,
-    ODown_DamageH,
-    OStandup,
-    JMove0,
-    JMove1,
-    JMove2,
-    JMove3,
-    JMove4,
-    OGiveup,
-    CWaite,
-    OBackstep,
-    Num,
-}
 
 // どこからでも使われるぜ☆
 public class CommonScript
@@ -110,20 +89,20 @@ public class CommonScript
         Player_To_UseCharacter = new CharacterIndex[] { CharacterIndex.Kifuwarabe, CharacterIndex.Kifuwarabe };
         Teban = PlayerIndex.Player1;
 
-        StringBuilder sb = new StringBuilder();
-        for (int iChar = 0; iChar < (int)CharacterIndex.Num; iChar++)
-        {
-            for (int iMotion = 0; iMotion < (int)MotionIndex.Num; iMotion++)
-            {
-                sb.Append("Char");
-                sb.Append(iChar);
-                sb.Append("@");
-                sb.Append(MotionNames[iMotion]);
-                CharacterAndMotion_To_Clip[iChar, iMotion] = sb.ToString();
-                //Debug.Log("CommonScript: iChar = " + iChar + " iMotion = " + iMotion + " : " + sb.ToString());
-                sb.Length = 0;
-            }
-        }
+        //StringBuilder sb = new StringBuilder();
+        //for (int iChar = 0; iChar < (int)CharacterIndex.Num; iChar++)
+        //{
+        //    for (int iAstate = 0; iAstate < (int)MotionDatabaseScript.AstateIndex.Num; iAstate++)
+        //    {
+        //        sb.Append("Char");
+        //        sb.Append(iChar);
+        //        sb.Append("@");
+        //        sb.Append(MotionDatabaseScript.astate_to_record[(MotionDatabaseScript.AstateIndex)iAstate].name);
+        //        CharacterAndAstate_To_Clip[iChar, iAstate] = sb.ToString();
+        //        //Debug.Log("CommonScript: iChar = " + iChar + " iMotion = " + iMotion + " : " + sb.ToString());
+        //        sb.Length = 0;
+        //    }
+        //}
     }
 
     public const string SCENE_TITLE = "Title";
@@ -153,44 +132,6 @@ public class CommonScript
     public const string BUTTON_17_P1_MK = "P2MediumKick";
     public const string BUTTON_18_P1_HK = "P2HardKick";
     public const string BUTTON_19_P1_PA = "P2Pause";
-
-    public const string MOTION_S_WAIT = "SWait";
-    public const string MOTION_S_ATK_LP = "SAtkLP";
-    public const string MOTION_S_ATK_MP = "SAtkMP";
-    public const string MOTION_S_ATK_HP = "SAtkHP";
-    public const string MOTION_S_ATK_LK = "SAtkLK";
-    public const string MOTION_S_ATK_MK = "SAtkMK";
-    public const string MOTION_S_ATK_HK = "SAtkHK";
-    public const string MOTION_O_DOWN_DAMAGE_H = "ODown_DamageH";
-    public const string MOTION_O_STANDUP = "OStandup";
-    public const string MOTION_J_MOVE0 = "JMove0";
-    public const string MOTION_J_MOVE1 = "JMove1";
-    public const string MOTION_J_MOVE2 = "JMove2";
-    public const string MOTION_J_MOVE3 = "JMove3";
-    public const string MOTION_J_MOVE4 = "JMove4";
-    public const string MOTION_O_GIVEUP = "OGiveup";
-    public const string MOTION_C_WAIT = "CWait";
-    public const string MOTION_O_BACKSTEP = "OBackstep";
-    public static string[] MotionNames = new string[]
-    {
-        MOTION_S_WAIT,
-        MOTION_S_ATK_LP,
-        MOTION_S_ATK_MP,
-        MOTION_S_ATK_HP,
-        MOTION_S_ATK_LK,
-        MOTION_S_ATK_MK,
-        MOTION_S_ATK_HK,
-        MOTION_O_DOWN_DAMAGE_H,
-        MOTION_O_STANDUP,
-        MOTION_J_MOVE0,
-        MOTION_J_MOVE1,
-        MOTION_J_MOVE2,
-        MOTION_J_MOVE3,
-        MOTION_J_MOVE4,
-        MOTION_O_GIVEUP,
-        MOTION_C_WAIT,
-        MOTION_O_BACKSTEP,
-    };
 
     public const string TRIGGER_MOVE_X = "moveX";
     public const string TRIGGER_MOVE_X_FORWARD = "moveXForward";
@@ -321,13 +262,7 @@ public class CommonScript
         { "Sprites/Face2", "Face2_0", "Face2_1" },
         { "Sprites/Face3", "Face3_0", "Face3_1" },
     };
-    public static string[,] CharacterAndMotion_To_Clip = new string[(int)CharacterIndex.Num, (int)MotionIndex.Num];
-    //{
-    //    { "Char0@"+MOTION_S_WAIT, "Char0@"+MOTION_S_ATK_LP, "Char0@"+MOTION_S_ATK_MP, "Char0@SAtkHP", "Char0@SAtkLK", "Char0@SAtkMK", "Char0@SAtkHK", },
-    //    { "Char1@"+MOTION_S_WAIT, "Char1@"+MOTION_S_ATK_LP, "Char1@"+MOTION_S_ATK_MP, "Char1@SAtkHP", "Char1@SAtkLK", "Char1@SAtkMK", "Char1@SAtkHK", },
-    //    { "Char2@"+MOTION_S_WAIT, "Char2@"+MOTION_S_ATK_LP, "Char2@"+MOTION_S_ATK_MP, "Char2@SAtkHP", "Char2@SAtkLK", "Char2@SAtkMK", "Char2@SAtkHK", },
-    //    { "Char3@"+MOTION_S_WAIT, "Char3@"+MOTION_S_ATK_LP, "Char3@SAtkMP", "Char3@SAtkHP", "Char3@SAtkLK", "Char3@SAtkMK", "Char3@SAtkHK", },
-    //};
+    //public static string[,] CharacterAndAstate_To_Clip = new string[(int)CharacterIndex.Num, (int)MotionDatabaseScript.AstateIndex.Num];
     public static string[] Player_To_Tag = new string[] { "Char0", "Char1" };
     public static string[] Player_To_Attacker = new string[] { "Attacker0", "Attacker1" };
     public static string[] Player_To_AttackerTag = new string[] { "Attacker0", "Attacker1" };
