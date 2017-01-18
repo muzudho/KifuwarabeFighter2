@@ -346,18 +346,22 @@ public class CharacterScript : MonoBehaviour {
                     //入力方向へ移動
                     Rigidbody2D.velocity = new Vector2(leverX * speedX, Rigidbody2D.velocity.y);
 
-                    //localScale.xを-1にすると画像が反転する
-                    Vector2 temp = transform.localScale;
-                    temp.x = Mathf.Sign(leverX) * CommonScript.GRAPHIC_SCALE;
-                    transform.localScale = temp;
+                    bool leftSideOfOpponent = IsLeftSideOfOpponent();
+                    FacingOpponent(leftSideOfOpponent);//相手の方を向く。
 
-                    // 自分と相手の位置（相手が右側にいるとき正となるようにする）
-                    float distanceX = mainCameraScript.player_to_x[(int)CommonScript.ReverseTeban((PlayerIndex)playerIndex)] - transform.position.x;
 
-                    if (Mathf.Sign(leverX) == Mathf.Sign(distanceX))
+                    if ((0.0f<leverX && leftSideOfOpponent)
+                        ||
+                        (leverX<0.0f && !leftSideOfOpponent)
+                    )//Mathf.Sign(leverX) == Mathf.Sign(distanceX)
                     {
-                        // 相手に向かって走るとき
-                        anim.SetBool(CommonScript.BOOL_BACKSTEPING, false);
+                        if ((int)PlayerIndex.Player1 == playerIndex)
+                        {
+                            Debug.Log("相手に向かって走っているぜ☆");
+                        }
+
+                            // 相手に向かって走るとき
+                            anim.SetBool(CommonScript.BOOL_BACKSTEPING, false);
 
                         if ((int)ActioningIndex.Dash != anim.GetInteger(CommonScript.INTEGER_ACTIONING))
                         {
@@ -375,6 +379,11 @@ public class CharacterScript : MonoBehaviour {
                     }
                     else
                     {
+                        if ((int)PlayerIndex.Player1 == playerIndex)
+                        {
+                            Debug.Log("相手の反対側に向かって走っているぜ☆");
+                        }
+
                         // 相手と反対の方向に移動するとき（バックステップ）
                         if (!anim.GetBool(CommonScript.BOOL_BACKSTEPING))
                         {
@@ -553,6 +562,45 @@ public class CharacterScript : MonoBehaviour {
         #endregion
     }
 
+    /// <summary>
+    /// 相手の左側にいれば真
+    /// </summary>
+    bool IsLeftSideOfOpponent()
+    {
+        // 自分と相手の位置（相手が右側にいるとき正となるようにする）
+        float opponentX = mainCameraScript.player_to_x[(int)CommonScript.ReverseTeban((PlayerIndex)playerIndex)];
+        if (transform.position.x < opponentX)
+        {
+            return true;
+        }
+        return false;
+    }
+    /// <summary>
+    /// 相手の方を向く。
+    /// </summary>
+    void FacingOpponent(bool isLeftSideOfOpponent)
+    {
+        //localScale.xを-1にすると画像が反転する
+        Vector2 temp = transform.localScale;
+        if (!isLeftSideOfOpponent)
+        {
+            temp.x = -1 * CommonScript.GRAPHIC_SCALE; //Mathf.Sign(leverX)
+            if ((int)PlayerIndex.Player1 == playerIndex)
+            {
+                Debug.Log("左を向くぜ☆");
+            }
+        }
+        else
+        {
+            temp.x = 1 * CommonScript.GRAPHIC_SCALE; //Mathf.Sign(leverX)
+            if ((int)PlayerIndex.Player1 == playerIndex)
+            {
+                Debug.Log("右を向くぜ☆");
+            }
+        }
+        transform.localScale = temp;
+    }
+
     #region ジャンプ
     public void JMove0Exit()
     {
@@ -625,13 +673,13 @@ public class CharacterScript : MonoBehaviour {
     }
     void Pull_Jump()
     {
-        if ((int)ActioningIndex.Stand ==anim.GetInteger(CommonScript.INTEGER_ACTIONING))
-        {
+        //if ((int)ActioningIndex.Stand ==anim.GetInteger(CommonScript.INTEGER_ACTIONING))
+        //{
             // とりあえず、立ちアクション中だけジャンプできるようにしておくぜ☆
 
             //ジャンプアニメーションの開始
             anim.SetTrigger(CommonScript.TRIGGER_JUMP);
-        }
+        //}
     }
     void Pull_Crouch()
     {

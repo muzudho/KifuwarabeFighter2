@@ -6,7 +6,7 @@
 ￥　Crowd funding!  
 ￥　  
 ￥　私は　最も難しいゲーム・ジャンルの１つ、２Ｄ対戦格闘ゲーム　をUnityで作ることに挑戦している☆（＾～＾）  
-￥　I challenge create 2D FIGHTING GAME by Unity. It is very difficult game creation genre!
+￥　I challenge create 2D FIGHTING GAME by Unity. It is very difficult game creation genre!  
 ￥　  
 ￥　開発資金がもらえると思ってオープンソースにしている☆（＾～＾）  
 ￥　面白いと思ったら、まずは１月末までにくれだぜ☆ 次のサイトで振り込めるぜ☆  
@@ -14,6 +14,10 @@
 ￥　This program is open source. Payment is here.  2017 Jan.
 ￥　  
 ￥　 https://enty.jp/posts/31990  
+￥　  
+￥　 Special Thanks
+￥　  
+￥　 2017-01-15 Yasuhiro Ike 様 \100
 ￥　  
 ￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥　￥  
 

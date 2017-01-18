@@ -292,12 +292,12 @@ public class MainCameraScript : MonoBehaviour {
                     aclipType, // モーション番号
                     currentMotionFrame
                     );
-                if((int)PlayerIndex.Player1==iPlayer && MotionDatabaseScript.AclipTypeIndex.Num != aclipType)
-                {
-                    Debug.Log( " iPlayer = " + iPlayer + " character = " + character + " aclipType = "+ aclipType + " currentMotionFrame = " + currentMotionFrame + " / serialImage = " + serialImage + " slice = " + slice);
-                    // + " motion = " + motion
-                    // "anime.GetCurrentAnimatorClipInfo(0).Length = " + anime.GetCurrentAnimatorClipInfo(0).Length+
-                }
+                //if((int)PlayerIndex.Player1==iPlayer && MotionDatabaseScript.AclipTypeIndex.Num != aclipType)
+                //{
+                //    Debug.Log( " iPlayer = " + iPlayer + " character = " + character + " aclipType = "+ aclipType + " currentMotionFrame = " + currentMotionFrame + " / serialImage = " + serialImage + " slice = " + slice);
+                //    // + " motion = " + motion
+                //    // "anime.GetCurrentAnimatorClipInfo(0).Length = " + anime.GetCurrentAnimatorClipInfo(0).Length+
+                //}
                 #endregion
 
                 if (-1 != slice)
