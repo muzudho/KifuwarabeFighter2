@@ -46,6 +46,9 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RectangleOnSlice.cs" />
+    <Compile Include="Utility_BoxScanner.cs" />
+    <Compile Include="Utility_Hitbox2DClassFormat.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
