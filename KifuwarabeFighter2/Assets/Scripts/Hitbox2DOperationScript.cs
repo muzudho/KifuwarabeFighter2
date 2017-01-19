@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Hitbox2DDatabaseScript
+public abstract class Hitbox2DOperationScript
 {
     /// <summary>
     /// キャラクターと画像種類番号から、通し画像番号を取得。

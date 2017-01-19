@@ -44,6 +44,10 @@ public enum AstateAttribute
     /// キャラクターが、レバーのＸ軸の入力を受け取れる状態でないとき。
     /// </summary>
     BusyX = 0x01,
+    /// <summary>
+    /// キャラクターが、レバーのＹ軸の入力を受け取れる状態でないとき。
+    /// </summary>
+    BusyY = 0x01<<1,
 }
 
 public abstract class MotionDatabaseScript {
@@ -148,7 +152,7 @@ public abstract class MotionDatabaseScript {
             {AstateIndex.JAtkMK,  new AstateRecord( AclipTypeIndex.JAtkMK, "Base Layer.", "JAtkMK", AstateAttribute.None)},
             {AstateIndex.JAtkHK,  new AstateRecord( AclipTypeIndex.JAtkHK, "Base Layer.", "JAtkHK", AstateAttribute.None)},
 
-            {AstateIndex.JMove0,  new AstateRecord( AclipTypeIndex.JMove0, "Base Layer.JMove.", "JMove0", AstateAttribute.BusyX)},
+            {AstateIndex.JMove0,  new AstateRecord( AclipTypeIndex.JMove0, "Base Layer.JMove.", "JMove0", AstateAttribute.BusyX | AstateAttribute.BusyY)},
             {AstateIndex.JMove1,  new AstateRecord( AclipTypeIndex.JMove1, "Base Layer.JMove.", "JMove1", AstateAttribute.None)},
             {AstateIndex.JMove2,  new AstateRecord( AclipTypeIndex.JMove2, "Base Layer.JMove.", "JMove2", AstateAttribute.None)},
             {AstateIndex.JMove3,  new AstateRecord( AclipTypeIndex.JMove3, "Base Layer.JMove.", "JMove3", AstateAttribute.None)},
@@ -411,7 +415,7 @@ public abstract class MotionDatabaseScript {
     {
         slice = aclipTypeRecord.slices[currentMotionFrame];
 
-        serialImageIndex = Hitbox2DDatabaseScript.GetSerialImageIndex(character, aclipTypeRecord.actioning);
+        serialImageIndex = Hitbox2DOperationScript.GetSerialImageIndex(character, aclipTypeRecord.actioning);
     }
 
 }

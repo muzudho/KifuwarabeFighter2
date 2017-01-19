@@ -346,136 +346,113 @@ public class CharacterScript : MonoBehaviour {
         #endregion
 
         #region レバー操作によるアクション
-        if (isGrounded)// 接地していれば
+        //if (!anim.GetBool(CommonScript.BOOL_JMOVE0))//ジャンプ時の屈伸中ではないなら
+        //{
+        if (leverX != 0)//左か右を入力したら
         {
-            if (!anim.GetBool(CommonScript.BOOL_JMOVE0))//ジャンプ時の屈伸中ではないなら
+            if (!astateRecord.attribute.HasFlag(AstateAttribute.BusyX))
             {
-                if (leverX != 0)//左か右を入力したら
+                //入力方向へ移動
+                Rigidbody2D.velocity = new Vector2(Mathf.Sign(leverX) * speedX, Rigidbody2D.velocity.y);
+            }
+
+            bool leftSideOfOpponent = IsLeftSideOfOpponent();
+            FacingOpponent(leftSideOfOpponent);//相手の方を向く。
+
+            if ((0.0f < leverX && leftSideOfOpponent)
+                ||
+                (leverX < 0.0f && !leftSideOfOpponent)
+            )
+            {
+                if ((int)PlayerIndex.Player1 == playerIndex)
                 {
-                    if (!astateRecord.attribute.HasFlag(AstateAttribute.BusyX))
-                    {
-                        //入力方向へ移動
-                        Rigidbody2D.velocity = new Vector2(leverX * speedX, Rigidbody2D.velocity.y);
-                    }
-
-                    bool leftSideOfOpponent = IsLeftSideOfOpponent();
-                    FacingOpponent(leftSideOfOpponent);//相手の方を向く。
-
-
-                    if ((0.0f<leverX && leftSideOfOpponent)
-                        ||
-                        (leverX<0.0f && !leftSideOfOpponent)
-                    )//Mathf.Sign(leverX) == Mathf.Sign(distanceX)
-                    {
-                        if ((int)PlayerIndex.Player1 == playerIndex)
-                        {
-                            Debug.Log("相手に向かって走っているぜ☆");
-                        }
-
-                        // 相手に向かって走るとき
-                        anim.SetBool(CommonScript.BOOL_BACKSTEPING, false);
-
-                        if ((int)ActioningIndex.Dash != anim.GetInteger(CommonScript.INTEGER_ACTIONING))
-                        {
-                            // ダッシュ・アニメーションの開始
-                            //if ((int)PlayerIndex.Player1 == playerIndex)
-                            //{
-                            //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ダッシュ!");
-                            //}
-                            Pull_Forward();
-                        }
-                        else
-                        {
-                            // 既にダッシュ中なら何もしない
-                        }
-                    }
-                    else
-                    {
-                        if ((int)PlayerIndex.Player1 == playerIndex)
-                        {
-                            Debug.Log("相手の反対側に向かって走っているぜ☆");
-                        }
-
-                        // 相手と反対の方向に移動するとき（バックステップ）
-                        if (!anim.GetBool(CommonScript.BOOL_BACKSTEPING))
-                        {
-                            // エスケープ・アニメーションの開始
-                            //anim.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Other);
-                            //if ((int)PlayerIndex.Player1 == playerIndex)
-                            //{
-                            //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " エスケープ!");
-                            //}
-                            Pull_Back();
-                        }
-                        else
-                        {
-                            // 既にバックステップ中なら何もしない
-                        }
-                    }
-                }
-                else//左も右も入力していなかったら
-                {
-                    //横移動の速度を0にしてピタッと止まるようにする
-                    Rigidbody2D.velocity = new Vector2(0, Rigidbody2D.velocity.y);
-
-                    // 感覚的に、左から右に隙間なく切り替えたと思っていても、
-                    // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
-                    if ( 8 < anim.GetInteger(CommonScript.INTEGER_LEVER_X_NEUTRAL) )// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
-                    {
-                        //if ((int)PlayerIndex.Player1 == playerIndex)
-                        //{
-                        //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ストップ!");
-                        //}
-
-                        anim.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
-                        anim.SetBool(CommonScript.BOOL_BACKSTEPING, false);
-                    }
+                    Debug.Log("相手に向かっていくぜ☆");
                 }
 
-                //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
+                // 相手に向かっていくとき
 
-                if (0 != leverY)// 上か下キーを入力していたら
+                Pull_Forward();
+                //if (isGrounded)// 接地していれば
+                //{
+                //}
+                //if ((int)ActioningIndex.Dash != anim.GetInteger(CommonScript.INTEGER_ACTIONING))
+                //{
+                //    // ダッシュ・アニメーションの開始
+                //    //if ((int)PlayerIndex.Player1 == playerIndex)
+                //    //{
+                //    //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ダッシュ!");
+                //    //}
+                //}
+                //else
+                //{
+                //    // 既にダッシュ中なら何もしない
+                //}
+            }
+            else
+            {
+                if ((int)PlayerIndex.Player1 == playerIndex)
                 {
-                    if (0 < leverY)// 上キーを入力したら
+                    Debug.Log("相手の反対側に向かっていくぜ☆");
+                }
+
+                // 相手と反対の方向に移動するとき（バックステップ）
+                Pull_Back();
+            }
+        }
+        else// 左も右も入力していなかったら
+        {
+
+            if (isGrounded)// 接地していれば
+            {
+                // 横移動の速度を0にしてピタッと止まるようにする
+                Rigidbody2D.velocity = new Vector2(0, Rigidbody2D.velocity.y);
+            }
+
+
+            // 感覚的に、左から右に隙間なく切り替えたと思っていても、
+            // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
+            if (8 < anim.GetInteger(CommonScript.INTEGER_LEVER_X_NEUTRAL))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
+            {
+                //if ((int)PlayerIndex.Player1 == playerIndex)
+                //{
+                //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ストップ!");
+                //}
+
+                if (isGrounded)// 接地していれば
+                {
+                    anim.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
+                }
+            }
+        }
+
+        //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
+
+        if (0 != leverY)// 上か下キーを入力していたら
+        {
+            if (!astateRecord.attribute.HasFlag(AstateAttribute.BusyY))
+            {
+                if (0 < leverY)// 上キーを入力したら
+                {
+                    if (isGrounded)// 接地していれば
                     {
                         // ジャンプするぜ☆
                         Pull_Jump();
                     }
-                    else if (leverY < 0)// 下キーを入力したら
+                }
+                else if (leverY < 0)// 下キーを入力したら
+                {
+                    if (isGrounded)// 接地していれば
                     {
                         // 屈むぜ☆
                         Pull_Crouch();
                     }
                 }
-                else // 下も上も入力していなかったら
-                {
-                }
             }
         }
-        else // 空中なら
+        else // 下も上も入力していなかったら
         {
-            if (0 < leverX) // 右を入力したら
-            {
-                //Debug.Log("lever x = " + x.ToString());
-
-                if (Rigidbody2D.velocity.x < 0)//左方向のベロシティーだったのなら
-                {
-                    // ベロシティーを少し減らして、右方向へ
-                    Rigidbody2D.velocity = new Vector2(Mathf.Abs(Rigidbody2D.velocity.x * 0.8f), Rigidbody2D.velocity.y);
-                }
-            }
-            else if (leverX < 0) // 左を入力したら
-            {
-                if (0 < Rigidbody2D.velocity.x)//右方向のベロシティーだったのなら
-                {
-                    // ベロシティーを少し減らして、左方向へ
-                    Rigidbody2D.velocity = new Vector2(-Mathf.Abs(Rigidbody2D.velocity.x * 0.8f), Rigidbody2D.velocity.y);
-                }
-            }
-            else//左も右も入力していなかったら
-            {
-            }
         }
+        //}
         #endregion
 
         #region 行動
@@ -771,9 +748,7 @@ public class CharacterScript : MonoBehaviour {
     public void Jump1()
     {
         float velocityX = Rigidbody2D.velocity.x;
-        float velocityY = Rigidbody2D.velocity.y;
-        // 上方向へ移動
-        velocityY = speedY;
+        float velocityY = speedY;// 上方向へ移動
 
         //左キー: -1、右キー: 1
         float leverX = Input.GetAxisRaw(CommonScript.PlayerAndButton_To_ButtonName[playerIndex, (int)ButtonIndex.Horizontal]);
@@ -784,11 +759,6 @@ public class CharacterScript : MonoBehaviour {
 
             //入力方向へ移動
             velocityX = speedX;
-
-            ////localScale.xを-1にすると画像が反転する
-            //Vector2 temp = transform.localScale;
-            //temp.x = leverX * CommonScript.GRAPHIC_SCALE;
-            //transform.localScale = temp;
         }
 
         Rigidbody2D.velocity = new Vector2(velocityX, velocityY);
@@ -822,25 +792,22 @@ public class CharacterScript : MonoBehaviour {
     }
     void Pull_Forward()
     {
-        //anim.SetInteger(CommonScript.INTEGER_ACTIONING, (int)ActioningIndex.Dash);
         anim.SetTrigger(CommonScript.TRIGGER_MOVE_X);
+
+        anim.ResetTrigger(CommonScript.TRIGGER_MOVE_X_BACK);
         anim.SetTrigger(CommonScript.TRIGGER_MOVE_X_FORWARD);
     }
     void Pull_Back()
     {
-        anim.SetBool(CommonScript.BOOL_BACKSTEPING, true);
         anim.SetTrigger(CommonScript.TRIGGER_MOVE_X);
+
+        anim.ResetTrigger(CommonScript.TRIGGER_MOVE_X_FORWARD);
         anim.SetTrigger(CommonScript.TRIGGER_MOVE_X_BACK);
     }
     void Pull_Jump()
     {
-        //if ((int)ActioningIndex.Stand ==anim.GetInteger(CommonScript.INTEGER_ACTIONING))
-        //{
-            // とりあえず、立ちアクション中だけジャンプできるようにしておくぜ☆
-
-            //ジャンプアニメーションの開始
-            anim.SetTrigger(CommonScript.TRIGGER_JUMP);
-        //}
+        //ジャンプアニメーションの開始
+        anim.SetTrigger(CommonScript.TRIGGER_JUMP);
     }
     void Pull_Crouch()
     {

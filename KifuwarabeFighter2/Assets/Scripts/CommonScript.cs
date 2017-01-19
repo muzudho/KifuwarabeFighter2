@@ -151,7 +151,6 @@ public class CommonScript
     public const string TRIGGER_GIVEUP = "giveup";
 
     public const string BOOL_ATTACKING = "attacking";
-    public const string BOOL_BACKSTEPING = "backsteping";
     public const string BOOL_PUSHING_LP = "pushingLP";
     public const string BOOL_PUSHING_MP = "pushingMP";
     public const string BOOL_PUSHING_HP = "pushingHP";

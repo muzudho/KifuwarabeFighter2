@@ -52,7 +52,7 @@
      <Compile Include="Assets\Scripts\CharacterScript.cs" />
      <Compile Include="Assets\Scripts\CommonScript.cs" />
      <Compile Include="Assets\Scripts\EnumExtensions.cs" />
-     <Compile Include="Assets\Scripts\Hitbox2DDatabaseScript.cs" />
+     <Compile Include="Assets\Scripts\Hitbox2DOperationScript.cs" />
      <Compile Include="Assets\Scripts\Hitbox2DScript.cs" />
      <Compile Include="Assets\Scripts\MainCameraScript.cs" />
      <Compile Include="Assets\Scripts\MotionDatabase\MotionDatabaseScript.cs" />
