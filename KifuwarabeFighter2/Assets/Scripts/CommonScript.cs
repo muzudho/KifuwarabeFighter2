@@ -71,6 +71,13 @@ public enum ButtonIndex
     Pause,
     Num
 }
+public enum HitboxIndex
+{
+    Hitbox,
+    Weakbox,
+    Strongbox,
+    Num
+}
 //public enum WeightIndex
 //{
 //    Light,
@@ -158,7 +165,6 @@ public class CommonScript
     public const string BOOL_PUSHING_MK = "pushingMK";
     public const string BOOL_PUSHING_HK = "pushingHK";
     public const string BOOL_PUSHING_PA = "pushingPA";
-    public const string BOOL_DOWNING = "downing";
     public const string BOOL_INVINCIBLE = "invincible";
     public const string BOOL_GIVEUPING = "giveuping";
     public const string BOOL_JMOVE0 = "jmove0";
@@ -263,8 +269,14 @@ public class CommonScript
     };
     //public static string[,] CharacterAndAstate_To_Clip = new string[(int)CharacterIndex.Num, (int)MotionDatabaseScript.AstateIndex.Num];
     public static string[] Player_To_Tag = new string[] { "Char0", "Char1" };
-    public static string[] Player_To_Attacker = new string[] { "Attacker0", "Attacker1" };
-    public static string[] Player_To_AttackerTag = new string[] { "Attacker0", "Attacker1" };
+    public static string[,] PlayerAndHitbox_To_Sprite = new string[,] {
+        { "Hitbox0", "Weakbox0", "Strongbox0", },
+        { "Hitbox1", "Weakbox1", "Strongbox1", },
+    };
+    public static string[,] PlayerAndHitbox_To_Tag = new string[,] {
+        { "Hitbox0", "Weakbox0", "Strongbox0", },
+        { "Hitbox1", "Weakbox1", "Strongbox1", },
+    };
 
     /// <summary>
     /// 画像を２．５倍角にして使っているぜ☆（＾～＾）

@@ -33,19 +33,27 @@ namespace Hitbox2DMaker
             // 大文字・小文字を無視してソート☆
             Array.Sort(files, StringComparer.OrdinalIgnoreCase);
 
-            // まずは赤い箱から。
             StringBuilder csFileText = new StringBuilder();
-            ColorBoxCondition expectedBox = Utility_BoxScanner.m_redBox;
             {
-                List<List<RectangleOnSlice>> image_to_slice_to_rectangleList = new List<List<RectangleOnSlice>>();
-                foreach (string file in files)
+                ColorBoxCondition[] expectedBoxes = new ColorBoxCondition[]
                 {
-                    Utility_BoxScanner.Execute_1Image(expectedBox, image_to_slice_to_rectangleList, file);
-                }
+                    Utility_BoxScanner.m_redBox,
+                    Utility_BoxScanner.m_blueBox,
+                    Utility_BoxScanner.m_yellowBox,
+                };
 
-                string text = Utility_Hitbox2DClassFormat.ToText(expectedBox.m_outputClassName, image_to_slice_to_rectangleList);
-                System.Console.WriteLine(text);
-                csFileText.Append(text);
+                foreach(ColorBoxCondition expectedBox in expectedBoxes)
+                {
+                    List<List<RectangleOnSlice>> image_to_slice_to_rectangleList = new List<List<RectangleOnSlice>>();
+                    foreach (string file in files)
+                    {
+                        Utility_BoxScanner.Execute_1Image(expectedBox, image_to_slice_to_rectangleList, file);
+                    }
+
+                    string text = Utility_Hitbox2DClassFormat.ToText(expectedBox.m_outputClassName, image_to_slice_to_rectangleList);
+                    System.Console.WriteLine(text);
+                    csFileText.Append(text);
+                }
             }
             File.WriteAllText(Program.FILE_NAME, csFileText.ToString());
 

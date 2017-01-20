@@ -99,6 +99,7 @@ KifuwarabeFighter2_meta
                         |
                         +--Hitbox2DMaker.exe
 </pre>
+Hitbox2DMaker プログラム解説(Program Explain) http://qiita.com/muzudho1/items/7de6e450e1762b993a63  
 
 これは半自動当たり判定座標調べツールだぜ☆ PNG画像からテキストデータを出力する。 1024x1024ピクセル画像を128x128ピクセルでスライスした画像に使える。 スライス１つにつき赤い矩形(R=255,G=0,B=0)１つから、Offset X,Y、Scale X,Y を算出するぜ☆スケールは（x=2,y=2,z=1 を想定）。  
 使い方

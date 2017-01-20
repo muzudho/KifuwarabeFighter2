@@ -62,6 +62,7 @@
      <Compile Include="Assets\Scripts\TakoyakiTokenScript.cs" />
      <Compile Include="Assets\Scripts\TakoyakiUtilScript.cs" />
      <Compile Include="Assets\Scripts\TitleCameraScript.cs" />
+     <Compile Include="Assets\Scripts\WeakboxScript.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

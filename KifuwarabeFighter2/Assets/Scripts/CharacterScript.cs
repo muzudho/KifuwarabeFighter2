@@ -4,22 +4,20 @@ public class CharacterScript : MonoBehaviour {
 
     #region 敵味方判定
     public int playerIndex;
-    PlayerIndex opponent;
+    public PlayerIndex opponent;
     #endregion
 
     public bool isComputer;
     public GameObject bullet;
     #region 当たり判定
     private GameObject mainCamera;
-    private string opponentAttackerTag;
+    public string opponentHitboxTag;
     /// <summary>
     /// 攻撃を受けた回数。１０回溜まるとダウン☆
     /// </summary>
-    private int damageHitCount;
-    private SpriteRenderer attackImgSpriteRenderer;
-    #endregion
-    #region 効果音
-    private AudioSource audioSource;
+    public int damageHitCount;
+    private SpriteRenderer[] hitboxsSpriteRenderer;
+    private BoxCollider2D weakboxCollider2D;
     #endregion
     #region 歩行
     float speedX = 4.0f; // 歩行速度☆
@@ -46,12 +44,14 @@ public class CharacterScript : MonoBehaviour {
         mainCamera = GameObject.Find("Main Camera");
         mainCameraScript = mainCamera.GetComponent<MainCameraScript>();
         opponent = CommonScript.ReverseTeban((PlayerIndex)playerIndex);
-        opponentAttackerTag = CommonScript.Player_To_AttackerTag[(int)opponent];
-        GameObject charAttackImg = GameObject.Find(CommonScript.Player_To_Attacker[playerIndex]);
-        attackImgSpriteRenderer = charAttackImg.GetComponent<SpriteRenderer>();
-        #endregion
-        #region 効果音
-        audioSource = GetComponent<AudioSource>();
+        opponentHitboxTag = CommonScript.PlayerAndHitbox_To_Tag[(int)opponent, (int)HitboxIndex.Hitbox];
+        
+        hitboxsSpriteRenderer = new SpriteRenderer[] {
+             GameObject.Find(CommonScript.PlayerAndHitbox_To_Sprite[playerIndex,(int)HitboxIndex.Hitbox]).GetComponent<SpriteRenderer>(),
+             GameObject.Find(CommonScript.PlayerAndHitbox_To_Sprite[playerIndex,(int)HitboxIndex.Weakbox]).GetComponent<SpriteRenderer>(),
+             GameObject.Find(CommonScript.PlayerAndHitbox_To_Sprite[playerIndex,(int)HitboxIndex.Strongbox]).GetComponent<SpriteRenderer>(),
+        };
+        weakboxCollider2D = GameObject.Find(CommonScript.PlayerAndHitbox_To_Sprite[playerIndex, (int)HitboxIndex.Weakbox]).GetComponent<BoxCollider2D>();
         #endregion
         #region ジャンプ
         groundLayer = LayerMask.GetMask("Ground");
@@ -67,8 +67,6 @@ public class CharacterScript : MonoBehaviour {
         mainCameraScript.player_to_x[playerIndex] = transform.position.x;
         #endregion
 
-        // 現在のアニメーション・クリップに紐づいたデータ
-        //AclipTypeRecord aclipTypeRecord = GetCurrentAclipTypeRecord();
         // 現在のアニメーター・ステートに紐づいたデータ
         AstateRecord astateRecord = GetCurrentAstateRecord();
 
@@ -364,10 +362,10 @@ public class CharacterScript : MonoBehaviour {
                 (leverX < 0.0f && !leftSideOfOpponent)
             )
             {
-                if ((int)PlayerIndex.Player1 == playerIndex)
-                {
-                    Debug.Log("相手に向かっていくぜ☆");
-                }
+                //if ((int)PlayerIndex.Player1 == playerIndex)
+                //{
+                //    Debug.Log("相手に向かっていくぜ☆");
+                //}
 
                 // 相手に向かっていくとき
 
@@ -390,10 +388,10 @@ public class CharacterScript : MonoBehaviour {
             }
             else
             {
-                if ((int)PlayerIndex.Player1 == playerIndex)
-                {
-                    Debug.Log("相手の反対側に向かっていくぜ☆");
-                }
+                //if ((int)PlayerIndex.Player1 == playerIndex)
+                //{
+                //    Debug.Log("相手の反対側に向かっていくぜ☆");
+                //}
 
                 // 相手と反対の方向に移動するとき（バックステップ）
                 Pull_Back();
@@ -601,7 +599,7 @@ public class CharacterScript : MonoBehaviour {
 
             int currentMotionFrame = Mathf.FloorToInt((normalizedTime % 1.0f) * clip.frameRate);
 
-            #region 画像分類　スライス番号　取得
+            // 画像分類　スライス番号　取得
             int serialImage;
             int slice;
             CharacterIndex character = CommonScript.Player_To_UseCharacter[playerIndex];
@@ -618,87 +616,45 @@ public class CharacterScript : MonoBehaviour {
             //    // + " motion = " + motion
             //    // "anime.GetCurrentAnimatorClipInfo(0).Length = " + anime.GetCurrentAnimatorClipInfo(0).Length+
             //}
-            #endregion
 
             if (-1 != slice)
             {
                 // 新・当たり判定くん
-                attackImgSpriteRenderer.transform.position = new Vector3(
-                    transform.position.x +
-                    Mathf.Sign(transform.localScale.x) *
-                    CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_OffsetX[serialImage, slice],
-                    transform.position.y + CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_OffsetY[serialImage, slice]
-                    );
-                attackImgSpriteRenderer.transform.localScale = new Vector3(
-                    CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_ScaleX[serialImage, slice],
-                    CommonScript.GRAPHIC_SCALE * Hitbox2DScript.imageAndSlice_To_ScaleY[serialImage, slice]
-                    );
+                float offsetX;
+                float offsetY;
+                float scaleX;
+                float scaleY;
+                for (int iHitbox = 0; iHitbox < (int)HitboxIndex.Num; iHitbox++)
+                {
+                    offsetX = transform.position.x + Mathf.Sign(transform.localScale.x) * CommonScript.GRAPHIC_SCALE * Hitbox2DOperationScript.GetOffsetX((HitboxIndex)iHitbox, serialImage, slice);
+                    offsetY = transform.position.y + CommonScript.GRAPHIC_SCALE * Hitbox2DOperationScript.GetOffsetY((HitboxIndex)iHitbox, serialImage, slice);
+                    scaleX = CommonScript.GRAPHIC_SCALE * Hitbox2DOperationScript.GetScaleX((HitboxIndex)iHitbox, serialImage, slice);
+                    scaleY = CommonScript.GRAPHIC_SCALE * Hitbox2DOperationScript.GetScaleY((HitboxIndex)iHitbox, serialImage, slice);
 
-                //if ((int)PlayerIndex.Player1 == iPlayer)
-                //{
-                //Debug.Log("stateSpeed = " + stateSpeed + " clip.frameRate = " + clip.frameRate + " normalizedTime = " + normalizedTime + " currentMotionFrame = " + currentMotionFrame + " 当たり判定くん.position.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.x + " 当たり判定くん.position.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.y + " scale.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.x + " scale.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.y);
-                //    //" clip.length = " + clip.length +
-                //    //" motionFrames = " + motionFrames +
-                //    //" lastKeyframeTime = "+ lastKeyframeTime +
-                //    //" clip.length = "+ clip.length +
-                //    //" motionFrames = "+ motionFrames +
-                //}
+                    hitboxsSpriteRenderer[iHitbox].transform.position = new Vector3(offsetX,offsetY);
+                    hitboxsSpriteRenderer[iHitbox].transform.localScale = new Vector3(scaleX, scaleY);
+
+                    if ((int)HitboxIndex.Weakbox == iHitbox)
+                    {
+                        // 当たり判定も変更
+                        weakboxCollider2D.transform.position = new Vector3(offsetX, offsetY);
+                        weakboxCollider2D.transform.localScale = new Vector3(scaleX, scaleY);
+                    }
+
+                    //if ((int)PlayerIndex.Player1 == iPlayer)
+                    //{
+                    //Debug.Log("stateSpeed = " + stateSpeed + " clip.frameRate = " + clip.frameRate + " normalizedTime = " + normalizedTime + " currentMotionFrame = " + currentMotionFrame + " 当たり判定くん.position.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.x + " 当たり判定くん.position.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.y + " scale.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.x + " scale.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.y);
+                    //    //" clip.length = " + clip.length +
+                    //    //" motionFrames = " + motionFrames +
+                    //    //" lastKeyframeTime = "+ lastKeyframeTime +
+                    //    //" clip.length = "+ clip.length +
+                    //    //" motionFrames = "+ motionFrames +
+                    //}
+                }
             }
         }
     }
 
-    void OnTriggerEnter2D(Collider2D col)
-    {
-        #region 当たり判定
-        if (!anim.GetBool(CommonScript.BOOL_INVINCIBLE) // 攻撃が当たらない状態ではなく。
-            &&
-            col.tag == opponentAttackerTag)// 相手の　攻撃当たり判定くん　が重なった時
-        {
-            this.damageHitCount++;// 攻撃を受けた回数。
-
-            // 効果音を鳴らすぜ☆
-            audioSource.PlayOneShot(audioSource.clip);
-
-            // 爆発の粒子を作るぜ☆
-            TakoyakiParticleScript.Add(transform.position.x, transform.position.y);
-
-            // ＨＰメーター
-            {
-                float damage = mainCameraScript.player_to_attackPower[(int)opponent];
-
-                float value = damage * (playerIndex == (int)PlayerIndex.Player1 ? -1 : 1);
-                mainCameraScript.OffsetBar(value);
-
-                if (10<=damageHitCount)
-                {
-                    // ダウン・アニメーションの開始
-                    Pull_Down();
-                }
-                else if (100.0f <= damage)
-                {
-                    // ダメージ・アニメーションの開始
-                    Pull_DamageH();
-                }
-                else if (50.0f <= damage)
-                {
-                    // ダメージ・アニメーションの開始
-                    Pull_DamageM();
-                }
-                else
-                {
-                    // ダメージ・アニメーションの開始
-                    Pull_DamageL();
-                }
-            }
-
-            // 手番
-            {
-                // 攻撃を受けた方の手番に変わるぜ☆（＾▽＾）
-                mainCameraScript.SetTeban(opponent);
-            }
-        }
-        #endregion
-    }
 
     /// <summary>
     /// 相手の左側にいれば真
@@ -723,18 +679,18 @@ public class CharacterScript : MonoBehaviour {
         if (!isLeftSideOfOpponent)
         {
             temp.x = -1 * CommonScript.GRAPHIC_SCALE; //Mathf.Sign(leverX)
-            if ((int)PlayerIndex.Player1 == playerIndex)
-            {
-                Debug.Log("左を向くぜ☆");
-            }
+            //if ((int)PlayerIndex.Player1 == playerIndex)
+            //{
+            //    Debug.Log("左を向くぜ☆");
+            //}
         }
         else
         {
             temp.x = 1 * CommonScript.GRAPHIC_SCALE; //Mathf.Sign(leverX)
-            if ((int)PlayerIndex.Player1 == playerIndex)
-            {
-                Debug.Log("右を向くぜ☆");
-            }
+            //if ((int)PlayerIndex.Player1 == playerIndex)
+            //{
+            //    Debug.Log("右を向くぜ☆");
+            //}
         }
         transform.localScale = temp;
     }
@@ -773,19 +729,19 @@ public class CharacterScript : MonoBehaviour {
     #endregion
 
     #region トリガーを引く
-    void Pull_DamageH()
+    public void Pull_DamageH()
     {
         anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_H);
     }
-    void Pull_DamageM()
+    public void Pull_DamageM()
     {
         anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_M);
     }
-    void Pull_DamageL()
+    public void Pull_DamageL()
     {
         anim.SetTrigger(CommonScript.TRIGGER_DAMAGE_L);
     }
-    void Pull_Down()
+    public void Pull_Down()
     {
         damageHitCount = 0;
         anim.SetTrigger(CommonScript.TRIGGER_DOWN);

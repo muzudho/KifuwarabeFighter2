@@ -86,7 +86,6 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
         else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.ODown_SDamageH].name))
         {
             // ダウンに入る時。
-            animator.SetBool(CommonScript.BOOL_DOWNING, true);
             animator.SetBool(CommonScript.BOOL_INVINCIBLE, true);// 攻撃が当たらない状態になる。
             //CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
             //script.isInvincible = true; // 攻撃が当たらない状態になる。
@@ -143,7 +142,6 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
         }
         else if (stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.OStandup].name))//起き上がりから抜けたとき。
         {
-            animator.SetBool(CommonScript.BOOL_DOWNING, false);
             animator.SetBool(CommonScript.BOOL_INVINCIBLE, false);// 攻撃が当たる状態になる。
             //CharacterScript script = animator.gameObject.GetComponent<CharacterScript>();
             //script.isInvincible = false; // 攻撃が当たる状態になる。
