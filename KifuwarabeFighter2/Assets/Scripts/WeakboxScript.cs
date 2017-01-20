@@ -29,9 +29,7 @@ public class WeakboxScript : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D col)
     {
         #region 当たり判定
-        if (//!anim.GetBool(CommonScript.BOOL_INVINCIBLE) // 攻撃が当たらない状態ではなく。
-            //&&
-            col.tag == characterScript.opponentHitboxTag)// 相手の　攻撃当たり判定くん　が重なった時
+        if (col.tag == characterScript.opponentHitboxTag)// 相手の　攻撃当たり判定くん　が重なった時
         {
             Debug.Log("当たった☆！ col.tag = " + col.tag);
 

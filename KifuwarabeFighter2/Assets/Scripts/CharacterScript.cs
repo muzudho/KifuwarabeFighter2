@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using SceneMain;
 
 public class CharacterScript : MonoBehaviour {
 
@@ -504,19 +505,19 @@ public class CharacterScript : MonoBehaviour {
     /// 現在のアニメーション・クリップに対応したデータを取得。
     /// </summary>
     /// <returns></returns>
-    public AclipTypeRecord GetCurrentAclipTypeRecord()
+    public AcliptypeRecord GetCurrentAclipTypeRecord()
     {
         AnimatorStateInfo animeStateInfo = anim.GetCurrentAnimatorStateInfo(0);
-        if (!MotionDatabaseScript.astateHash_to_aclipType.ContainsKey(animeStateInfo.fullPathHash))
-        {
-            throw new UnityException("フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆");
-        }
+        //if (!AstateDatabase.hash_to_acliptype.ContainsKey(animeStateInfo.fullPathHash))
+        //{
+        //    throw new UnityException("フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆");
+        //}
 
-        MotionDatabaseScript.AclipTypeIndex aclipType = MotionDatabaseScript.astateHash_to_aclipType[animeStateInfo.fullPathHash];
+        AcliptypeIndex aclipType = AstateDatabase.index_to_record[AstateDatabase.hash_to_index[animeStateInfo.fullPathHash]].acliptype;
 
-        if (MotionDatabaseScript.aclipType_to_record.ContainsKey(aclipType))
+        if (AcliptypeDatabase.index_to_record.ContainsKey(aclipType))
         {
-            return MotionDatabaseScript.aclipType_to_record[aclipType];
+            return AcliptypeDatabase.index_to_record[aclipType];
         }
 
         throw new UnityException("aclipType = [" + aclipType + "]に対応するアニメーション・クリップのレコードが無いぜ☆");
@@ -528,16 +529,16 @@ public class CharacterScript : MonoBehaviour {
     public AstateRecord GetCurrentAstateRecord()
     {
         AnimatorStateInfo animeStateInfo = anim.GetCurrentAnimatorStateInfo(0);
-        if (!MotionDatabaseScript.astateHash_to_aclipType.ContainsKey(animeStateInfo.fullPathHash))
-        {
-            throw new UnityException("フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆");
-        }
+        //if (!MotionDatabaseScript.astateHash_to_aclipType.ContainsKey(animeStateInfo.fullPathHash))
+        //{
+        //    throw new UnityException("フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆");
+        //}
 
-        MotionDatabaseScript.AstateIndex astate = MotionDatabaseScript.astateHash_to_astate[animeStateInfo.fullPathHash];
+        AstateDatabase.AstateIndex astate = AstateDatabase.hash_to_index[animeStateInfo.fullPathHash];
 
-        if (MotionDatabaseScript.astate_to_record.ContainsKey(astate))
+        if (AstateDatabase.index_to_record.ContainsKey(astate))
         {
-            return MotionDatabaseScript.astate_to_record[astate];
+            return AstateDatabase.index_to_record[astate];
         }
 
         throw new UnityException("aclipType = [" + astate + "]に対応するアニメーター・ステートのレコードが無いぜ☆");
@@ -566,13 +567,7 @@ public class CharacterScript : MonoBehaviour {
             AnimatorStateInfo animeStateInfo = anim.GetCurrentAnimatorStateInfo(0);
             float stateSpeed = animeStateInfo.speed;
 
-            // ステートのハッシュから、アニメーション・クリップの種類を取得。
-            if (!MotionDatabaseScript.astateHash_to_aclipType.ContainsKey(animeStateInfo.fullPathHash))
-            {
-                throw new UnityException("フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆");
-            }
-
-            AclipTypeRecord aclipTypeRecord = GetCurrentAclipTypeRecord();
+            AcliptypeRecord aclipTypeRecord = GetCurrentAclipTypeRecord();
 
             // 正規化時間取得（0～1 の数倍。時間経過で 1以上になる）
             float normalizedTime = animeStateInfo.normalizedTime;
@@ -603,7 +598,7 @@ public class CharacterScript : MonoBehaviour {
             int serialImage;
             int slice;
             CharacterIndex character = CommonScript.Player_To_UseCharacter[playerIndex];
-            MotionDatabaseScript.Select(
+            AstateDatabase.Select(
                 out serialImage,
                 out slice,
                 character, // キャラクター番号

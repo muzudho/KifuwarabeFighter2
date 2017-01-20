@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-//using UnityEditor;
+using SceneMain;
 
 // メインシーンのメインカメラのスクリプトだぜ☆
 public class MainCameraScript : MonoBehaviour {
@@ -111,7 +111,7 @@ public class MainCameraScript : MonoBehaviour {
         }
         #endregion
 
-        MotionDatabaseScript.ReadAstateHashs();
+        AstateDatabase.InsertAllStates();
 
         #region リセット（配列やスプライト等の初期設定が終わってから）
         readyingTime = 0;

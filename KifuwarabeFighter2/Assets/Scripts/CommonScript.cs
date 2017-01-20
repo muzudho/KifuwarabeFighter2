@@ -157,7 +157,6 @@ public class CommonScript
     public const string TRIGGER_DAMAGE_H = "damageH";
     public const string TRIGGER_GIVEUP = "giveup";
 
-    public const string BOOL_ATTACKING = "attacking";
     public const string BOOL_PUSHING_LP = "pushingLP";
     public const string BOOL_PUSHING_MP = "pushingMP";
     public const string BOOL_PUSHING_HP = "pushingHP";
@@ -165,7 +164,6 @@ public class CommonScript
     public const string BOOL_PUSHING_MK = "pushingMK";
     public const string BOOL_PUSHING_HK = "pushingHK";
     public const string BOOL_PUSHING_PA = "pushingPA";
-    public const string BOOL_INVINCIBLE = "invincible";
     public const string BOOL_GIVEUPING = "giveuping";
     public const string BOOL_JMOVE0 = "jmove0";
 
