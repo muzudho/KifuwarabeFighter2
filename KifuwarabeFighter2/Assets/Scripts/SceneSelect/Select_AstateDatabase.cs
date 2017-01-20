@@ -12,6 +12,7 @@ namespace SceneSelect {
         Stay,
         Move,
         Ready,
+        Timeover,
         Num,
     }
 
@@ -39,6 +40,7 @@ namespace SceneSelect {
                 {AstateIndex.Stay, new AstateRecord(  "Base Layer.", "Stay")},
                 {AstateIndex.Move, new AstateRecord(  "Base Layer.", "Move")},
                 {AstateIndex.Ready, new AstateRecord(  "Base Layer.", "Ready")},
+                {AstateIndex.Timeover, new AstateRecord(  "Base Layer.", "Timeover")},
             };
         }
         /// <summary>

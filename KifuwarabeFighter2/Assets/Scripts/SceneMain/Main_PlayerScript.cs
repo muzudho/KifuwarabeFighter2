@@ -13,8 +13,11 @@ namespace SceneMain
 
         public bool isComputer;
         public GameObject bullet;
+        Animator animator;
+        //GameObject mainCamera;
+        Main_CameraScript mainCameraScript; public Main_CameraScript MainCameraScript { get { return mainCameraScript; } }
+
         #region 当たり判定
-        GameObject mainCamera;
         string opponentHitboxTag; public string OpponentHitboxTag { get { return opponentHitboxTag; } }
         /// <summary>
         /// 攻撃を受けた回数。１０回溜まるとダウン☆
@@ -35,18 +38,15 @@ namespace SceneMain
         bool isGrounded;
         Rigidbody2D Rigidbody2D { get; set; }
         float speedY = 7.0f; // ジャンプ速度☆
-        Animator anim;
         #endregion
-        Main_CameraScript mainCameraScript; public Main_CameraScript MainCameraScript { get { return mainCameraScript; } }
         #region 勝敗判定
         bool isResign; public bool IsResign { get { return isResign; } set { isResign = value; } }
         #endregion
 
         void Start()
         {
+            mainCameraScript = GameObject.Find("Main Camera").GetComponent<Main_CameraScript>();
             #region 当たり判定
-            mainCamera = GameObject.Find("Main Camera");
-            mainCameraScript = mainCamera.GetComponent<Main_CameraScript>();
             opponent = CommonScript.ReverseTeban((PlayerIndex)playerIndex);
             opponentHitboxTag = SceneCommon.PlayerAndHitbox_to_tag[(int)this.Opponent, (int)HitboxIndex.Hitbox];
 
@@ -60,19 +60,18 @@ namespace SceneMain
             #region ジャンプ
             groundLayer = LayerMask.GetMask("Ground");
             Rigidbody2D = GetComponent<Rigidbody2D>();
-            anim = GetComponent<Animator>();
+            animator = GetComponent<Animator>();
             #endregion
         }
 
 
         void Update()
         {
-            #region キャラクター同士が向き合うために
-            mainCameraScript.Player_to_x[playerIndex] = transform.position.x;
-            #endregion
-
             // 現在のアニメーター・ステートに紐づいたデータ
-            AstateRecord astateRecord = AstateDatabase.GetCurrentAstateRecord(anim);
+            AstateRecord astateRecord = AstateDatabase.GetCurrentAstateRecord(animator);
+
+            // キャラクター同士が向き合うために
+            mainCameraScript.Player_to_x[playerIndex] = transform.position.x;
 
             #region 入力受付
             float leverX;
@@ -99,13 +98,13 @@ namespace SceneMain
                     isComputer = false;
                     leverX = 0;
                     leverY = 0;
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_LP, false);
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_MP, false);
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_HP, false);
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_LK, false);
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_MK, false);
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_HK, false);
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_PA, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_LP, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_MP, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_HP, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_LK, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_MK, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_HK, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_PA, false);
                 }
                 else
                 {
@@ -124,7 +123,7 @@ namespace SceneMain
                         leverY = 0.0f;
                     }
 
-                    if (anim.GetBool(SceneCommon.BOOL_PUSHING_LP))
+                    if (animator.GetBool(SceneCommon.BOOL_PUSHING_LP))
                     {
                         buttonUpLP = (0.900f < Random.Range(0.0f, 1.0f));
                     }
@@ -134,7 +133,7 @@ namespace SceneMain
                         buttonDownLP = (0.900f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (anim.GetBool(SceneCommon.BOOL_PUSHING_MP))
+                    if (animator.GetBool(SceneCommon.BOOL_PUSHING_MP))
                     {
                         buttonUpMP = (0.990f < Random.Range(0.0f, 1.0f));
                     }
@@ -144,7 +143,7 @@ namespace SceneMain
                         buttonDownMP = (0.990f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (anim.GetBool(SceneCommon.BOOL_PUSHING_HP))
+                    if (animator.GetBool(SceneCommon.BOOL_PUSHING_HP))
                     {
                         buttonUpHP = (0.995f < Random.Range(0.0f, 1.0f));
                     }
@@ -154,7 +153,7 @@ namespace SceneMain
                         buttonDownHP = (0.995f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (anim.GetBool(SceneCommon.BOOL_PUSHING_LK))
+                    if (animator.GetBool(SceneCommon.BOOL_PUSHING_LK))
                     {
                         buttonUpLK = (0.900f < Random.Range(0.0f, 1.0f));
                     }
@@ -164,7 +163,7 @@ namespace SceneMain
                         buttonDownLK = (0.900f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (anim.GetBool(SceneCommon.BOOL_PUSHING_MK))
+                    if (animator.GetBool(SceneCommon.BOOL_PUSHING_MK))
                     {
                         buttonUpMK = (0.990f < Random.Range(0.0f, 1.0f));
                     }
@@ -174,7 +173,7 @@ namespace SceneMain
                         buttonDownMK = (0.990f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (anim.GetBool(SceneCommon.BOOL_PUSHING_HK))
+                    if (animator.GetBool(SceneCommon.BOOL_PUSHING_HK))
                     {
                         buttonUpHK = (0.995f < Random.Range(0.0f, 1.0f));
                     }
@@ -199,27 +198,27 @@ namespace SceneMain
             {
                 if (buttonUpLP)
                 {
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_LP, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_LP, false);
                 }
                 if (buttonUpMP)
                 {
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_MP, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_MP, false);
                 }
                 if (buttonUpHP)
                 {
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_HP, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_HP, false);
                 }
                 if (buttonUpLK)
                 {
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_LK, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_LK, false);
                 }
                 if (buttonUpMK)
                 {
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_MK, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_MK, false);
                 }
                 if (buttonUpHK)
                 {
-                    anim.SetBool(SceneCommon.BOOL_PUSHING_HK, false);
+                    animator.SetBool(SceneCommon.BOOL_PUSHING_HK, false);
                 }
             }
             #endregion
@@ -244,7 +243,7 @@ namespace SceneMain
             #region 弾を撃つ
             // 弾を撃つぜ☆
             if (
-                (3 == anim.GetInteger(SceneCommon.INTEGER_LEVER_X_NEUTRAL) % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
+                (3 == animator.GetInteger(SceneCommon.INTEGER_LEVER_X_NEUTRAL) % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
                 &&
                 (
                     buttonDownLP ||
@@ -306,43 +305,43 @@ namespace SceneMain
             // レバー・ニュートラル時間と、レバー・プレッシング時間は、8フレームほど重複する部分がある。
             if (leverX != 0)//左か右を入力したら
             {
-                anim.SetInteger(SceneCommon.INTEGER_LEVER_X_PRESSING, anim.GetInteger(SceneCommon.INTEGER_LEVER_X_PRESSING) + 1);
-                anim.SetInteger(SceneCommon.INTEGER_LEVER_X_NEUTRAL, 0);
-                anim.SetInteger(SceneCommon.INTEGER_LEVER_X_IDOL, 0);
+                animator.SetInteger(SceneCommon.INTEGER_LEVER_X_PRESSING, animator.GetInteger(SceneCommon.INTEGER_LEVER_X_PRESSING) + 1);
+                animator.SetInteger(SceneCommon.INTEGER_LEVER_X_NEUTRAL, 0);
+                animator.SetInteger(SceneCommon.INTEGER_LEVER_X_IDOL, 0);
             }
             else //左も右も入力していなかったら
             {
                 // 感覚的に、左から右に隙間なく切り替えたと思っていても、
                 // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
-                if (8 < anim.GetInteger(SceneCommon.INTEGER_LEVER_X_IDOL))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
+                if (8 < animator.GetInteger(SceneCommon.INTEGER_LEVER_X_IDOL))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
                 {
-                    anim.SetInteger(SceneCommon.INTEGER_LEVER_X_PRESSING, 0);
-                    anim.SetInteger(SceneCommon.INTEGER_LEVER_X_NEUTRAL, anim.GetInteger(SceneCommon.INTEGER_LEVER_X_NEUTRAL) + 1);
+                    animator.SetInteger(SceneCommon.INTEGER_LEVER_X_PRESSING, 0);
+                    animator.SetInteger(SceneCommon.INTEGER_LEVER_X_NEUTRAL, animator.GetInteger(SceneCommon.INTEGER_LEVER_X_NEUTRAL) + 1);
                 }
                 else
                 {
-                    anim.SetInteger(SceneCommon.INTEGER_LEVER_X_IDOL, anim.GetInteger(SceneCommon.INTEGER_LEVER_X_IDOL) + 1);
+                    animator.SetInteger(SceneCommon.INTEGER_LEVER_X_IDOL, animator.GetInteger(SceneCommon.INTEGER_LEVER_X_IDOL) + 1);
                 }
             }
 
             if (0 != leverY)// 上か下キーを入力していたら
             {
-                anim.SetInteger(SceneCommon.INTEGER_LEVER_Y_PRESSING, anim.GetInteger(SceneCommon.INTEGER_LEVER_Y_PRESSING) + 1);
-                anim.SetInteger(SceneCommon.INTEGER_LEVER_Y_NEUTRAL, 0);
-                anim.SetInteger(SceneCommon.INTEGER_LEVER_Y_IDOL, 0);
+                animator.SetInteger(SceneCommon.INTEGER_LEVER_Y_PRESSING, animator.GetInteger(SceneCommon.INTEGER_LEVER_Y_PRESSING) + 1);
+                animator.SetInteger(SceneCommon.INTEGER_LEVER_Y_NEUTRAL, 0);
+                animator.SetInteger(SceneCommon.INTEGER_LEVER_Y_IDOL, 0);
             }
             else // 下も上も入力していなかったら
             {
                 // 感覚的に、左から右に隙間なく切り替えたと思っていても、
                 // 入力装置的には、下から上（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
-                if (8 < anim.GetInteger(SceneCommon.INTEGER_LEVER_Y_IDOL))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
+                if (8 < animator.GetInteger(SceneCommon.INTEGER_LEVER_Y_IDOL))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
                 {
-                    anim.SetInteger(SceneCommon.INTEGER_LEVER_Y_PRESSING, 0);
-                    anim.SetInteger(SceneCommon.INTEGER_LEVER_Y_NEUTRAL, anim.GetInteger(SceneCommon.INTEGER_LEVER_Y_NEUTRAL) + 1);
+                    animator.SetInteger(SceneCommon.INTEGER_LEVER_Y_PRESSING, 0);
+                    animator.SetInteger(SceneCommon.INTEGER_LEVER_Y_NEUTRAL, animator.GetInteger(SceneCommon.INTEGER_LEVER_Y_NEUTRAL) + 1);
                 }
                 else
                 {
-                    anim.SetInteger(SceneCommon.INTEGER_LEVER_Y_IDOL, anim.GetInteger(SceneCommon.INTEGER_LEVER_Y_IDOL) + 1);
+                    animator.SetInteger(SceneCommon.INTEGER_LEVER_Y_IDOL, animator.GetInteger(SceneCommon.INTEGER_LEVER_Y_IDOL) + 1);
                 }
             }
             #endregion
@@ -413,7 +412,7 @@ namespace SceneMain
 
                 // 感覚的に、左から右に隙間なく切り替えたと思っていても、
                 // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
-                if (8 < anim.GetInteger(SceneCommon.INTEGER_LEVER_X_NEUTRAL))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
+                if (8 < animator.GetInteger(SceneCommon.INTEGER_LEVER_X_NEUTRAL))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
                 {
                     //if ((int)PlayerIndex.Player1 == playerIndex)
                     //{
@@ -422,7 +421,7 @@ namespace SceneMain
 
                     if (isGrounded)// 接地していれば
                     {
-                        anim.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
+                        animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
                     }
                 }
             }
@@ -510,7 +509,7 @@ namespace SceneMain
         /// <returns></returns>
         public AcliptypeRecord GetCurrentAclipTypeRecord()
         {
-            AnimatorStateInfo animeStateInfo = anim.GetCurrentAnimatorStateInfo(0);
+            AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
             //if (!AstateDatabase.hash_to_acliptype.ContainsKey(animeStateInfo.fullPathHash))
             //{
             //    throw new UnityException("フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆");
@@ -535,18 +534,18 @@ namespace SceneMain
             if (Main_CameraScript.READY_TIME_LENGTH < mainCameraScript.ReadyingTime)
             {
                 // クリップ名取得
-                if (anim.GetCurrentAnimatorClipInfo(0).Length < 1)
+                if (animator.GetCurrentAnimatorClipInfo(0).Length < 1)
                 {
                     Debug.LogError("クリップインフォの配列の範囲外エラー☆ playerIndex = " + playerIndex);
                     return;
                 }
-                AnimationClip clip = anim.GetCurrentAnimatorClipInfo(0)[0].clip;
+                AnimationClip clip = animator.GetCurrentAnimatorClipInfo(0)[0].clip;
 
                 // FIXME: bug? クリップ名は、Animator Controller Override を使っている場合、継承しているアニメーション・クリップは名前を取れない？
                 // string clipName = clip.name;
 
                 // ステートのスピードを取得したい。
-                AnimatorStateInfo animeStateInfo = anim.GetCurrentAnimatorStateInfo(0);
+                AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
                 float stateSpeed = animeStateInfo.speed;
 
                 AcliptypeRecord aclipTypeRecord = GetCurrentAclipTypeRecord();
@@ -675,7 +674,7 @@ namespace SceneMain
         #region ジャンプ
         public void JMove0Exit()
         {
-            anim.SetBool(SceneCommon.BOOL_JMOVE0, false);
+            animator.SetBool(SceneCommon.BOOL_JMOVE0, false);
         }
 
         public void Jump1()
@@ -700,94 +699,94 @@ namespace SceneMain
         void UpdateAnim()
         {
             //Animatorへパラメーターを送る
-            anim.SetFloat("velY", Rigidbody2D.velocity.y); // y方向へかかる速度単位,上へいくとプラス、下へいくとマイナス
-            anim.SetBool("isGrounded", isGrounded);
+            animator.SetFloat("velY", Rigidbody2D.velocity.y); // y方向へかかる速度単位,上へいくとプラス、下へいくとマイナス
+            animator.SetBool("isGrounded", isGrounded);
         }
         #endregion
 
         #region トリガーを引く
         public void Pull_DamageH()
         {
-            anim.SetTrigger(SceneCommon.TRIGGER_DAMAGE_H);
+            animator.SetTrigger(SceneCommon.TRIGGER_DAMAGE_H);
         }
         public void Pull_DamageM()
         {
-            anim.SetTrigger(SceneCommon.TRIGGER_DAMAGE_M);
+            animator.SetTrigger(SceneCommon.TRIGGER_DAMAGE_M);
         }
         public void Pull_DamageL()
         {
-            anim.SetTrigger(SceneCommon.TRIGGER_DAMAGE_L);
+            animator.SetTrigger(SceneCommon.TRIGGER_DAMAGE_L);
         }
         public void Pull_Down()
         {
             damageHitCount = 0;
-            anim.SetTrigger(SceneCommon.TRIGGER_DOWN);
+            animator.SetTrigger(SceneCommon.TRIGGER_DOWN);
         }
         void Pull_Forward()
         {
-            anim.SetTrigger(SceneCommon.TRIGGER_MOVE_X);
+            animator.SetTrigger(SceneCommon.TRIGGER_MOVE_X);
 
-            anim.ResetTrigger(SceneCommon.TRIGGER_MOVE_X_BACK);
-            anim.SetTrigger(SceneCommon.TRIGGER_MOVE_X_FORWARD);
+            animator.ResetTrigger(SceneCommon.TRIGGER_MOVE_X_BACK);
+            animator.SetTrigger(SceneCommon.TRIGGER_MOVE_X_FORWARD);
         }
         void Pull_Back()
         {
-            anim.SetTrigger(SceneCommon.TRIGGER_MOVE_X);
+            animator.SetTrigger(SceneCommon.TRIGGER_MOVE_X);
 
-            anim.ResetTrigger(SceneCommon.TRIGGER_MOVE_X_FORWARD);
-            anim.SetTrigger(SceneCommon.TRIGGER_MOVE_X_BACK);
+            animator.ResetTrigger(SceneCommon.TRIGGER_MOVE_X_FORWARD);
+            animator.SetTrigger(SceneCommon.TRIGGER_MOVE_X_BACK);
         }
         void Pull_Jump()
         {
             //ジャンプアニメーションの開始
-            anim.SetTrigger(SceneCommon.TRIGGER_JUMP);
+            animator.SetTrigger(SceneCommon.TRIGGER_JUMP);
         }
         void Pull_Crouch()
         {
             // 屈みアニメーションの開始
-            anim.SetTrigger(SceneCommon.TRIGGER_CROUCH);
+            animator.SetTrigger(SceneCommon.TRIGGER_CROUCH);
         }
         void Pull_LightPunch()
         {
             mainCameraScript.Player_to_attackPower[playerIndex] = 10.0f;
 
             // アニメーションの開始
-            anim.SetTrigger(SceneCommon.TRIGGER_ATK_LP);
+            animator.SetTrigger(SceneCommon.TRIGGER_ATK_LP);
         }
         void Pull_MediumPunch()
         {
             mainCameraScript.Player_to_attackPower[playerIndex] = 50.0f;
 
             // アニメーションの開始
-            anim.SetTrigger(SceneCommon.TRIGGER_ATK_MP);
+            animator.SetTrigger(SceneCommon.TRIGGER_ATK_MP);
         }
         void Pull_HardPunch()
         {
             mainCameraScript.Player_to_attackPower[playerIndex] = 100.0f;
 
             // アニメーションの開始
-            anim.SetTrigger(SceneCommon.TRIGGER_ATK_HP);
+            animator.SetTrigger(SceneCommon.TRIGGER_ATK_HP);
         }
         void Pull_LightKick()
         {
             mainCameraScript.Player_to_attackPower[playerIndex] = 10.0f;
 
             // アニメーションの開始
-            anim.SetTrigger(SceneCommon.TRIGGER_ATK_LK);
+            animator.SetTrigger(SceneCommon.TRIGGER_ATK_LK);
         }
         void Pull_MediumKick()
         {
             mainCameraScript.Player_to_attackPower[playerIndex] = 50.0f;
 
             // アニメーションの開始
-            anim.SetTrigger(SceneCommon.TRIGGER_ATK_MK);
+            animator.SetTrigger(SceneCommon.TRIGGER_ATK_MK);
         }
         void Pull_HardKick()
         {
             mainCameraScript.Player_to_attackPower[playerIndex] = 100.0f;
 
             // アニメーションの開始
-            anim.SetTrigger(SceneCommon.TRIGGER_ATK_HK);
+            animator.SetTrigger(SceneCommon.TRIGGER_ATK_HK);
         }
         /// <summary>
         /// お辞儀の開始。
@@ -795,7 +794,7 @@ namespace SceneMain
         void Pull_Resign()
         {
             //Debug.Log("トリガー　投了Ａ");
-            anim.SetTrigger(SceneCommon.TRIGGER_GIVEUP);
+            animator.SetTrigger(SceneCommon.TRIGGER_GIVEUP);
         }
         /// <summary>
         /// お辞儀の開始。
@@ -803,7 +802,7 @@ namespace SceneMain
         public void Pull_ResignByLose()
         {
             //Debug.Log("トリガー　投了Ｘ");
-            anim.SetTrigger(SceneCommon.TRIGGER_GIVEUP);
+            animator.SetTrigger(SceneCommon.TRIGGER_GIVEUP);
         }
         #endregion
 

@@ -162,7 +162,7 @@ namespace SceneMain
             AstateDatabase.InsertAllStates();
 
             #region リセット（配列やスプライト等の初期設定が終わってから）
-            readyingTime = 0;
+            ReadyingTime = 0;
             SetTeban(PlayerIndex.Player1);
             // コンピューターかどうか。
             for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
@@ -176,8 +176,8 @@ namespace SceneMain
         void Update()
         {
             #region 対局開始表示
-            readyingTime++;
-            if (READY_TIME_LENGTH == readyingTime)
+            ReadyingTime++;
+            if (READY_TIME_LENGTH == ReadyingTime)
             {
                 fight0.SetActive(false);
                 fight1.SetActive(false);
@@ -255,7 +255,7 @@ namespace SceneMain
                         resign0.SetActive(false);
                         player_to_playerChar[(int)PlayerIndex.Player1].transform.position = new Vector3(2.52f, 0.0f);
                         player_to_playerChar[(int)PlayerIndex.Player2].transform.position = new Vector3(-2.52f, 0.0f);
-                        readyingTime = 0;
+                        ReadyingTime = 0;
                         fight0.SetActive(true);
                         fight1.SetActive(true);
                     }
