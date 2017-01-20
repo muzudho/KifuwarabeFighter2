@@ -4,94 +4,140 @@ using UnityEngine.UI;
 
 namespace SceneMain
 {
-    // メインシーンのメインカメラのスクリプトだぜ☆
+    /// <summary>
+    /// メインシーンのメインカメラのスクリプトだぜ☆
+    /// </summary>
     public class Main_CameraScript : MonoBehaviour
     {
-
-        public int readyingTime;
+        #region UI 表示物
+        /// <summary>
+        /// Player name on bar. プレイヤー名。
+        /// </summary>
+        Text[] player_to_name;
+        /// <summary>
+        /// Ready message 0, 1. 対局開始テキスト。
+        /// </summary>
         GameObject fight0;
         GameObject fight1;
+        /// <summary>
+        /// KO message. 参りましたテキスト。
+        /// </summary>
         GameObject resign0;
-        #region 選択キャラクター
-        public Text name0;
-        public Text name1;
-        private Text[] player_to_name;
-        public GameObject player0;
-        public GameObject player1;
-        private GameObject[] player_to_playerChar;
-        private Main_PlayerScript[] player_to_charScript;
-        Animator anim0;
-        Animator anim1;
-        private Animator[] player_to_anime;//[プレイヤー番号]
-                                           //private BoxCollider2D[] player_to_charAttackImgBoxCollider2D;//[プレイヤー番号]
-                                           /// <summary>
-                                           /// 相手と向かい合うために使うぜ☆（＾▽＾）
-                                           /// </summary>
-        public float[] player_to_x;
+        /// <summary>
+        /// life bar. 評価値メーター
+        /// </summary>
+        RectTransform[] player_to_barTransform;
+        /// <summary>
+        /// life point. 評価値。
+        /// </summary>
+        Text[] player_to_value;
         #endregion
-        public GameObject bar0;
-        public GameObject bar1;
-        GameObject[,] playerAndRound_to_result;//勝ち星
-        public Text value0;
-        public Text value1;
-        RectTransform bar0_rt;
-        RectTransform bar1_rt;
+
+        #region Internal variable 内部変数
+        /// <summary>
+        /// Ready message presentation time; 対局開始メッセージが表示されている時間。
+        /// </summary>
+        public const int READY_TIME_LENGTH = 60;
+        /// <summary>
+        /// Ready message presentation time counter; 対局開始メッセージが表示されている時間カウンター。
+        /// </summary>
+        int readyingTime; public int ReadyingTime { get { return readyingTime; } set { readyingTime = value; } }
+        #endregion
+
+        #region 選択キャラクター
+        /// <summary>
+        /// player character. プレイヤー・キャラ。
+        /// </summary>
+        GameObject[] player_to_playerChar;
+        /// <summary>
+        /// player character's attached script. プレイヤー・キャラにアタッチされているスクリプト。
+        /// </summary>
+        Main_PlayerScript[] player_to_charScript;
+        /// <summary>
+        /// players animator. アニメーター。
+        /// </summary>
+        Animator[] player_to_anime;
+        /// <summary>
+        /// player position x for facing opponent. 相手と向かい合うために使うプレイヤーのX座標だぜ☆（＾▽＾）
+        /// </summary>
+        float[] player_to_x; public float[] Player_to_x { get { return player_to_x; } set { player_to_x = value; } }
+        #endregion
+        /// <summary>
+        /// win,lose mark. 勝ち星
+        /// </summary>
+        GameObject[,] playerAndRound_to_result;
         #region 制限時間
-        public Text turn0;
-        public Text turn1;
-        private Text[] player_to_turn;
-        public Text time0;
-        public Text time1;
-        private Text[] player_to_time;
-        private Outline[] player_to_turnOutline;
-        private Outline[] player_to_timeOutline;
-        private float[] player_to_timeCount;
+        /// <summary>
+        /// turn. ターン。
+        /// </summary>
+        Text[] player_to_turn;
+        Outline[] player_to_turnOutline;
+        /// <summary>
+        /// timer. 残りタイマー。
+        /// </summary>
+        Text[] player_to_time;
+        Outline[] player_to_timeOutline;
+        float[] player_to_timeCount;
         #endregion
         #region 攻撃力
-        public float[] player_to_attackPower;
+        /// <summary>
+        /// point for calculate damage. ダメージ計算のための数字。
+        /// </summary>
+        private float[] player_to_attackPower; public float[] Player_to_attackPower { get { return player_to_attackPower; } }
         #endregion
         #region ラウンド
+        /// <summary>
+        /// Win count. 勝ち数。２本先取か数える。
+        /// </summary>
         int[] player_to_winCount;
-        public const int READY_TIME_LENGTH = 60;
+        /// <summary>
+        /// flag of end. 終了フラグ
+        /// </summary>
         bool isRoundFinished;
+        /// <summary>
+        /// flag of start of KO Message. 参りましたメッセージを開始したときにＯＮにするフラグ。
+        /// </summary>
         public bool IsResignCalled { get; set; }
         #endregion
 
         void Start()
         {
-            fight0 = GameObject.Find(SceneCommon.SPRITE_FIGHT0);
-            fight0.GetComponent<Text>().text = SceneCommon.Character_To_FightMessage[(int)CommonScript.Player_To_UseCharacter[(int)PlayerIndex.Player1]];
-            fight1 = GameObject.Find(SceneCommon.SPRITE_FIGHT1);
-            resign0 = GameObject.Find(SceneCommon.SPRITE_RESIGN0);
+            #region UI 表示物
+            fight0 = GameObject.Find(SceneCommon.GAMEOBJ_FIGHT0);
+            fight0.GetComponent<Text>().text = SceneCommon.Character_to_fightMessage[(int)CommonScript.Player_to_useCharacter[(int)PlayerIndex.Player1]];
+            fight1 = GameObject.Find(SceneCommon.GAMEOBJ_FIGHT1);
+            resign0 = GameObject.Find(SceneCommon.GAMEOBJ_RESIGN0);
             resign0.SetActive(false);
+            player_to_name = new[] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1,(int)GameobjectIndex.Name]).GetComponent<Text>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Name]).GetComponent<Text>() };
+            player_to_value = new[] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1, (int)GameobjectIndex.Value]).GetComponent<Text>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Value]).GetComponent<Text>() };
+            #endregion
+            #region Internal variable 内部変数
+            player_to_winCount = new[] { 0, 0 };
+            #endregion
             #region 選択キャラクター
-            player_to_name = new Text[] { name0, name1 };
-            player_to_playerChar = new GameObject[] { player0, player1 };
-            player_to_charScript = new Main_PlayerScript[] { player0.GetComponent<Main_PlayerScript>(), player1.GetComponent<Main_PlayerScript>() };
-            player_to_anime = new Animator[] { player0.GetComponent<Animator>(), player1.GetComponent<Animator>() };
-            //player_to_charAttackImgBoxCollider2D = new BoxCollider2D[] { player_to_charAttackImg[(int)PlayerIndex.Player1].GetComponent<BoxCollider2D>(), player_to_charAttackImg[(int)PlayerIndex.Player2].GetComponent<BoxCollider2D>() };
-            player_to_winCount = new int[] { 0, 0 };
+            player_to_playerChar = new[] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1, (int)GameobjectIndex.Player]), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Player]) };
+            player_to_charScript = new[] { player_to_playerChar[(int)PlayerIndex.Player1].GetComponent<Main_PlayerScript>(), player_to_playerChar[(int)PlayerIndex.Player2].GetComponent<Main_PlayerScript>() };
+            player_to_anime = new [] { player_to_playerChar[(int)PlayerIndex.Player1].GetComponent<Animator>(), player_to_playerChar[(int)PlayerIndex.Player2].GetComponent<Animator>() };
             for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
             {
-                CharacterIndex character = CommonScript.Player_To_UseCharacter[iPlayer];
+                CharacterIndex character = CommonScript.Player_to_useCharacter[iPlayer];
                 // 名前
-                player_to_name[iPlayer].text = SceneCommon.Character_To_NameRoma[(int)character];
+                player_to_name[iPlayer].text = SceneCommon.Character_to_nameRoma[(int)character];
 
                 // アニメーター
-                player_to_anime[iPlayer].runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(SceneCommon.Character_To_AnimationController[(int)character]));
+                player_to_anime[iPlayer].runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(SceneCommon.Character_to_animationController[(int)character]));
             }
-            player_to_x = new float[] { 0.0f, 0.0f };
+            player_to_x = new [] { 0.0f, 0.0f };
             #endregion
 
             //bar1のRectTransformコンポーネントをキャッシュ
-            bar0_rt = bar0.GetComponent<RectTransform>();
-            bar1_rt = bar1.GetComponent<RectTransform>();
+            player_to_barTransform = new[] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1, (int)GameobjectIndex.Bar]).GetComponent<RectTransform>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Bar]).GetComponent<RectTransform>() };
 
             #region 時間制限
-            player_to_turn = new Text[] { turn0, turn1 };
-            player_to_time = new Text[] { time0, time1 };
-            player_to_turnOutline = new Outline[] { turn0.GetComponent<Outline>(), turn1.GetComponent<Outline>() };
-            player_to_timeOutline = new Outline[] { time0.GetComponent<Outline>(), time1.GetComponent<Outline>() };
+            player_to_turn = new [] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1, (int)GameobjectIndex.Turn]).GetComponent<Text>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Turn]).GetComponent<Text>() };
+            player_to_time = new [] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1, (int)GameobjectIndex.Time]).GetComponent<Text>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Time]).GetComponent<Text>() };
+            player_to_turnOutline = new [] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1, (int)GameobjectIndex.Turn]).GetComponent<Outline>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Turn]).GetComponent<Outline>() };
+            player_to_timeOutline = new [] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1, (int)GameobjectIndex.Time]).GetComponent<Outline>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Time]).GetComponent<Outline>() };
             InitTime();
             #endregion
 
@@ -121,7 +167,7 @@ namespace SceneMain
             // コンピューターかどうか。
             for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
             {
-                player_to_charScript[iPlayer].isComputer = CommonScript.Player_To_Computer[iPlayer];
+                player_to_charScript[iPlayer].isComputer = CommonScript.Player_to_computer[iPlayer];
             }
             #endregion
         }
@@ -141,9 +187,9 @@ namespace SceneMain
             #region 投了判定
             for (int iLoser = (int)PlayerIndex.Player1; iLoser < (int)PlayerIndex.Num; iLoser++)
             {
-                if (player_to_charScript[iLoser].isResign)
+                if (player_to_charScript[iLoser].IsResign)
                 {
-                    player_to_charScript[iLoser].isResign = false;
+                    player_to_charScript[iLoser].IsResign = false;
 
                     PlayerIndex winner = CommonScript.ReverseTeban((PlayerIndex)iLoser);
                     player_to_winCount[(int)winner]++;
@@ -174,14 +220,14 @@ namespace SceneMain
                         round = 1;
                         if (1 < player_to_winCount[(int)winner])//2本先取
                         {
-                            SceneManager.LoadScene(CommonScript.scene_to_name[(int)SceneIndex.Result]);
+                            SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Result]);
                             return;
                         }
                     }
                     else//星が２ラウンド目まで表示されているとき☆
                     {
                         round = 2;
-                        SceneManager.LoadScene(CommonScript.scene_to_name[(int)SceneIndex.Result]);
+                        SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Result]);
                         return;
                     }
 
@@ -241,13 +287,13 @@ namespace SceneMain
                 //}
                 //else
                 PlayerIndex loser = PlayerIndex.Num;
-                if (bar1_rt.sizeDelta.x <= bar0_rt.sizeDelta.x
+                if (player_to_barTransform[(int)PlayerIndex.Player2].sizeDelta.x <= player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta.x
                     || player_to_timeCount[(int)PlayerIndex.Player2] < 1.0f)
                 {
                     // １プレイヤーの勝ち
                     loser = PlayerIndex.Player2;
                 }
-                else if (bar0_rt.sizeDelta.x <= 0
+                else if (player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta.x <= 0
                     || player_to_timeCount[(int)PlayerIndex.Player1] < 1.0f)
                 {
                     // ２プレイヤーの勝ち
@@ -310,22 +356,22 @@ namespace SceneMain
         }
         public void InitBar()
         {
-            bar0_rt.sizeDelta = new Vector2(
+            player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta = new Vector2(
                 1791.7f,
-                bar0_rt.sizeDelta.y
+                player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta.y
                 );
-            value0.text = ((int)0).ToString();
-            value1.text = ((int)0).ToString();
+            player_to_value[(int)PlayerIndex.Player1].text = ((int)0).ToString();
+            player_to_value[(int)PlayerIndex.Player2].text = ((int)0).ToString();
         }
         public void OffsetBar(float value)
         {
-            bar0_rt.sizeDelta = new Vector2(
-                bar0_rt.sizeDelta.x + value,
-                bar0_rt.sizeDelta.y
+            player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta = new Vector2(
+                player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta.x + value,
+                player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta.y
                 );
 
             // 見えていないところも含めた、bar1 の割合 -0.5～0.5。（真ん中を０とする）
-            float rate = bar0_rt.sizeDelta.x / bar1_rt.sizeDelta.x - 0.5f;
+            float rate = player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta.x / player_to_barTransform[(int)PlayerIndex.Player2].sizeDelta.x - 0.5f;
             // 正負
             float sign = 0 <= rate ? 1.0f : -1.0f;
             // bar1 の割合 0～1。（真ん中を０とする絶対値）
@@ -335,20 +381,20 @@ namespace SceneMain
             {
                 score = 9999.0f;
             }
-            value0.text = ((int)score).ToString();
-            value1.text = ((int)score).ToString();
+            player_to_value[(int)PlayerIndex.Player1].text = ((int)score).ToString();
+            player_to_value[(int)PlayerIndex.Player2].text = ((int)score).ToString();
             // 見えているところの半分で　357px　ぐらい。これが 2000点。
             // 全体を 20000点にしたいので、全体は 3570px か。
 
             if (0 <= sign)
             {
-                value0.color = Color.white;
-                value1.color = Color.red;
+                player_to_value[(int)PlayerIndex.Player1].color = Color.white;
+                player_to_value[(int)PlayerIndex.Player2].color = Color.red;
             }
             else
             {
-                value0.color = Color.red;
-                value1.color = Color.white;
+                player_to_value[(int)PlayerIndex.Player1].color = Color.red;
+                player_to_value[(int)PlayerIndex.Player2].color = Color.white;
             }
         }
         /// <summary>

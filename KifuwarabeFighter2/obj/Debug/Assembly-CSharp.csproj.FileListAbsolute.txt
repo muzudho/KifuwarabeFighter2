@@ -57,6 +57,6 @@ C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\Temp\bin\Debug\UnityEngine.Analytics.xml
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\Temp\bin\Debug\UnityEngine.HoloLens.xml
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\Temp\bin\Debug\UnityEngine.VR.xml
-C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\obj\Debug\Assembly-CSharp.dll
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\obj\Debug\Assembly-CSharp.pdb
+C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache

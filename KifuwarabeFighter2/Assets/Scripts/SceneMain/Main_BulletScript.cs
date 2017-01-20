@@ -9,7 +9,7 @@ namespace SceneMain
         /// この弾を発射したプレイヤー☆ １プレイヤーは 0 と指定☆
         /// </summary>
         public int friend;
-        private int speed = 10;
+        int speed = 10;
         #endregion
         #region 当たり判定
         /// <summary>
@@ -25,14 +25,10 @@ namespace SceneMain
             #region 当たり判定
             mainCamera = GameObject.Find("Main Camera");
             mainCameraScript = mainCamera.GetComponent<Main_CameraScript>();
-            //if (null==mainCameraScript)
-            //{
-            //    throw new UnityException("メインカメラのスクリプトが取れない☆");
-            //}
             #endregion
             #region 弾作成
             // 味方キャラクター　のオブジェクトを取得
-            GameObject friendChar = GameObject.FindWithTag(SceneCommon.Player_To_Tag[friend]);
+            GameObject friendChar = GameObject.FindWithTag(SceneCommon.Player_to_tag[friend]);
             // 弾のrigidbody2Dコンポーネントを取得
             Rigidbody2D rigidbody2D = GetComponent<Rigidbody2D>();
             // 味方キャラクター　の向いている向きに弾を飛ばす
@@ -49,7 +45,7 @@ namespace SceneMain
         void OnTriggerEnter2D(Collider2D col)
         {
             // 相手キャラクター　に当たったら、この弾を消すぜ☆
-            if (col.gameObject.tag == SceneCommon.Player_To_Tag[opponent])
+            if (col.gameObject.tag == SceneCommon.Player_to_tag[opponent])
             {
                 if (mainCameraScript != null)// なぜかヌルになっていることがあるぜ☆（＾～＾）
                 {

@@ -7,20 +7,21 @@ namespace SceneMain
 
         #region 敵味方判定
         public int playerIndex;
-        public PlayerIndex opponent;
+        private PlayerIndex opponent;
+        public PlayerIndex Opponent { get { return opponent; } }
         #endregion
 
         public bool isComputer;
         public GameObject bullet;
         #region 当たり判定
-        private GameObject mainCamera;
-        public string opponentHitboxTag;
+        GameObject mainCamera;
+        string opponentHitboxTag; public string OpponentHitboxTag { get { return opponentHitboxTag; } }
         /// <summary>
         /// 攻撃を受けた回数。１０回溜まるとダウン☆
         /// </summary>
-        public int damageHitCount;
-        private SpriteRenderer[] hitboxsSpriteRenderer;
-        private BoxCollider2D weakboxCollider2D;
+        int damageHitCount; public int DamageHitCount { get { return damageHitCount; } set { damageHitCount = value; } }
+        SpriteRenderer[] hitboxsSpriteRenderer;
+        BoxCollider2D weakboxCollider2D;
         #endregion
         #region 歩行
         float speedX = 4.0f; // 歩行速度☆
@@ -31,14 +32,14 @@ namespace SceneMain
         /// 備考： public LayerMask にしておくと、UnityのGUI上でレイヤー選択用のドロップダウン・リストになる。
         /// </summary>
         LayerMask groundLayer;
-        private bool isGrounded;
-        private Rigidbody2D Rigidbody2D { get; set; }
+        bool isGrounded;
+        Rigidbody2D Rigidbody2D { get; set; }
         float speedY = 7.0f; // ジャンプ速度☆
-        private Animator anim;
+        Animator anim;
         #endregion
-        public Main_CameraScript mainCameraScript;
+        Main_CameraScript mainCameraScript; public Main_CameraScript MainCameraScript { get { return mainCameraScript; } }
         #region 勝敗判定
-        public bool isResign;
+        bool isResign; public bool IsResign { get { return isResign; } set { isResign = value; } }
         #endregion
 
         void Start()
@@ -47,14 +48,14 @@ namespace SceneMain
             mainCamera = GameObject.Find("Main Camera");
             mainCameraScript = mainCamera.GetComponent<Main_CameraScript>();
             opponent = CommonScript.ReverseTeban((PlayerIndex)playerIndex);
-            opponentHitboxTag = SceneCommon.PlayerAndHitbox_To_Tag[(int)opponent, (int)HitboxIndex.Hitbox];
+            opponentHitboxTag = SceneCommon.PlayerAndHitbox_to_tag[(int)this.Opponent, (int)HitboxIndex.Hitbox];
 
             hitboxsSpriteRenderer = new SpriteRenderer[] {
-             GameObject.Find(SceneCommon.PlayerAndHitbox_To_Sprite[playerIndex,(int)HitboxIndex.Hitbox]).GetComponent<SpriteRenderer>(),
-             GameObject.Find(SceneCommon.PlayerAndHitbox_To_Sprite[playerIndex,(int)HitboxIndex.Weakbox]).GetComponent<SpriteRenderer>(),
-             GameObject.Find(SceneCommon.PlayerAndHitbox_To_Sprite[playerIndex,(int)HitboxIndex.Strongbox]).GetComponent<SpriteRenderer>(),
+             GameObject.Find(SceneCommon.PlayerAndHitbox_to_path[playerIndex,(int)HitboxIndex.Hitbox]).GetComponent<SpriteRenderer>(),
+             GameObject.Find(SceneCommon.PlayerAndHitbox_to_path[playerIndex,(int)HitboxIndex.Weakbox]).GetComponent<SpriteRenderer>(),
+             GameObject.Find(SceneCommon.PlayerAndHitbox_to_path[playerIndex,(int)HitboxIndex.Strongbox]).GetComponent<SpriteRenderer>(),
         };
-            weakboxCollider2D = GameObject.Find(SceneCommon.PlayerAndHitbox_To_Sprite[playerIndex, (int)HitboxIndex.Weakbox]).GetComponent<BoxCollider2D>();
+            weakboxCollider2D = GameObject.Find(SceneCommon.PlayerAndHitbox_to_path[playerIndex, (int)HitboxIndex.Weakbox]).GetComponent<BoxCollider2D>();
             #endregion
             #region ジャンプ
             groundLayer = LayerMask.GetMask("Ground");
@@ -67,7 +68,7 @@ namespace SceneMain
         void Update()
         {
             #region キャラクター同士が向き合うために
-            mainCameraScript.player_to_x[playerIndex] = transform.position.x;
+            mainCameraScript.Player_to_x[playerIndex] = transform.position.x;
             #endregion
 
             // 現在のアニメーター・ステートに紐づいたデータ
@@ -76,20 +77,20 @@ namespace SceneMain
             #region 入力受付
             float leverX;
             float leverY;
-            bool buttonDownLP = Input.GetButtonDown(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.LightPunch]);
-            bool buttonDownMP = Input.GetButtonDown(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.MediumPunch]);
-            bool buttonDownHP = Input.GetButtonDown(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.HardPunch]);
-            bool buttonDownLK = Input.GetButtonDown(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.LightKick]);
-            bool buttonDownMK = Input.GetButtonDown(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.MediumKick]);
-            bool buttonDownHK = Input.GetButtonDown(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.HardKick]);
-            bool buttonDownPA = Input.GetButtonDown(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.Pause]);
-            bool buttonUpLP = Input.GetButtonUp(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.LightPunch]);
-            bool buttonUpMP = Input.GetButtonUp(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.MediumPunch]);
-            bool buttonUpHP = Input.GetButtonUp(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.HardPunch]);
-            bool buttonUpLK = Input.GetButtonUp(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.LightKick]);
-            bool buttonUpMK = Input.GetButtonUp(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.MediumKick]);
-            bool buttonUpHK = Input.GetButtonUp(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.HardKick]);
-            bool buttonUpPA = Input.GetButtonUp(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.Pause]);
+            bool buttonDownLP = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.LightPunch]);
+            bool buttonDownMP = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.MediumPunch]);
+            bool buttonDownHP = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.HardPunch]);
+            bool buttonDownLK = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.LightKick]);
+            bool buttonDownMK = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.MediumKick]);
+            bool buttonDownHK = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.HardKick]);
+            bool buttonDownPA = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Pause]);
+            bool buttonUpLP = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.LightPunch]);
+            bool buttonUpMP = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.MediumPunch]);
+            bool buttonUpHP = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.HardPunch]);
+            bool buttonUpLK = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.LightKick]);
+            bool buttonUpMK = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.MediumKick]);
+            bool buttonUpHK = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.HardKick]);
+            bool buttonUpPA = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Pause]);
             if (isComputer)
             {
                 if (buttonDownLP || buttonDownMP || buttonDownHP || buttonDownLK || buttonDownMK || buttonDownHK || buttonDownPA)
@@ -189,9 +190,9 @@ namespace SceneMain
             else
             {
                 //左キー: -1、右キー: 1
-                leverX = Input.GetAxisRaw(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.Horizontal]);
+                leverX = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Horizontal]);
                 // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
-                leverY = Input.GetAxisRaw(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.Vertical]);
+                leverY = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Vertical]);
             }
 
             // 連打防止のフラグ解除
@@ -531,7 +532,7 @@ namespace SceneMain
         /// <param name="player"></param>
         public void UpdateHitbox2D()
         {
-            if (Main_CameraScript.READY_TIME_LENGTH < mainCameraScript.readyingTime)
+            if (Main_CameraScript.READY_TIME_LENGTH < mainCameraScript.ReadyingTime)
             {
                 // クリップ名取得
                 if (anim.GetCurrentAnimatorClipInfo(0).Length < 1)
@@ -578,7 +579,7 @@ namespace SceneMain
                 // 画像分類　スライス番号　取得
                 int serialImage;
                 int slice;
-                CharacterIndex character = CommonScript.Player_To_UseCharacter[playerIndex];
+                CharacterIndex character = CommonScript.Player_to_useCharacter[playerIndex];
                 AstateDatabase.Select(
                     out serialImage,
                     out slice,
@@ -638,7 +639,7 @@ namespace SceneMain
         bool IsLeftSideOfOpponent()
         {
             // 自分と相手の位置（相手が右側にいるとき正となるようにする）
-            float opponentX = mainCameraScript.player_to_x[(int)CommonScript.ReverseTeban((PlayerIndex)playerIndex)];
+            float opponentX = mainCameraScript.Player_to_x[(int)CommonScript.ReverseTeban((PlayerIndex)playerIndex)];
             if (transform.position.x < opponentX)
             {
                 return true;
@@ -683,7 +684,7 @@ namespace SceneMain
             float velocityY = speedY;// 上方向へ移動
 
             //左キー: -1、右キー: 1
-            float leverX = Input.GetAxisRaw(CommonScript.PlayerAndInput_To_InputName[playerIndex, (int)InputIndex.Horizontal]);
+            float leverX = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Horizontal]);
 
             if (leverX != 0)//左か右を入力したら
             {
@@ -748,42 +749,42 @@ namespace SceneMain
         }
         void Pull_LightPunch()
         {
-            mainCameraScript.player_to_attackPower[playerIndex] = 10.0f;
+            mainCameraScript.Player_to_attackPower[playerIndex] = 10.0f;
 
             // アニメーションの開始
             anim.SetTrigger(SceneCommon.TRIGGER_ATK_LP);
         }
         void Pull_MediumPunch()
         {
-            mainCameraScript.player_to_attackPower[playerIndex] = 50.0f;
+            mainCameraScript.Player_to_attackPower[playerIndex] = 50.0f;
 
             // アニメーションの開始
             anim.SetTrigger(SceneCommon.TRIGGER_ATK_MP);
         }
         void Pull_HardPunch()
         {
-            mainCameraScript.player_to_attackPower[playerIndex] = 100.0f;
+            mainCameraScript.Player_to_attackPower[playerIndex] = 100.0f;
 
             // アニメーションの開始
             anim.SetTrigger(SceneCommon.TRIGGER_ATK_HP);
         }
         void Pull_LightKick()
         {
-            mainCameraScript.player_to_attackPower[playerIndex] = 10.0f;
+            mainCameraScript.Player_to_attackPower[playerIndex] = 10.0f;
 
             // アニメーションの開始
             anim.SetTrigger(SceneCommon.TRIGGER_ATK_LK);
         }
         void Pull_MediumKick()
         {
-            mainCameraScript.player_to_attackPower[playerIndex] = 50.0f;
+            mainCameraScript.Player_to_attackPower[playerIndex] = 50.0f;
 
             // アニメーションの開始
             anim.SetTrigger(SceneCommon.TRIGGER_ATK_MK);
         }
         void Pull_HardKick()
         {
-            mainCameraScript.player_to_attackPower[playerIndex] = 100.0f;
+            mainCameraScript.Player_to_attackPower[playerIndex] = 100.0f;
 
             // アニメーションの開始
             anim.SetTrigger(SceneCommon.TRIGGER_ATK_HK);

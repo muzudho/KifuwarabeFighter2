@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace SceneSelect {
 
-    #region アニメーターのステート名
     /// <summary>
     /// Animator の State に一対一対応☆
     /// </summary>
@@ -15,7 +14,6 @@ namespace SceneSelect {
         Ready,
         Num,
     }
-    #endregion
 
     /// <summary>
     /// アニメーターのステート

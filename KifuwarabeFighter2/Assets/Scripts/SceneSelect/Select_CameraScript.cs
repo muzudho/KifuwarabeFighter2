@@ -10,26 +10,15 @@ namespace SceneSelect
 
         int transitionTime;
         #region カーソル移動
-        public Text player0;
-        public Text player1;
-        public Image face0;
-        public Image face1;
-        public Text name0;
-        public Text name1;
-        private Text[] player_to_cursor;// [player]
-        private Image[] player_to_face;// [player]
-        private Text[] player_to_name;// [player]
-        private bool[] player_to_cursorMoving;// [player]
-        private Rigidbody2D[] player_to_rigidbody2Ds;//[プレイヤー番号]
-        public AnimationCurve animCurve = AnimationCurve.Linear(0, 0, 1, 1);
-        private int[] player_to_cursorColumn;
-        private float[] box_to_locationX = new float[] {// [box column]
-        -150.0f, 0.0f, 150.0f
-    };
-        private float[] player_to_locationY = new float[] // [player]
-        {
-        -124.0f, -224.0f
-        };
+        Text[] player_to_playerChar;
+        Image[] player_to_face;
+        Text[] player_to_name;
+        bool[] player_to_cursorMoving;
+        Rigidbody2D[] player_to_rigidbody2Ds;//[プレイヤー番号]
+        AnimationCurve animCurve = AnimationCurve.Linear(0, 0, 1, 1);
+        int[] player_to_cursorColumn;
+        float[] boxColumn_to_locationX = new float[] { -150.0f, 0.0f, 150.0f };
+        float[] player_to_locationY = new float[] { -124.0f, -224.0f };
         #endregion
 
         void Start()
@@ -37,11 +26,11 @@ namespace SceneSelect
             transitionTime = 0;
             #region カーソル移動
             player_to_cursorColumn = new int[] { 0, 0 };
-            player_to_cursor = new Text[] { player0, player1 };
-            player_to_face = new Image[] { face0, face1 };
-            player_to_name = new Text[] { name0, name1 };
+            player_to_playerChar = new [] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1,(int)GameobjectIndex.Player]).GetComponent<Text>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Player]).GetComponent<Text>() };
+            player_to_face = new Image[] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1, (int)GameobjectIndex.Face]).GetComponent<Image>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Face]).GetComponent<Image>() };
+            player_to_name = new Text[] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1, (int)GameobjectIndex.Name]).GetComponent<Text>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Name]).GetComponent<Text>() };
             player_to_cursorMoving = new bool[] { false, false };
-            player_to_rigidbody2Ds = new Rigidbody2D[] { player0.GetComponent<Rigidbody2D>(), player1.GetComponent<Rigidbody2D>() };
+            player_to_rigidbody2Ds = new Rigidbody2D[] { player_to_playerChar[(int)PlayerIndex.Player1].GetComponent<Rigidbody2D>(), player_to_playerChar[(int)PlayerIndex.Player2].GetComponent<Rigidbody2D>() };
             ChangeCharacter((int)PlayerIndex.Player1);
             ChangeCharacter((int)PlayerIndex.Player2);
             #endregion
@@ -56,21 +45,21 @@ namespace SceneSelect
             for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
             {
                 //左キー: -1、右キー: 1
-                float leverX = Input.GetAxisRaw(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.Horizontal]);
+                float leverX = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.Horizontal]);
                 // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
-                float leverY = Input.GetAxisRaw(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.Vertical]);
+                float leverY = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.Vertical]);
 
                 if (
-                    !CommonScript.Player_To_Computer[iPlayer] // 人間プレイヤーの場合
+                    !CommonScript.Player_to_computer[iPlayer] // 人間プレイヤーの場合
                     &&
                     (
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.LightPunch]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.MediumPunch]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.HardPunch]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.LightKick]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.MediumKick]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.HardKick]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.Pause]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.LightPunch]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.MediumPunch]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.HardPunch]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.LightKick]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.MediumKick]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.HardKick]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.Pause]) ||
                     Input.GetButton(CommonScript.INPUT_10_CA)
                     ))
                 {
@@ -78,22 +67,22 @@ namespace SceneSelect
                     transitionTime = 1;
                 }
                 else if (
-                    CommonScript.Player_To_Computer[iPlayer] && // コンピュータープレイヤーの場合
+                    CommonScript.Player_to_computer[iPlayer] && // コンピュータープレイヤーの場合
                     (
                     0 != leverX ||
                     0 != leverY ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.LightPunch]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.MediumPunch]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.HardPunch]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.LightKick]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.MediumKick]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.HardKick]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.Pause]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.LightPunch]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.MediumPunch]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.HardPunch]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.LightKick]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.MediumKick]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.HardKick]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.Pause]) ||
                     Input.GetButton(CommonScript.INPUT_10_CA)
                     ))
                 {
                     // コンピューター・プレイヤー側のゲームパッドで、何かボタンを押したら、人間の参入。
-                    CommonScript.Player_To_Computer[iPlayer] = false;
+                    CommonScript.Player_to_computer[iPlayer] = false;
                     // FIXME: 硬直時間を入れたい。
                 }
             }
@@ -104,7 +93,7 @@ namespace SceneSelect
 
                 if (5 == transitionTime)
                 {
-                    SceneManager.LoadScene(CommonScript.scene_to_name[(int)SceneIndex.Main]);
+                    SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Main]);
                 }
             }
 
@@ -114,13 +103,13 @@ namespace SceneSelect
                 // 入力
                 //左キー: -1、右キー: 1
                 float leverX;
-                if (CommonScript.Player_To_Computer[iPlayer])
+                if (CommonScript.Player_to_computer[iPlayer])
                 {
                     leverX = Random.Range(-1.0f, 1.0f);
                 }
                 else
                 {
-                    leverX = Input.GetAxisRaw(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.Horizontal]);
+                    leverX = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.Horizontal]);
                 }
 
                 if (!player_to_cursorMoving[iPlayer])//カーソル移動中でなければ。
@@ -169,13 +158,13 @@ namespace SceneSelect
         {
             // 選択キャラクター変更
             CharacterIndex character = SceneCommon.X_To_CharacterInSelectMenu[player_to_cursorColumn[iPlayer]];
-            CommonScript.Player_To_UseCharacter[iPlayer] = character;
+            CommonScript.Player_to_useCharacter[iPlayer] = character;
             // 顔変更
-            Sprite[] sprites = Resources.LoadAll<Sprite>(CommonScript.CharacterAndSlice_To_FaceSprites[(int)character, (int)ResultFaceSpriteIndex.All]);
-            string slice = CommonScript.CharacterAndSlice_To_FaceSprites[(int)character, (int)ResultFaceSpriteIndex.Win];
+            Sprite[] sprites = Resources.LoadAll<Sprite>(CommonScript.CharacterAndSlice_to_faceSprites[(int)character, (int)ResultFaceSpriteIndex.All]);
+            string slice = CommonScript.CharacterAndSlice_to_faceSprites[(int)character, (int)ResultFaceSpriteIndex.Win];
             player_to_face[iPlayer].sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(slice));
             // キャラクター名変更
-            player_to_name[iPlayer].text = SceneCommon.Character_To_Name[(int)CommonScript.Player_To_UseCharacter[iPlayer]];
+            player_to_name[iPlayer].text = SceneCommon.Character_To_Name[(int)CommonScript.Player_to_useCharacter[iPlayer]];
         }
 
         /// <summary>
@@ -192,23 +181,23 @@ namespace SceneSelect
         private IEnumerator StartSlideCoroutine(PlayerIndex player)
         {
             Vector3 inPosition = new Vector3(
-                box_to_locationX[player_to_cursorColumn[(int)player]],
+                boxColumn_to_locationX[player_to_cursorColumn[(int)player]],
                 player_to_locationY[(int)player],
                 0.0f);// スライドイン後の位置
             float duration = 1.0f;// スライド時間（秒）
 
             float startTime = Time.time;    // 開始時間
-            Vector3 startPos = player_to_cursor[(int)player].transform.localPosition;  // 開始位置
+            Vector3 startPos = player_to_playerChar[(int)player].transform.localPosition;  // 開始位置
             Vector3 moveDistance;            // 移動距離および方向
 
             moveDistance = (inPosition - startPos);
 
             while ((Time.time - startTime) < duration)
             {
-                player_to_cursor[(int)player].transform.localPosition = startPos + moveDistance * animCurve.Evaluate((Time.time - startTime) / duration);
+                player_to_playerChar[(int)player].transform.localPosition = startPos + moveDistance * animCurve.Evaluate((Time.time - startTime) / duration);
                 yield return 0;        // 1フレーム後、再開
             }
-            player_to_cursor[(int)player].transform.localPosition = startPos + moveDistance;
+            player_to_playerChar[(int)player].transform.localPosition = startPos + moveDistance;
             player_to_cursorMoving[(int)player] = false;
         }
     }

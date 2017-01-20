@@ -14,18 +14,18 @@ namespace SceneTitle
             for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
             {
                 if (
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.LightPunch]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.MediumPunch]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.HardPunch]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.LightKick]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.MediumKick]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.HardKick]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_To_InputName[iPlayer, (int)InputIndex.Pause]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.LightPunch]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.MediumPunch]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.HardPunch]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.LightKick]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.MediumKick]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.HardKick]) ||
+                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.Pause]) ||
                     Input.GetButton(CommonScript.INPUT_10_CA)
                 )
                 {
-                    CommonScript.Player_To_Computer[iPlayer] = false;
-                    SceneManager.LoadScene(CommonScript.scene_to_name[(int)SceneIndex.Select]);
+                    CommonScript.Player_to_computer[iPlayer] = false;
+                    SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Select]);
                 }
             }
 

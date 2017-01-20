@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SceneMain
 {
@@ -8,15 +6,15 @@ namespace SceneMain
     {
 
         public int playerIndex;
-        private Main_PlayerScript playerScript;
+        Main_PlayerScript playerScript;
         #region 効果音
-        private AudioSource audioSource;
+        AudioSource audioSource;
         #endregion
 
         // Use this for initialization
         void Start()
         {
-            playerScript = GameObject.Find(SceneCommon.Player_To_Tag[playerIndex]).GetComponent<Main_PlayerScript>();
+            playerScript = GameObject.Find(SceneCommon.Player_to_tag[playerIndex]).GetComponent<Main_PlayerScript>();
             #region 効果音
             audioSource = GetComponent<AudioSource>();
             #endregion
@@ -33,11 +31,11 @@ namespace SceneMain
         void OnTriggerEnter2D(Collider2D col)
         {
             #region 当たり判定
-            if (col.tag == playerScript.opponentHitboxTag)// 相手の　攻撃当たり判定くん　が重なった時
+            if (col.tag == playerScript.OpponentHitboxTag)// 相手の　攻撃当たり判定くん　が重なった時
             {
                 Debug.Log("当たった☆！ col.tag = " + col.tag);
 
-                playerScript.damageHitCount++;// 攻撃を受けた回数。
+                playerScript.DamageHitCount++;// 攻撃を受けた回数。
 
                 // 効果音を鳴らすぜ☆
                 audioSource.PlayOneShot(audioSource.clip);
@@ -47,12 +45,12 @@ namespace SceneMain
 
                 // ＨＰメーター
                 {
-                    float damage = playerScript.mainCameraScript.player_to_attackPower[(int)playerScript.opponent];
+                    float damage = playerScript.MainCameraScript.Player_to_attackPower[(int)playerScript.Opponent];
 
                     float value = damage * (playerIndex == (int)PlayerIndex.Player1 ? -1 : 1);
-                    playerScript.mainCameraScript.OffsetBar(value);
+                    playerScript.MainCameraScript.OffsetBar(value);
 
-                    if (10 <= playerScript.damageHitCount)
+                    if (10 <= playerScript.DamageHitCount)
                     {
                         // ダウン・アニメーションの開始
                         playerScript.Pull_Down();
@@ -77,7 +75,7 @@ namespace SceneMain
                 // 手番
                 {
                     // 攻撃を受けた方の手番に変わるぜ☆（＾▽＾）
-                    playerScript.mainCameraScript.SetTeban(playerScript.opponent);
+                    playerScript.MainCameraScript.SetTeban(playerScript.Opponent);
                 }
             }
             else

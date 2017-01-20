@@ -8,7 +8,6 @@ using UnityEngine;
 /// </summary>
 namespace SceneMain
 {
-    #region アニメーターのステート名
     /// <summary>
     /// Animator の State に一対一対応☆
     /// </summary>
@@ -93,7 +92,6 @@ namespace SceneMain
 
         Num,
     }
-    #endregion
 
     /// <summary>
     /// アニメーターのステート

@@ -12,6 +12,7 @@ public class TakoyakiTokenScript : MonoBehaviour
     /// プレハブは必ず"Resources/Prefabs/"に配置すること.
     public static GameObject GetPrefab(GameObject prefab, string name)
     {
+        // 既存ならそのまま使い、既存でなければロードしてくる。
         return prefab ?? (prefab = Resources.Load("Prefabs/" + name) as GameObject);
     }
 

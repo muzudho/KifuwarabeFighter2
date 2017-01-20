@@ -97,7 +97,7 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
             if(2.0f<=stateInfo.normalizedTime % 1 * animator.GetCurrentAnimatorClipInfo(0)[0].clip.frameRate)
             {
                 Main_PlayerScript script = animator.gameObject.GetComponent<Main_PlayerScript>();
-                if (!script.mainCameraScript.IsResignCalled)
+                if (!script.MainCameraScript.IsResignCalled)
                 {
                     script.ResignCall();
                 }
@@ -121,7 +121,7 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
             animator.SetBool(SceneCommon.BOOL_GIVEUPING, false);
 
             Main_PlayerScript script = animator.gameObject.GetComponent<Main_PlayerScript>();
-            script.isResign = true;
+            script.IsResign = true;
         }
         //else if (
         //    stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkLP].name) ||
