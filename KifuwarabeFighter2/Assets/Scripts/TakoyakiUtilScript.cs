@@ -1,6 +1,7 @@
 ﻿/// The license of this file is unknown. Author: 2dgames_jp
 /// 出典 http://qiita.com/2dgames_jp/items/11bb76167fb44bb5af5f
 using UnityEngine;
+using SceneMain;
 
 /// 様々なユーティリティ.
 public class TakoyakiUtilScript
@@ -19,8 +20,8 @@ public class TakoyakiUtilScript
     /// 入力方向を取得する.
     public static Vector2 GetInputVector()
     {
-        float x = Input.GetAxisRaw(CommonScript.BUTTON_01_P0_HO);
-        float y = Input.GetAxisRaw(CommonScript.BUTTON_02_P0_VE);
+        float x = Input.GetAxisRaw(CommonScript.PlayerAndInput_To_InputName[(int)PlayerIndex.Player1,(int)InputIndex.Horizontal]);
+        float y = Input.GetAxisRaw(CommonScript.PlayerAndInput_To_InputName[(int)PlayerIndex.Player1, (int)InputIndex.Vertical]);
         return new Vector2(x, y).normalized;
     }
 

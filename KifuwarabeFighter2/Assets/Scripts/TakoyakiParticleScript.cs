@@ -2,6 +2,7 @@
 /// 出典 http://qiita.com/2dgames_jp/items/11bb76167fb44bb5af5f
 using UnityEngine;
 using System.Collections;
+using SceneMain;
 
 /// パーティクル
 public class TakoyakiParticleScript : TakoyakiTokenScript
@@ -12,7 +13,7 @@ public class TakoyakiParticleScript : TakoyakiTokenScript
     public static TakoyakiParticleScript Add(float x, float y)
     {
         // プレハブを取得
-        m_prefab_ = GetPrefab(m_prefab_, CommonScript.Prefab_TakoyakiParticle0);
+        m_prefab_ = GetPrefab(m_prefab_, SceneCommon.Prefab_TakoyakiParticle0);
         // プレハブからインスタンスを生成
         return CreateInstance2<TakoyakiParticleScript>(m_prefab_, x, y);
     }
