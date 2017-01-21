@@ -20,8 +20,8 @@ public class TakoyakiUtilScript
     /// 入力方向を取得する.
     public static Vector2 GetInputVector()
     {
-        float x = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[(int)PlayerIndex.Player1,(int)InputIndex.Horizontal]);
-        float y = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[(int)PlayerIndex.Player1, (int)InputIndex.Vertical]);
+        float x = Input.GetAxisRaw(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player1,(int)InputIndex.Horizontal]);
+        float y = Input.GetAxisRaw(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player1, (int)InputIndex.Vertical]);
         return new Vector2(x, y).normalized;
     }
 

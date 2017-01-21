@@ -12,7 +12,7 @@ namespace SceneMain
 
         public bool isComputer;
         public GameObject bullet;
-        Animator animator;
+        Animator animator; public Animator Animator { get { return animator; } }
         Main_CameraScript mainCameraScript; public Main_CameraScript MainCameraScript { get { return mainCameraScript; } }
 
         #region 当たり判定
@@ -69,34 +69,25 @@ namespace SceneMain
 
         void Update()
         {
+            //if ((int)PlayerIndex.Player1 == playerIndex)
+            //{
+            //    Debug.Log("Update Time.deltaTime = " + Time.deltaTime);
+            //}
+
             // 現在のアニメーター・ステートに紐づいたデータ
             AstateRecord astateRecord = AstateDatabase.GetCurrentAstateRecord(animator);
 
             #region 入力受付
-            float leverX;
-            float leverY;
-            bool buttonDownLP = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.LightPunch]);
-            bool buttonDownMP = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.MediumPunch]);
-            bool buttonDownHP = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.HardPunch]);
-            bool buttonDownLK = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.LightKick]);
-            bool buttonDownMK = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.MediumKick]);
-            bool buttonDownHK = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.HardKick]);
-            bool buttonDownPA = Input.GetButtonDown(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Pause]);
-            bool buttonUpLP = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.LightPunch]);
-            bool buttonUpMP = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.MediumPunch]);
-            bool buttonUpHP = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.HardPunch]);
-            bool buttonUpLK = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.LightKick]);
-            bool buttonUpMK = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.MediumKick]);
-            bool buttonUpHK = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.HardKick]);
-            bool buttonUpPA = Input.GetButtonUp(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Pause]);
+            CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
+            
             if (isComputer)
             {
-                if (buttonDownLP || buttonDownMP || buttonDownHP || buttonDownLK || buttonDownMK || buttonDownHK || buttonDownPA)
+                if (input.buttonDownLP || input.buttonDownMP || input.buttonDownHP || input.buttonDownLK || input.buttonDownMK || input.buttonDownHK || input.buttonDownPA)
                 {
                     // 人間プレイヤーの乱入☆ 次のフレームから☆
                     isComputer = false;
-                    leverX = 0;
-                    leverY = 0;
+                    input.leverX = 0;
+                    input.leverY = 0;
                     animator.SetBool(SceneCommon.BOOL_PUSHING_LP, false);
                     animator.SetBool(SceneCommon.BOOL_PUSHING_MP, false);
                     animator.SetBool(SceneCommon.BOOL_PUSHING_HP, false);
@@ -108,114 +99,107 @@ namespace SceneMain
                 else
                 {
                     // コンピューター・プレイヤーの場合。
-                    leverX = Random.Range(-1.0f, 1.0f);
-                    leverY = Random.Range(-1.0f, 1.0f);
-                    if (-0.980f < leverX && leverX < 0.980f)
+                    input.leverX = Random.Range(-1.0f, 1.0f);
+                    input.leverY = Random.Range(-1.0f, 1.0f);
+                    if (-0.980f < input.leverX && input.leverX < 0.980f)
                     {
                         // きょろきょろするので落ち着かせるぜ☆（＾～＾）
-                        leverX = 0.0f;
+                        input.leverX = 0.0f;
                     }
 
-                    if (-0.995f < leverY && leverY < 0.995f)
+                    if (-0.995f < input.leverY && input.leverY < 0.995f)
                     {
                         // ジャンプばっかりするので落ち着かせるぜ☆（＾～＾）
-                        leverY = 0.0f;
+                        input.leverY = 0.0f;
                     }
 
                     if (animator.GetBool(SceneCommon.BOOL_PUSHING_LP))
                     {
-                        buttonUpLP = (0.900f < Random.Range(0.0f, 1.0f));
+                        input.buttonUpLP = (0.900f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        buttonUpLP = false;
-                        buttonDownLP = (0.900f < Random.Range(0.0f, 1.0f));
+                        input.buttonUpLP = false;
+                        input.buttonDownLP = (0.900f < Random.Range(0.0f, 1.0f));
                     }
 
                     if (animator.GetBool(SceneCommon.BOOL_PUSHING_MP))
                     {
-                        buttonUpMP = (0.990f < Random.Range(0.0f, 1.0f));
+                        input.buttonUpMP = (0.990f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        buttonUpMP = false;
-                        buttonDownMP = (0.990f < Random.Range(0.0f, 1.0f));
+                        input.buttonUpMP = false;
+                        input.buttonDownMP = (0.990f < Random.Range(0.0f, 1.0f));
                     }
 
                     if (animator.GetBool(SceneCommon.BOOL_PUSHING_HP))
                     {
-                        buttonUpHP = (0.995f < Random.Range(0.0f, 1.0f));
+                        input.buttonUpHP = (0.995f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        buttonUpHP = false;
-                        buttonDownHP = (0.995f < Random.Range(0.0f, 1.0f));
+                        input.buttonUpHP = false;
+                        input.buttonDownHP = (0.995f < Random.Range(0.0f, 1.0f));
                     }
 
                     if (animator.GetBool(SceneCommon.BOOL_PUSHING_LK))
                     {
-                        buttonUpLK = (0.900f < Random.Range(0.0f, 1.0f));
+                        input.buttonUpLK = (0.900f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        buttonUpLK = false;
-                        buttonDownLK = (0.900f < Random.Range(0.0f, 1.0f));
+                        input.buttonUpLK = false;
+                        input.buttonDownLK = (0.900f < Random.Range(0.0f, 1.0f));
                     }
 
                     if (animator.GetBool(SceneCommon.BOOL_PUSHING_MK))
                     {
-                        buttonUpMK = (0.990f < Random.Range(0.0f, 1.0f));
+                        input.buttonUpMK = (0.990f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        buttonUpMK = false;
-                        buttonDownMK = (0.990f < Random.Range(0.0f, 1.0f));
+                        input.buttonUpMK = false;
+                        input.buttonDownMK = (0.990f < Random.Range(0.0f, 1.0f));
                     }
 
                     if (animator.GetBool(SceneCommon.BOOL_PUSHING_HK))
                     {
-                        buttonUpHK = (0.995f < Random.Range(0.0f, 1.0f));
+                        input.buttonUpHK = (0.995f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        buttonUpHK = false;
-                        buttonDownHK = (0.995f < Random.Range(0.0f, 1.0f));
+                        input.buttonUpHK = false;
+                        input.buttonDownHK = (0.995f < Random.Range(0.0f, 1.0f));
                     }
                     //buttonUpPA = (0.999f < Random.Range(0.0f, 1.0f));
                     //buttonDownPA = (0.999f < Random.Range(0.0f, 1.0f));
                 }
             }
-            else
-            {
-                //左キー: -1、右キー: 1
-                leverX = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Horizontal]);
-                // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
-                leverY = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Vertical]);
-            }
 
             // 連打防止のフラグ解除
             {
-                if (buttonUpLP)
+                if (input.buttonUpLP)
                 {
                     animator.SetBool(SceneCommon.BOOL_PUSHING_LP, false);
                 }
-                if (buttonUpMP)
+                if (input.buttonUpMP)
                 {
                     animator.SetBool(SceneCommon.BOOL_PUSHING_MP, false);
                 }
-                if (buttonUpHP)
+                if (input.buttonUpHP)
                 {
                     animator.SetBool(SceneCommon.BOOL_PUSHING_HP, false);
                 }
-                if (buttonUpLK)
+                if (input.buttonUpLK)
                 {
                     animator.SetBool(SceneCommon.BOOL_PUSHING_LK, false);
                 }
-                if (buttonUpMK)
+                if (input.buttonUpMK)
                 {
                     animator.SetBool(SceneCommon.BOOL_PUSHING_MK, false);
                 }
-                if (buttonUpHK)
+                if (input.buttonUpHK)
                 {
                     animator.SetBool(SceneCommon.BOOL_PUSHING_HK, false);
                 }
@@ -245,22 +229,22 @@ namespace SceneMain
                 (3 == animator.GetInteger(SceneCommon.INTEGER_LEVER_X_NEUTRAL) % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
                 &&
                 (
-                    buttonDownLP ||
-                    buttonDownMP ||
-                    buttonDownHP ||
-                    buttonDownLK ||
-                    buttonDownMK ||
-                    buttonDownHK
+                    input.buttonDownLP ||
+                    input.buttonDownMP ||
+                    input.buttonDownHP ||
+                    input.buttonDownLK ||
+                    input.buttonDownMK ||
+                    input.buttonDownHK
                 )
             )
             {
                 float startY;
 
-                if (0 < leverY)// 上段だぜ☆
+                if (0 < input.leverY)// 上段だぜ☆
                 {
                     startY = 1.2f;
                 }
-                else if (0 == leverY)// 中段だぜ☆
+                else if (0 == input.leverY)// 中段だぜ☆
                 {
                     startY = 0.6f;
                 }
@@ -302,7 +286,7 @@ namespace SceneMain
 
             #region レバーの押下時間の更新
             // レバー・ニュートラル時間と、レバー・プレッシング時間は、8フレームほど重複する部分がある。
-            if (leverX != 0)//左か右を入力したら
+            if (input.leverX != 0)//左か右を入力したら
             {
                 animator.SetInteger(SceneCommon.INTEGER_LEVER_X_PRESSING, animator.GetInteger(SceneCommon.INTEGER_LEVER_X_PRESSING) + 1);
                 animator.SetInteger(SceneCommon.INTEGER_LEVER_X_NEUTRAL, 0);
@@ -323,7 +307,7 @@ namespace SceneMain
                 }
             }
 
-            if (0 != leverY)// 上か下キーを入力していたら
+            if (0 != input.leverY)// 上か下キーを入力していたら
             {
                 animator.SetInteger(SceneCommon.INTEGER_LEVER_Y_PRESSING, animator.GetInteger(SceneCommon.INTEGER_LEVER_Y_PRESSING) + 1);
                 animator.SetInteger(SceneCommon.INTEGER_LEVER_Y_NEUTRAL, 0);
@@ -348,25 +332,24 @@ namespace SceneMain
             #region レバー操作によるアクション
             //if (!anim.GetBool(CommonScript.BOOL_JMOVE0))//ジャンプ時の屈伸中ではないなら
             //{
-            if (leverX != 0)//左か右を入力したら
+            if (input.leverX != 0)//左か右を入力したら
             {
                 if (!astateRecord.attribute.HasFlag(AstateAttribute.BusyX))
                 {
                     //入力方向へ移動
-                    Rigidbody2D.velocity = new Vector2(Mathf.Sign(leverX) * speedX, Rigidbody2D.velocity.y);
+                    Rigidbody2D.velocity = new Vector2(Mathf.Sign(input.leverX) * speedX, Rigidbody2D.velocity.y);
                 }
 
-                FacingOpponentFwBk facingOpponentFwBk = GetFacingOpponentFwBk(leverX);
+                FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(input.leverX);
                 DoFacingOpponent(GetFacingOfOpponentLR());
+                //Debug.Log("さあ、どっちだ☆ input.leverX = " + input.leverX + " facingOpponentMoveFwBkSt = " + facingOpponentMoveFwBkSt + " Time.deltaTime = " + Time.deltaTime);
 
-                if (FacingOpponentFwBk.Forward == facingOpponentFwBk)
+                if (FacingOpponentMoveFwBkSt.Forward == facingOpponentMoveFwBkSt)// 相手に向かってレバーを倒したとき
                 {
-                    if ((int)PlayerIndex.Player1 == playerIndex)
-                    {
-                        Debug.Log("相手に向かっていくぜ☆");
-                    }
-
-                    // 相手に向かっていくとき
+                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //{
+                    //    Debug.Log("相手に向かっていくぜ☆ input.leverX = " + input.leverX);
+                    //}
 
                     Pull_Forward();
                     //if (isGrounded)// 接地していれば
@@ -385,15 +368,21 @@ namespace SceneMain
                     //    // 既にダッシュ中なら何もしない
                     //}
                 }
-                else
+                else if (FacingOpponentMoveFwBkSt.Back == facingOpponentMoveFwBkSt)// 相手と反対の方向にレバーを倒したとき（バックステップ）
                 {
-                    if ((int)PlayerIndex.Player1 == playerIndex)
-                    {
-                        Debug.Log("相手の反対側に向かっていくぜ☆");
-                    }
+                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //{
+                    //    Debug.Log("相手の反対側に向かっていくぜ☆ input.leverX = " + input.leverX);
+                    //}
 
-                    // 相手と反対の方向に移動するとき（バックステップ）
                     Pull_Back();
+                }
+                else // レバーを倒していない時（ここにはこない？）
+                {
+                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //{
+                    //    Debug.Log("止まっているぜ☆ input.leverX = " + input.leverX);
+                    //}
                 }
             }
             else// 左も右も入力していなかったら
@@ -424,11 +413,11 @@ namespace SceneMain
 
             //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
 
-            if (0 != leverY)// 上か下キーを入力していたら
+            if (0 != input.leverY)// 上か下キーを入力していたら
             {
                 if (!astateRecord.attribute.HasFlag(AstateAttribute.BusyY))
                 {
-                    if (0 < leverY)// 上キーを入力したら
+                    if (0 < input.leverY)// 上キーを入力したら
                     {
                         if (isGrounded)// 接地していれば
                         {
@@ -436,7 +425,7 @@ namespace SceneMain
                             Pull_Jump();
                         }
                     }
-                    else if (leverY < 0)// 下キーを入力したら
+                    else if (input.leverY < 0)// 下キーを入力したら
                     {
                         if (isGrounded)// 接地していれば
                         {
@@ -459,37 +448,37 @@ namespace SceneMain
             //    Resign();
             //}
             //else
-            if (buttonDownLP)
+            if (input.buttonDownLP)
             {
                 //Debug.Log("button BUTTON_03_P1_LP");
                 Pull_LightPunch();
             }
-            else if (buttonDownMP)
+            else if (input.buttonDownMP)
             {
                 //Debug.Log("button BUTTON_04_P1_MP");
                 Pull_MediumPunch();
             }
-            else if (buttonDownHP)
+            else if (input.buttonDownHP)
             {
                 //Debug.Log("button BUTTON_05_P1_HP");
                 Pull_HardPunch();
             }
-            else if (buttonDownLK)
+            else if (input.buttonDownLK)
             {
                 //Debug.Log("button BUTTON_06_P1_LK");
                 Pull_LightKick();
             }
-            else if (buttonDownMK)
+            else if (input.buttonDownMK)
             {
                 //Debug.Log("button BUTTON_07_P1_MK");
                 Pull_MediumKick();
             }
-            else if (buttonDownHK)
+            else if (input.buttonDownHK)
             {
                 //Debug.Log("button BUTTON_08_P1_HK");
                 Pull_HardKick();
             }
-            else if (buttonDownPA)
+            else if (input.buttonDownPA)
             {
                 //Debug.Log("button BUTTON_09_P1_PA");
             }
@@ -627,16 +616,25 @@ namespace SceneMain
             }
         }
 
-        FacingOpponentFwBk GetFacingOpponentFwBk(float leverX)
+        /// <summary>
+        /// 相手に向かって進んでいるか、相手から離れているか、こっちからは動いていないかを判定する。
+        /// </summary>
+        /// <param name="leverX"></param>
+        /// <returns></returns>
+        public FacingOpponentMoveFwBkSt GetFacingOpponentMoveFwBkSt(float leverX)
         {
+            if (0.0f==leverX)
+            {
+                return FacingOpponentMoveFwBkSt.Stay;
+            }
             if (Mathf.Sign(SceneCommon.Player_to_transform[(int)CommonScript.ReverseTeban((PlayerIndex)playerIndex)].position.x - transform.position.x)
                 ==
                 Mathf.Sign(leverX)
                 )
             {
-                return FacingOpponentFwBk.Forward;
+                return FacingOpponentMoveFwBkSt.Forward;
             }
-            return FacingOpponentFwBk.Back;
+            return FacingOpponentMoveFwBkSt.Back;
         }
         FacingOpponentLR GetFacingOfOpponentLR()
         {
@@ -685,7 +683,7 @@ namespace SceneMain
             float velocityY = speedY;// 上方向へ移動
 
             //左キー: -1、右キー: 1
-            float leverX = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Horizontal]);
+            float leverX = Input.GetAxisRaw(CommonInput.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Horizontal]);
 
             if (leverX != 0)//左か右を入力したら
             {

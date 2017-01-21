@@ -8,7 +8,7 @@ namespace SceneMain
         public int playerIndex;
         Main_PlayerScript playerScript;
         #region 効果音
-        AudioSource audioSource;
+        AudioSource[] audioSources;
         #endregion
 
         // Use this for initialization
@@ -16,7 +16,7 @@ namespace SceneMain
         {
             playerScript = GameObject.Find(SceneCommon.Player_to_tag[playerIndex]).GetComponent<Main_PlayerScript>();
             #region 効果音
-            audioSource = GetComponent<AudioSource>();
+            audioSources = GetComponents<AudioSource>();
             #endregion
         }
 
@@ -33,49 +33,66 @@ namespace SceneMain
             #region 当たり判定
             if (col.tag == playerScript.OpponentHitboxTag)// 相手の　攻撃当たり判定くん　が重なった時
             {
-                //Debug.Log("当たった☆！ col.tag = " + col.tag);
 
-                playerScript.DamageHitCount++;// 攻撃を受けた回数。
-
-                // 効果音を鳴らすぜ☆
-                audioSource.PlayOneShot(audioSource.clip);
-
-                // 爆発の粒子を作るぜ☆
-                TakoyakiParticleScript.Add(transform.position.x, transform.position.y);
-
-                // ＨＰメーター
+                // ブロックしているかどうか判定☆
+                //CommonInput.PlayerInput input = CommonInput.player_to_input[playerIndex];
+                CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
+                if (FacingOpponentMoveFwBkSt.Back == playerScript.GetFacingOpponentMoveFwBkSt(input.leverX))
                 {
-                    float damage = playerScript.MainCameraScript.Player_to_attackPower[(int)playerScript.Opponent];
-
-                    float value = damage * (playerIndex == (int)PlayerIndex.Player1 ? -1 : 1);
-                    playerScript.MainCameraScript.OffsetBar(value);
-
-                    if (10 <= playerScript.DamageHitCount)
-                    {
-                        // ダウン・アニメーションの開始
-                        playerScript.Pull_Down();
-                    }
-                    else if (100.0f <= damage)
-                    {
-                        // ダメージ・アニメーションの開始
-                        playerScript.Pull_DamageH();
-                    }
-                    else if (50.0f <= damage)
-                    {
-                        // ダメージ・アニメーションの開始
-                        playerScript.Pull_DamageM();
-                    }
-                    else
-                    {
-                        // ダメージ・アニメーションの開始
-                        playerScript.Pull_DamageL();
-                    }
+                    //if ((int)PlayerIndex.Player1==playerIndex)
+                    //{
+                    //    Debug.Log("ブロック☆！ col.tag = " + col.tag + " input.leverX = " + input.leverX + " Time.deltaTime = " + Time.deltaTime);
+                    //}
+                    audioSources[1].PlayOneShot(audioSources[1].clip);// 効果音を鳴らすぜ☆
+                    playerScript.Animator.SetTrigger(SceneCommon.TRIGGER_BLOCK);
                 }
-
-                // 手番
+                else
                 {
-                    // 攻撃を受けた方の手番に変わるぜ☆（＾▽＾）
-                    playerScript.MainCameraScript.SetTeban(playerScript.Opponent);
+                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //{
+                    //    Debug.Log("痛っ☆！ col.tag = " + col.tag + " input.leverX = " + input.leverX + " Time.deltaTime = " + Time.deltaTime);
+                    //}
+                    playerScript.DamageHitCount++;// 攻撃を受けた回数。
+
+                    audioSources[0].PlayOneShot(audioSources[0].clip);// 効果音を鳴らすぜ☆
+
+                    // 爆発の粒子を作るぜ☆
+                    TakoyakiParticleScript.Add(transform.position.x, transform.position.y);
+
+                    // ＨＰメーター
+                    {
+                        float damage = playerScript.MainCameraScript.Player_to_attackPower[(int)playerScript.Opponent];
+
+                        float value = damage * (playerIndex == (int)PlayerIndex.Player1 ? -1 : 1);
+                        playerScript.MainCameraScript.OffsetBar(value);
+
+                        if (10 <= playerScript.DamageHitCount)
+                        {
+                            // ダウン・アニメーションの開始
+                            playerScript.Pull_Down();
+                        }
+                        else if (100.0f <= damage)
+                        {
+                            // ダメージ・アニメーションの開始
+                            playerScript.Pull_DamageH();
+                        }
+                        else if (50.0f <= damage)
+                        {
+                            // ダメージ・アニメーションの開始
+                            playerScript.Pull_DamageM();
+                        }
+                        else
+                        {
+                            // ダメージ・アニメーションの開始
+                            playerScript.Pull_DamageL();
+                        }
+                    }
+
+                    // 手番
+                    {
+                        // 攻撃を受けた方の手番に変わるぜ☆（＾▽＾）
+                        playerScript.MainCameraScript.SetTeban(playerScript.Opponent);
+                    }
                 }
             }
             else

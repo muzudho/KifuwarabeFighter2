@@ -43,12 +43,13 @@ namespace SceneMain
         Time,
     }
     /// <summary>
-    /// 相手に向かっていっているかどうか。めんどうなので、相手に重なっている、Equal は無しで。
+    /// 相手に向かっていっているかどうか。動いていないときは Stay で☆
     /// </summary>
-    public enum FacingOpponentFwBk
+    public enum FacingOpponentMoveFwBkSt
     {
         Forward,
-        Back
+        Back,
+        Stay
     }
     /// <summary>
     /// 相手は左か右か。めんどうなので、相手に重なっている、Equal は無しで。
@@ -77,6 +78,7 @@ namespace SceneMain
         public const string TRIGGER_DAMAGE_M = "damageM";
         public const string TRIGGER_DAMAGE_H = "damageH";
         public const string TRIGGER_GIVEUP = "giveup";
+        public const string TRIGGER_BLOCK = "block";
 
         public const string BOOL_PUSHING_LP = "pushingLP";
         public const string BOOL_PUSHING_MP = "pushingMP";

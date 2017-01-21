@@ -252,12 +252,6 @@ namespace SceneMain
             }
             #endregion
 
-            //// 当たり判定くん
-            //for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
-            //{
-            //    UpdateHitbox2D((PlayerIndex)iPlayer);
-            //}
-
             #region 時間制限
             if (!isRoundFinished)
             {

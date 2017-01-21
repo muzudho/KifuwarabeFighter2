@@ -14,14 +14,14 @@ namespace SceneTitle
             for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
             {
                 if (
-                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.LightPunch]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.MediumPunch]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.HardPunch]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.LightKick]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.MediumKick]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.HardKick]) ||
-                    Input.GetButton(CommonScript.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.Pause]) ||
-                    Input.GetButton(CommonScript.INPUT_10_CA)
+                    Input.GetButton(CommonInput.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.LightPunch]) ||
+                    Input.GetButton(CommonInput.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.MediumPunch]) ||
+                    Input.GetButton(CommonInput.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.HardPunch]) ||
+                    Input.GetButton(CommonInput.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.LightKick]) ||
+                    Input.GetButton(CommonInput.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.MediumKick]) ||
+                    Input.GetButton(CommonInput.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.HardKick]) ||
+                    Input.GetButton(CommonInput.PlayerAndInput_to_inputName[iPlayer, (int)InputIndex.Pause]) ||
+                    Input.GetButton(CommonInput.INPUT_10_CA)
                 )
                 {
                     CommonScript.Player_to_computer[iPlayer] = false;

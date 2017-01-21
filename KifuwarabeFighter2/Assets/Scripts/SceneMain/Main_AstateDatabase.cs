@@ -135,9 +135,9 @@ namespace SceneMain
             {
                 {AstateIndex.SWait, new AstateRecord(  "Base Layer.", "SWait", AcliptypeIndex.SWait,AstateAttribute.None)},
                 {AstateIndex.SMove,  new AstateRecord(  "Base Layer.", "SMove", AcliptypeIndex.SMove,AstateAttribute.None)},
-                {AstateIndex.SBlockL,  new AstateRecord(  "Base Layer.", "SBlockL", AcliptypeIndex.SBlockL,AstateAttribute.None)},
-                {AstateIndex.SBlockM,  new AstateRecord(  "Base Layer.", "SBlockM", AcliptypeIndex.SBlockM,AstateAttribute.None)},
-                {AstateIndex.SBlockH,  new AstateRecord(  "Base Layer.", "SBlockH", AcliptypeIndex.SBlockH,AstateAttribute.None)},
+                {AstateIndex.SBlockL,  new AstateRecord(  "Base Layer.", "SBlockL", AcliptypeIndex.SBlockL,AstateAttribute.BusyX)},
+                {AstateIndex.SBlockM,  new AstateRecord(  "Base Layer.", "SBlockM", AcliptypeIndex.SBlockM,AstateAttribute.BusyX)},
+                {AstateIndex.SBlockH,  new AstateRecord(  "Base Layer.", "SBlockH", AcliptypeIndex.SBlockH,AstateAttribute.BusyX)},
                 {AstateIndex.SAtkLP,  new AstateRecord(  "Base Layer.", "SAtkLP", AcliptypeIndex.SAtkLP,AstateAttribute.BusyX)},
                 {AstateIndex.SAtkMP,  new AstateRecord(  "Base Layer.", "SAtkMP", AcliptypeIndex.SAtkMP,AstateAttribute.BusyX)},
                 {AstateIndex.SAtkHP,  new AstateRecord( "Base Layer.", "SAtkHP",  AcliptypeIndex.SAtkHP,AstateAttribute.BusyX)},
@@ -147,9 +147,9 @@ namespace SceneMain
 
                 {AstateIndex.OBackstep,  new AstateRecord(  "Base Layer.", "OBackstep", AcliptypeIndex.OBackstep,AstateAttribute.None)},
 
-                {AstateIndex.JBlockL,  new AstateRecord(  "Base Layer.", "JBlockL", AcliptypeIndex.JBlockL,AstateAttribute.None)},
-                {AstateIndex.JBlockM,  new AstateRecord(  "Base Layer.", "JBlockM", AcliptypeIndex.JBlockM,AstateAttribute.None)},
-                {AstateIndex.JBlockH,  new AstateRecord(  "Base Layer.", "JBlockH", AcliptypeIndex.JBlockH,AstateAttribute.None)},
+                {AstateIndex.JBlockL,  new AstateRecord(  "Base Layer.", "JBlockL", AcliptypeIndex.JBlockL,AstateAttribute.BusyX)},
+                {AstateIndex.JBlockM,  new AstateRecord(  "Base Layer.", "JBlockM", AcliptypeIndex.JBlockM,AstateAttribute.BusyX)},
+                {AstateIndex.JBlockH,  new AstateRecord(  "Base Layer.", "JBlockH", AcliptypeIndex.JBlockH,AstateAttribute.BusyX)},
                 {AstateIndex.JAtkLP,  new AstateRecord(  "Base Layer.", "JAtkLP", AcliptypeIndex.JAtkLP,AstateAttribute.None)},
                 {AstateIndex.JAtkMP,  new AstateRecord(  "Base Layer.", "JAtkMP", AcliptypeIndex.JAtkMP,AstateAttribute.None)},
                 {AstateIndex.JAtkHP,  new AstateRecord(  "Base Layer.", "JAtkHP", AcliptypeIndex.JAtkHP,AstateAttribute.None)},
@@ -163,9 +163,9 @@ namespace SceneMain
                 {AstateIndex.JMove3,  new AstateRecord(  "Base Layer.JMove.", "JMove3", AcliptypeIndex.JMove3,AstateAttribute.None)},
                 {AstateIndex.JMove4,  new AstateRecord(  "Base Layer.JMove.", "JMove4", AcliptypeIndex.JMove4,AstateAttribute.BusyX)},
 
-                {AstateIndex.DBlockL,  new AstateRecord(  "Base Layer.", "DBlockL", AcliptypeIndex.DBlockL,AstateAttribute.None)},
-                {AstateIndex.DBlockM,  new AstateRecord(  "Base Layer.", "DBlockM", AcliptypeIndex.DBlockM,AstateAttribute.None)},
-                {AstateIndex.DBlockH,  new AstateRecord(  "Base Layer.", "DBlockH", AcliptypeIndex.DBlockH,AstateAttribute.None)},
+                {AstateIndex.DBlockL,  new AstateRecord(  "Base Layer.", "DBlockL", AcliptypeIndex.DBlockL,AstateAttribute.BusyX)},
+                {AstateIndex.DBlockM,  new AstateRecord(  "Base Layer.", "DBlockM", AcliptypeIndex.DBlockM,AstateAttribute.BusyX)},
+                {AstateIndex.DBlockH,  new AstateRecord(  "Base Layer.", "DBlockH", AcliptypeIndex.DBlockH,AstateAttribute.BusyX)},
                 {AstateIndex.DAtkLP,  new AstateRecord(  "Base Layer.", "DAtkLP", AcliptypeIndex.DAtkLP,AstateAttribute.None)},
                 {AstateIndex.DAtkMP,  new AstateRecord(  "Base Layer.", "DAtkMP", AcliptypeIndex.DAtkMP,AstateAttribute.None)},
                 {AstateIndex.DAtkHP,  new AstateRecord(  "Base Layer.", "DAtkHP", AcliptypeIndex.DAtkHP,AstateAttribute.None)},
@@ -175,9 +175,9 @@ namespace SceneMain
 
                 {AstateIndex.DMove,  new AstateRecord(  "Base Layer.", "DMove", AcliptypeIndex.DMove,AstateAttribute.None)},
 
-                {AstateIndex.CBlockL,  new AstateRecord(  "Base Layer.", "CBlockL", AcliptypeIndex.CBlockL,AstateAttribute.None)},
-                {AstateIndex.CBlockM,  new AstateRecord(  "Base Layer.", "CBlockM", AcliptypeIndex.CBlockM,AstateAttribute.None)},
-                {AstateIndex.CBlockH,  new AstateRecord(  "Base Layer.", "CBlockH", AcliptypeIndex.CBlockH,AstateAttribute.None)},
+                {AstateIndex.CBlockL,  new AstateRecord(  "Base Layer.", "CBlockL", AcliptypeIndex.CBlockL,AstateAttribute.BusyX)},
+                {AstateIndex.CBlockM,  new AstateRecord(  "Base Layer.", "CBlockM", AcliptypeIndex.CBlockM,AstateAttribute.BusyX)},
+                {AstateIndex.CBlockH,  new AstateRecord(  "Base Layer.", "CBlockH", AcliptypeIndex.CBlockH,AstateAttribute.BusyX)},
                 {AstateIndex.CAtkLP,  new AstateRecord(  "Base Layer.", "CAtkLP", AcliptypeIndex.CAtkLP,AstateAttribute.BusyX)},
                 {AstateIndex.CAtkMP,  new AstateRecord(  "Base Layer.", "CAtkMP", AcliptypeIndex.CAtkMP,AstateAttribute.BusyX)},
                 {AstateIndex.CAtkHP,  new AstateRecord(  "Base Layer.", "CAtkHP", AcliptypeIndex.CAtkHP,AstateAttribute.BusyX)},

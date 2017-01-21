@@ -43,41 +43,50 @@ namespace SceneSelect
             // 現在のアニメーター・ステートに紐づいたデータ
             AstateRecord astateRecord = AstateDatabase.GetCurrentAstateRecord(animator);
 
-            #region 入力受付
-            // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
-            float leverY = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Vertical]);
-            float leverX; //左キー: -1、右キー: 1
-            bool inputLP;
-            bool inputMP;
-            bool inputHP;
-            bool inputLK;
-            bool inputMK;
-            bool inputHK;
-            bool inputPA;
-            bool inputCA;
+            #region 入力受付と途中参加
+            CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
+
+            // 人間の途中参加受付
+            if (
+                CommonScript.Player_to_computer[playerIndex] && // コンピュータープレイヤーの場合
+                (
+                // レバーはコンピューターもいじっているので、区別できない。
+                // 0 != leverX ||
+                // 0 != leverY ||
+                0 != input.leverX ||
+                0 != input.leverY ||
+                input.pressingLP ||
+                input.pressingMP ||
+                input.pressingHP ||
+                input.pressingLK ||
+                input.pressingMK ||
+                input.pressingHK ||
+                input.pressingPA ||
+                input.pressingCA
+                ))
+            {
+                Debug.Log("途中参加 " + playerIndex + " プレイヤー" + " leverX = " + input.leverX + " leverY = " + input.leverY);
+                // コンピューター・プレイヤー側のゲームパッドで、何かボタンを押したら、人間の参入。
+                CommonScript.Player_to_computer[playerIndex] = false;
+                // FIXME: 硬直時間を入れたい。
+                return;
+            }
+
             if (CommonScript.Player_to_computer[playerIndex])
             {
-                leverX = Random.Range(-1.0f, 1.0f);
-                inputLP = false;
-                inputMP = false;
-                inputHP = false;
-                inputLK = false;
-                inputMK = false;
-                inputHK = false;
-                inputPA = false;
-                inputCA = false;
+                input.leverX = Random.Range(-1.0f, 1.0f);
+                input.pressingLP = false;
+                input.pressingMP = false;
+                input.pressingHP = false;
+                input.pressingLK = false;
+                input.pressingMK = false;
+                input.pressingHK = false;
+                input.pressingPA = false;
+                input.pressingCA = false;
             }
             else
             {
-                leverX = Input.GetAxisRaw(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Horizontal]);
-                inputLP = Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.LightPunch]);
-                inputMP = Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.MediumPunch]);
-                inputHP = Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.HardPunch]);
-                inputLK = Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.LightKick]);
-                inputMK = Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.MediumKick]);
-                inputHK = Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.HardKick]);
-                inputPA = Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Pause]);
-                inputCA = Input.GetButton(CommonScript.INPUT_10_CA);
+                input.leverX = Input.GetAxisRaw(CommonInput.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Horizontal]);
             }
             #endregion
 
@@ -89,31 +98,27 @@ namespace SceneSelect
                 {
                     if (Select_CameraScript.READY_TIME_LENGTH < mainCameraScript.ReadyingTime)
                     {
-                        inputLP = (0.5 < Random.Range(0.0f, 1.0f)); // たまにパンチ・キーを押して決定する。
+                        input.pressingLP = (0.5 < Random.Range(0.0f, 1.0f)); // たまにパンチ・キーを押して決定する。
                     }
                 }
 
                 if (
-                    //!CommonScript.Player_to_computer[playerIndex] // 人間プレイヤーの場合
-                    //&&
-                    //(
-                    inputLP ||
-                    inputMP ||
-                    inputHP ||
-                    inputLK ||
-                    inputMK ||
-                    inputHK ||
-                    inputPA
-                    //)
+                    input.pressingLP ||
+                    input.pressingMP ||
+                    input.pressingHP ||
+                    input.pressingLK ||
+                    input.pressingMK ||
+                    input.pressingHK ||
+                    input.pressingPA
                     )
                 {
                     // 何かボタンを押したら、キャラクター選択。
                     animator.SetTrigger(SceneCommon.TRIGGER_SELECT);
                 }
-                else if (leverX != 0.0f)//左か右を入力したら
+                else if (input.leverX != 0.0f)//左か右を入力したら
                 {
                     //Debug.Log("slide lever x = " + leverX.ToString());
-                    if (leverX < 0.0f)
+                    if (input.leverX < 0.0f)
                     {
                         cursorColumn--;
                         if (cursorColumn < 0)
@@ -157,38 +162,15 @@ namespace SceneSelect
                     !CommonScript.Player_to_computer[playerIndex] // 人間プレイヤーの場合
                     &&
                     (
-                    inputLK ||
-                    inputMK ||
-                    inputHK ||
-                    inputCA
+                    input.pressingLK ||
+                    input.pressingMK ||
+                    input.pressingHK ||
+                    input.pressingCA
                     ))
                 {
                     // キック・ボタンを押したら、キャンセル☆
                     animator.SetTrigger(SceneCommon.TRIGGER_STAY);
                 }
-            }
-
-            // 人間の途中参加受付
-            if (
-                CommonScript.Player_to_computer[playerIndex] && // コンピュータープレイヤーの場合
-                (
-                // レバーはコンピューターもいじっているので、区別できない。
-                // 0 != leverX ||
-                // 0 != leverY ||
-                Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.LightPunch]) ||
-                Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.MediumPunch]) ||
-                Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.HardPunch]) ||
-                Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.LightKick]) ||
-                Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.MediumKick]) ||
-                Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.HardKick]) ||
-                Input.GetButton(CommonScript.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Pause]) ||
-                Input.GetButton(CommonScript.INPUT_10_CA)
-                ))
-            {
-                Debug.Log("途中参加 " + playerIndex + " プレイヤー" + " leverX = " + leverX + " leverY = " + leverY);
-                // コンピューター・プレイヤー側のゲームパッドで、何かボタンを押したら、人間の参入。
-                CommonScript.Player_to_computer[playerIndex] = false;
-                // FIXME: 硬直時間を入れたい。
             }
         }
 
