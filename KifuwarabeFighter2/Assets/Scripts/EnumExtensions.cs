@@ -8,7 +8,8 @@
 public static class EnumExtensions
 {
     /// <summary>
-    /// 現在のインスタンスで 1 つ以上のビット フィールドが設定されているかどうかを判断します
+    /// 現在のインスタンスで 1 つ以上のビット フィールドが設定されているかどうかを判断します。
+    /// 探される方.HasFlag(探したいもの)
     /// </summary>
     public static bool HasFlag(this Enum self, Enum flag)
     {

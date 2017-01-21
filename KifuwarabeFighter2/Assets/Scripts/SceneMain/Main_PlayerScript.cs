@@ -88,13 +88,6 @@ namespace SceneMain
                     isComputer = false;
                     input.leverX = 0;
                     input.leverY = 0;
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_LP, false);
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_MP, false);
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_HP, false);
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_LK, false);
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_MK, false);
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_HK, false);
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_PA, false);
                 }
                 else
                 {
@@ -113,7 +106,7 @@ namespace SceneMain
                         input.leverY = 0.0f;
                     }
 
-                    if (animator.GetBool(SceneCommon.BOOL_PUSHING_LP))
+                    if (input.pressingLP)
                     {
                         input.buttonUpLP = (0.900f < Random.Range(0.0f, 1.0f));
                     }
@@ -123,7 +116,7 @@ namespace SceneMain
                         input.buttonDownLP = (0.900f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (animator.GetBool(SceneCommon.BOOL_PUSHING_MP))
+                    if (input.pressingMP)
                     {
                         input.buttonUpMP = (0.990f < Random.Range(0.0f, 1.0f));
                     }
@@ -133,7 +126,7 @@ namespace SceneMain
                         input.buttonDownMP = (0.990f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (animator.GetBool(SceneCommon.BOOL_PUSHING_HP))
+                    if (input.pressingHP)
                     {
                         input.buttonUpHP = (0.995f < Random.Range(0.0f, 1.0f));
                     }
@@ -143,7 +136,7 @@ namespace SceneMain
                         input.buttonDownHP = (0.995f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (animator.GetBool(SceneCommon.BOOL_PUSHING_LK))
+                    if (input.pressingLK)
                     {
                         input.buttonUpLK = (0.900f < Random.Range(0.0f, 1.0f));
                     }
@@ -153,7 +146,7 @@ namespace SceneMain
                         input.buttonDownLK = (0.900f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (animator.GetBool(SceneCommon.BOOL_PUSHING_MK))
+                    if (input.pressingMK)
                     {
                         input.buttonUpMK = (0.990f < Random.Range(0.0f, 1.0f));
                     }
@@ -163,7 +156,7 @@ namespace SceneMain
                         input.buttonDownMK = (0.990f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (animator.GetBool(SceneCommon.BOOL_PUSHING_HK))
+                    if (input.pressingHK)
                     {
                         input.buttonUpHK = (0.995f < Random.Range(0.0f, 1.0f));
                     }
@@ -176,35 +169,19 @@ namespace SceneMain
                     //buttonDownPA = (0.999f < Random.Range(0.0f, 1.0f));
                 }
             }
+            #endregion
 
-            // 連打防止のフラグ解除
+            FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(input.leverX);
+
+            if (astateRecord.attribute.HasFlag(AstateDatabase.Attr.Block))
             {
-                if (input.buttonUpLP)
+                // ブロック中
+                if(FacingOpponentMoveFwBkSt.Back != facingOpponentMoveFwBkSt)
                 {
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_LP, false);
-                }
-                if (input.buttonUpMP)
-                {
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_MP, false);
-                }
-                if (input.buttonUpHP)
-                {
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_HP, false);
-                }
-                if (input.buttonUpLK)
-                {
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_LK, false);
-                }
-                if (input.buttonUpMK)
-                {
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_MK, false);
-                }
-                if (input.buttonUpHK)
-                {
-                    animator.SetBool(SceneCommon.BOOL_PUSHING_HK, false);
+                    // バックを解除している場合。
+                    animator.SetTrigger(SceneCommon.TRIGGER_DEBLOCK);
                 }
             }
-            #endregion
 
             #region ジャンプ
             {
@@ -334,13 +311,12 @@ namespace SceneMain
             //{
             if (input.leverX != 0)//左か右を入力したら
             {
-                if (!astateRecord.attribute.HasFlag(AstateAttribute.BusyX))
+                if (!astateRecord.attribute.HasFlag(AstateDatabase.Attr.BusyX))
                 {
                     //入力方向へ移動
                     Rigidbody2D.velocity = new Vector2(Mathf.Sign(input.leverX) * speedX, Rigidbody2D.velocity.y);
                 }
 
-                FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(input.leverX);
                 DoFacingOpponent(GetFacingOfOpponentLR());
                 //Debug.Log("さあ、どっちだ☆ input.leverX = " + input.leverX + " facingOpponentMoveFwBkSt = " + facingOpponentMoveFwBkSt + " Time.deltaTime = " + Time.deltaTime);
 
@@ -415,7 +391,7 @@ namespace SceneMain
 
             if (0 != input.leverY)// 上か下キーを入力していたら
             {
-                if (!astateRecord.attribute.HasFlag(AstateAttribute.BusyY))
+                if (!astateRecord.attribute.HasFlag(AstateDatabase.Attr.BusyY))
                 {
                     if (0 < input.leverY)// 上キーを入力したら
                     {

@@ -101,9 +101,9 @@ namespace SceneMain
         public string breadCrumb;
         public string name;
         public AcliptypeIndex acliptype;
-        public AstateAttribute attribute;
+        public AstateDatabase.Attr attribute;
 
-        public AstateRecord(string breadCrumb, string name, AcliptypeIndex acliptype, AstateAttribute attribute)
+        public AstateRecord(string breadCrumb, string name, AcliptypeIndex acliptype, AstateDatabase.Attr attribute)
         {
             this.breadCrumb = breadCrumb;
             this.name = name;
@@ -112,102 +112,108 @@ namespace SceneMain
         }
     }
 
-    [Flags]
-    public enum AstateAttribute
-    {
-        None = 0,
-        /// <summary>
-        /// キャラクターが、レバーのＸ軸の入力を受け取れる状態でないとき。
-        /// </summary>
-        BusyX = 0x01,
-        /// <summary>
-        /// キャラクターが、レバーのＹ軸の入力を受け取れる状態でないとき。
-        /// </summary>
-        BusyY = 0x01 << 1,
-    }
-
     public abstract class AstateDatabase
     {
+        /// <summary>
+        /// AstateAttribute. 略したいので子クラスとして名称を縮めた。
+        /// </summary>
+        [Flags]
+        public enum Attr
+        {
+            None = 0,
+            /// <summary>
+            /// キャラクターが、レバーのＸ軸の入力を受け取れる状態でないとき。
+            /// </summary>
+            BusyX = 0x01,
+            /// <summary>
+            /// キャラクターが、レバーのＹ軸の入力を受け取れる状態でないとき。
+            /// </summary>
+            BusyY = 0x01 << 1,
+            /// <summary>
+            /// ブロック・モーションなら
+            /// </summary>
+            Block = 0x01 << 2,
+        }
 
         static AstateDatabase()
         {
             index_to_record = new Dictionary<AstateIndex, AstateRecord>()
             {
-                {AstateIndex.SWait, new AstateRecord(  "Base Layer.", "SWait", AcliptypeIndex.SWait,AstateAttribute.None)},
-                {AstateIndex.SMove,  new AstateRecord(  "Base Layer.", "SMove", AcliptypeIndex.SMove,AstateAttribute.None)},
-                {AstateIndex.SBlockL,  new AstateRecord(  "Base Layer.", "SBlockL", AcliptypeIndex.SBlockL,AstateAttribute.BusyX)},
-                {AstateIndex.SBlockM,  new AstateRecord(  "Base Layer.", "SBlockM", AcliptypeIndex.SBlockM,AstateAttribute.BusyX)},
-                {AstateIndex.SBlockH,  new AstateRecord(  "Base Layer.", "SBlockH", AcliptypeIndex.SBlockH,AstateAttribute.BusyX)},
-                {AstateIndex.SAtkLP,  new AstateRecord(  "Base Layer.", "SAtkLP", AcliptypeIndex.SAtkLP,AstateAttribute.BusyX)},
-                {AstateIndex.SAtkMP,  new AstateRecord(  "Base Layer.", "SAtkMP", AcliptypeIndex.SAtkMP,AstateAttribute.BusyX)},
-                {AstateIndex.SAtkHP,  new AstateRecord( "Base Layer.", "SAtkHP",  AcliptypeIndex.SAtkHP,AstateAttribute.BusyX)},
-                {AstateIndex.SAtkLK,  new AstateRecord(  "Base Layer.", "SAtkLK", AcliptypeIndex.SAtkLK,AstateAttribute.BusyX)},
-                {AstateIndex.SAtkMK,  new AstateRecord(  "Base Layer.", "SAtkMK", AcliptypeIndex.SAtkMK,AstateAttribute.BusyX)},
-                {AstateIndex.SAtkHK,  new AstateRecord(  "Base Layer.", "SAtkHK", AcliptypeIndex.SAtkHK,AstateAttribute.BusyX)},
+                {AstateIndex.SWait, new AstateRecord(  "Base Layer.", "SWait", AcliptypeIndex.SWait,Attr.None)},
+                {AstateIndex.SMove,  new AstateRecord(  "Base Layer.", "SMove", AcliptypeIndex.SMove,Attr.None)},
+                {AstateIndex.SBlockL,  new AstateRecord(  "Base Layer.", "SBlockL", AcliptypeIndex.SBlockL, Attr.BusyX | Attr.Block)},
+                {AstateIndex.SBlockM,  new AstateRecord(  "Base Layer.", "SBlockM", AcliptypeIndex.SBlockM, Attr.BusyX | Attr.Block)},
+                {AstateIndex.SBlockH,  new AstateRecord(  "Base Layer.", "SBlockH", AcliptypeIndex.SBlockH, Attr.BusyX | Attr.Block)},
+                {AstateIndex.SAtkLP,  new AstateRecord(  "Base Layer.", "SAtkLP", AcliptypeIndex.SAtkLP,Attr.BusyX)},
+                {AstateIndex.SAtkMP,  new AstateRecord(  "Base Layer.", "SAtkMP", AcliptypeIndex.SAtkMP,Attr.BusyX)},
+                {AstateIndex.SAtkHP,  new AstateRecord( "Base Layer.", "SAtkHP",  AcliptypeIndex.SAtkHP,Attr.BusyX)},
+                {AstateIndex.SAtkLK,  new AstateRecord(  "Base Layer.", "SAtkLK", AcliptypeIndex.SAtkLK,Attr.BusyX)},
+                {AstateIndex.SAtkMK,  new AstateRecord(  "Base Layer.", "SAtkMK", AcliptypeIndex.SAtkMK,Attr.BusyX)},
+                {AstateIndex.SAtkHK,  new AstateRecord(  "Base Layer.", "SAtkHK", AcliptypeIndex.SAtkHK,Attr.BusyX)},
 
-                {AstateIndex.OBackstep,  new AstateRecord(  "Base Layer.", "OBackstep", AcliptypeIndex.OBackstep,AstateAttribute.None)},
+                {AstateIndex.OBackstep,  new AstateRecord(  "Base Layer.", "OBackstep", AcliptypeIndex.OBackstep,Attr.None)},
 
-                {AstateIndex.JBlockL,  new AstateRecord(  "Base Layer.", "JBlockL", AcliptypeIndex.JBlockL,AstateAttribute.BusyX)},
-                {AstateIndex.JBlockM,  new AstateRecord(  "Base Layer.", "JBlockM", AcliptypeIndex.JBlockM,AstateAttribute.BusyX)},
-                {AstateIndex.JBlockH,  new AstateRecord(  "Base Layer.", "JBlockH", AcliptypeIndex.JBlockH,AstateAttribute.BusyX)},
-                {AstateIndex.JAtkLP,  new AstateRecord(  "Base Layer.", "JAtkLP", AcliptypeIndex.JAtkLP,AstateAttribute.None)},
-                {AstateIndex.JAtkMP,  new AstateRecord(  "Base Layer.", "JAtkMP", AcliptypeIndex.JAtkMP,AstateAttribute.None)},
-                {AstateIndex.JAtkHP,  new AstateRecord(  "Base Layer.", "JAtkHP", AcliptypeIndex.JAtkHP,AstateAttribute.None)},
-                {AstateIndex.JAtkLK,  new AstateRecord(  "Base Layer.", "JAtkLK", AcliptypeIndex.JAtkLK,AstateAttribute.None)},
-                {AstateIndex.JAtkMK,  new AstateRecord( "Base Layer.", "JAtkMK",  AcliptypeIndex.JAtkMK,AstateAttribute.None)},
-                {AstateIndex.JAtkHK,  new AstateRecord(  "Base Layer.", "JAtkHK", AcliptypeIndex.JAtkHK,AstateAttribute.None)},
+                {AstateIndex.JBlockL,  new AstateRecord(  "Base Layer.", "JBlockL", AcliptypeIndex.JBlockL, Attr.BusyX | Attr.Block)},
+                {AstateIndex.JBlockM,  new AstateRecord(  "Base Layer.", "JBlockM", AcliptypeIndex.JBlockM, Attr.BusyX | Attr.Block)},
+                {AstateIndex.JBlockH,  new AstateRecord(  "Base Layer.", "JBlockH", AcliptypeIndex.JBlockH, Attr.BusyX | Attr.Block)},
+                {AstateIndex.JAtkLP,  new AstateRecord(  "Base Layer.", "JAtkLP", AcliptypeIndex.JAtkLP,Attr.None)},
+                {AstateIndex.JAtkMP,  new AstateRecord(  "Base Layer.", "JAtkMP", AcliptypeIndex.JAtkMP,Attr.None)},
+                {AstateIndex.JAtkHP,  new AstateRecord(  "Base Layer.", "JAtkHP", AcliptypeIndex.JAtkHP,Attr.None)},
+                {AstateIndex.JAtkLK,  new AstateRecord(  "Base Layer.", "JAtkLK", AcliptypeIndex.JAtkLK,Attr.None)},
+                {AstateIndex.JAtkMK,  new AstateRecord( "Base Layer.", "JAtkMK",  AcliptypeIndex.JAtkMK,Attr.None)},
+                {AstateIndex.JAtkHK,  new AstateRecord(  "Base Layer.", "JAtkHK", AcliptypeIndex.JAtkHK,Attr.None)},
 
-                {AstateIndex.JMove0,  new AstateRecord(  "Base Layer.JMove.", "JMove0", AcliptypeIndex.JMove0,AstateAttribute.BusyX | AstateAttribute.BusyY)},
-                {AstateIndex.JMove1,  new AstateRecord(  "Base Layer.JMove.", "JMove1", AcliptypeIndex.JMove1,AstateAttribute.None)},
-                {AstateIndex.JMove2,  new AstateRecord( "Base Layer.JMove.", "JMove2",  AcliptypeIndex.JMove2,AstateAttribute.None)},
-                {AstateIndex.JMove3,  new AstateRecord(  "Base Layer.JMove.", "JMove3", AcliptypeIndex.JMove3,AstateAttribute.None)},
-                {AstateIndex.JMove4,  new AstateRecord(  "Base Layer.JMove.", "JMove4", AcliptypeIndex.JMove4,AstateAttribute.BusyX)},
+                {AstateIndex.JMove0,  new AstateRecord(  "Base Layer.JMove.", "JMove0", AcliptypeIndex.JMove0,Attr.BusyX | Attr.BusyY)},
+                {AstateIndex.JMove1,  new AstateRecord(  "Base Layer.JMove.", "JMove1", AcliptypeIndex.JMove1,Attr.None)},
+                {AstateIndex.JMove2,  new AstateRecord( "Base Layer.JMove.", "JMove2",  AcliptypeIndex.JMove2,Attr.None)},
+                {AstateIndex.JMove3,  new AstateRecord(  "Base Layer.JMove.", "JMove3", AcliptypeIndex.JMove3,Attr.None)},
+                {AstateIndex.JMove4,  new AstateRecord(  "Base Layer.JMove.", "JMove4", AcliptypeIndex.JMove4,Attr.BusyX)},
 
-                {AstateIndex.DBlockL,  new AstateRecord(  "Base Layer.", "DBlockL", AcliptypeIndex.DBlockL,AstateAttribute.BusyX)},
-                {AstateIndex.DBlockM,  new AstateRecord(  "Base Layer.", "DBlockM", AcliptypeIndex.DBlockM,AstateAttribute.BusyX)},
-                {AstateIndex.DBlockH,  new AstateRecord(  "Base Layer.", "DBlockH", AcliptypeIndex.DBlockH,AstateAttribute.BusyX)},
-                {AstateIndex.DAtkLP,  new AstateRecord(  "Base Layer.", "DAtkLP", AcliptypeIndex.DAtkLP,AstateAttribute.None)},
-                {AstateIndex.DAtkMP,  new AstateRecord(  "Base Layer.", "DAtkMP", AcliptypeIndex.DAtkMP,AstateAttribute.None)},
-                {AstateIndex.DAtkHP,  new AstateRecord(  "Base Layer.", "DAtkHP", AcliptypeIndex.DAtkHP,AstateAttribute.None)},
-                {AstateIndex.DAtkLK,  new AstateRecord(  "Base Layer.", "DAtkLK", AcliptypeIndex.DAtkLK,AstateAttribute.None)},
-                {AstateIndex.DAtkMK,  new AstateRecord(  "Base Layer.", "DAtkMK", AcliptypeIndex.DAtkMK,AstateAttribute.None)},
-                {AstateIndex.DAtkHK,  new AstateRecord(  "Base Layer.", "DAtkHK", AcliptypeIndex.DAtkHK,AstateAttribute.None)},
+                {AstateIndex.DBlockL,  new AstateRecord(  "Base Layer.", "DBlockL", AcliptypeIndex.DBlockL, Attr.BusyX | Attr.Block)},
+                {AstateIndex.DBlockM,  new AstateRecord(  "Base Layer.", "DBlockM", AcliptypeIndex.DBlockM, Attr.BusyX | Attr.Block)},
+                {AstateIndex.DBlockH,  new AstateRecord(  "Base Layer.", "DBlockH", AcliptypeIndex.DBlockH, Attr.BusyX | Attr.Block)},
+                {AstateIndex.DAtkLP,  new AstateRecord(  "Base Layer.", "DAtkLP", AcliptypeIndex.DAtkLP,Attr.None)},
+                {AstateIndex.DAtkMP,  new AstateRecord(  "Base Layer.", "DAtkMP", AcliptypeIndex.DAtkMP,Attr.None)},
+                {AstateIndex.DAtkHP,  new AstateRecord(  "Base Layer.", "DAtkHP", AcliptypeIndex.DAtkHP,Attr.None)},
+                {AstateIndex.DAtkLK,  new AstateRecord(  "Base Layer.", "DAtkLK", AcliptypeIndex.DAtkLK,Attr.None)},
+                {AstateIndex.DAtkMK,  new AstateRecord(  "Base Layer.", "DAtkMK", AcliptypeIndex.DAtkMK,Attr.None)},
+                {AstateIndex.DAtkHK,  new AstateRecord(  "Base Layer.", "DAtkHK", AcliptypeIndex.DAtkHK,Attr.None)},
 
-                {AstateIndex.DMove,  new AstateRecord(  "Base Layer.", "DMove", AcliptypeIndex.DMove,AstateAttribute.None)},
+                {AstateIndex.DMove,  new AstateRecord(  "Base Layer.", "DMove", AcliptypeIndex.DMove,Attr.None)},
 
-                {AstateIndex.CBlockL,  new AstateRecord(  "Base Layer.", "CBlockL", AcliptypeIndex.CBlockL,AstateAttribute.BusyX)},
-                {AstateIndex.CBlockM,  new AstateRecord(  "Base Layer.", "CBlockM", AcliptypeIndex.CBlockM,AstateAttribute.BusyX)},
-                {AstateIndex.CBlockH,  new AstateRecord(  "Base Layer.", "CBlockH", AcliptypeIndex.CBlockH,AstateAttribute.BusyX)},
-                {AstateIndex.CAtkLP,  new AstateRecord(  "Base Layer.", "CAtkLP", AcliptypeIndex.CAtkLP,AstateAttribute.BusyX)},
-                {AstateIndex.CAtkMP,  new AstateRecord(  "Base Layer.", "CAtkMP", AcliptypeIndex.CAtkMP,AstateAttribute.BusyX)},
-                {AstateIndex.CAtkHP,  new AstateRecord(  "Base Layer.", "CAtkHP", AcliptypeIndex.CAtkHP,AstateAttribute.BusyX)},
-                {AstateIndex.CAtkLK,  new AstateRecord(  "Base Layer.", "CAtkLK", AcliptypeIndex.CAtkLK,AstateAttribute.BusyX)},
-                {AstateIndex.CAtkMK,  new AstateRecord(  "Base Layer.", "CAtkMK", AcliptypeIndex.CAtkMK,AstateAttribute.BusyX)},
-                {AstateIndex.CAtkHK,  new AstateRecord(  "Base Layer.", "CAtkHK", AcliptypeIndex.CAtkHK,AstateAttribute.BusyX)},
+                {AstateIndex.CBlockL,  new AstateRecord(  "Base Layer.", "CBlockL", AcliptypeIndex.CBlockL, Attr.BusyX | Attr.Block)},
+                {AstateIndex.CBlockM,  new AstateRecord(  "Base Layer.", "CBlockM", AcliptypeIndex.CBlockM, Attr.BusyX | Attr.Block)},
+                {AstateIndex.CBlockH,  new AstateRecord(  "Base Layer.", "CBlockH", AcliptypeIndex.CBlockH, Attr.BusyX | Attr.Block)},
+                {AstateIndex.CAtkLP,  new AstateRecord(  "Base Layer.", "CAtkLP", AcliptypeIndex.CAtkLP,Attr.BusyX)},
+                {AstateIndex.CAtkMP,  new AstateRecord(  "Base Layer.", "CAtkMP", AcliptypeIndex.CAtkMP,Attr.BusyX)},
+                {AstateIndex.CAtkHP,  new AstateRecord(  "Base Layer.", "CAtkHP", AcliptypeIndex.CAtkHP,Attr.BusyX)},
+                {AstateIndex.CAtkLK,  new AstateRecord(  "Base Layer.", "CAtkLK", AcliptypeIndex.CAtkLK,Attr.BusyX)},
+                {AstateIndex.CAtkMK,  new AstateRecord(  "Base Layer.", "CAtkMK", AcliptypeIndex.CAtkMK,Attr.BusyX)},
+                {AstateIndex.CAtkHK,  new AstateRecord(  "Base Layer.", "CAtkHK", AcliptypeIndex.CAtkHK,Attr.BusyX)},
 
-                {AstateIndex.CWait,  new AstateRecord(  "Base Layer.", "CWait", AcliptypeIndex.CWait,AstateAttribute.None)},
-                {AstateIndex.CMove,  new AstateRecord(  "Base Layer.", "CMove", AcliptypeIndex.CMove,AstateAttribute.None)},
+                {AstateIndex.CWait,  new AstateRecord(  "Base Layer.", "CWait", AcliptypeIndex.CWait,Attr.None)},
+                {AstateIndex.CMove,  new AstateRecord(  "Base Layer.", "CMove", AcliptypeIndex.CMove,Attr.None)},
 
-                {AstateIndex.OGiveup,  new AstateRecord(  "Base Layer.", "OGiveup", AcliptypeIndex.OGiveup,AstateAttribute.None)},
-                {AstateIndex.ODown_SDamageH,  new AstateRecord(  "Base Layer.", "ODown_SDamageH", AcliptypeIndex.SDamageH,AstateAttribute.BusyX)},
-                {AstateIndex.ODown,  new AstateRecord(  "Base Layer.", "ODown", AcliptypeIndex.ODown,AstateAttribute.BusyX)},
-                {AstateIndex.OStandup,  new AstateRecord(  "Base Layer.", "OStandup", AcliptypeIndex.OStandup,AstateAttribute.None)},
+                {AstateIndex.OGiveup,  new AstateRecord(  "Base Layer.", "OGiveup", AcliptypeIndex.OGiveup,Attr.None)},
+                {AstateIndex.ODown_SDamageH,  new AstateRecord(  "Base Layer.", "ODown_SDamageH", AcliptypeIndex.SDamageH,Attr.BusyX)},
+                {AstateIndex.ODown,  new AstateRecord(  "Base Layer.", "ODown", AcliptypeIndex.ODown,Attr.BusyX)},
+                {AstateIndex.OStandup,  new AstateRecord(  "Base Layer.", "OStandup", AcliptypeIndex.OStandup,Attr.None)},
 
-                {AstateIndex.SDamageL,  new AstateRecord(  "Base Layer.", "SDamageL", AcliptypeIndex.SDamageL,AstateAttribute.None)},
-                {AstateIndex.SDamageM,  new AstateRecord(  "Base Layer.", "SDamageM", AcliptypeIndex.SDamageM,AstateAttribute.None)},
-                {AstateIndex.SDamageH,  new AstateRecord(  "Base Layer.", "SDamageH", AcliptypeIndex.SDamageH,AstateAttribute.None)},
+                {AstateIndex.SDamageL,  new AstateRecord(  "Base Layer.", "SDamageL", AcliptypeIndex.SDamageL,Attr.None)},
+                {AstateIndex.SDamageM,  new AstateRecord(  "Base Layer.", "SDamageM", AcliptypeIndex.SDamageM,Attr.None)},
+                {AstateIndex.SDamageH,  new AstateRecord(  "Base Layer.", "SDamageH", AcliptypeIndex.SDamageH,Attr.None)},
 
-                {AstateIndex.JDamageL,  new AstateRecord(  "Base Layer.", "JDamageL", AcliptypeIndex.JDamageL,AstateAttribute.None)},
-                {AstateIndex.JDamageM,  new AstateRecord(  "Base Layer.", "JDamageM", AcliptypeIndex.JDamageM,AstateAttribute.None)},
-                {AstateIndex.JDamageH,  new AstateRecord(  "Base Layer.", "JDamageH", AcliptypeIndex.JDamageH,AstateAttribute.None)},
+                {AstateIndex.JDamageL,  new AstateRecord(  "Base Layer.", "JDamageL", AcliptypeIndex.JDamageL,Attr.None)},
+                {AstateIndex.JDamageM,  new AstateRecord(  "Base Layer.", "JDamageM", AcliptypeIndex.JDamageM,Attr.None)},
+                {AstateIndex.JDamageH,  new AstateRecord(  "Base Layer.", "JDamageH", AcliptypeIndex.JDamageH,Attr.None)},
 
-                {AstateIndex.DDamageL,  new AstateRecord(  "Base Layer.", "DDamageL", AcliptypeIndex.DDamageL,AstateAttribute.None)},
-                {AstateIndex.DDamageM,  new AstateRecord(  "Base Layer.", "DDamageM", AcliptypeIndex.DDamageM,AstateAttribute.None)},
-                {AstateIndex.DDamageH,  new AstateRecord(  "Base Layer.", "DDamageH", AcliptypeIndex.DDamageH,AstateAttribute.None)},
+                {AstateIndex.DDamageL,  new AstateRecord(  "Base Layer.", "DDamageL", AcliptypeIndex.DDamageL,Attr.None)},
+                {AstateIndex.DDamageM,  new AstateRecord(  "Base Layer.", "DDamageM", AcliptypeIndex.DDamageM,Attr.None)},
+                {AstateIndex.DDamageH,  new AstateRecord(  "Base Layer.", "DDamageH", AcliptypeIndex.DDamageH,Attr.None)},
 
-                {AstateIndex.CDamageL,  new AstateRecord(  "Base Layer.", "CDamageL", AcliptypeIndex.CDamageL,AstateAttribute.None)},
-                {AstateIndex.CDamageM,  new AstateRecord(  "Base Layer.", "CDamageM", AcliptypeIndex.CDamageM,AstateAttribute.None)},
-                {AstateIndex.CDamageH,  new AstateRecord(  "Base Layer.", "CDamageH", AcliptypeIndex.CDamageH,AstateAttribute.None)},
+                {AstateIndex.CDamageL,  new AstateRecord(  "Base Layer.", "CDamageL", AcliptypeIndex.CDamageL,Attr.None)},
+                {AstateIndex.CDamageM,  new AstateRecord(  "Base Layer.", "CDamageM", AcliptypeIndex.CDamageM,Attr.None)},
+                {AstateIndex.CDamageH,  new AstateRecord(  "Base Layer.", "CDamageH", AcliptypeIndex.CDamageH,Attr.None)},
             };
         }
 

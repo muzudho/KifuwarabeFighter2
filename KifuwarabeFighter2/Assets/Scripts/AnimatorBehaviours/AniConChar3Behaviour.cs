@@ -13,41 +13,16 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
         }
-        else if (
-            stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkLP].name) ||
-            stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkMP].name) ||
-            stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkHP].name) ||
-            stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkLK].name) ||
-            stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkMK].name) ||
-            stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkHK].name)
-            ) // 攻撃が始まった時
-        {
-            // 連打防止のフラグ立て。
-            if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkLP].name))
-            {
-                animator.SetBool(SceneCommon.BOOL_PUSHING_LP, true);
-            }
-            else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkMP].name))
-            {
-                animator.SetBool(SceneCommon.BOOL_PUSHING_MP, true);
-            }
-            else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkHP].name))
-            {
-                animator.SetBool(SceneCommon.BOOL_PUSHING_HP, true);
-            }
-            else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkLK].name))
-            {
-                animator.SetBool(SceneCommon.BOOL_PUSHING_LK, true);
-            }
-            else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkMK].name))
-            {
-                animator.SetBool(SceneCommon.BOOL_PUSHING_MK, true);
-            }
-            else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkHK].name))
-            {
-                animator.SetBool(SceneCommon.BOOL_PUSHING_HK, true);
-            }
-        }
+        //else if (
+        //    stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkLP].name) ||
+        //    stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkMP].name) ||
+        //    stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkHP].name) ||
+        //    stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkLK].name) ||
+        //    stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkMK].name) ||
+        //    stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkHK].name)
+        //    ) // 攻撃が始まった時
+        //{
+        //}
         #endregion
         #region ジャンプ
         else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.JMove0].name)) // ジャンプに着手した。
