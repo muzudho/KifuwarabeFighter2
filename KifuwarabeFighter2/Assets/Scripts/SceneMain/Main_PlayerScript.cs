@@ -7,14 +7,12 @@ namespace SceneMain
 
         #region 敵味方判定
         public int playerIndex;
-        private PlayerIndex opponent;
-        public PlayerIndex Opponent { get { return opponent; } }
+        private PlayerIndex opponent; public PlayerIndex Opponent { get { return opponent; } }
         #endregion
 
         public bool isComputer;
         public GameObject bullet;
         Animator animator;
-        //GameObject mainCamera;
         Main_CameraScript mainCameraScript; public Main_CameraScript MainCameraScript { get { return mainCameraScript; } }
 
         #region 当たり判定
@@ -26,9 +24,10 @@ namespace SceneMain
         SpriteRenderer[] hitboxsSpriteRenderer;
         BoxCollider2D weakboxCollider2D;
         #endregion
-        #region 歩行
-        float speedX = 4.0f; // 歩行速度☆
-        #endregion
+        /// <summary>
+        /// 歩行速度☆
+        /// </summary>
+        float speedX = 4.0f;
         #region ジャンプ
         /// <summary>
         /// 地面のレイヤー。
@@ -51,10 +50,10 @@ namespace SceneMain
             opponentHitboxTag = SceneCommon.PlayerAndHitbox_to_tag[(int)this.Opponent, (int)HitboxIndex.Hitbox];
 
             hitboxsSpriteRenderer = new SpriteRenderer[] {
-             GameObject.Find(SceneCommon.PlayerAndHitbox_to_path[playerIndex,(int)HitboxIndex.Hitbox]).GetComponent<SpriteRenderer>(),
-             GameObject.Find(SceneCommon.PlayerAndHitbox_to_path[playerIndex,(int)HitboxIndex.Weakbox]).GetComponent<SpriteRenderer>(),
-             GameObject.Find(SceneCommon.PlayerAndHitbox_to_path[playerIndex,(int)HitboxIndex.Strongbox]).GetComponent<SpriteRenderer>(),
-        };
+                 GameObject.Find(SceneCommon.PlayerAndHitbox_to_path[playerIndex,(int)HitboxIndex.Hitbox]).GetComponent<SpriteRenderer>(),
+                 GameObject.Find(SceneCommon.PlayerAndHitbox_to_path[playerIndex,(int)HitboxIndex.Weakbox]).GetComponent<SpriteRenderer>(),
+                 GameObject.Find(SceneCommon.PlayerAndHitbox_to_path[playerIndex,(int)HitboxIndex.Strongbox]).GetComponent<SpriteRenderer>(),
+            };
             weakboxCollider2D = GameObject.Find(SceneCommon.PlayerAndHitbox_to_path[playerIndex, (int)HitboxIndex.Weakbox]).GetComponent<BoxCollider2D>();
             #endregion
             #region ジャンプ
@@ -62,6 +61,9 @@ namespace SceneMain
             Rigidbody2D = GetComponent<Rigidbody2D>();
             animator = GetComponent<Animator>();
             #endregion
+
+            // x位置を共有できるようにするぜ☆
+            SceneCommon.Player_to_transform[playerIndex] = transform;
         }
 
 
@@ -69,9 +71,6 @@ namespace SceneMain
         {
             // 現在のアニメーター・ステートに紐づいたデータ
             AstateRecord astateRecord = AstateDatabase.GetCurrentAstateRecord(animator);
-
-            // キャラクター同士が向き合うために
-            mainCameraScript.Player_to_x[playerIndex] = transform.position.x;
 
             #region 入力受付
             float leverX;
@@ -357,18 +356,15 @@ namespace SceneMain
                     Rigidbody2D.velocity = new Vector2(Mathf.Sign(leverX) * speedX, Rigidbody2D.velocity.y);
                 }
 
-                bool leftSideOfOpponent = IsLeftSideOfOpponent();
-                FacingOpponent(leftSideOfOpponent);//相手の方を向く。
+                FacingOpponentFwBk facingOpponentFwBk = GetFacingOpponentFwBk(leverX);
+                DoFacingOpponent(GetFacingOfOpponentLR());
 
-                if ((0.0f < leverX && leftSideOfOpponent)
-                    ||
-                    (leverX < 0.0f && !leftSideOfOpponent)
-                )
+                if (FacingOpponentFwBk.Forward == facingOpponentFwBk)
                 {
-                    //if ((int)PlayerIndex.Player1 == playerIndex)
-                    //{
-                    //    Debug.Log("相手に向かっていくぜ☆");
-                    //}
+                    if ((int)PlayerIndex.Player1 == playerIndex)
+                    {
+                        Debug.Log("相手に向かっていくぜ☆");
+                    }
 
                     // 相手に向かっていくとき
 
@@ -391,10 +387,10 @@ namespace SceneMain
                 }
                 else
                 {
-                    //if ((int)PlayerIndex.Player1 == playerIndex)
-                    //{
-                    //    Debug.Log("相手の反対側に向かっていくぜ☆");
-                    //}
+                    if ((int)PlayerIndex.Player1 == playerIndex)
+                    {
+                        Debug.Log("相手の反対側に向かっていくぜ☆");
+                    }
 
                     // 相手と反対の方向に移動するとき（バックステップ）
                     Pull_Back();
@@ -531,7 +527,7 @@ namespace SceneMain
         /// <param name="player"></param>
         public void UpdateHitbox2D()
         {
-            if (Main_CameraScript.READY_TIME_LENGTH < mainCameraScript.ReadyingTime)
+            if (SceneCommon.READY_TIME_LENGTH < mainCameraScript.ReadyingTime)
             {
                 // クリップ名取得
                 if (animator.GetCurrentAnimatorClipInfo(0).Length < 1)
@@ -631,42 +627,48 @@ namespace SceneMain
             }
         }
 
-
-        /// <summary>
-        /// 相手の左側にいれば真
-        /// </summary>
-        bool IsLeftSideOfOpponent()
+        FacingOpponentFwBk GetFacingOpponentFwBk(float leverX)
+        {
+            if (Mathf.Sign(SceneCommon.Player_to_transform[(int)CommonScript.ReverseTeban((PlayerIndex)playerIndex)].position.x - transform.position.x)
+                ==
+                Mathf.Sign(leverX)
+                )
+            {
+                return FacingOpponentFwBk.Forward;
+            }
+            return FacingOpponentFwBk.Back;
+        }
+        FacingOpponentLR GetFacingOfOpponentLR()
         {
             // 自分と相手の位置（相手が右側にいるとき正となるようにする）
-            float opponentX = mainCameraScript.Player_to_x[(int)CommonScript.ReverseTeban((PlayerIndex)playerIndex)];
-            if (transform.position.x < opponentX)
+            if( 0<=SceneCommon.Player_to_transform[(int)CommonScript.ReverseTeban((PlayerIndex)playerIndex)].position.x - transform.position.x)
             {
-                return true;
+                return FacingOpponentLR.Right;
             }
-            return false;
+            return FacingOpponentLR.Left;
         }
-        /// <summary>
-        /// 相手の方を向く。
-        /// </summary>
-        void FacingOpponent(bool isLeftSideOfOpponent)
+        void DoFacingOpponent(FacingOpponentLR facingOpponentLR)
         {
             //localScale.xを-1にすると画像が反転する
             Vector2 temp = transform.localScale;
-            if (!isLeftSideOfOpponent)
+            switch (facingOpponentLR)
             {
-                temp.x = -1 * SceneCommon.GRAPHIC_SCALE; //Mathf.Sign(leverX)
-                                                         //if ((int)PlayerIndex.Player1 == playerIndex)
-                                                         //{
-                                                         //    Debug.Log("左を向くぜ☆");
-                                                         //}
-            }
-            else
-            {
-                temp.x = 1 * SceneCommon.GRAPHIC_SCALE; //Mathf.Sign(leverX)
-                                                        //if ((int)PlayerIndex.Player1 == playerIndex)
-                                                        //{
-                                                        //    Debug.Log("右を向くぜ☆");
-                                                        //}
+                case FacingOpponentLR.Left:
+                    temp.x = -1 * SceneCommon.GRAPHIC_SCALE;
+                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //{
+                    //    Debug.Log("左を向くぜ☆");
+                    //}
+                    break;
+                case FacingOpponentLR.Right:
+                    temp.x = 1 * SceneCommon.GRAPHIC_SCALE;
+                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //{
+                    //    Debug.Log("右を向くぜ☆");
+                    //}
+                    break;
+                default:
+                    break;
             }
             transform.localScale = temp;
         }

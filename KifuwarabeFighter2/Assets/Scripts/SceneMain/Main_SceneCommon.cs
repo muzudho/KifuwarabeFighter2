@@ -1,4 +1,6 @@
-﻿namespace SceneMain
+﻿using UnityEngine;
+
+namespace SceneMain
 {
     /// <summary>
     /// キャラクターの行動、キャラクター画像とも対応。Unityで数字を直打ちしているので、対応する数字も保つこと。
@@ -39,6 +41,22 @@
         Value,
         Turn,
         Time,
+    }
+    /// <summary>
+    /// 相手に向かっていっているかどうか。めんどうなので、相手に重なっている、Equal は無しで。
+    /// </summary>
+    public enum FacingOpponentFwBk
+    {
+        Forward,
+        Back
+    }
+    /// <summary>
+    /// 相手は左か右か。めんどうなので、相手に重なっている、Equal は無しで。
+    /// </summary>
+    public enum FacingOpponentLR
+    {
+        Left,
+        Right
     }
 
     public class SceneCommon
@@ -122,10 +140,21 @@
         };
 
         /// <summary>
+        /// player position x for facing opponent.
+        /// 相手と向かい合うために使うプレイヤーのX座標だぜ☆（＾▽＾）x位置を共有するためのものだぜ☆
+        /// </summary>
+        public static Transform[] Player_to_transform = new Transform[] { null, null };
+
+        /// <summary>
         /// 画像を２．５倍角にして使っているぜ☆（＾～＾）
         /// </summary>
         public static float GRAPHIC_SCALE = 2.5f;
 
         public static string Prefab_TakoyakiParticle0 = "TakoyakiParticle0";
+
+        /// <summary>
+        /// Ready message presentation time; 対局開始メッセージが表示されている時間。
+        /// </summary>
+        public const int READY_TIME_LENGTH = 60;
     }
 }

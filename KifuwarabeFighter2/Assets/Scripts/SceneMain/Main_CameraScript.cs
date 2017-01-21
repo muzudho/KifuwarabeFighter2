@@ -33,16 +33,10 @@ namespace SceneMain
         Text[] player_to_value;
         #endregion
 
-        #region Internal variable 内部変数
-        /// <summary>
-        /// Ready message presentation time; 対局開始メッセージが表示されている時間。
-        /// </summary>
-        public const int READY_TIME_LENGTH = 60;
         /// <summary>
         /// Ready message presentation time counter; 対局開始メッセージが表示されている時間カウンター。
         /// </summary>
         int readyingTime; public int ReadyingTime { get { return readyingTime; } set { readyingTime = value; } }
-        #endregion
 
         #region 選択キャラクター
         /// <summary>
@@ -57,10 +51,6 @@ namespace SceneMain
         /// players animator. アニメーター。
         /// </summary>
         Animator[] player_to_anime;
-        /// <summary>
-        /// player position x for facing opponent. 相手と向かい合うために使うプレイヤーのX座標だぜ☆（＾▽＾）
-        /// </summary>
-        float[] player_to_x; public float[] Player_to_x { get { return player_to_x; } set { player_to_x = value; } }
         #endregion
         /// <summary>
         /// win,lose mark. 勝ち星
@@ -127,7 +117,6 @@ namespace SceneMain
                 // アニメーター
                 player_to_anime[iPlayer].runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(SceneCommon.Character_to_animationController[(int)character]));
             }
-            player_to_x = new [] { 0.0f, 0.0f };
             #endregion
 
             //bar1のRectTransformコンポーネントをキャッシュ
@@ -177,7 +166,7 @@ namespace SceneMain
         {
             #region 対局開始表示
             ReadyingTime++;
-            if (READY_TIME_LENGTH == ReadyingTime)
+            if (SceneCommon.READY_TIME_LENGTH == ReadyingTime)
             {
                 fight0.SetActive(false);
                 fight1.SetActive(false);

@@ -33,7 +33,7 @@ namespace SceneMain
             #region 当たり判定
             if (col.tag == playerScript.OpponentHitboxTag)// 相手の　攻撃当たり判定くん　が重なった時
             {
-                Debug.Log("当たった☆！ col.tag = " + col.tag);
+                //Debug.Log("当たった☆！ col.tag = " + col.tag);
 
                 playerScript.DamageHitCount++;// 攻撃を受けた回数。
 
