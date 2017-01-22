@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Editor\AnimatorControllerCsv.cs" />
      <Compile Include="Assets\Editor\SM.cs" />
+     <Compile Include="Assets\Editor\Util_CsvParser.cs" />
  <Reference Include="UnityEngine.Advertisements">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll</HintPath>
  </Reference>
