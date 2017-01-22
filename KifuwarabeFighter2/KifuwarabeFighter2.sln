@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 
 Project("{EB26B7C0-D882-A55C-A671-958B9C7630B1}") = "KifuwarabeFighter2", "Assembly-CSharp.csproj", "{1E14DB9F-8EAB-1982-F8AE-22F8D5263D4E}"
 EndProject
+Project("{EB26B7C0-D882-A55C-A671-958B9C7630B1}") = "KifuwarabeFighter2", "Assembly-CSharp-Editor.csproj", "{3256FBAA-F3C4-DD39-EF85-15B2F02601C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{1E14DB9F-8EAB-1982-F8AE-22F8D5263D4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E14DB9F-8EAB-1982-F8AE-22F8D5263D4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E14DB9F-8EAB-1982-F8AE-22F8D5263D4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3256FBAA-F3C4-DD39-EF85-15B2F02601C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3256FBAA-F3C4-DD39-EF85-15B2F02601C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3256FBAA-F3C4-DD39-EF85-15B2F02601C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3256FBAA-F3C4-DD39-EF85-15B2F02601C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
