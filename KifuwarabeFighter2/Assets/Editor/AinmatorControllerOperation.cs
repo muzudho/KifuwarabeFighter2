@@ -1,5 +1,6 @@
 ﻿using UnityEditor.Animations;
 using UnityEngine;
+using System.Collections.Generic;
 
 public abstract class AinmatorControllerOperation
 {
@@ -76,9 +77,9 @@ public abstract class AinmatorControllerOperation
 
     #region トランジション
     /// <summary>
-    /// パスを指定すると トランジションを返す。
+    /// ２つのステートを トランジションで結ぶ。
     /// </summary>
-    /// <param name="path">"Base Layer.JMove.JMove0" といった文字列。</param>
+    /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
     public static AnimatorStateTransition LookupTransition(AnimatorController ac, string path_src, string path_dst )
     {
         AnimatorState state_src = LookupState(ac, path_src);
@@ -95,15 +96,30 @@ public abstract class AinmatorControllerOperation
     }
 
     /// <summary>
-    /// パスを指定すると トランジションを返す。
+    /// ２つのステートを トランジションで結ぶ。
     /// </summary>
-    /// <param name="path">"Base Layer.JMove.JMove0" といった文字列。</param>
+    /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
     public static void AddTransition(AnimatorController ac, string path_src, string path_dst)
     {
         AnimatorState state_src = LookupState(ac, path_src);
         AnimatorState state_dst = LookupState(ac, path_dst);
 
         state_src.AddTransition(state_dst);
+    }
+
+    /// <summary>
+    /// ２つのステートを トランジションで結ぶ。ステートは複数指定でき、総当たりで全部結ぶ。
+    /// </summary>
+    /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
+    public static void AddTransitions(AnimatorController ac, List<AnimatorState> states_src, List<AnimatorState> states_dst)
+    {
+        foreach (AnimatorState state_src in states_src)
+        {
+            foreach (AnimatorState state_dst in states_dst)
+            {
+                state_src.AddTransition(state_dst);
+            }
+        }
     }
     #endregion
 

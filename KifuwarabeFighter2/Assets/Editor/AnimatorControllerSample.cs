@@ -25,14 +25,24 @@ public class AnimatorControllerSample : MonoBehaviour {
         Debug.Log("Play2!");
     }
 
-    [MenuItem("(^_^)Menu/Set Tag13")]
+    [MenuItem("(^_^)Menu/Set Tag15")]
     static void SetTag()
     {
         // アニメーター・コントローラーを取得。
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
         AnimatorState state = AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.JMove0");
-        state.tag = "tamesi(^q^)5";
+        //AnimatorState state;
+        //state = AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi1");
+        //state.tag = "tamesi(^q^)1";
+        //state = AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi2");
+        //state.tag = "tamesi(^q^)2";
+        //state = AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi3");
+        //state.tag = "tamesi(^q^)3";
+        //state = AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi4");
+        //state.tag = "tamesi(^q^)4";
+        //state = AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi5");
+        //state.tag = "tamesi(^q^)5";
     }
 
     [MenuItem("(^_^)Menu/Set Transition Name 1")]
@@ -52,6 +62,23 @@ public class AnimatorControllerSample : MonoBehaviour {
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
         AinmatorControllerOperation.AddTransition(ac, "Base Layer.JMove.Tamesi1 0", "Base Layer.JMove.Tamesi1");
+    }
+
+    [MenuItem("(^_^)Menu/Add 5x5 Transitions 1")]
+    static void AddTransitions()
+    {
+        // アニメーター・コントローラーを取得。
+        AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
+
+        List<AnimatorState> states = new List<AnimatorState>() {
+            AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi1"),
+            AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi2"),
+            AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi3"),
+            AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi4"),
+            AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi5"),
+        };
+        Debug.Log("states.Count = " + states.Count);
+        AinmatorControllerOperation.AddTransitions(ac, states, states);
     }
 
 }
