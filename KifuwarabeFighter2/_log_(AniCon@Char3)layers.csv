@@ -1,2 +1,3 @@
 LayerNum,LayerName,AvatarMask,BlendingMode,DefaultWeight,IKPass,SyncedLayerAffectsTiming,SyncedLayerIndex,
 0,Base Layer,,Override,0,False,False,-1,
+1,New Layer,,Override,0,False,False,-1,

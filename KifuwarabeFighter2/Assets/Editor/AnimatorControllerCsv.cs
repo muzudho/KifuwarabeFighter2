@@ -80,16 +80,12 @@ public class MachineStateRecord
 {
     public int layerNum;
     public int machineStateNum;
-    //public string anyStatePosition;
     public string anyStateTransitions;
     public string behaviours;
     public string defaultState;
-    public string entryPosition;
     public string entryTransitions;
-    public string exitPosition;
     public string hideFlags;
     public string name;
-    public string parentStateMachinePosition;
 
     public MachineStateRecord(int layerNum, int machineStateNum, AnimatorStateMachine stateMachine, List<PositionRecord> positionsTable)
     {
@@ -98,18 +94,35 @@ public class MachineStateRecord
 
         if (stateMachine.anyStatePosition != null)
         {
-            positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, stateMachine.anyStatePosition));
+            positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "anyStatePosition", stateMachine.anyStatePosition));
         }
 
         anyStateTransitions = stateMachine.anyStateTransitions == null ? "" : stateMachine.anyStateTransitions.ToString();
         behaviours = stateMachine.behaviours == null ? "" : stateMachine.behaviours.ToString();
         defaultState = stateMachine.defaultState == null ? "" : stateMachine.defaultState.ToString();
-        entryPosition = stateMachine.entryPosition == null ? "" : stateMachine.entryPosition.ToString();
+
+        if (stateMachine.entryPosition != null)
+        {
+            positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "entryPosition", stateMachine.entryPosition));
+            //entryPosition = stateMachine.entryPosition == null ? "" : stateMachine.entryPosition.ToString();
+        }
+
         entryTransitions = stateMachine.entryTransitions == null ? "" : stateMachine.entryTransitions.ToString();
-        exitPosition = stateMachine.exitPosition == null ? "" : stateMachine.exitPosition.ToString();
+
+        if (stateMachine.exitPosition != null)
+        {
+            positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "exitPosition", stateMachine.exitPosition));
+            //exitPosition = stateMachine.exitPosition == null ? "" : stateMachine.exitPosition.ToString();
+        }
+
         hideFlags = stateMachine.hideFlags.ToString();
         name = stateMachine.name;
-        parentStateMachinePosition = stateMachine.parentStateMachinePosition == null ? "" : stateMachine.parentStateMachinePosition.ToString();
+
+        if (stateMachine.parentStateMachinePosition != null)
+        {
+            positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "parentStateMachinePosition", stateMachine.parentStateMachinePosition));
+            //parentStateMachinePosition = stateMachine.parentStateMachinePosition == null ? "" : stateMachine.parentStateMachinePosition.ToString();
+        }
     }
 
     public void CreateCsv(StringBuilder sb)
@@ -119,15 +132,12 @@ public class MachineStateRecord
         sb.Append(anyStateTransitions); sb.Append(",");
         sb.Append(behaviours); sb.Append(",");
         sb.Append(defaultState); sb.Append(",");
-        sb.Append(entryPosition); sb.Append(",");
         sb.Append(entryTransitions); sb.Append(",");
-        sb.Append(exitPosition); sb.Append(",");
         sb.Append(hideFlags); sb.Append(",");
         sb.Append(name); sb.Append(",");
-        sb.Append(parentStateMachinePosition); sb.Append(",");
     }
 
-    public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,AnyStateTransitions,Behaviours,DefaultState,EntryPosition,EntryTransitions,ExitPosition,HideFlags,Name,ParentStateMachinePosition,"; } }
+    public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,AnyStateTransitions,Behaviours,DefaultState,EntryTransitions,HideFlags,Name,"; } }
 }
 
 public class StateRecord
@@ -161,7 +171,7 @@ public class StateRecord
         this.machineStateNum = machineStateNum;
         this.stateNum = stateNum;
 
-        positionsTable.Add(new PositionRecord(layerNum, machineStateNum, stateNum, -1, -1, caState.position));
+        positionsTable.Add(new PositionRecord(layerNum, machineStateNum, stateNum, -1, -1, "position", caState.position));
 
         AnimatorState state = caState.state; ;
         cycleOffset = state.cycleOffset;
@@ -205,7 +215,7 @@ public class StateRecord
         sb.Append(writeDefaultValues); sb.Append(",");
     }
 
-    public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,StateNum,PositionMagnitude,PositionX,PositionY,PositionZ,CycleOffset,CycleOffsetParameter,HideFlags,IKOnFeet,Mirror,MirrorParameter,MirrorParameterActive,Motion,Name,NameHash,Speed,SpeedParameter,SpeedParameterActive,Tag,WriteDefaultValues,"; } }
+    public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,StateNum,CycleOffset,CycleOffsetParameter,HideFlags,IKOnFeet,Mirror,MirrorParameter,MirrorParameterActive,Motion,Name,NameHash,Speed,SpeedParameter,SpeedParameterActive,Tag,WriteDefaultValues,"; } }
 }
 
 /// <summary>
@@ -339,10 +349,14 @@ public class PositionRecord
     public int stateNum;
     public int transitionNum;
     public int conditionNum;
+    public string proertyName;
 
     //
     public float magnitude;
     public string normalized;
+    public float normalizedX;
+    public float normalizedY;
+    public float normalizedZ;
     public float sqrMagnitude;
     public float x;
     public float y;
@@ -355,6 +369,7 @@ public class PositionRecord
         int stateNum,
         int transitionNum,
         int conditionNum,
+        string proertyName,
         Vector3 position)
     {
         this.layerNum = layerNum;
@@ -362,11 +377,15 @@ public class PositionRecord
         this.stateNum = stateNum;
         this.transitionNum = transitionNum;
         this.conditionNum = conditionNum;
+        this.proertyName = proertyName;
 
         magnitude = position.magnitude;
         //normalized = position.normalized == null ? "" : "(解析未対応)";
         normalized = position.normalized == null ? "" : Util_CsvParser.EscapeCell(position.normalized.ToString());
         //normalized = position.normalized == null ? "" : Util_CsvParser.CellList_to_csvLine( Util_CsvParser.CsvLine_to_cellList(position.normalized.ToString()));
+        normalizedX = position.x;
+        normalizedY = position.y;
+        normalizedZ = position.z;
         sqrMagnitude = position.sqrMagnitude;
         x = position.x;
         y = position.y;
@@ -380,16 +399,20 @@ public class PositionRecord
         sb.Append(stateNum); sb.Append(",");
         sb.Append(transitionNum); sb.Append(",");
         sb.Append(conditionNum); sb.Append(",");
+        sb.Append(proertyName); sb.Append(",");
 
         sb.Append(magnitude); sb.Append(",");
         sb.Append(normalized); sb.Append(",");
+        sb.Append(normalizedX); sb.Append(",");
+        sb.Append(normalizedY); sb.Append(",");
+        sb.Append(normalizedZ); sb.Append(",");
         sb.Append(sqrMagnitude); sb.Append(",");
         sb.Append(x); sb.Append(",");
         sb.Append(y); sb.Append(",");
         sb.Append(z); sb.Append(",");
     }
 
-    public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,StateNum,TransitionNum,ConditionNum,Magnitude,Normalized,SqrMagnitude,X,Y,Z,"; } }
+    public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,StateNum,TransitionNum,ConditionNum,PropertyName,Magnitude,Normalized,NormalizedX,NormalizedY,NormalizedZ,SqrMagnitude,X,Y,Z,"; } }
 }
 
 /// <summary>
@@ -399,8 +422,6 @@ public class PositionRecord
 /// </summary>
 public class AnimatorControllerCsv : EditorWindow
 {
-
-
     string myText = "Hello World";
     string pathController = "Assets/Resources/AnimatorControllers/AniCon@Char3.controller";
     string filenameWE = "";
@@ -425,7 +446,7 @@ public class AnimatorControllerCsv : EditorWindow
 
     void OnGUI()
     {
-        GUILayout.Label("Animator controller CSV", EditorStyles.boldLabel);
+        GUILayout.Label("Animator controller  CSV", EditorStyles.boldLabel);
         pathController = EditorGUILayout.TextField(pathController);
 
         if (GUILayout.Button("Export controller CSV"))
@@ -610,11 +631,11 @@ public class AnimatorControllerCsv : EditorWindow
         Debug.Log(resultMessage);
     }
 
-    void ScanRecursive(List<AnimatorStateMachine> aStateMachineList, AnimatorStateMachine aStateMachine)
+    void ScanRecursive(List<AnimatorStateMachine> aStateMachineList, AnimatorStateMachine stateMachine)
     {
-        aStateMachineList.Add(aStateMachine);
+        aStateMachineList.Add(stateMachine);
 
-        foreach (ChildAnimatorStateMachine caStateMachine in aStateMachine.stateMachines)
+        foreach (ChildAnimatorStateMachine caStateMachine in stateMachine.stateMachines)
         {
             ScanRecursive(aStateMachineList, caStateMachine.stateMachine);
         }

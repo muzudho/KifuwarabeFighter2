@@ -1,5 +1,3 @@
-LayerNum,MachineStateNum,AnyStateTransitions,Behaviours,DefaultState,EntryPosition,EntryTransitions,ExitPosition,HideFlags,Name,ParentStateMachinePosition,
-1,0,UnityEditor.Animations.AnimatorStateTransition[],UnityEngine.StateMachineBehaviour[],SWait (UnityEngine.AnimatorState),(-72.0, -24.0, 0.0),UnityEditor.Animations.AnimatorTransition[],(-12.0, 684.0, 0.0),HideInHierarchy,Base Layer,(800.0, 20.0, 0.0),
-1,1,UnityEditor.Animations.AnimatorStateTransition[],UnityEngine.StateMachineBehaviour[],JMove0 (UnityEngine.AnimatorState),(300.0, -60.0, 0.0),UnityEditor.Animations.AnimatorTransition[],(780.0, 144.0, 0.0),HideInHierarchy,JMove,(744.0, 12.0, 0.0),
-1,2,UnityEditor.Animations.AnimatorStateTransition[],UnityEngine.StateMachineBehaviour[],SWait (UnityEngine.AnimatorState),(-72.0, -24.0, 0.0),UnityEditor.Animations.AnimatorTransition[],(-12.0, 684.0, 0.0),HideInHierarchy,Base Layer,(800.0, 20.0, 0.0),
-1,3,UnityEditor.Animations.AnimatorStateTransition[],UnityEngine.StateMachineBehaviour[],JMove0 (UnityEngine.AnimatorState),(300.0, -60.0, 0.0),UnityEditor.Animations.AnimatorTransition[],(780.0, 144.0, 0.0),HideInHierarchy,JMove,(744.0, 12.0, 0.0),
+LayerNum,MachineStateNum,AnyStateTransitions,Behaviours,DefaultState,EntryTransitions,HideFlags,Name,
+1,0,UnityEditor.Animations.AnimatorStateTransition[],UnityEngine.StateMachineBehaviour[],SWait (UnityEngine.AnimatorState),UnityEditor.Animations.AnimatorTransition[],HideInHierarchy,Base Layer,
+1,1,UnityEditor.Animations.AnimatorStateTransition[],UnityEngine.StateMachineBehaviour[],JMove0 (UnityEngine.AnimatorState),UnityEditor.Animations.AnimatorTransition[],HideInHierarchy,JMove,
