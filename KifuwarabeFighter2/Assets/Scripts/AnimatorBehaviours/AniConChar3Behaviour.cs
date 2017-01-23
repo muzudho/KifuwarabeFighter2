@@ -9,28 +9,18 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         #region 立ち
-        if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SWait].name)) // 立ち待機
+        if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.SWait].Name)) // 立ち待機
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
         }
-        //else if (
-        //    stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkLP].name) ||
-        //    stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkMP].name) ||
-        //    stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkHP].name) ||
-        //    stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkLK].name) ||
-        //    stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkMK].name) ||
-        //    stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.SAtkHK].name)
-        //    ) // 攻撃が始まった時
-        //{
-        //}
         #endregion
         #region ジャンプ
-        else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.JMove0].name)) // ジャンプに着手した。
+        else if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.JMove0].Name)) // ジャンプに着手した。
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Jump);
             animator.SetBool(SceneCommon.BOOL_JMOVE0, true);
         }
-        else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.JMove1].name)) // 上昇
+        else if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.JMove1].Name)) // 上昇
         {
             Main_PlayerScript script = animator.gameObject.GetComponent<Main_PlayerScript>();
             script.Jump1();
@@ -39,34 +29,30 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
         #region 走り
         #endregion
         #region 屈み
-        else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.CWait].name)) // かがみ待機
+        else if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.CWait].Name)) // かがみ待機
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Crouch);
         }
         #endregion
         #region その他
-        else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.OBackstep].name)) // バックステップ
+        else if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.OBackstep].Name)) // バックステップ
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
         }
-        else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.OGiveup].name))
+        else if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.OGiveup].Name))
         {
             // 投了モーションに入る時。
             //Debug.Log("投了モーション始まり☆ layerIndex = " + layerIndex + " stateInfo.fullPathHash = " + stateInfo.fullPathHash + " animator.name = " + animator.name);
 
             animator.SetBool(SceneCommon.BOOL_GIVEUPING, true);
         }
-        //else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.ODown_SDamageH].name))
-        //{
-        //    // ダウンに入る時。
-        //}
         #endregion
     }
 
     // OnStateUpdate is called before OnStateUpdate is called on any state inside this state machine
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.OGiveup].name))
+        if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.OGiveup].Name))
         {
             // 投了モーション中
             if(2.0f<=stateInfo.normalizedTime % 1 * animator.GetCurrentAnimatorClipInfo(0)[0].clip.frameRate)
@@ -83,12 +69,12 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
     // OnStateExit is called before OnStateExit is called on any state inside this state machine
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.JMove0].name)) // 屈伸が終わった時
+        if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.JMove0].Name)) // 屈伸が終わった時
         {
             Main_PlayerScript script = animator.gameObject.GetComponent<Main_PlayerScript>();
             script.JMove0Exit();
         }
-        else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.OGiveup].name))
+        else if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.OGiveup].Name))
         {
             //Debug.Log("投了モーション終わり☆ layerIndex = " + layerIndex + " stateInfo.fullPathHash = " + stateInfo.fullPathHash + " animator.name = " + animator.name);
 
@@ -98,19 +84,6 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
             Main_PlayerScript script = animator.gameObject.GetComponent<Main_PlayerScript>();
             script.IsResign = true;
         }
-        //else if (
-        //    stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkLP].name) ||
-        //    stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkMP].name) ||
-        //    stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkHP].name) ||
-        //    stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkLK].name) ||
-        //    stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkMK].name) ||
-        //    stateInfo.IsName(MotionDatabaseScript.astate_to_record[MotionDatabaseScript.AstateIndex.SAtkHK].name)
-        //    ) // 攻撃が終わった時
-        //{
-        //}
-        //else if (stateInfo.IsName(AstateDatabase.index_to_record[AstateIndex.OStandup].name))//起き上がりから抜けたとき。
-        //{
-        //}
     }
 
     // OnStateMove is called before OnStateMove is called on any state inside this state machine

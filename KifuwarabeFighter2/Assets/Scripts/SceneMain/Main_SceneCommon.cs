@@ -80,7 +80,10 @@ namespace SceneMain
         public const string TRIGGER_GIVEUP = "giveup";
         public const string TRIGGER_BLOCK = "block";
         public const string TRIGGER_DEBLOCK = "deblock";
+        
+        public const string FLOAT_VEL_Y = "velY";
 
+        public const string BOOL_IS_GROUNDED = "isGrounded";
         public const string BOOL_GIVEUPING = "giveuping";
         public const string BOOL_JMOVE0 = "jmove0";
 

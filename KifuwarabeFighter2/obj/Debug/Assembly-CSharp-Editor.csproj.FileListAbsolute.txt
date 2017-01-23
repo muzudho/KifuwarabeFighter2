@@ -30,7 +30,6 @@ C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\Temp\bin\Debug\Mono.Cecil.Mdb.dll
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\Temp\bin\Debug\Unity.CecilTools.dll
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\Temp\bin\Debug\Mono.Cecil.Pdb.dll
-C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\Temp\bin\Debug\Assembly-CSharp.pdb
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\Temp\bin\Debug\UnityEngine.xml
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\Temp\bin\Debug\UnityEditor.xml
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2\Temp\bin\Debug\UnityEditor.Advertisements.xml

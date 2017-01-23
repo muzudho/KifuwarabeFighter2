@@ -81,4 +81,18 @@ public class AnimatorControllerSample : MonoBehaviour {
         AinmatorControllerOperation.AddTransitions(ac, states, states);
     }
 
+    [MenuItem("(^_^)Menu/TestWhere 4")]
+    static void TestWhere()
+    {
+        //List<AstateRecordable> recordset = SceneMain.AstateDatabase.Instance.Where((int)SceneMain.AstateDatabase.Attr.BusyX);
+        //List<AstateRecordable> recordset = SceneMain.AstateDatabase.Instance.Where((int)(SceneMain.AstateDatabase.Attr.BusyX | SceneMain.AstateDatabase.Attr.BusyY));
+        List<AstateRecordable> recordset = SceneMain.AstateDatabase.Instance.Where((int)(SceneMain.AstateDatabase.Attr.BusyX | SceneMain.AstateDatabase.Attr.Block));
+
+        Debug.Log("結果：" + recordset.Count + "件");
+        foreach (AstateRecordable record in recordset)
+        {
+            Debug.Log("結果："+ record.BreadCrumb+record.Name);
+        }
+    }
+
 }

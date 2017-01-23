@@ -75,7 +75,7 @@ namespace SceneMain
             //}
 
             // 現在のアニメーター・ステートに紐づいたデータ
-            AstateRecord astateRecord = AstateDatabase.GetCurrentAstateRecord(animator);
+            AstateRecord astateRecord = (AstateRecord)AstateDatabase.Instance.GetCurrentAstateRecord(animator);
 
             #region 入力受付
             CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
@@ -196,8 +196,12 @@ namespace SceneMain
                 //{
                 //    Debug.Log("B playerIndex = " + playerIndex + " isGrounded = " + isGrounded + " transform.position.y = " + transform.position.y + " Rigidbody2D.velocity.y = " + Rigidbody2D.velocity.y);
                 //}
+
+                //Animatorへパラメーターを送る
+                animator.SetFloat(SceneCommon.FLOAT_VEL_Y, Rigidbody2D.velocity.y); // y方向へかかる速度単位,上へいくとプラス、下へいくとマイナス
+                //Debug.Log("Jumping velY="+animator.GetFloat(SceneCommon.FLOAT_VEL_Y));
+                animator.SetBool(SceneCommon.BOOL_IS_GROUNDED, isGrounded);
             }
-            UpdateAnim();
             #endregion
 
             #region 弾を撃つ
@@ -476,7 +480,7 @@ namespace SceneMain
             //    throw new UnityException("フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆");
             //}
 
-            AcliptypeIndex aclipType = AstateDatabase.index_to_record[AstateDatabase.hash_to_index[animeStateInfo.fullPathHash]].acliptype;
+            AcliptypeIndex aclipType = ((AstateRecord)AstateDatabase.Instance.index_to_record[(int)AstateDatabase.Instance.hash_to_index[animeStateInfo.fullPathHash]]).acliptype;
 
             if (AcliptypeDatabase.index_to_record.ContainsKey(aclipType))
             {
@@ -540,7 +544,7 @@ namespace SceneMain
                 int serialImage;
                 int slice;
                 CharacterIndex character = CommonScript.Player_to_useCharacter[playerIndex];
-                AstateDatabase.Select(
+                AstateDatabase.GetSlice(
                     out serialImage,
                     out slice,
                     character, // キャラクター番号
@@ -650,13 +654,14 @@ namespace SceneMain
         #region ジャンプ
         public void JMove0Exit()
         {
+            Debug.Log("JMove0Exit");
             animator.SetBool(SceneCommon.BOOL_JMOVE0, false);
         }
 
         public void Jump1()
         {
+            Debug.Log("Jump1");
             float velocityX = Rigidbody2D.velocity.x;
-            float velocityY = speedY;// 上方向へ移動
 
             //左キー: -1、右キー: 1
             float leverX = Input.GetAxisRaw(CommonInput.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Horizontal]);
@@ -669,14 +674,7 @@ namespace SceneMain
                 velocityX = speedX;
             }
 
-            Rigidbody2D.velocity = new Vector2(velocityX, velocityY);
-        }
-
-        void UpdateAnim()
-        {
-            //Animatorへパラメーターを送る
-            animator.SetFloat("velY", Rigidbody2D.velocity.y); // y方向へかかる速度単位,上へいくとプラス、下へいくとマイナス
-            animator.SetBool("isGrounded", isGrounded);
+            Rigidbody2D.velocity = new Vector2(velocityX, speedY);// 上方向へ移動
         }
         #endregion
 
@@ -716,6 +714,7 @@ namespace SceneMain
         {
             //ジャンプアニメーションの開始
             animator.SetTrigger(SceneCommon.TRIGGER_JUMP);
+            //Debug.Log("JUMP trigger!");
         }
         void Pull_Crouch()
         {

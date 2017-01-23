@@ -41,7 +41,7 @@ namespace SceneSelect
         void Update()
         {
             // 現在のアニメーター・ステートに紐づいたデータ
-            AstateRecord astateRecord = AstateDatabase.GetCurrentAstateRecord(animator);
+            AstateRecordable astateRecord = AstateDatabase.Instance.GetCurrentAstateRecord(animator);
 
             #region 入力受付と途中参加
             CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
@@ -90,7 +90,7 @@ namespace SceneSelect
             }
             #endregion
 
-            if (AstateDatabase.index_to_record[AstateIndex.Stay].name == astateRecord.name)
+            if (AstateDatabase.Instance.index_to_record[(int)AstateIndex.Stay].Name == astateRecord.Name)
             {
                 //カーソル移動中でなければ。
 
@@ -151,10 +151,10 @@ namespace SceneSelect
                     myRigidbody2D.velocity = new Vector2(0, myRigidbody2D.velocity.y);
                 }
             }
-            else if (AstateDatabase.index_to_record[AstateIndex.Move].name == astateRecord.name)
+            else if (AstateDatabase.Instance.index_to_record[(int)AstateIndex.Move].Name == astateRecord.Name)
             {
             }
-            else if (AstateDatabase.index_to_record[AstateIndex.Ready].name == astateRecord.name)
+            else if (AstateDatabase.Instance.index_to_record[(int)AstateIndex.Ready].Name == astateRecord.Name)
             {
                 // キャラクター選択済みのとき
 

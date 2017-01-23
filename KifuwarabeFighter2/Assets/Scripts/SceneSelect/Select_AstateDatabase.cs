@@ -19,72 +19,41 @@ namespace SceneSelect {
     /// <summary>
     /// アニメーターのステート
     /// </summary>
-    public struct AstateRecord
+    public class AstateRecord : AstateRecordable
     {
-        public string breadCrumb;
-        public string name;
+        public string BreadCrumb { get; set; }
+        public string Name { get; set; }
 
         public AstateRecord(string breadCrumb, string name)
         {
-            this.breadCrumb = breadCrumb;
-            this.name = name;
+            this.BreadCrumb = breadCrumb;
+            this.Name = name;
+        }
+
+        public bool HasFlag(int enumration)
+        {
+            return false;
         }
     }
 
-    public abstract class AstateDatabase
+    public class AstateDatabase : AbstractAstateDatabase
     {
         static AstateDatabase()
         {
-            index_to_record = new Dictionary<AstateIndex, AstateRecord>()
+            Instance = new AstateDatabase();
+        }
+
+        public static AstateDatabase Instance { get; set; }
+
+        private AstateDatabase()
+        {
+            index_to_record = new Dictionary<int, AstateRecordable> ()//AstateIndex
             {
-                {AstateIndex.Stay, new AstateRecord(  "Base Layer.", "Stay")},
-                {AstateIndex.Move, new AstateRecord(  "Base Layer.", "Move")},
-                {AstateIndex.Ready, new AstateRecord(  "Base Layer.", "Ready")},
-                {AstateIndex.Timeover, new AstateRecord(  "Base Layer.", "Timeover")},
+                {(int)AstateIndex.Stay, new AstateRecord(  "Base Layer.", "Stay")},
+                {(int)AstateIndex.Move, new AstateRecord(  "Base Layer.", "Move")},
+                {(int)AstateIndex.Ready, new AstateRecord(  "Base Layer.", "Ready")},
+                {(int)AstateIndex.Timeover, new AstateRecord(  "Base Layer.", "Timeover")},
             };
-        }
-        /// <summary>
-        /// Animator の state の hash を、state番号に変換☆
-        /// </summary>
-        public static Dictionary<int, AstateIndex> hash_to_index;
-        /// <summary>
-        /// Animator の state の名前と、AnimationClipの種類の対応☆　手作業で入力しておく（２度手間）
-        /// </summary>
-        public static Dictionary<AstateIndex, AstateRecord> index_to_record;
-        /// <summary>
-        /// シーンの Start( )メソッドで呼び出してください。
-        /// </summary>
-        public static void InsertAllStates()
-        {
-            hash_to_index = new Dictionary<int, AstateIndex>();
-
-            for (int iAstate = 0; iAstate < (int)AstateIndex.Num; iAstate++)
-            {
-                AstateRecord astate = index_to_record[(AstateIndex)iAstate];
-                hash_to_index.Add(Animator.StringToHash(astate.breadCrumb + astate.name), (AstateIndex)iAstate);
-            }
-        }
-
-        /// <summary>
-        /// 現在のアニメーター・ステートに対応したデータを取得。
-        /// </summary>
-        /// <returns></returns>
-        public static AstateRecord GetCurrentAstateRecord(Animator animator)
-        {
-            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
-            if (!AstateDatabase.hash_to_index.ContainsKey(state.fullPathHash))
-            {
-                throw new UnityException("もしかして列挙型に登録していないステートがあるんじゃないか☆（＾～＾）？　ハッシュは[" + state.fullPathHash + "]だぜ☆");
-            }
-
-            AstateIndex index = AstateDatabase.hash_to_index[state.fullPathHash];
-
-            if (AstateDatabase.index_to_record.ContainsKey(index))
-            {
-                return AstateDatabase.index_to_record[index];
-            }
-
-            throw new UnityException("[" + index + "]のデータが無いぜ☆　なんでだろな☆？（＾～＾）");
         }
     }
 
