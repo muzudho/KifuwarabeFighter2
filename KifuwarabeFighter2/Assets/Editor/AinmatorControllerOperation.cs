@@ -12,6 +12,7 @@ public abstract class AinmatorControllerOperation
     /// </summary>
     public const int LEAF_NODE_IS_STATE = -1;
 
+    #region ステート検索
     /// <summary>
     /// パスを指定すると ステートを返す。
     /// </summary>
@@ -19,8 +20,7 @@ public abstract class AinmatorControllerOperation
     public static AnimatorState LookupState(AnimatorController ac, string path)
     {
         string[] nodes = path.Split('.');
-        // [0] レイヤー番号
-        // [1～length-2] ステートマシン名
+        // [0～length-2] ステートマシン名
         // [length-1] ステート名
 
         if ( nodes.Length < 2){ throw new UnityException("ノード数が２つ未満だったぜ☆（＾～＾） レイヤー番号か、ステート名は無いのかだぜ☆？"); }
@@ -72,4 +72,39 @@ public abstract class AinmatorControllerOperation
         }
         return null;
     }
+    #endregion
+
+    #region トランジション
+    /// <summary>
+    /// パスを指定すると トランジションを返す。
+    /// </summary>
+    /// <param name="path">"Base Layer.JMove.JMove0" といった文字列。</param>
+    public static AnimatorStateTransition LookupTransition(AnimatorController ac, string path_src, string path_dst )
+    {
+        AnimatorState state_src = LookupState(ac, path_src);
+        AnimatorState state_dst = LookupState(ac, path_dst);
+
+        foreach (AnimatorStateTransition transition in state_src.transitions)
+        {
+            if(transition.destinationState.name == state_dst.name)
+            {
+                return transition;
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// パスを指定すると トランジションを返す。
+    /// </summary>
+    /// <param name="path">"Base Layer.JMove.JMove0" といった文字列。</param>
+    public static void AddTransition(AnimatorController ac, string path_src, string path_dst)
+    {
+        AnimatorState state_src = LookupState(ac, path_src);
+        AnimatorState state_dst = LookupState(ac, path_dst);
+
+        state_src.AddTransition(state_dst);
+    }
+    #endregion
+
 }

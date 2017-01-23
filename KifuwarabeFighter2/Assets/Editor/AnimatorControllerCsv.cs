@@ -229,8 +229,8 @@ public class TransitionRecord
     public int stateNum;
     public int transitionNum;
     public bool canTransitionToSelf;
-    //public string conditions;
     public string destinationState_name;
+    public int destinationState_nameHash;
     public string destinationStateMachine_name;
     public float duration;
     public float exitTime;
@@ -257,6 +257,7 @@ public class TransitionRecord
 
         // 名前のみ取得
         destinationState_name = transition.destinationState == null ? "" : transition.destinationState.name;
+        destinationState_nameHash = transition.destinationState == null ? 0 : transition.destinationState.nameHash;
 
         // 名前のみ取得
         destinationStateMachine_name = transition.destinationStateMachine == null ? "" : transition.destinationStateMachine.name;
@@ -282,8 +283,8 @@ public class TransitionRecord
         sb.Append(stateNum); sb.Append(",");
         sb.Append(transitionNum); sb.Append(",");
         sb.Append(canTransitionToSelf); sb.Append(",");
-        //sb.Append(conditions); sb.Append(",");
         sb.Append(destinationState_name); sb.Append(",");
+        sb.Append(destinationState_nameHash); sb.Append(",");
         sb.Append(destinationStateMachine_name); sb.Append(",");
         sb.Append(duration); sb.Append(",");
         sb.Append(exitTime); sb.Append(",");
@@ -299,7 +300,7 @@ public class TransitionRecord
         sb.Append(solo); sb.Append(",");
     }
 
-    public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,StateNum,TransitionNum,CanTransitionToSelf,DestinationState,DestinationStateMachine,Duration,ExitTime,HasExitTime,HasFixedDuration,HideFlags,InterruptionSource,IsExit,Mute,Name,Offset,OrderedInterruption,Solo,"; } }
+    public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,StateNum,TransitionNum,CanTransitionToSelf,DestinationState_Name,DestinationState_NameHash,DestinationStateMachine,Duration,ExitTime,HasExitTime,HasFixedDuration,HideFlags,InterruptionSource,IsExit,Mute,Name,Offset,OrderedInterruption,Solo,"; } }
     //,Conditions
 }
 

@@ -35,4 +35,23 @@ public class AnimatorControllerSample : MonoBehaviour {
         state.tag = "tamesi(^q^)5";
     }
 
+    [MenuItem("(^_^)Menu/Set Transition Name 1")]
+    static void SetTransitionTag()
+    {
+        // アニメーター・コントローラーを取得。
+        AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
+
+        AnimatorStateTransition transition = AinmatorControllerOperation.LookupTransition(ac, "Base Layer.JMove.Tamesi1 1", "Base Layer.JMove.Tamesi1");
+        transition.name = "tamesi(^q^)6";
+    }
+
+    [MenuItem("(^_^)Menu/Add Transition 1")]
+    static void AddTransition()
+    {
+        // アニメーター・コントローラーを取得。
+        AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
+
+        AinmatorControllerOperation.AddTransition(ac, "Base Layer.JMove.Tamesi1 0", "Base Layer.JMove.Tamesi1");
+    }
+
 }
