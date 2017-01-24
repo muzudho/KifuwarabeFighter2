@@ -96,10 +96,8 @@ namespace SceneMain
     /// <summary>
     /// アニメーターのステート
     /// </summary>
-    public class AstateRecord : AstateRecordable
+    public class AstateRecord : AbstractAstateRecord
     {
-        public string BreadCrumb { get; set; }
-        public string Name { get; set; }
         public AcliptypeIndex acliptype;
         public AstateDatabase.Attr attribute;
 
@@ -111,7 +109,7 @@ namespace SceneMain
             this.attribute = attribute;
         }
 
-        public bool HasFlag(int enumration)
+        public override bool HasFlag(int enumration)
         {
             //Debug.Log("InFlag[" + ((AstateDatabase.Attr)enumration).HasFlag(this.attribute) + "] = [" + ((AstateDatabase.Attr)enumration) + "].HasFlag(" + this.attribute + ")");
             //return ((AstateDatabase.Attr)enumration).HasFlag(this.attribute);

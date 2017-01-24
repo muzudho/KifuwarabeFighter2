@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
+using System;
 //using SceneMain;
 
 //[ExecuteInEditMode]
@@ -93,6 +94,34 @@ public class AnimatorControllerSample : MonoBehaviour {
         {
             Debug.Log("結果："+ record.BreadCrumb+record.Name);
         }
+    }
+
+    [Flags]
+    public enum Flag
+    {
+        A = 0x01 << 1,
+        B = 0x01 << 2,
+        C = 0x01 << 3,
+        D = 0x01 << 4,
+    }
+
+    /// <summary>
+    /// 参考：https://teratail.com/questions/46225
+    /// </summary>
+    [MenuItem("(^_^)Menu/HasFlag 8")]
+    static void HasFlag()
+    {
+        Debug.Log("結果： Flag.A.HasFlag(Flag.A| Flag.B| Flag.C) = " + Flag.A.HasFlag(Flag.A| Flag.B| Flag.C));
+        Debug.Log("結果： (Flag.A| Flag.B).HasFlag(Flag.A | Flag.B | Flag.C) = " + (Flag.A| Flag.B).HasFlag(Flag.A | Flag.B | Flag.C));
+        Debug.Log("結果： (Flag.A| Flag.B).HasFlag(Flag.A) = " + (Flag.A| Flag.B).HasFlag(Flag.A));
+        Debug.Log("結果： Flag.D.HasFlag(Flag.A | Flag.B | Flag.C) = " + Flag.D.HasFlag(Flag.A | Flag.B | Flag.C));
+        Debug.Log("結果： Flag.D.HasFlag(Flag.A) = " + Flag.D.HasFlag(Flag.A));
+        Debug.Log("結果： Flag.A.HasFlag(Flag.A| Flag.B) = " + Flag.A.HasFlag(Flag.A | Flag.B));
+        Debug.Log("結果： Flag.A.HasFlag(Flag.A) = " + Flag.A.HasFlag(Flag.A));
+        Debug.Log("結果： Flag.A.HasFlag(Flag.B) = " + Flag.A.HasFlag(Flag.B));
+        Debug.Log("結果： (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B) = " + (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B));
+        Debug.Log("結果： (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B | Flag.C) = " + (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B | Flag.C));
+        Debug.Log("結果： (Flag.A | Flag.B).HasFlag(Flag.A | Flag.B | Flag.C) = " + (Flag.A | Flag.B).HasFlag(Flag.A | Flag.B | Flag.C));
     }
 
 }

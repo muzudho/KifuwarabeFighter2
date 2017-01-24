@@ -11,6 +11,13 @@ public interface AstateRecordable
     bool HasFlag(int enumration);
 }
 
+public abstract class AbstractAstateRecord : AstateRecordable
+{
+    public string BreadCrumb { get; set; }
+    public string Name { get; set; }
+    public abstract bool HasFlag(int enumration);
+}
+
 public abstract class AbstractAstateDatabase
 {
     /// <summary>
@@ -28,13 +35,12 @@ public abstract class AbstractAstateDatabase
     /// </summary>
     public void InsertAllStates()
     {
-        hash_to_index = new Dictionary<int, int>();//AstateIndex
+        hash_to_index = new Dictionary<int, int>(); // <hash,AstateIndex>
 
-        for (int iAstate = 0; iAstate < index_to_record.Count; iAstate++)//(int)AstateIndex.Num
+        for (int iAstate = 0; iAstate < index_to_record.Count; iAstate++)
         {
-            AstateRecordable astate = index_to_record[iAstate];//(AstateIndex)
-            hash_to_index.Add(Animator.StringToHash(astate.BreadCrumb + astate.Name), iAstate);//(AstateIndex)
-                                                                                               //Debug.Log("astate.BreadCrumb + astate.Name = ["+(astate.BreadCrumb + astate.Name) +"]");
+            AstateRecordable astate = index_to_record[iAstate]; // [AstateIndex]
+            hash_to_index.Add(Animator.StringToHash(astate.BreadCrumb + astate.Name), iAstate); // (～,AstateIndex)
         }
     }
 

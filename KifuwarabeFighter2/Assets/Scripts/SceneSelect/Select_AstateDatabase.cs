@@ -19,18 +19,15 @@ namespace SceneSelect {
     /// <summary>
     /// アニメーターのステート
     /// </summary>
-    public class AstateRecord : AstateRecordable
+    public class AstateRecord : AbstractAstateRecord
     {
-        public string BreadCrumb { get; set; }
-        public string Name { get; set; }
-
         public AstateRecord(string breadCrumb, string name)
         {
             this.BreadCrumb = breadCrumb;
             this.Name = name;
         }
 
-        public bool HasFlag(int enumration)
+        public override bool HasFlag(int enumration)
         {
             return false;
         }
