@@ -173,7 +173,7 @@ namespace SceneMain
 
             FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(input.leverX);
 
-            if (astateRecord.attribute.HasFlag(AstateDatabase.Attr.Block))
+            if (((AstateDatabase.Attr)astateRecord.AttributeEnum).HasFlag(AstateDatabase.Attr.Block))
             {
                 // ブロック中
                 if(FacingOpponentMoveFwBkSt.Back != facingOpponentMoveFwBkSt)
@@ -315,7 +315,7 @@ namespace SceneMain
             //{
             if (input.leverX != 0)//左か右を入力したら
             {
-                if (!astateRecord.attribute.HasFlag(AstateDatabase.Attr.BusyX))
+                if (!((AstateDatabase.Attr)astateRecord.AttributeEnum).HasFlag(AstateDatabase.Attr.BusyX))
                 {
                     //入力方向へ移動
                     Rigidbody2D.velocity = new Vector2(Mathf.Sign(input.leverX) * speedX, Rigidbody2D.velocity.y);
@@ -395,7 +395,7 @@ namespace SceneMain
 
             if (0 != input.leverY)// 上か下キーを入力していたら
             {
-                if (!astateRecord.attribute.HasFlag(AstateDatabase.Attr.BusyY))
+                if (!((AstateDatabase.Attr)astateRecord.AttributeEnum).HasFlag(AstateDatabase.Attr.BusyY))
                 {
                     if (0 < input.leverY)// 上キーを入力したら
                     {

@@ -9,6 +9,10 @@ public interface AstateRecordable
     string BreadCrumb { get; }
     string Name { get; }
     bool HasFlag(int enumration);
+    /// <summary>
+    /// ほんとは列挙型にしたい☆
+    /// </summary>
+    int AttributeEnum { get; }
 }
 
 public abstract class AbstractAstateRecord : AstateRecordable
@@ -16,6 +20,10 @@ public abstract class AbstractAstateRecord : AstateRecordable
     public string BreadCrumb { get; set; }
     public string Name { get; set; }
     public abstract bool HasFlag(int enumration);
+    /// <summary>
+    /// ほんとは列挙型にしたい☆
+    /// </summary>
+    public int AttributeEnum { get; set; }
 }
 
 public abstract class AbstractAstateDatabase

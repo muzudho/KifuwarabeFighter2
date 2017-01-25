@@ -99,14 +99,14 @@ namespace SceneMain
     public class AstateRecord : AbstractAstateRecord
     {
         public AcliptypeIndex acliptype;
-        public AstateDatabase.Attr attribute;
+        //public int attribute;//AstateDatabase.Attr
 
         public AstateRecord(string breadCrumb, string name, AcliptypeIndex acliptype, AstateDatabase.Attr attribute)
         {
             this.BreadCrumb = breadCrumb;
             this.Name = name;
             this.acliptype = acliptype;
-            this.attribute = attribute;
+            this.AttributeEnum = (int)attribute;
         }
 
         public override bool HasFlag(int enumration)
@@ -114,8 +114,8 @@ namespace SceneMain
             //Debug.Log("InFlag[" + ((AstateDatabase.Attr)enumration).HasFlag(this.attribute) + "] = [" + ((AstateDatabase.Attr)enumration) + "].HasFlag(" + this.attribute + ")");
             //return ((AstateDatabase.Attr)enumration).HasFlag(this.attribute);
 
-            Debug.Log("InFlag[" + this.attribute.HasFlag((AstateDatabase.Attr)enumration) + "] = [" + this.attribute + "].HasFlag(" + ((AstateDatabase.Attr)enumration) + ")");
-            return this.attribute.HasFlag((AstateDatabase.Attr)enumration);
+            Debug.Log("InFlag[" + ((AstateDatabase.Attr)this.AttributeEnum).HasFlag((AstateDatabase.Attr)enumration) + "] = [" + this.AttributeEnum + "].HasFlag(" + ((AstateDatabase.Attr)enumration) + ")");
+            return ((AstateDatabase.Attr)this.AttributeEnum).HasFlag((AstateDatabase.Attr)enumration);
         }
     }
 
