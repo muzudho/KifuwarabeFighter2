@@ -8,7 +8,7 @@ public interface AstateRecordable
 {
     string BreadCrumb { get; }
     string Name { get; }
-    bool HasFlag(int enumration);
+    bool HasFlag_attr(int enumration);
     /// <summary>
     /// ほんとは列挙型にしたい☆
     /// </summary>
@@ -19,7 +19,7 @@ public abstract class AbstractAstateRecord : AstateRecordable
 {
     public string BreadCrumb { get; set; }
     public string Name { get; set; }
-    public abstract bool HasFlag(int enumration);
+    public abstract bool HasFlag_attr(int attributeEnumration);
     /// <summary>
     /// ほんとは列挙型にしたい☆
     /// </summary>
@@ -83,7 +83,7 @@ public abstract class AbstractAstateDatabase
 
         foreach (AstateRecordable record in index_to_record.Values)
         {
-            if (record.HasFlag(enumration_attr)) // if(attribute.HasFlag(record.attribute))
+            if (record.HasFlag_attr(enumration_attr)) // if(attribute.HasFlag(record.attribute))
             {
                 recordset.Add(record);
             }

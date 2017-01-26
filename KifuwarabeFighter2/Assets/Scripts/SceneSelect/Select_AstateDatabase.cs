@@ -27,7 +27,7 @@ namespace SceneSelect {
             this.Name = name;
         }
 
-        public override bool HasFlag(int enumration)
+        public override bool HasFlag_attr(int enumration)
         {
             return false;
         }

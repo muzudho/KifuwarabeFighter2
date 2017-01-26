@@ -109,7 +109,7 @@ namespace SceneMain
             this.AttributeEnum = (int)attribute;
         }
 
-        public override bool HasFlag(int enumration)
+        public override bool HasFlag_attr(int enumration)
         {
             //Debug.Log("InFlag[" + ((AstateDatabase.Attr)enumration).HasFlag(this.attribute) + "] = [" + ((AstateDatabase.Attr)enumration) + "].HasFlag(" + this.attribute + ")");
             //return ((AstateDatabase.Attr)enumration).HasFlag(this.attribute);

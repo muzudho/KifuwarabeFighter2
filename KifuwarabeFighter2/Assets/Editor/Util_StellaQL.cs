@@ -188,6 +188,97 @@ namespace StellaQL
             this.bufferKeywordEnums.Clear();
         }
 
+        public static Dictionary<int, AstateRecordable> FilteringByAttr_AndCollection(List<int> attrs, Dictionary<int, AstateRecordable> universe)
+        {
+            Dictionary<int, AstateRecordable> rHitRecords = new Dictionary<int, AstateRecordable>(universe);
+            foreach (int attr in attrs)
+            {
+                Dictionary<int, AstateRecordable> rRecords_empty = new Dictionary<int, AstateRecordable>();
+                foreach (KeyValuePair<int, AstateRecordable> rPair in rHitRecords)
+                {
+                    if (rPair.Value.HasFlag_attr(attr)) { rRecords_empty.Add(rPair.Key, rPair.Value); }// 該当したもの
+                }
+                rHitRecords = rRecords_empty;
+            }
+            return rHitRecords;
+        }
+
+        public static Dictionary<int, AstateRecordable> FilteringByAttr_OrCollection(List<int> attrs, Dictionary<int, AstateRecordable> universe)
+        {
+            HashSet<int> distinctAttr = new HashSet<int>();// まず属性の重複を除外
+            foreach (int attr in attrs)
+            {
+                distinctAttr.Add(attr);
+            }
+
+            HashSet<int> hitRecordIndexes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
+            foreach (KeyValuePair<int, AstateRecordable> pair in universe)
+            {
+                foreach (int attr in distinctAttr)
+                {
+                    if (pair.Value.HasFlag_attr(attr))
+                    {
+                        hitRecordIndexes.Add(pair.Key);
+                    }
+                }
+            }
+
+            Dictionary<int, AstateRecordable> rHitRecords = new Dictionary<int, AstateRecordable>();
+            foreach (int recordIndex in hitRecordIndexes)
+            {
+                rHitRecords.Add(recordIndex, universe[recordIndex]);
+            }
+            return rHitRecords;
+        }
+
+        public static Dictionary<int, AstateRecordable> FilteringByAttr_NotCollection(List<int> attrs, Dictionary<int, AstateRecordable> universe)
+        {
+            HashSet<int> distinctAttr = new HashSet<int>();// まず属性の重複を除外
+            foreach (int attr in attrs)
+            {
+                distinctAttr.Add(attr);
+            }
+
+            HashSet<int> hitRecordIndexes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
+            foreach (KeyValuePair<int, AstateRecordable> pair in universe)
+            {
+                foreach (int attr in distinctAttr)
+                {
+                    if (pair.Value.HasFlag_attr(attr))
+                    {
+                        hitRecordIndexes.Add(pair.Key);
+                    }
+                }
+            }
+
+            // 補集合を取る
+            List<int> complementRecordIndexes = new List<int>();
+            {
+                // 列挙型の中身をリストに移動。
+                foreach (int recordIndex in universe.Keys) { complementRecordIndexes.Add(recordIndex); }
+                // 後ろから指定の要素を削除する。
+                for (int iComp = complementRecordIndexes.Count - 1; -1 < iComp; iComp--)
+                {
+                    if (hitRecordIndexes.Contains(complementRecordIndexes[iComp]))
+                    {
+                        Debug.Log("Remove[" + iComp + "] (" + complementRecordIndexes[iComp] + ")");
+                        complementRecordIndexes.RemoveAt(iComp);
+                    }
+                    else
+                    {
+                        Debug.Log("Tick[" + iComp + "] (" + complementRecordIndexes[iComp] + ")");
+                    }
+                }
+            }
+
+            Dictionary<int, AstateRecordable> rHitRecords = new Dictionary<int, AstateRecordable>();
+            foreach (int recordIndex in complementRecordIndexes)
+            {
+                rHitRecords.Add(recordIndex, universe[recordIndex]);
+            }
+            return rHitRecords;
+        }
+
         public static List<int> Keyword_to_locker(List<int> set, Type enumration)
         { // 列挙型要素を OR 結合して持つ。
             List<int> attrs = new List<int>();
