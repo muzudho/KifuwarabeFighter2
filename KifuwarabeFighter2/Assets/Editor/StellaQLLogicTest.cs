@@ -88,26 +88,26 @@ public class NewEditorTest {
                 {(int)AstateIndex.Bear, new AstateRecord(  "Base Layer.", "Bear", Attr.Alpha | Attr.Beta | Attr.Eee)},//AE(1) AE,B,E(1)
                 {(int)AstateIndex.Cat, new AstateRecord(  "Base Layer.", "Cat", Attr.Alpha | Attr.Cee)},// ([(Alpha Cee)(Beta)]{Eee})(2)
                 {(int)AstateIndex.Dog, new AstateRecord(  "Base Layer.", "Dog", Attr.Dee)},
-                {(int)AstateIndex.Elephant, new AstateRecord(  "Base Layer.", "Elephant", Attr.Alpha | Attr.Eee)},//AE(2) AE,B,E(2)
+                {(int)AstateIndex.Elephant, new AstateRecord(  "Base Layer.", "Elephant", Attr.Alpha | Attr.Eee)},//AE(2) AE,B,E(2) Nn(1)
                 {(int)AstateIndex.Fox, new AstateRecord(  "Base Layer.", "Fox", Attr.Zero)},
                 {(int)AstateIndex.Giraffe, new AstateRecord(  "Base Layer.", "Giraffe", Attr.Alpha | Attr.Eee)},//AE(3) AE,B,E(3)
                 {(int)AstateIndex.Horse, new AstateRecord(  "Base Layer.", "Horse", Attr.Eee)},// AE,B,E(4)
-                {(int)AstateIndex.Iguana, new AstateRecord(  "Base Layer.", "Iguana", Attr.Alpha)},
+                {(int)AstateIndex.Iguana, new AstateRecord(  "Base Layer.", "Iguana", Attr.Alpha)},// Nn(2)
                 {(int)AstateIndex.Jellyfish, new AstateRecord(  "Base Layer.", "Jellyfish", Attr.Eee)},// AE,B,E(5)
-                {(int)AstateIndex.Kangaroo, new AstateRecord(  "Base Layer.", "Kangaroo", Attr.Alpha)},
-                {(int)AstateIndex.Lion, new AstateRecord(  "Base Layer.", "Lion", Attr.Zero)},
-                {(int)AstateIndex.Monkey, new AstateRecord(  "Base Layer.", "Monkey", Attr.Eee)},// AE,B,E(6)
-                {(int)AstateIndex.Nutria, new AstateRecord(  "Base Layer.", "Nutria", Attr.Alpha)},
+                {(int)AstateIndex.Kangaroo, new AstateRecord(  "Base Layer.", "Kangaroo", Attr.Alpha)},// Nn(3)
+                {(int)AstateIndex.Lion, new AstateRecord(  "Base Layer.", "Lion", Attr.Zero)},// Nn(4)
+                {(int)AstateIndex.Monkey, new AstateRecord(  "Base Layer.", "Monkey", Attr.Eee)},// AE,B,E(6) Nn(5)
+                {(int)AstateIndex.Nutria, new AstateRecord(  "Base Layer.", "Nutria", Attr.Alpha)},// Nn(6)
                 {(int)AstateIndex.Ox, new AstateRecord(  "Base Layer.", "Ox", Attr.Zero)},
                 {(int)AstateIndex.Pig, new AstateRecord(  "Base Layer.", "Pig", Attr.Zero)},
                 {(int)AstateIndex.Quetzal, new AstateRecord(  "Base Layer.", "Quetzal", Attr.Alpha | Attr.Eee)},//AE(4) AE,B,E(7)
                 {(int)AstateIndex.Rabbit, new AstateRecord(  "Base Layer.", "Rabbit", Attr.Alpha | Attr.Beta)},// ([(Alpha Cee)(Beta)]{Eee})(3)  AE,B,E(8)
                 {(int)AstateIndex.Sheep, new AstateRecord(  "Base Layer.", "Sheep", Attr.Eee)},// AE,B,E(9)
                 {(int)AstateIndex.Tiger, new AstateRecord(  "Base Layer.", "Tiger", Attr.Eee)},// AE,B,E(10)
-                {(int)AstateIndex.Unicorn, new AstateRecord(  "Base Layer.", "Unicorn", Attr.Cee)},
-                {(int)AstateIndex.Vixen, new AstateRecord(  "Base Layer.", "Vixen", Attr.Eee)},// AE,B,E(11)
+                {(int)AstateIndex.Unicorn, new AstateRecord(  "Base Layer.", "Unicorn", Attr.Cee)},// Nn(7)
+                {(int)AstateIndex.Vixen, new AstateRecord(  "Base Layer.", "Vixen", Attr.Eee)},// AE,B,E(11) Nn(8)
                 {(int)AstateIndex.Wolf, new AstateRecord(  "Base Layer.", "Wolf", Attr.Zero)},
-                {(int)AstateIndex.Xenopus, new AstateRecord(  "Base Layer.", "Xenopus", Attr.Eee)},// AE,B,E(12)
+                {(int)AstateIndex.Xenopus, new AstateRecord(  "Base Layer.", "Xenopus", Attr.Eee)},// AE,B,E(12) Nn(9)
                 {(int)AstateIndex.Yak, new AstateRecord(  "Base Layer.", "Yak", Attr.Alpha)},
                 {(int)AstateIndex.Zebra, new AstateRecord(  "Base Layer.", "Zebra", Attr.Alpha | Attr.Beta | Attr.Eee)},//AE(5) AE,B,E(13)
             };
@@ -249,6 +249,32 @@ public class NewEditorTest {
             Assert.IsTrue(recordIndexes.Contains((int)AstateDatabase.Attr.Eee));
         }
         */
+    }
+
+    /// <summary>
+    /// ステート名正規表現フィルター
+    /// </summary>
+    [Test]
+    public void Filtering_StateFullNameRegex()
+    {
+        // 条件は、「Base Layer.」の下に、n または N が含まれるもの
+        string pattern = @"Base Layer\.\w*[Nn]\w*";
+        Dictionary<int, AstateRecordable> recordIndexes = StellaQLScanner.Filtering_StateFullNameRegex(pattern, InstanceDatabase.index_to_record);
+
+        // 結果は　Elephant、Iguana、Kangaroo、Lion、Monkey、Nutria、Unicorn、Vixen、Xenopus
+        Assert.AreEqual(9, recordIndexes.Count);
+        if (9 == recordIndexes.Count)
+        {
+            Assert.IsTrue(recordIndexes.ContainsKey((int)AstateIndex.Elephant));
+            Assert.IsTrue(recordIndexes.ContainsKey((int)AstateIndex.Iguana));
+            Assert.IsTrue(recordIndexes.ContainsKey((int)AstateIndex.Kangaroo));
+            Assert.IsTrue(recordIndexes.ContainsKey((int)AstateIndex.Lion));
+            Assert.IsTrue(recordIndexes.ContainsKey((int)AstateIndex.Monkey));
+            Assert.IsTrue(recordIndexes.ContainsKey((int)AstateIndex.Nutria));
+            Assert.IsTrue(recordIndexes.ContainsKey((int)AstateIndex.Unicorn));
+            Assert.IsTrue(recordIndexes.ContainsKey((int)AstateIndex.Vixen));
+            Assert.IsTrue(recordIndexes.ContainsKey((int)AstateIndex.Xenopus));
+        }
     }
 
     /// <summary>

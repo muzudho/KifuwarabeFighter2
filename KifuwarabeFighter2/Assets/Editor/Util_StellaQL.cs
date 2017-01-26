@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace StellaQL
@@ -200,6 +201,22 @@ namespace StellaQL
                 }
                 hitRecords = records_empty;
             }
+            return hitRecords;
+        }
+
+        public static Dictionary<int, AstateRecordable> Filtering_StateFullNameRegex(string pattern, Dictionary<int, AstateRecordable> universe)
+        {
+            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
+
+            Regex regex = new Regex(pattern);
+            foreach (KeyValuePair<int, AstateRecordable> pair in universe)
+            {
+                if(regex.IsMatch(pair.Value.BreadCrumb + pair.Value.Name))
+                {
+                    hitRecords.Add(pair.Key, pair.Value);
+                }
+            }
+
             return hitRecords;
         }
 
