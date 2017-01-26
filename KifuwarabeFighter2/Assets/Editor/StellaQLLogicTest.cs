@@ -132,6 +132,226 @@ public class NewEditorTest {
     }
 
     /// <summary>
+    /// 構文解析 Insert 文
+    /// </summary>
+    [Test]
+    public void Parser_InsertStatement()
+    {
+        string query = @"TRANSITION INSERT
+                        SET Duration 0 ExitTime 1
+                        FROM ""Base Layer.SMove""
+                        TO ATTR (BusyX Block)";
+        StructuredQuery sq = StellaQLScanner.Parser_InsertStatement(query);
+
+        Assert.AreEqual(StructuredQuery.TRANSITION, sq.Target);
+        Assert.AreEqual(StructuredQuery.INSERT, sq.Manipulation);
+        Assert.AreEqual(2, sq.Set.Count);
+        Assert.IsTrue(sq.Set.ContainsKey("Duration"));
+        Assert.AreEqual("0", sq.Set["Duration"]);
+        Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
+        Assert.AreEqual("1", sq.Set["ExitTime"]);
+        Assert.AreEqual("Base Layer.SMove", sq.From_Fullname);
+        Assert.AreEqual("", sq.From_Attr);
+        Assert.AreEqual("", sq.To_Fullname);
+        Assert.AreEqual("(BusyX Block)", sq.To_Attr);
+    }
+
+    /// <summary>
+    /// 構文解析 Update 文
+    /// </summary>
+    [Test]
+    public void Parser_UpdateStatement()
+    {
+        string query = @"TRANSITION UPDATE
+                        SET Duration 0.25 ExitTime 0.75
+                        FROM ""Base Layer.SMove""
+                        TO ATTR (BusyX Block)";
+        StructuredQuery sq = StellaQLScanner.Parser_UpdateStatement(query);
+
+        Assert.AreEqual(StructuredQuery.TRANSITION, sq.Target);
+        Assert.AreEqual(StructuredQuery.UPDATE, sq.Manipulation);
+        Assert.AreEqual(2, sq.Set.Count);
+        Assert.IsTrue(sq.Set.ContainsKey("Duration"));
+        Assert.AreEqual("0.25", sq.Set["Duration"]);
+        Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
+        Assert.AreEqual("0.75", sq.Set["ExitTime"]);
+        Assert.AreEqual("Base Layer.SMove", sq.From_Fullname);
+        Assert.AreEqual("", sq.From_Attr);
+        Assert.AreEqual("", sq.To_Fullname);
+        Assert.AreEqual("(BusyX Block)", sq.To_Attr);
+    }
+
+    /// <summary>
+    /// 構文解析 Delete 文
+    /// </summary>
+    [Test]
+    public void Parser_DeleteStatement()
+    {
+        string query = @"TRANSITION DELETE
+                        FROM ""Base Layer.SMove""
+                        TO ATTR (BusyX Block)";
+        StructuredQuery sq = StellaQLScanner.Parser_DeleteStatement(query);
+
+        Assert.AreEqual(StructuredQuery.TRANSITION, sq.Target);
+        Assert.AreEqual(StructuredQuery.DELETE, sq.Manipulation);
+        Assert.AreEqual(0, sq.Set.Count);
+        Assert.AreEqual("Base Layer.SMove", sq.From_Fullname);
+        Assert.AreEqual("", sq.From_Attr);
+        Assert.AreEqual("", sq.To_Fullname);
+        Assert.AreEqual("(BusyX Block)", sq.To_Attr);
+    }
+
+    /// <summary>
+    /// 構文解析 Select 文
+    /// </summary>
+    [Test]
+    public void Parser_SelectStatement()
+    {
+        string query = @"TRANSITION SELECT
+                        FROM ""Base Layer.SMove""
+                        TO ATTR (BusyX Block)";
+        StructuredQuery sq = StellaQLScanner.Parser_SelectStatement(query);
+
+        Assert.AreEqual(StructuredQuery.TRANSITION, sq.Target);
+        Assert.AreEqual(StructuredQuery.SELECT, sq.Manipulation);
+        Assert.AreEqual(0, sq.Set.Count);
+        Assert.AreEqual("Base Layer.SMove", sq.From_Fullname);
+        Assert.AreEqual("", sq.From_Attr);
+        Assert.AreEqual("", sq.To_Fullname);
+        Assert.AreEqual("(BusyX Block)", sq.To_Attr);
+    }
+
+    /// <summary>
+    /// Parser 改行テスト
+    /// </summary>
+    [Test]
+    public void Parser_Newline()
+    {
+        int caret = 0;
+        bool hit;
+
+        caret = 0;
+        hit = StellaQLScanner.HitSpaces(@"
+a", ref caret);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(2, caret); // 改行は 2 ？ 改行の文字数は環境依存か☆？
+    }
+
+    /// <summary>
+    /// Parser
+    /// </summary>
+    [Test]
+    public void Parser()
+    {
+        int caret = 0;
+        StellaQLScanner.SkipSpace("  a",ref caret);
+        Assert.AreEqual(2, caret);
+
+        bool hit;
+        string word;
+        string stringWithoutDoubleQuotation;
+        string parenthesis;
+
+        caret = 0;
+        hit = StellaQLScanner.HitSpaces("  a", ref caret);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(2, caret);
+
+        caret = 1;
+        hit = StellaQLScanner.HitSpaces("  a", ref caret);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(2, caret);
+
+        caret = 0;
+        hit = StellaQLScanner.HitSpaces("a  ", ref caret);
+        Assert.IsFalse(hit);
+        Assert.AreEqual(0, caret);
+
+        caret = 0;
+        hit = StellaQLScanner.HitWordAndSpace_IgnoreCase("alpaca", "alpaca bear cat ", ref caret);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(6+1, caret);
+        hit = StellaQLScanner.HitWordAndSpace_IgnoreCase("bear", "alpaca bear cat ", ref caret);
+        Assert.IsTrue(hit, "caret="+caret);
+        Assert.AreEqual(11 + 1, caret);
+
+        caret = 0;
+        hit = StellaQLScanner.HitWordAndSpace_IgnoreCase("alpaca", "alpaca  ", ref caret);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(6 + 2, caret);
+
+        caret = 0;
+        hit = StellaQLScanner.HitWordAndSpace_IgnoreCase("alpaca", "alpaca", ref caret);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(6, caret);
+
+        caret = 0;
+        hit = StellaQLScanner.HitWordAndSpace_IgnoreCase("alpaca", "alpxxx ", ref caret);
+        Assert.IsFalse(hit);
+        Assert.AreEqual(0, caret);
+
+        caret = 0;
+        hit = StellaQLScanner.GetWordAndSpace_IgnoreCase("alpaca ", ref caret, out word);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(6+1, caret);
+        Assert.AreEqual("alpaca", word);
+
+        caret = 0;
+        hit = StellaQLScanner.GetWordAndSpace_IgnoreCase(" alpaca", ref caret, out word);
+        Assert.IsFalse(hit);
+        Assert.AreEqual(0, caret);
+        Assert.AreEqual("", word);
+
+        caret = 0;
+        hit = StellaQLScanner.GetStringAndSpace_IgnoreCase(@"""alpaca"" ", ref caret, out stringWithoutDoubleQuotation);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(8+1, caret);
+        Assert.AreEqual("alpaca", stringWithoutDoubleQuotation);
+
+        caret = 0;
+        hit = StellaQLScanner.GetStringAndSpace_IgnoreCase(@"""alpaca""", ref caret, out stringWithoutDoubleQuotation);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(8, caret);
+        Assert.AreEqual("alpaca", stringWithoutDoubleQuotation);
+
+        caret = 0;
+        hit = StellaQLScanner.GetWordAndSpace_IgnoreCase(@" alpaca ", ref caret, out stringWithoutDoubleQuotation);
+        Assert.IsFalse(hit);
+        Assert.AreEqual(0, caret);
+        Assert.AreEqual("", stringWithoutDoubleQuotation);
+
+        caret = 0;
+        hit = StellaQLScanner.GetParentesisAndSpace_IgnoreCase(@"( alpaca ) ", ref caret, out parenthesis);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(10+1, caret);
+        Assert.AreEqual("( alpaca )", parenthesis);
+
+        caret = 0;
+        hit = StellaQLScanner.GetWordAndSpace_IgnoreCase(@"( alpaca ", ref caret, out parenthesis);
+        Assert.IsFalse(hit);
+        Assert.AreEqual(0, caret);
+        Assert.AreEqual("", parenthesis);
+
+        caret = 0;
+        hit = StellaQLScanner.GetParentesisAndSpace_IgnoreCase(@"(alpaca) ", ref caret, out parenthesis);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(8 + 1, caret);
+        Assert.AreEqual("(alpaca)", parenthesis);
+
+        caret = 0;
+        hit = StellaQLScanner.GetParentesisAndSpace_IgnoreCase(@"(alpaca bear) ", ref caret, out parenthesis);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(13 + 1, caret);
+        Assert.AreEqual("(alpaca bear)", parenthesis);
+
+        caret = 0;
+        hit = StellaQLScanner.GetParentesisAndSpace_IgnoreCase(@"(alpaca bear)", ref caret, out parenthesis);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(13, caret);
+        Assert.AreEqual("(alpaca bear)", parenthesis);
+    }
+
+    /// <summary>
     /// （　）要素フィルター
     /// </summary>
     [Test]
@@ -143,7 +363,7 @@ public class NewEditorTest {
             new List<int>() { (int)AstateIndex.Bear, (int)AstateIndex.Elephant },
             new List<int>() { (int)AstateIndex.Bear, (int)AstateIndex.Giraffe },
         };
-        Dictionary<int, AstateRecordable> recordIndexes = StellaQLScanner.Filtering_ElementsAnd(lockers, InstanceDatabase.index_to_record);
+        Dictionary<int, AstateRecordable> recordIndexes = StellaQLAggregater.Filtering_ElementsAnd(lockers, InstanceDatabase.index_to_record);
 
         // 結果は　Bear
         Assert.AreEqual(1, recordIndexes.Count);
@@ -165,7 +385,7 @@ public class NewEditorTest {
             new List<int>() { (int)AstateIndex.Bear, (int)AstateIndex.Elephant },
             new List<int>() { (int)AstateIndex.Bear, (int)AstateIndex.Giraffe },
         };
-        Dictionary<int, AstateRecordable> recordIndexes = StellaQLScanner.Filtering_OrElements(lockers, InstanceDatabase.index_to_record);
+        Dictionary<int, AstateRecordable> recordIndexes = StellaQLAggregater.Filtering_OrElements(lockers, InstanceDatabase.index_to_record);
 
         // 結果は　Bear, Elephant, Giraffe
         Assert.AreEqual(3, recordIndexes.Count);
@@ -189,7 +409,7 @@ public class NewEditorTest {
             new List<int>() { (int)AstateIndex.Bear, (int)AstateIndex.Elephant },
             new List<int>() { (int)AstateIndex.Bear, (int)AstateIndex.Giraffe },
         };
-        Dictionary<int, AstateRecordable> recordIndexes = StellaQLScanner.Filtering_ElementsNotAndNot(lockers, InstanceDatabase.index_to_record);
+        Dictionary<int, AstateRecordable> recordIndexes = StellaQLAggregater.Filtering_ElementsNotAndNot(lockers, InstanceDatabase.index_to_record);
 
         // 結果は　Alpaca,Cat,Dog,Fox,Horse,Iguana,Jellyfish,Kangaroo,Lion,Monkey,Nutria,Ox,Pig,Quetzal,Rabbit,Sheep,Tiger,Unicorn,Vixen,Wolf,Xenopus,Yak,Zebra
         Assert.AreEqual(23, recordIndexes.Count);
@@ -229,7 +449,7 @@ public class NewEditorTest {
     {
         // 条件は、「Base Layer.」の下に、n または N が含まれるもの
         string pattern = @"Base Layer\.\w*[Nn]\w*";
-        Dictionary<int, AstateRecordable> recordIndexes = StellaQLScanner.Filtering_StateFullNameRegex(pattern, InstanceDatabase.index_to_record);
+        Dictionary<int, AstateRecordable> recordIndexes = StellaQLAggregater.Filtering_StateFullNameRegex(pattern, InstanceDatabase.index_to_record);
 
         // 結果は　Elephant、Iguana、Kangaroo、Lion、Monkey、Nutria、Unicorn、Vixen、Xenopus
         Assert.AreEqual(9, recordIndexes.Count);
@@ -255,7 +475,7 @@ public class NewEditorTest {
     {
         // 条件は　Alpha | Eee
         List<int> attrs = new List<int>() { (int)AstateDatabase.Attr.Alpha | (int)AstateDatabase.Attr.Eee };
-        Dictionary<int, AstateRecordable> recordIndexes = StellaQLScanner.Filtering_AndAttributes(attrs, InstanceDatabase.index_to_record);
+        Dictionary<int, AstateRecordable> recordIndexes = StellaQLAggregater.Filtering_AndAttributes(attrs, InstanceDatabase.index_to_record);
 
         // 結果は　Bear、Elephant、Giraffe、Quetzal、Zebra
         Assert.AreEqual(5, recordIndexes.Count);
@@ -277,7 +497,7 @@ public class NewEditorTest {
     {
         // 条件は　（Alpha | Eee）、Beta、Eee
         List<int> attrs = new List<int>() { (int)AstateDatabase.Attr.Alpha | (int)AstateDatabase.Attr.Eee, (int)AstateDatabase.Attr.Beta, (int)AstateDatabase.Attr.Eee };
-        Dictionary<int, AstateRecordable> recordIndexes = StellaQLScanner.Filtering_OrAttributes(attrs, InstanceDatabase.index_to_record);
+        Dictionary<int, AstateRecordable> recordIndexes = StellaQLAggregater.Filtering_OrAttributes(attrs, InstanceDatabase.index_to_record);
 
         // 結果は　Bear、Elephant、Giraffe、Horse、Jellyfish、Monkey、Quetzal、Rabbit、Sheep、Tiger、Vixen、Xenopus、Zebra
         Assert.AreEqual(13, recordIndexes.Count);
@@ -307,7 +527,7 @@ public class NewEditorTest {
     {
         // 条件は　（Alpha | Eee）、Beta、Eee
         List<int> attrs = new List<int>() { (int)AstateDatabase.Attr.Alpha | (int)AstateDatabase.Attr.Eee, (int)AstateDatabase.Attr.Beta, (int)AstateDatabase.Attr.Eee };
-        Dictionary<int, AstateRecordable> recordIndexes = StellaQLScanner.Filtering_NotAndNotAttributes(attrs, InstanceDatabase.index_to_record);
+        Dictionary<int, AstateRecordable> recordIndexes = StellaQLAggregater.Filtering_NotAndNotAttributes(attrs, InstanceDatabase.index_to_record);
 
         // 結果は　Alpaca、Cat、Dog、Fox、Iguana、Kangaroo、Lion、Nutria、Ox、Pig、Unicorn、Wolf、Yak
         Assert.AreEqual(13, recordIndexes.Count);
@@ -336,7 +556,7 @@ public class NewEditorTest {
     public void OperationKeyword()
     {
         List<int> set = new List<int>() { (int)AstateDatabase.Attr.Beta, (int)AstateDatabase.Attr.Dee };
-        List<int> result = StellaQLScanner.Keyword_to_locker(set, typeof(AstateDatabase.Attr));
+        List<int> result = StellaQLAggregater.Keyword_to_locker(set, typeof(AstateDatabase.Attr));
 
         int i = 0;
         foreach (int attr in result) { Debug.Log("Attr[" + i + "]: " + (AstateDatabase.Attr)attr + " (" + attr + ")"); i++; }
@@ -355,7 +575,7 @@ public class NewEditorTest {
     public void OperationKeywordList()
     {
         List<int> set = new List<int>() { (int)AstateDatabase.Attr.Beta, (int)AstateDatabase.Attr.Dee };
-        List<int> result = StellaQLScanner.KeywordList_to_locker(set, typeof(AstateDatabase.Attr));
+        List<int> result = StellaQLAggregater.KeywordList_to_locker(set, typeof(AstateDatabase.Attr));
 
         int i = 0;
         foreach (int attr in result) { Debug.Log("Attr[" + i + "]: " + (AstateDatabase.Attr)attr + " (" + attr + ")"); i++; }
@@ -375,7 +595,7 @@ public class NewEditorTest {
     public void OperationNGKeywordList()
     {
         List<int> set = new List<int>() { (int)AstateDatabase.Attr.Beta, (int)AstateDatabase.Attr.Dee };
-        List<int> result = StellaQLScanner.NGKeywordList_to_locker(set, typeof(AstateDatabase.Attr));
+        List<int> result = StellaQLAggregater.NGKeywordList_to_locker(set, typeof(AstateDatabase.Attr));
 
         int i = 0;
         foreach (int attr in result) { Debug.Log("Attr[" + i + "]: " + (AstateDatabase.Attr)attr + " (" + attr + ")"); i++; }
@@ -397,7 +617,7 @@ public class NewEditorTest {
     public void GetComplement()
     {
         List<int> set = new List<int>() { (int)AstateDatabase.Attr.Beta, (int)AstateDatabase.Attr.Dee }; // int型にして持つ
-        List<int> complement = StellaQLScanner.Complement(set, typeof(AstateDatabase.Attr));
+        List<int> complement = StellaQLAggregater.Complement(set, typeof(AstateDatabase.Attr));
 
         int i = 0;
         foreach (int attr in complement)
