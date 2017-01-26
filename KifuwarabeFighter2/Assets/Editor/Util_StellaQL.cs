@@ -189,6 +189,94 @@ namespace StellaQL
             this.bufferKeywordEnums.Clear();
         }
 
+        public static Dictionary<int, AstateRecordable> Filtering_ElementsAnd(List<List<int>> lockers, Dictionary<int, AstateRecordable> universe)
+        {
+            List<int> recordIndexes = new List<int>();// レコード・インデックスを入れたり、削除したりする
+            int iLocker = 0;
+            foreach (List<int> locker in lockers)
+            {
+                if (0==iLocker) // 最初のロッカーは丸ごと入れる。
+                {
+                    foreach (int recordIndex in locker) { recordIndexes.Add(recordIndex); }
+                }
+                else // ２つ目以降のロッカーは、全てのロッカーに共通する要素のみ残るようにする。
+                {
+                    for (int iElem = recordIndexes.Count - 1; -1 < iElem; iElem--)// 後ろから指定の要素を削除する。
+                    {
+                        if (!locker.Contains(recordIndexes[iElem])) { recordIndexes.RemoveAt(iElem); }
+                    }
+                }
+                iLocker++;
+            }
+
+            HashSet<int> distinctRecordIndexes = new HashSet<int>();// 一応、重複を消しておく
+            foreach (int recordIndex in recordIndexes) { distinctRecordIndexes.Add(recordIndex); }
+
+            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
+            foreach (int recordIndex in distinctRecordIndexes) { hitRecords.Add(recordIndex, universe[recordIndex]); }
+            return hitRecords;
+        }
+
+        public static Dictionary<int, AstateRecordable> Filtering_OrElements(List<List<int>> lockers, Dictionary<int, AstateRecordable> universe)
+        {
+            HashSet<int> recordIndexes = new HashSet<int>();// どんどんレコード・インデックスを追加していく
+            foreach (List<int> locker in lockers)
+            {
+                foreach (int recordIndex in locker)
+                {
+                    recordIndexes.Add(recordIndex);
+                }
+            }
+
+            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
+            foreach (int recordIndex in recordIndexes) { hitRecords.Add(recordIndex, universe[recordIndex]); }
+            return hitRecords;
+        }
+
+        public static Dictionary<int, AstateRecordable> Filtering_ElementsNotAndNot(List<List<int>> lockers, Dictionary<int, AstateRecordable> universe)
+        {
+            HashSet<int> recordIndexes = new HashSet<int>();// どんどんレコード・インデックスを追加していく
+            foreach (List<int> locker in lockers)
+            {
+                foreach (int recordIndex in locker)
+                {
+                    recordIndexes.Add(recordIndex);
+                }
+            }
+
+            List<int> complementRecordIndexes = new List<int>();// 補集合を取る
+            {
+                foreach (int recordIndex in universe.Keys) { complementRecordIndexes.Add(recordIndex); }// 列挙型の中身をリストに移動。
+                for (int iComp = complementRecordIndexes.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
+                {
+                    if (recordIndexes.Contains(complementRecordIndexes[iComp])) // 集合にある要素を削除
+                    {
+                        complementRecordIndexes.RemoveAt(iComp);
+                    }
+                }
+            }
+
+            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
+            foreach (int recordIndex in complementRecordIndexes) { hitRecords.Add(recordIndex, universe[recordIndex]); }
+            return hitRecords;
+        }
+
+        public static Dictionary<int, AstateRecordable> Filtering_StateFullNameRegex(string pattern, Dictionary<int, AstateRecordable> universe)
+        {
+            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
+
+            Regex regex = new Regex(pattern);
+            foreach (KeyValuePair<int, AstateRecordable> pair in universe)
+            {
+                if (regex.IsMatch(pair.Value.BreadCrumb + pair.Value.Name))
+                {
+                    hitRecords.Add(pair.Key, pair.Value);
+                }
+            }
+
+            return hitRecords;
+        }
+
         public static Dictionary<int, AstateRecordable> Filtering_AndAttributes(List<int> attrs, Dictionary<int, AstateRecordable> universe)
         {
             Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>(universe);
@@ -201,22 +289,6 @@ namespace StellaQL
                 }
                 hitRecords = records_empty;
             }
-            return hitRecords;
-        }
-
-        public static Dictionary<int, AstateRecordable> Filtering_StateFullNameRegex(string pattern, Dictionary<int, AstateRecordable> universe)
-        {
-            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
-
-            Regex regex = new Regex(pattern);
-            foreach (KeyValuePair<int, AstateRecordable> pair in universe)
-            {
-                if(regex.IsMatch(pair.Value.BreadCrumb + pair.Value.Name))
-                {
-                    hitRecords.Add(pair.Key, pair.Value);
-                }
-            }
-
             return hitRecords;
         }
 
