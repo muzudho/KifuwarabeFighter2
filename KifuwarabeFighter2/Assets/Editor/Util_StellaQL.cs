@@ -188,95 +188,71 @@ namespace StellaQL
             this.bufferKeywordEnums.Clear();
         }
 
-        public static Dictionary<int, AstateRecordable> FilteringByAttr_AndCollection(List<int> attrs, Dictionary<int, AstateRecordable> universe)
+        public static Dictionary<int, AstateRecordable> Filtering_AndAttributes(List<int> attrs, Dictionary<int, AstateRecordable> universe)
         {
-            Dictionary<int, AstateRecordable> rHitRecords = new Dictionary<int, AstateRecordable>(universe);
+            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>(universe);
             foreach (int attr in attrs)
             {
-                Dictionary<int, AstateRecordable> rRecords_empty = new Dictionary<int, AstateRecordable>();
-                foreach (KeyValuePair<int, AstateRecordable> rPair in rHitRecords)
+                Dictionary<int, AstateRecordable> records_empty = new Dictionary<int, AstateRecordable>();
+                foreach (KeyValuePair<int, AstateRecordable> pair in hitRecords)
                 {
-                    if (rPair.Value.HasFlag_attr(attr)) { rRecords_empty.Add(rPair.Key, rPair.Value); }// 該当したもの
+                    if (pair.Value.HasFlag_attr(attr)) { records_empty.Add(pair.Key, pair.Value); }// 該当したもの
                 }
-                rHitRecords = rRecords_empty;
+                hitRecords = records_empty;
             }
-            return rHitRecords;
+            return hitRecords;
         }
 
-        public static Dictionary<int, AstateRecordable> FilteringByAttr_OrCollection(List<int> attrs, Dictionary<int, AstateRecordable> universe)
+        public static Dictionary<int, AstateRecordable> Filtering_OrAttributes(List<int> attrs, Dictionary<int, AstateRecordable> universe)
         {
             HashSet<int> distinctAttr = new HashSet<int>();// まず属性の重複を除外
-            foreach (int attr in attrs)
-            {
-                distinctAttr.Add(attr);
-            }
+            foreach (int attr in attrs) { distinctAttr.Add(attr); }
 
             HashSet<int> hitRecordIndexes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
             foreach (KeyValuePair<int, AstateRecordable> pair in universe)
             {
                 foreach (int attr in distinctAttr)
                 {
-                    if (pair.Value.HasFlag_attr(attr))
-                    {
-                        hitRecordIndexes.Add(pair.Key);
-                    }
+                    if (pair.Value.HasFlag_attr(attr)) { hitRecordIndexes.Add(pair.Key); }
                 }
             }
 
-            Dictionary<int, AstateRecordable> rHitRecords = new Dictionary<int, AstateRecordable>();
-            foreach (int recordIndex in hitRecordIndexes)
-            {
-                rHitRecords.Add(recordIndex, universe[recordIndex]);
-            }
-            return rHitRecords;
+            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
+            foreach (int recordIndex in hitRecordIndexes) { hitRecords.Add(recordIndex, universe[recordIndex]); }
+            return hitRecords;
         }
 
-        public static Dictionary<int, AstateRecordable> FilteringByAttr_NotCollection(List<int> attrs, Dictionary<int, AstateRecordable> universe)
+        public static Dictionary<int, AstateRecordable> Filtering_NotAndNotAttributes(List<int> attrs, Dictionary<int, AstateRecordable> universe)
         {
             HashSet<int> distinctAttr = new HashSet<int>();// まず属性の重複を除外
-            foreach (int attr in attrs)
-            {
-                distinctAttr.Add(attr);
-            }
+            foreach (int attr in attrs) { distinctAttr.Add(attr); }
 
             HashSet<int> hitRecordIndexes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
             foreach (KeyValuePair<int, AstateRecordable> pair in universe)
             {
                 foreach (int attr in distinctAttr)
                 {
-                    if (pair.Value.HasFlag_attr(attr))
-                    {
-                        hitRecordIndexes.Add(pair.Key);
-                    }
+                    if (pair.Value.HasFlag_attr(attr)) { hitRecordIndexes.Add(pair.Key); }
                 }
             }
 
-            // 補集合を取る
-            List<int> complementRecordIndexes = new List<int>();
+            List<int> complementRecordIndexes = new List<int>();// 補集合を取る
             {
-                // 列挙型の中身をリストに移動。
-                foreach (int recordIndex in universe.Keys) { complementRecordIndexes.Add(recordIndex); }
-                // 後ろから指定の要素を削除する。
-                for (int iComp = complementRecordIndexes.Count - 1; -1 < iComp; iComp--)
+                foreach (int recordIndex in universe.Keys) { complementRecordIndexes.Add(recordIndex); }// 列挙型の中身をリストに移動。
+                for (int iComp = complementRecordIndexes.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
                 {
                     if (hitRecordIndexes.Contains(complementRecordIndexes[iComp]))
                     {
-                        Debug.Log("Remove[" + iComp + "] (" + complementRecordIndexes[iComp] + ")");
+                        // Debug.Log("Remove[" + iComp + "] (" + complementRecordIndexes[iComp] + ")");
                         complementRecordIndexes.RemoveAt(iComp);
                     }
-                    else
-                    {
-                        Debug.Log("Tick[" + iComp + "] (" + complementRecordIndexes[iComp] + ")");
-                    }
+                    // else { Debug.Log("Tick[" + iComp + "] (" + complementRecordIndexes[iComp] + ")"); }
                 }
             }
 
-            Dictionary<int, AstateRecordable> rHitRecords = new Dictionary<int, AstateRecordable>();
-            foreach (int recordIndex in complementRecordIndexes)
-            {
-                rHitRecords.Add(recordIndex, universe[recordIndex]);
-            }
-            return rHitRecords;
+            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
+            foreach (int recordIndex in complementRecordIndexes) { hitRecords.Add(recordIndex, universe[recordIndex]); }
+            return hitRecords;
         }
 
         public static List<int> Keyword_to_locker(List<int> set, Type enumration)
