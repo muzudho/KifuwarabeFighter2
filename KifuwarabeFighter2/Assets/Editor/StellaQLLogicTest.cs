@@ -133,41 +133,46 @@ public class NewEditorTest {
     }
 
     /// <summary>
-    /// 属性検索部を解析
+    /// ATTR部を解析（２）
     /// </summary>
     [Test]
     public void Parse_AttrParentesis_TokensToLockers()
     {
-        List<string> tokens = new List<string>() {
-            "(","[","(","Alpaca","Bear",")","(","Cat","Dog",")","]","{","Elephant","}",")",
-        };
+        List<string> tokens = new List<string>() {"(","[","(","Alpaca","Bear",")","(","Cat","Dog",")","]","{","Elephant","}",")",};
         List<List<string>> lockers;
-        AttrParenthesisParser.Tokens_to_lockers(tokens, out lockers);
+        List<string> lockersOperation;
+        AttrParenthesisParser.Tokens_to_lockers(tokens, out lockers, out lockersOperation);
 
         Assert.AreEqual(5, lockers.Count);
-        { int i = 0; foreach (string token in lockers[0]) { Debug.Log("[0][" + i + "]=" + token); i++; } }
+        Assert.AreEqual(5, lockersOperation.Count);
+        //{ int i = 0; foreach (string token in lockers[0]) { Debug.Log("[0][" + i + "]=" + token); i++; } }
         Assert.AreEqual(2, lockers[0].Count);
-        { int i = 0; foreach (string token in lockers[1]) { Debug.Log("[1][" + i + "]=" + token); i++; } }
+        //{ int i = 0; foreach (string token in lockers[1]) { Debug.Log("[1][" + i + "]=" + token); i++; } }
         Assert.AreEqual(2, lockers[1].Count);
-        { int i = 0; foreach (string token in lockers[2]) { Debug.Log("[2][" + i + "]=" + token); i++; } }
+        //{ int i = 0; foreach (string token in lockers[2]) { Debug.Log("[2][" + i + "]=" + token); i++; } }
         Assert.AreEqual(2, lockers[2].Count);
-        { int i = 0; foreach (string token in lockers[3]) { Debug.Log("[3][" + i + "]=" + token); i++; } }
+        //{ int i = 0; foreach (string token in lockers[3]) { Debug.Log("[3][" + i + "]=" + token); i++; } }
         Assert.AreEqual(1, lockers[3].Count);
-        { int i = 0; foreach (string token in lockers[4]) { Debug.Log("[4][" + i + "]=" + token); i++; } }
+        //{ int i = 0; foreach (string token in lockers[4]) { Debug.Log("[4][" + i + "]=" + token); i++; } }
         Assert.AreEqual(2, lockers[4].Count);
         Assert.AreEqual("Bear", lockers[0][0]);
         Assert.AreEqual("Alpaca", lockers[0][1]);
+        Assert.AreEqual("(", lockersOperation[0]);
         Assert.AreEqual("Dog", lockers[1][0]);
         Assert.AreEqual("Cat", lockers[1][1]);
+        Assert.AreEqual("(", lockersOperation[1]);
         Assert.AreEqual("1", lockers[2][0]);
         Assert.AreEqual("0", lockers[2][1]);
+        Assert.AreEqual("[", lockersOperation[2]);
         Assert.AreEqual("Elephant", lockers[3][0]);
+        Assert.AreEqual("{", lockersOperation[3]);
         Assert.AreEqual("3", lockers[4][0]);
         Assert.AreEqual("2", lockers[4][1]);
+        Assert.AreEqual("(", lockersOperation[4]);
     }
 
     /// <summary>
-    /// 属性検索部を解析
+    /// ATTR部を解析（１）
     /// </summary>
     [Test]
     public void Parse_AttrParentesis_StringToTokens()
@@ -177,7 +182,6 @@ public class NewEditorTest {
         AttrParenthesisParser.String_to_tokens(attrParentesis, out tokens);
 
         //{ int i = 0; foreach (string token in tokens) { Debug.Log("Token[" + i + "]: " + token); i++; } }
-
         Assert.AreEqual(15, tokens.Count);
         Assert.AreEqual("(", tokens[0]);
         Assert.AreEqual("[", tokens[1]);

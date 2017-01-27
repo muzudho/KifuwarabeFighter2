@@ -326,47 +326,26 @@ namespace StellaQL
 
             for (int iCaret = 0; iCaret < expression.Length;)
             {
-                if(StellaQLScanner.VarSpaces(expression, ref iCaret))
-                {
-                    // 空白を読み飛ばす。
-                    if (0 < bufferWord.Length)
-                    {
-                        // Debug.Log("iCaret=[" + iCaret + "] 空白読み飛ばし word.ToString()=[" + bufferWord.ToString() + "]");
-                        tokens.Add(bufferWord.ToString()); bufferWord.Length = 0;
-                    }
-                    //else
-                    //{
-                    //    Debug.Log("iCaret=[" + iCaret + "] 空白読み飛ばし word.ToString()=[" + bufferWord.ToString()+"]");
-                    //}
-                }
-                else
-                {
+                if(StellaQLScanner.VarSpaces(expression, ref iCaret)) {
+                    if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; } // 空白を読み飛ばす。
+                    // Debug.Log("iCaret=[" + iCaret + "] 空白読み飛ばし word.ToString()=[" + bufferWord.ToString() + "]");
+                }else{
                     char ch = expression[iCaret];
-                    switch (ch)
-                    {
+                    switch (ch) {
                         case '(':
                         case '[':
                         case '{':
                         case ')':
                         case ']':
-                        case '}':
-                            // Debug.Log("iCaret=[" + iCaret + "] tokens.Add(ch.ToString()) ch=[" + ch + "]");
-                            if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; }
-                            tokens.Add(ch.ToString());
-                            break;
-                        default:
-                            // Debug.Log("iCaret=["+ iCaret + "] word.Append(ch) ch=[" + ch + "]");
+                        case '}': // Debug.Log("iCaret=[" + iCaret + "] tokens.Add(ch.ToString()) ch=[" + ch + "]");
+                            if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; } tokens.Add(ch.ToString()); break;
+                        default: // Debug.Log("iCaret=["+ iCaret + "] word.Append(ch) ch=[" + ch + "]");
                             bufferWord.Append(ch); break;
                     }
                     iCaret++;
                 }
             }
-
-            if (0 < bufferWord.Length)//構文エラー
-            {
-                tokens.Add(bufferWord.ToString());
-                bufferWord.Length = 0;
-            }
+            if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; } //構文エラー
         }
 
         /// <summary>
@@ -382,54 +361,37 @@ namespace StellaQL
         /// 
         /// というロッカーに並べ替える。
         /// </summary>
-        public static void Tokens_to_lockers(List<string> tokens, out List<List<string>> lockers)
+        public static void Tokens_to_lockers(List<string> tokens, out List<List<string>> lockers, out List<string> lockersOperation)
         {
             string openParen = ""; // 閉じ括弧に対応する、「開きカッコ」
             int iCursor = 0;
 
             lockers = new List<List<string>>(); // 部室のロッカー。スタートは 0 番から。
+            lockersOperation = new List<string>();
             List<string> bufferTokens = new List<string>(); // スキャン中のトークン。
-            while (iCursor < tokens.Count)
-            {
+            while (iCursor < tokens.Count) {
                 string token = tokens[iCursor];
-                if ("" == openParen)
-                {
-                    StringBuilder sb1 = new StringBuilder();
-                    sb1.Append("go["); sb1.Append(iCursor); sb1.Append("]: "); sb1.Append(token); sb1.AppendLine();
-                    Debug.Log(sb1.ToString());
-                    switch (token)
-                    {
+                if ("" == openParen) { //StringBuilder sb1 = new StringBuilder(); sb1.Append("go["); sb1.Append(iCursor); sb1.Append("]: "); sb1.Append(token); sb1.AppendLine(); Debug.Log(sb1.ToString());
+                    switch (token) {
                         case ")": openParen = "("; tokens[iCursor] = ""; break;
                         case "]": openParen = "["; tokens[iCursor] = ""; break;
                         case "}": openParen = "{"; tokens[iCursor] = ""; break;
                         default: break; // 無視して進む
                     }
-                }
-                else // 後ろに進む☆　括弧内のメンバーの文字を削除し、開きカッコをロッカー番号に置き換える。
-                {
-                    StringBuilder sb2 = new StringBuilder();
-                    sb2.Append("back["); sb2.Append(iCursor); sb2.Append("]: "); sb2.Append(token); sb2.AppendLine();
-                    Debug.Log(sb2.ToString());
-                    switch (token)
-                    {
+                } else // 後ろに進む☆　括弧内のメンバーの文字を削除し、開きカッコをロッカー番号に置き換える。
+                { //StringBuilder sb2 = new StringBuilder(); sb2.Append("back["); sb2.Append(iCursor); sb2.Append("]: "); sb2.Append(token); sb2.AppendLine(); Debug.Log(sb2.ToString());
+                    switch (token){
                         case "": break; // 無視
                         case "(":
                         case "[":
-                        case "{": if (openParen == token)
-                            {
+                        case "{": if (openParen == token) {
                                 tokens[iCursor] = lockers.Count.ToString(); // ロッカー番号に置換
-                                openParen = ""; lockers.Add(bufferTokens); bufferTokens = new List<string>();
-                            }
-                            else {
-                                throw new UnityException("Tokens_to_lockers パース・エラー？"); // エラー？
-                            }
-                            break;
+                                openParen = ""; lockersOperation.Add(token); lockers.Add(bufferTokens); bufferTokens = new List<string>();
+                            } else { throw new UnityException("Tokens_to_lockers パース・エラー？"); } break;
                         default: bufferTokens.Add(token); tokens[iCursor] = ""; break;
                     }
                 }
-
-                if ("" == openParen) { iCursor++; }
-                else { iCursor--; }
+                if ("" == openParen) { iCursor++; } else { iCursor--; }
             }
         }
     }
