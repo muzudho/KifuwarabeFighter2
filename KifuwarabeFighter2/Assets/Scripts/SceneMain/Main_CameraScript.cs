@@ -148,7 +148,7 @@ namespace SceneMain
             }
             #endregion
 
-            AstateDatabase.Instance.InsertAllStates();
+            StateExTable.Instance.InsertAllStates();
 
             #region リセット（配列やスプライト等の初期設定が終わってから）
             ReadyingTime = 0;

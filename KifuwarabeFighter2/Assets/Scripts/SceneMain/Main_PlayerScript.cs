@@ -75,7 +75,7 @@ namespace SceneMain
             //}
 
             // 現在のアニメーター・ステートに紐づいたデータ
-            AstateRecord astateRecord = (AstateRecord)AstateDatabase.Instance.GetCurrentAstateRecord(animator);
+            StateExRecord astateRecord = (StateExRecord)StateExTable.Instance.GetCurrentStateExRecord(animator);
 
             #region 入力受付
             CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
@@ -173,7 +173,7 @@ namespace SceneMain
 
             FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(input.leverX);
 
-            if (((AstateDatabase.Attr)astateRecord.AttributeEnum).HasFlag(AstateDatabase.Attr.Block))
+            if (((StateExTable.Attr)astateRecord.AttributeEnum).HasFlag(StateExTable.Attr.Block))
             {
                 // ブロック中
                 if(FacingOpponentMoveFwBkSt.Back != facingOpponentMoveFwBkSt)
@@ -315,7 +315,7 @@ namespace SceneMain
             //{
             if (input.leverX != 0)//左か右を入力したら
             {
-                if (!((AstateDatabase.Attr)astateRecord.AttributeEnum).HasFlag(AstateDatabase.Attr.BusyX))
+                if (!((StateExTable.Attr)astateRecord.AttributeEnum).HasFlag(StateExTable.Attr.BusyX))
                 {
                     //入力方向へ移動
                     Rigidbody2D.velocity = new Vector2(Mathf.Sign(input.leverX) * speedX, Rigidbody2D.velocity.y);
@@ -395,7 +395,7 @@ namespace SceneMain
 
             if (0 != input.leverY)// 上か下キーを入力していたら
             {
-                if (!((AstateDatabase.Attr)astateRecord.AttributeEnum).HasFlag(AstateDatabase.Attr.BusyY))
+                if (!((StateExTable.Attr)astateRecord.AttributeEnum).HasFlag(StateExTable.Attr.BusyY))
                 {
                     if (0 < input.leverY)// 上キーを入力したら
                     {
@@ -472,7 +472,7 @@ namespace SceneMain
         /// 現在のアニメーション・クリップに対応したデータを取得。
         /// </summary>
         /// <returns></returns>
-        public AcliptypeRecord GetCurrentAclipTypeRecord()
+        public CliptypeRecord GetCurrentAclipTypeRecord()
         {
             AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
             //if (!AstateDatabase.hash_to_acliptype.ContainsKey(animeStateInfo.fullPathHash))
@@ -480,11 +480,11 @@ namespace SceneMain
             //    throw new UnityException("フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆");
             //}
 
-            AcliptypeIndex aclipType = ((AstateRecord)AstateDatabase.Instance.index_to_record[(int)AstateDatabase.Instance.hash_to_index[animeStateInfo.fullPathHash]]).acliptype;
+            CliptypeIndex aclipType = ((StateExRecord)StateExTable.Instance.index_to_exRecord[(int)StateExTable.Instance.hash_to_index[animeStateInfo.fullPathHash]]).acliptype;
 
-            if (AcliptypeDatabase.index_to_record.ContainsKey(aclipType))
+            if (CliptypeDatabase.index_to_record.ContainsKey(aclipType))
             {
-                return AcliptypeDatabase.index_to_record[aclipType];
+                return CliptypeDatabase.index_to_record[aclipType];
             }
 
             throw new UnityException("aclipType = [" + aclipType + "]に対応するアニメーション・クリップのレコードが無いぜ☆");
@@ -513,7 +513,7 @@ namespace SceneMain
                 AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
                 float stateSpeed = animeStateInfo.speed;
 
-                AcliptypeRecord aclipTypeRecord = GetCurrentAclipTypeRecord();
+                CliptypeRecord aclipTypeRecord = GetCurrentAclipTypeRecord();
 
                 // 正規化時間取得（0～1 の数倍。時間経過で 1以上になる）
                 float normalizedTime = animeStateInfo.normalizedTime;
@@ -544,7 +544,7 @@ namespace SceneMain
                 int serialImage;
                 int slice;
                 CharacterIndex character = CommonScript.Player_to_useCharacter[playerIndex];
-                AstateDatabase.GetSlice(
+                StateExTable.GetSlice(
                     out serialImage,
                     out slice,
                     character, // キャラクター番号

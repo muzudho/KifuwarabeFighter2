@@ -9,18 +9,18 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         #region 立ち
-        if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.SWait].Name)) // 立ち待機
+        if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.SWait].Name)) // 立ち待機
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
         }
         #endregion
         #region ジャンプ
-        else if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.JMove0].Name)) // ジャンプに着手した。
+        else if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.JMove0].Name)) // ジャンプに着手した。
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Jump);
             animator.SetBool(SceneCommon.BOOL_JMOVE0, true);
         }
-        else if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.JMove1].Name)) // 上昇
+        else if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.JMove1].Name)) // 上昇
         {
             Main_PlayerScript script = animator.gameObject.GetComponent<Main_PlayerScript>();
             script.Jump1();
@@ -29,17 +29,17 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
         #region 走り
         #endregion
         #region 屈み
-        else if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.CWait].Name)) // かがみ待機
+        else if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.CWait].Name)) // かがみ待機
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Crouch);
         }
         #endregion
         #region その他
-        else if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.OBackstep].Name)) // バックステップ
+        else if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.OBackstep].Name)) // バックステップ
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
         }
-        else if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.OGiveup].Name))
+        else if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.OGiveup].Name))
         {
             // 投了モーションに入る時。
             //Debug.Log("投了モーション始まり☆ layerIndex = " + layerIndex + " stateInfo.fullPathHash = " + stateInfo.fullPathHash + " animator.name = " + animator.name);
@@ -52,7 +52,7 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
     // OnStateUpdate is called before OnStateUpdate is called on any state inside this state machine
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.OGiveup].Name))
+        if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.OGiveup].Name))
         {
             // 投了モーション中
             if(2.0f<=stateInfo.normalizedTime % 1 * animator.GetCurrentAnimatorClipInfo(0)[0].clip.frameRate)
@@ -69,12 +69,12 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
     // OnStateExit is called before OnStateExit is called on any state inside this state machine
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.JMove0].Name)) // 屈伸が終わった時
+        if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.JMove0].Name)) // 屈伸が終わった時
         {
             Main_PlayerScript script = animator.gameObject.GetComponent<Main_PlayerScript>();
             script.JMove0Exit();
         }
-        else if (stateInfo.IsName(AstateDatabase.Instance.index_to_record[(int)AstateIndex.OGiveup].Name))
+        else if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.OGiveup].Name))
         {
             //Debug.Log("投了モーション終わり☆ layerIndex = " + layerIndex + " stateInfo.fullPathHash = " + stateInfo.fullPathHash + " animator.name = " + animator.name);
 

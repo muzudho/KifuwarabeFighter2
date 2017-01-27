@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
 using System;
-//using SceneMain;
+using StellaQL;
 
 //[ExecuteInEditMode]
 public class AnimatorControllerSample : MonoBehaviour {
@@ -32,7 +32,7 @@ public class AnimatorControllerSample : MonoBehaviour {
         // アニメーター・コントローラーを取得。
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
-        AnimatorState state = AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.JMove0");
+        AnimatorState state = AniconOpe_State.Lookup(ac, "Base Layer.JMove.JMove0");
         //AnimatorState state;
         //state = AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi1");
         //state.tag = "tamesi(^q^)1";
@@ -52,7 +52,7 @@ public class AnimatorControllerSample : MonoBehaviour {
         // アニメーター・コントローラーを取得。
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
-        AnimatorStateTransition transition = AinmatorControllerOperation.LookupTransition(ac, "Base Layer.JMove.Tamesi1 1", "Base Layer.JMove.Tamesi1");
+        AnimatorStateTransition transition = AniconOpe_Transition.Lookup(ac, "Base Layer.JMove.Tamesi1 1", "Base Layer.JMove.Tamesi1");
         transition.name = "tamesi(^q^)6";
     }
 
@@ -62,7 +62,7 @@ public class AnimatorControllerSample : MonoBehaviour {
         // アニメーター・コントローラーを取得。
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
-        AinmatorControllerOperation.AddTransition(ac, "Base Layer.JMove.Tamesi1 0", "Base Layer.JMove.Tamesi1");
+        AniconOpe_Transition.Add(ac, "Base Layer.JMove.Tamesi1 0", "Base Layer.JMove.Tamesi1");
     }
 
     [MenuItem("(^_^)Menu/Add 5x5 Transitions 1")]
@@ -72,14 +72,14 @@ public class AnimatorControllerSample : MonoBehaviour {
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
         List<AnimatorState> states = new List<AnimatorState>() {
-            AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi1"),
-            AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi2"),
-            AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi3"),
-            AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi4"),
-            AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi5"),
+            AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi1"),
+            AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi2"),
+            AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi3"),
+            AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi4"),
+            AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi5"),
         };
         Debug.Log("states.Count = " + states.Count);
-        AinmatorControllerOperation.AddTransitions(ac, states, states);
+        AniconOpe_Transition.AddAll(ac, states, states);
     }
 
     [MenuItem("(^_^)Menu/TestWhere 4")]
@@ -87,10 +87,10 @@ public class AnimatorControllerSample : MonoBehaviour {
     {
         //List<AstateRecordable> recordset = SceneMain.AstateDatabase.Instance.Where((int)SceneMain.AstateDatabase.Attr.BusyX);
         //List<AstateRecordable> recordset = SceneMain.AstateDatabase.Instance.Where((int)(SceneMain.AstateDatabase.Attr.BusyX | SceneMain.AstateDatabase.Attr.BusyY));
-        List<AstateRecordable> recordset = SceneMain.AstateDatabase.Instance.Where((int)(SceneMain.AstateDatabase.Attr.BusyX | SceneMain.AstateDatabase.Attr.Block));
+        List<StateExRecordable> recordset = SceneMain.StateExTable.Instance.Where((int)(SceneMain.StateExTable.Attr.BusyX | SceneMain.StateExTable.Attr.Block));
 
         Debug.Log("結果：" + recordset.Count + "件");
-        foreach (AstateRecordable record in recordset)
+        foreach (StateExRecordable record in recordset)
         {
             Debug.Log("結果："+ record.BreadCrumb+record.Name);
         }

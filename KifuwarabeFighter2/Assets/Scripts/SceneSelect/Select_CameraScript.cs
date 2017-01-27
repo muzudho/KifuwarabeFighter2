@@ -2,6 +2,7 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
+using StellaQL;
 
 namespace SceneSelect
 {
@@ -22,7 +23,7 @@ namespace SceneSelect
             player_to_animator = new[] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1,(int)GameobjectIndex.Player]).GetComponent<Animator>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Player]).GetComponent<Animator>() };
 
             // このシーンのデータベースを用意するぜ☆（＾▽＾）
-            AstateDatabase.Instance.InsertAllStates();
+            StateExTable.Instance.InsertAllStates();
         }
 
         // Update is called once per frame
@@ -31,12 +32,12 @@ namespace SceneSelect
             ReadyingTime++;
 
             // 現在のアニメーター・ステートに紐づいたデータ
-            AstateRecordable astateRecord0 = AstateDatabase.Instance.GetCurrentAstateRecord(player_to_animator[(int)PlayerIndex.Player1]);
-            AstateRecordable astateRecord1 = AstateDatabase.Instance.GetCurrentAstateRecord(player_to_animator[(int)PlayerIndex.Player2]);
+            StateExRecordable astateRecord0 = StateExTable.Instance.GetCurrentStateExRecord(player_to_animator[(int)PlayerIndex.Player1]);
+            StateExRecordable astateRecord1 = StateExTable.Instance.GetCurrentStateExRecord(player_to_animator[(int)PlayerIndex.Player2]);
             if (
-                AstateDatabase.Instance.index_to_record[(int)AstateIndex.Ready].Name == astateRecord0.Name
+                StateExTable.Instance.index_to_exRecord[(int)StateIndex.Ready].Name == astateRecord0.Name
                 &&
-                AstateDatabase.Instance.index_to_record[(int)AstateIndex.Ready].Name == astateRecord1.Name
+                StateExTable.Instance.index_to_exRecord[(int)StateIndex.Ready].Name == astateRecord1.Name
                 )
             {
                 // １プレイヤー、２プレイヤー　ともに Ready ステートなら。

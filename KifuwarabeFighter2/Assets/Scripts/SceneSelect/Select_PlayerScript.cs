@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using StellaQL;
 
 namespace SceneSelect
 {
@@ -41,7 +42,7 @@ namespace SceneSelect
         void Update()
         {
             // 現在のアニメーター・ステートに紐づいたデータ
-            AstateRecordable astateRecord = AstateDatabase.Instance.GetCurrentAstateRecord(animator);
+            StateExRecordable astateRecord = StateExTable.Instance.GetCurrentStateExRecord(animator);
 
             #region 入力受付と途中参加
             CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
@@ -90,7 +91,7 @@ namespace SceneSelect
             }
             #endregion
 
-            if (AstateDatabase.Instance.index_to_record[(int)AstateIndex.Stay].Name == astateRecord.Name)
+            if (StateExTable.Instance.index_to_exRecord[(int)StateIndex.Stay].Name == astateRecord.Name)
             {
                 //カーソル移動中でなければ。
 
@@ -151,10 +152,10 @@ namespace SceneSelect
                     myRigidbody2D.velocity = new Vector2(0, myRigidbody2D.velocity.y);
                 }
             }
-            else if (AstateDatabase.Instance.index_to_record[(int)AstateIndex.Move].Name == astateRecord.Name)
+            else if (StateExTable.Instance.index_to_exRecord[(int)StateIndex.Move].Name == astateRecord.Name)
             {
             }
-            else if (AstateDatabase.Instance.index_to_record[(int)AstateIndex.Ready].Name == astateRecord.Name)
+            else if (StateExTable.Instance.index_to_exRecord[(int)StateIndex.Ready].Name == astateRecord.Name)
             {
                 // キャラクター選択済みのとき
 
