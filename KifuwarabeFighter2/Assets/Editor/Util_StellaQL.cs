@@ -36,14 +36,14 @@ namespace StellaQL
 
             Stack<char> stack = new Stack<char>();
 
-            // スキャン（XMLのSAX風）
-            StellaQLParenthesisScanner1 scanner = new StellaQLParenthesisScanner1(enumration);
-            scanner.Scan(tokens);
-            {
-            }
+            //// スキャン（XMLのSAX風）
+            //LockersScanner scanner = new LockersScanner(enumration);
+            //scanner.Scan(tokens);
+            //{
+            //}
 
-            object enumElement = Enum.Parse(enumration, "Num"); // 変換できなかったら例外を投げる
-            Debug.Log("enumElement = " + enumElement.ToString() + " typeof = " + enumElement.GetType());
+            //object enumElement = Enum.Parse(enumration, "Num"); // 変換できなかったら例外を投げる
+            //Debug.Log("enumElement = " + enumElement.ToString() + " typeof = " + enumElement.GetType());
 
             return result;
         }
@@ -104,28 +104,29 @@ namespace StellaQL
 
     public class StellaQLAggregater
     {
-        public static Dictionary<int, AstateRecordable> Filtering_StateFullNameRegex(string pattern, Dictionary<int, AstateRecordable> universe)
+        public static List<int> RecordIndexes_FilteringStateFullNameRegex(string pattern, Dictionary<int, AstateRecordable> universe)
         {
-            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
+            List<int> hitRecordIndexes = new List<int>();
 
             Regex regex = new Regex(pattern);
             foreach (KeyValuePair<int, AstateRecordable> pair in universe)
             {
                 if (regex.IsMatch(pair.Value.BreadCrumb + pair.Value.Name))
                 {
-                    hitRecords.Add(pair.Key, pair.Value);
+                    hitRecordIndexes.Add(pair.Key);
                 }
             }
 
-            return hitRecords;
+            return hitRecordIndexes;
         }
 
-        public static Dictionary<int, AstateRecordable> Filtering_ElementsAnd(List<List<int>> lockers, Dictionary<int, AstateRecordable> universe)
+        public static HashSet<int> RecordIndexes_FilteringElementsAnd(HashSet<int> lockerNumbers, List<HashSet<int>> recordIndexeslockers)
         {
             List<int> recordIndexes = new List<int>();// レコード・インデックスを入れたり、削除したりする
             int iLocker = 0;
-            foreach (List<int> locker in lockers)
+            foreach (int lockerNumber in lockerNumbers)
             {
+                HashSet<int> locker = recordIndexeslockers[lockerNumber];
                 if (0 == iLocker) // 最初のロッカーは丸ごと入れる。
                 {
                     foreach (int recordIndex in locker) { recordIndexes.Add(recordIndex); }
@@ -143,71 +144,68 @@ namespace StellaQL
             HashSet<int> distinctRecordIndexes = new HashSet<int>();// 一応、重複を消しておく
             foreach (int recordIndex in recordIndexes) { distinctRecordIndexes.Add(recordIndex); }
 
-            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
-            foreach (int recordIndex in distinctRecordIndexes) { hitRecords.Add(recordIndex, universe[recordIndex]); }
-            return hitRecords;
+            return distinctRecordIndexes;
         }
 
-        public static Dictionary<int, AstateRecordable> Filtering_OrElements(List<List<int>> lockers, Dictionary<int, AstateRecordable> universe)
+        public static HashSet<int> RecordIndexes_FilteringElementsOr(HashSet<int> lockerNumbers, List<HashSet<int>> recordIndexeslockers)
         {
-            HashSet<int> recordIndexes = new HashSet<int>();// どんどんレコード・インデックスを追加していく
-            foreach (List<int> locker in lockers)
+            HashSet<int> hitRecordIndexes = new HashSet<int>();// どんどんレコード・インデックスを追加していく
+            foreach (int lockerNumber in lockerNumbers)
             {
+                HashSet<int> locker = recordIndexeslockers[lockerNumber];
+                if (0==locker.Count) { throw new UnityException("#RecordIndexes_FilteringElementsOr: lockerNumber=[" + lockerNumber + "]のメンバーが空っぽ☆"); }
                 foreach (int recordIndex in locker)
                 {
-                    recordIndexes.Add(recordIndex);
+                    hitRecordIndexes.Add(recordIndex);
                 }
             }
 
-            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
-            foreach (int recordIndex in recordIndexes) { hitRecords.Add(recordIndex, universe[recordIndex]); }
-            return hitRecords;
+            if (0 == hitRecordIndexes.Count) { throw new UnityException("#RecordIndexes_FilteringElementsOr: 結果が空っぽ☆"); }
+            return hitRecordIndexes;
         }
 
-        public static Dictionary<int, AstateRecordable> Filtering_ElementsNotAndNot(List<List<int>> lockers, Dictionary<int, AstateRecordable> universe)
+        public static HashSet<int> RecordIndexes_FilteringElementsNotAndNot(HashSet<int> lockerNumbers, List<HashSet<int>> recordIndexeslockers, Dictionary<int, AstateRecordable> universe)
         {
-            HashSet<int> recordIndexes = new HashSet<int>();// どんどんレコード・インデックスを追加していく
-            foreach (List<int> locker in lockers)
+            HashSet<int> recordIndexesSet = new HashSet<int>();// どんどんレコード・インデックスを追加していく
+            foreach (int lockerNumber in lockerNumbers)
             {
+                HashSet<int> locker = recordIndexeslockers[lockerNumber];
                 foreach (int recordIndex in locker)
                 {
-                    recordIndexes.Add(recordIndex);
+                    recordIndexesSet.Add(recordIndex);
                 }
             }
 
-            List<int> complementRecordIndexes = new List<int>();// 補集合を取る
+            List<int> complementRecordIndexes = new List<int>(universe.Keys); // 補集合を取る（全集合から要素を除外していく）
             {
-                foreach (int recordIndex in universe.Keys) { complementRecordIndexes.Add(recordIndex); }// 列挙型の中身をリストに移動。
                 for (int iComp = complementRecordIndexes.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
                 {
-                    if (recordIndexes.Contains(complementRecordIndexes[iComp])) // 集合にある要素を削除
+                    if (recordIndexesSet.Contains(complementRecordIndexes[iComp])) // 集合にある要素を削除
                     {
                         complementRecordIndexes.RemoveAt(iComp);
                     }
                 }
             }
 
-            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
-            foreach (int recordIndex in complementRecordIndexes) { hitRecords.Add(recordIndex, universe[recordIndex]); }
-            return hitRecords;
+            return new HashSet<int>(complementRecordIndexes);
         }
 
-        public static Dictionary<int, AstateRecordable> Filtering_AndAttributes(List<int> attrs, Dictionary<int, AstateRecordable> universe)
+        public static HashSet<int> RecordIndexes_FilteringAttributesAnd(HashSet<int> attrs, Dictionary<int, AstateRecordable> universe)
         {
-            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>(universe);
+            HashSet<int> hitRecordIndexes = new HashSet<int>(universe.Keys);
             foreach (int attr in attrs)
             {
-                Dictionary<int, AstateRecordable> records_empty = new Dictionary<int, AstateRecordable>();
-                foreach (KeyValuePair<int, AstateRecordable> pair in hitRecords)
+                HashSet<int> records_empty = new HashSet<int>();
+                foreach (int recordIndex in hitRecordIndexes)
                 {
-                    if (pair.Value.HasFlag_attr(attr)) { records_empty.Add(pair.Key, pair.Value); }// 該当したもの
+                    if (universe[recordIndex].HasFlag_attr(attr)) { records_empty.Add(recordIndex); }// 該当したもの
                 }
-                hitRecords = records_empty;
+                hitRecordIndexes = records_empty;
             }
-            return hitRecords;
+            return hitRecordIndexes;
         }
 
-        public static Dictionary<int, AstateRecordable> Filtering_OrAttributes(List<int> attrs, Dictionary<int, AstateRecordable> universe)
+        public static HashSet<int> RecordIndexes_FilteringAttributesOr(HashSet<int> attrs, Dictionary<int, AstateRecordable> universe)
         {
             HashSet<int> distinctAttr = new HashSet<int>();// まず属性の重複を除外
             foreach (int attr in attrs) { distinctAttr.Add(attr); }
@@ -221,12 +219,10 @@ namespace StellaQL
                 }
             }
 
-            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
-            foreach (int recordIndex in hitRecordIndexes) { hitRecords.Add(recordIndex, universe[recordIndex]); }
-            return hitRecords;
+            return hitRecordIndexes;
         }
 
-        public static Dictionary<int, AstateRecordable> Filtering_NotAndNotAttributes(List<int> attrs, Dictionary<int, AstateRecordable> universe)
+        public static HashSet<int> RecordIndexes_FilteringAttributesNotAndNot(HashSet<int> attrs, Dictionary<int, AstateRecordable> universe)
         {
             HashSet<int> distinctAttr = new HashSet<int>();// まず属性の重複を除外
             foreach (int attr in attrs) { distinctAttr.Add(attr); }
@@ -254,28 +250,24 @@ namespace StellaQL
                 }
             }
 
-            Dictionary<int, AstateRecordable> hitRecords = new Dictionary<int, AstateRecordable>();
-            foreach (int recordIndex in complementRecordIndexes) { hitRecords.Add(recordIndex, universe[recordIndex]); }
-            return hitRecords;
+            return new HashSet<int>( complementRecordIndexes);
         }
 
-        public static List<int> Keyword_to_locker(List<int> set, Type enumration)
+        public static HashSet<int> KeywordSet_to_attrLocker(HashSet<int> set)//, Type enumration
         { // 列挙型要素を OR 結合して持つ。
-            List<int> attrs = new List<int>();
-            int sum = (int)Enum.GetValues(enumration).GetValue(0);//最初の要素は 0 にしておくこと。 列挙型だが、int 型に変換。
+            HashSet<int> attrs = new HashSet<int>();
+            int sum = 0;// (int)Enum.GetValues(enumration).GetValue(0);//最初の要素は 0 にしておくこと。 列挙型だが、int 型に変換。
             foreach (object elem in set) { sum |= (int)elem; }// OR結合
             attrs.Add(sum); // 列挙型の要素を結合したものを int型として入れておく。
             return attrs;
         }
 
-        public static List<int> KeywordList_to_locker(List<int> set, Type enumration)
+        public static HashSet<int> KeywordlistSet_to_attrLocker(HashSet<int> set)
         { // 列挙型要素を １つ１つ　ばらばらに持つ。
-            List<int> attrs = new List<int>();
-            foreach (int elem in set) { attrs.Add(elem); }// 列挙型の要素を１つ１つ入れていく。
-            return attrs;
+            return set;
         }
 
-        public static List<int> NGKeywordList_to_locker(List<int> set, Type enumration)
+        public static HashSet<int> NGKeywordSet_to_attrLocker(HashSet<int> set, Type enumration)
         {
             return Complement(set, enumration); // 補集合を返すだけ☆
         }
@@ -283,27 +275,37 @@ namespace StellaQL
         /// <summary>
         /// 補集合
         /// </summary>
-        public static List<int> Complement(List<int> set, Type enumration)
+        public static HashSet<int> Complement(HashSet<int> set, Type enumration)
         {
             List<int> complement = new List<int>();
+            foreach (int elem in Enum.GetValues(enumration)) { complement.Add(elem); }// 列挙型の中身をリストに移動。
+            for (int iComp = complement.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
             {
-                // 列挙型の中身をリストに移動。
-                foreach (int elem in Enum.GetValues(enumration)) { complement.Add(elem); }
-                // 後ろから指定の要素を削除する。
-                for (int iComp = complement.Count - 1; -1 < iComp; iComp--)
+                if (set.Contains(complement[iComp]))
                 {
-                    if (set.Contains(complement[iComp]))
-                    {
-                        Debug.Log("Remove[" + iComp + "] (" + complement[iComp] + ")");
-                        complement.RemoveAt(iComp);
-                    }
-                    else
-                    {
-                        Debug.Log("Tick[" + iComp + "] (" + complement[iComp] + ")");
-                    }
+                    //Debug.Log("Remove[" + iComp + "] (" + complement[iComp] + ")");
+                    complement.RemoveAt(iComp);
                 }
+                //else
+                //{
+                //    Debug.Log("Tick[" + iComp + "] (" + complement[iComp] + ")");
+                //}
             }
-            return complement;
+            return new HashSet<int>( complement);
+        }
+
+        public static HashSet<int> Tokens_to_numbers(List<string> tokens, Type enumration)
+        {
+            HashSet<int> numberSet = new HashSet<int>();
+            foreach (string numberString in tokens) { numberSet.Add(int.Parse(numberString)); }// 変換できなかったら例外を投げる
+            return numberSet;
+        }
+
+        public static HashSet<int> Names_to_enums(HashSet<string> nameSet, Type enumration)
+        {
+            HashSet<int> enumSet = new HashSet<int>();
+            foreach (string name in nameSet) { enumSet.Add((int)Enum.Parse(enumration, name)); }// 変換できなかったら例外を投げる
+            return enumSet;
         }
     }
 
@@ -396,122 +398,83 @@ namespace StellaQL
         }
     }
 
-    public abstract class AbstractStellaQLParenthesisScanner1
+    public abstract class AbstractLockersScanner
     {
         /// <summary>
-        /// 
-        /// イベントハンドラを叩くのが仕事。
-        /// ロッカーに集計結果が入っていくとよい。
+        /// トークン・ロッカーを元に、レコード・インデックス・ロッカーを返す。
         /// </summary>
         /// <param name="tokens"></param>
-        public void Scan(List<string> tokens)
+        public static void TokenLockers_to_recordIndexesLockers(List<List<string>> tokenLockers, List<string> tokenLockersOperation, Type attrEnumration, Dictionary<int, AstateRecordable> universe, out List<HashSet<int>> recordIndexesLockers)
         {
-            string openParen = ""; // 閉じ括弧に対応する、「開きカッコ」
-            int iCursor = 0;
-            int lockerIndex = 0; // 部室のロッカー番号。スタートは 0 番から。
-            while (iCursor < tokens.Count)
+            recordIndexesLockers = new List<HashSet<int>>();
+
             {
-                string token = tokens[iCursor];
-                if ("" == openParen)
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("開始 tokenLockers.Count=[" + tokenLockers.Count + "]");
+                Debug.Log(sb.ToString());
+            }
+            //*
+            for (int iTokenLocker = 0; iTokenLocker<tokenLockers.Count; iTokenLocker++)// 部室のロッカー番号。スタートは 0 番から。
+            {
+                List<string>  tokenMembers = tokenLockers[iTokenLocker];
+                string tokenOperation = tokenLockersOperation[iTokenLocker];// 「(」「[」「{」 がある。
                 {
-                    this.OnGo(iCursor, token);
-                    switch (token)
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("ループ頭 tokenMembers.Count=[" + tokenMembers.Count + "] tokenOperation=[" + tokenOperation + "]");
+                    int i = 0;
+                    foreach (HashSet<int> recordIndexesSet in recordIndexesLockers)
                     {
-                        case ")": openParen = "("; tokens[iCursor] = ""; break;
-                        case "]": openParen = "["; tokens[iCursor] = ""; break;
-                        case "}": openParen = "{"; tokens[iCursor] = ""; break;
-                        default: break; // 無視して進む
+                        sb.AppendLine("ロッカー recordIndexesLockers[" + i + "].Count=[" + recordIndexesSet.Count + "]");
+                        i++;
                     }
+                    Debug.Log(sb.ToString());
                 }
-                else // 後ろに進む☆
-                {
-                    this.OnBack(iCursor, token);
-                    switch (token)
+
+                int memberLockerNumber_temp;
+                if (int.TryParse(tokenMembers[0], out memberLockerNumber_temp))
+                { // レコード・インデックス・ロッカー番号だ。
+                    HashSet<int> lockerNumbers = StellaQLAggregater.Tokens_to_numbers(tokenMembers, attrEnumration);
+                    { Debug.Log("レコード・インデックス・ロッカー番号だ。 tokenMembers.Count=[" + tokenMembers.Count+ "] lockerNumbers.Count = " + lockerNumbers.Count); int i = 0; foreach (int lockerNumber in lockerNumbers) { Debug.Log("["+i+"] lockerNumber=["+ lockerNumber + "]"); } i++; }
+                    switch (tokenOperation)// 属性結合を解消する
                     {
                         case "(":
+                            recordIndexesLockers.Add(StellaQLAggregater.RecordIndexes_FilteringElementsAnd(lockerNumbers, recordIndexesLockers));
+                            break;
                         case "[":
-                        case "{": if (openParen == token) { openParen = ""; this.OnOpenParen(iCursor, token); lockerIndex++; } break;
-                        default: this.OnKeywordGet(iCursor, token, lockerIndex); break;
+                            recordIndexesLockers.Add(StellaQLAggregater.RecordIndexes_FilteringElementsOr(lockerNumbers, recordIndexesLockers));
+                            break;
+                        case "{":
+                            recordIndexesLockers.Add(StellaQLAggregater.RecordIndexes_FilteringElementsNotAndNot(lockerNumbers, recordIndexesLockers, universe));
+                            break;
+                        default: throw new UnityException("未対応1のtokenOperation=["+ tokenOperation + "]");
                     }
-                    tokens[iCursor] = ""; // 後ろに進んだ先では、その文字を削除する
                 }
-
-                if ("" == openParen) { iCursor++; }
-                else { iCursor--; }
+                else { // 属性名のリストなら
+                    HashSet<int> attrEnumSet = StellaQLAggregater.Names_to_enums(new HashSet<string>(tokenMembers), attrEnumration);
+                    HashSet<int> attrIndexes;
+                    switch (tokenOperation)// 属性結合を解消する
+                    {
+                        case "(":
+                            attrIndexes = StellaQLAggregater.KeywordSet_to_attrLocker(attrEnumSet);
+                            recordIndexesLockers.Add(StellaQLAggregater.RecordIndexes_FilteringAttributesAnd(attrIndexes, universe));
+                            break;
+                        case "[":
+                            attrIndexes = StellaQLAggregater.KeywordlistSet_to_attrLocker(attrEnumSet);
+                            recordIndexesLockers.Add(StellaQLAggregater.RecordIndexes_FilteringAttributesOr(attrIndexes, universe));
+                            break;
+                        case "{":
+                            //attrIndexes = StellaQLAggregater.NGKeywordSet_to_attrLocker(attrEnumSet, attrEnumration);
+                            attrIndexes = StellaQLAggregater.KeywordlistSet_to_attrLocker(attrEnumSet); // NOT キーワードは NOT結合ではなく OR結合 で取る。
+                            { Debug.Log("属性NOT attrIndexes.Count=[" + attrIndexes.Count + "]"); foreach (int attrIndex in attrIndexes) { Debug.Log("属性NOT attrIndex=["+ attrIndex + "]"); } }
+                            HashSet<int> temp = StellaQLAggregater.RecordIndexes_FilteringAttributesNotAndNot(attrIndexes, universe);
+                            recordIndexesLockers.Add(temp);
+                            { Debug.Log("属性NOT temp.Count=[" + temp.Count+ "] universe.Count=[" + universe.Count+"]"); }
+                            break;
+                        default: throw new UnityException("未対応2のtokenOperation=[" + tokenOperation + "]");
+                    }
+                }
             }
-        }
-
-        abstract public void OnGo(int iCursor, string token);
-        abstract public void OnBack(int iCursor, string token);
-        abstract public void OnKeywordGet(int iCursor, string token, int locker);
-        abstract public void OnOpenParen(int iCursor, string token);
-    }
-
-    public class StellaQLParenthesisScanner1 : AbstractStellaQLParenthesisScanner1
-    {
-        /// <summary>
-        /// 属性の列挙型。ほんとは列挙型の要素として持っておきたいが、型指定できないので int 型として持っておく。
-        /// </summary>
-        private List<int> bufferAttrKeyword;
-        private Type enumration;
-        /// <summary>
-        /// ほんとは列挙型の要素として持っておきたいが、型指定できないので int 型として持っておく。
-        /// ２重のリストになっており、
-        /// [ロッカー番号][要素番号]
-        /// または、
-        /// [ロッカー番号][属性番号]
-        /// となる。
-        /// </summary>
-        private List<List<int>> lockerAttr;
-        /// <summary>
-        /// ロッカーの内容が属性なら真、それ以外なら偽。
-        /// </summary>
-        private List<bool> lockerIsAttr;
-
-        public StellaQLParenthesisScanner1(Type enumration)
-        {
-            this.enumration = enumration;
-            this.bufferAttrKeyword = new List<int>();
-
-            this.lockerAttr = new List<List<int>>();
-            this.lockerIsAttr = new List<bool>();
-        }
-
-        public override void OnGo(int iCursor, string token)
-        {
-            StringBuilder sb1 = new StringBuilder();
-            sb1.Append("go["); sb1.Append(iCursor); sb1.Append("]: "); sb1.Append(token); sb1.AppendLine();
-            Debug.Log(sb1.ToString());
-        }
-        public override void OnBack(int iCursor, string token)
-        {
-            StringBuilder sb2 = new StringBuilder();
-            sb2.Append("back["); sb2.Append(iCursor); sb2.Append("]: "); sb2.Append(token); sb2.AppendLine();
-            Debug.Log(sb2.ToString());
-        }
-        public override void OnKeywordGet(int iCursor, string token, int locker)
-        {
-            object enumElement = Enum.Parse(enumration, token); // 変換できなかったら例外を投げる
-            this.bufferAttrKeyword.Add((int)enumElement);// 列挙型だが、int 型に変換。
-        }
-        public override void OnOpenParen(int iCursor, string token)
-        {
-            switch (token)
-            {
-                case "(":
-                    this.lockerAttr.Add(StellaQLAggregater.Keyword_to_locker(this.bufferAttrKeyword, enumration));
-                    this.lockerIsAttr.Add(true);
-                    break;
-                case "[":
-                    this.lockerAttr.Add(StellaQLAggregater.KeywordList_to_locker(this.bufferAttrKeyword, enumration));
-                    this.lockerIsAttr.Add(true);
-                    break;
-                case "{":
-                    this.lockerAttr.Add(StellaQLAggregater.NGKeywordList_to_locker(this.bufferAttrKeyword, enumration));
-                    this.lockerIsAttr.Add(true);
-                    break;
-            }
-            this.bufferAttrKeyword.Clear();
+            // */
         }
     }
 
