@@ -203,6 +203,16 @@ namespace StellaQL
                 message = "開発中";
                 return true;
             }
+            else if (SyntaxP.ParseStatement_TransitionDelete(query, out sq))
+            {
+                HashSet<int> recordIndexesFrom = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);
+                HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);
+                AniconOpe_Transition.RemoveAll(ac,
+                    Fetcher.FetchAll(ac, recordIndexesFrom, universe),
+                    Fetcher.FetchAll(ac, recordIndexesTo, universe));
+                message = "開発中";
+                return true;
+            }
             else if (SyntaxP.ParseStatement_TransitionSelect(query, out sq)) {
                 HashSet<int> recordIndexesFrom = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);
                 HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);

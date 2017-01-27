@@ -113,16 +113,30 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// ２つのステートを トランジションで結ぶ。ステートは複数指定でき、総当たりで全部結ぶ。
+        /// ２つのステートを トランジションで結ぶ。ステートは複数指定でき、src→dst方向の総当たりで全部結ぶ。
         /// </summary>
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
         public static void AddAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst)
         {
+            foreach (AnimatorState state_src in states_src) {
+                foreach (AnimatorState state_dst in states_dst) { state_src.AddTransition(state_dst); }
+            }
+        }
+
+        /// <summary>
+        /// ２つのステート間の トランジションを削除する。ステートは複数指定でき、src→dst方向の総当たりで全部削除する。
+        /// </summary>
+        /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
+        public static void RemoveAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst)
+        {
             foreach (AnimatorState state_src in states_src)
             {
-                foreach (AnimatorState state_dst in states_dst)
-                {
-                    state_src.AddTransition(state_dst);
+                foreach (AnimatorState state_dst in states_dst) {
+                    for (int iTra=0; iTra< state_src.transitions.Length; iTra++)
+                    {
+                        AnimatorStateTransition transition = state_src.transitions[iTra];
+                        if (state_dst == transition.destinationState) { state_src.RemoveTransition(transition); break; }
+                    }
                 }
             }
         }
