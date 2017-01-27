@@ -48,7 +48,7 @@ namespace StellaQL
         /// <summary>
         /// SET部。大文字小文字は区別したい。
         /// </summary>
-        public Dictionary<string,string> Set { get; set; }
+        public Dictionary<string, string> Set { get; set; }
         /// <summary>
         /// ステート・フルネーム が入る。
         /// </summary>
@@ -73,10 +73,7 @@ namespace StellaQL
         /// 括弧を使った式 が入る。
         /// </summary>
         public string Where_Attr { get; set; }
-    }
 
-    public abstract class Util_AttrParenthesisParser
-    {
         /// <summary>
         /// スキャンに渡すトークンを作るのが仕事。
         /// 
@@ -94,19 +91,23 @@ namespace StellaQL
 
             for (int iCaret = 0; iCaret < expression.Length;)
             {
-                if(LexcalP.VarSpaces(expression, ref iCaret)) {
+                if (LexcalP.VarSpaces(expression, ref iCaret))
+                {
                     if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; } // 空白を読み飛ばす。
                     // Debug.Log("iCaret=[" + iCaret + "] 空白読み飛ばし word.ToString()=[" + bufferWord.ToString() + "]");
-                }else{
+                }
+                else {
                     char ch = expression[iCaret];
-                    switch (ch) {
+                    switch (ch)
+                    {
                         case '(':
                         case '[':
                         case '{':
                         case ')':
                         case ']':
                         case '}': // Debug.Log("iCaret=[" + iCaret + "] tokens.Add(ch.ToString()) ch=[" + ch + "]");
-                            if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; } tokens.Add(ch.ToString()); break;
+                            if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; }
+                            tokens.Add(ch.ToString()); break;
                         default: // Debug.Log("iCaret=["+ iCaret + "] word.Append(ch) ch=[" + ch + "]");
                             bufferWord.Append(ch); break;
                     }
@@ -114,6 +115,95 @@ namespace StellaQL
                 }
             }
             if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; } //構文エラー
+        }
+    }
+
+    public abstract class QueryTokensUtility
+    {
+        public static HashSet<int> RecordIndexes_From(QueryTokens qt, Type enumration, Dictionary<int, AstateRecordable> universe)
+        {
+            if ("" != qt.From_FullnameRegex) { return ElementSet.RecordIndexes_FilteringStateFullNameRegex(qt.From_FullnameRegex, universe); }
+            else {
+                List<string> tokens; QueryTokens.String_to_tokens(qt.From_Attr, out tokens);
+
+                List<List<string>> tokenLockers;
+                List<string> tokenLockersOperation;
+                Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
+
+                List<HashSet<int>> recordIndexesLockers;
+                Fetcher.TokenLockers_to_recordIndexesLockers(tokenLockers, tokenLockersOperation, enumration, universe, out recordIndexesLockers);
+                return recordIndexesLockers[recordIndexesLockers.Count - 1];
+            }
+        }
+
+        public static HashSet<int> RecordIndexes_To(QueryTokens qt, Type enumration, Dictionary<int, AstateRecordable> universe)
+        {
+            if ("" != qt.To_FullnameRegex) { return ElementSet.RecordIndexes_FilteringStateFullNameRegex(qt.To_FullnameRegex, universe); }
+            else {
+                List<string> tokens; QueryTokens.String_to_tokens(qt.To_Attr, out tokens);
+
+                List<List<string>> tokenLockers;
+                List<string> tokenLockersOperation;
+                Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
+
+                List<HashSet<int>> recordIndexesLockers;
+                Fetcher.TokenLockers_to_recordIndexesLockers(tokenLockers, tokenLockersOperation, enumration, universe, out recordIndexesLockers);
+                return recordIndexesLockers[recordIndexesLockers.Count - 1];
+            }
+        }
+
+        public static HashSet<int> RecordIndexes_Where(QueryTokens qt, Type enumration, Dictionary<int, AstateRecordable> universe)
+        {
+            if ("" != qt.Where_FullnameRegex) { return ElementSet.RecordIndexes_FilteringStateFullNameRegex(qt.Where_FullnameRegex, universe); }
+            else {
+                List<string> tokens; QueryTokens.String_to_tokens(qt.Where_Attr, out tokens);
+
+                List<List<string>> tokenLockers;
+                List<string> tokenLockersOperation;
+                Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
+
+                List<HashSet<int>> recordIndexesLockers;
+                Fetcher.TokenLockers_to_recordIndexesLockers(tokenLockers, tokenLockersOperation, enumration, universe, out recordIndexesLockers);
+                return recordIndexesLockers[recordIndexesLockers.Count - 1];
+            }
+        }
+    }
+
+    /// <summary>
+    /// Query (文字列を与えて、レコード・インデックスを取ってくる)
+    /// </summary>
+    public abstract class Querier
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="query">例えば 「STATE SELECT WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})」 といった式。</param>
+        /// <returns></returns>
+        public static bool ExecuteStateSelect(string query, Type enumration, Dictionary<int, AstateRecordable> universe, out HashSet<int> recordIndexes)
+        {
+            recordIndexes = null;
+            QueryTokens sq;
+            if (!SyntaxP.ParseStatement_StateSelect(query, out sq)) { return false; }
+
+            recordIndexes = QueryTokensUtility.RecordIndexes_Where(sq, enumration, universe);
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="query">例えば 「TRANSITION SELECT FROM "Base Layer.Zebra" TO ATTR ([(Alpha Cee)(Beta)]{Eee})」 といった式。</param>
+        /// <returns></returns>
+        public static bool ExecuteTransitionSelect(string query, Type enumration, Dictionary<int, AstateRecordable> universe, out HashSet<int> recordIndexesSrc, out HashSet<int> recordIndexesDst)
+        {
+            recordIndexesSrc = null;
+            recordIndexesDst = null;
+            QueryTokens sq;
+            if (!SyntaxP.ParseStatement_TransitionSelect(query, out sq)) { return false; }
+
+            recordIndexesSrc = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);// FROM
+            recordIndexesDst = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);// TO
+            return true;
         }
 
         /// <summary>
@@ -137,62 +227,39 @@ namespace StellaQL
             lockers = new List<List<string>>(); // 部室のロッカー。スタートは 0 番から。
             lockersOperation = new List<string>();
             List<string> bufferTokens = new List<string>(); // スキャン中のトークン。
-            while (iCursor < tokens.Count) {
+            while (iCursor < tokens.Count)
+            {
                 string token = tokens[iCursor];
-                if ("" == openParen) { //StringBuilder sb1 = new StringBuilder(); sb1.Append("go["); sb1.Append(iCursor); sb1.Append("]: "); sb1.Append(token); sb1.AppendLine(); Debug.Log(sb1.ToString());
-                    switch (token) {
+                if ("" == openParen)
+                { //StringBuilder sb1 = new StringBuilder(); sb1.Append("go["); sb1.Append(iCursor); sb1.Append("]: "); sb1.Append(token); sb1.AppendLine(); Debug.Log(sb1.ToString());
+                    switch (token)
+                    {
                         case ")": openParen = "("; tokens[iCursor] = ""; break;
                         case "]": openParen = "["; tokens[iCursor] = ""; break;
                         case "}": openParen = "{"; tokens[iCursor] = ""; break;
                         default: break; // 無視して進む
                     }
-                } else // 後ろに進む☆　括弧内のメンバーの文字を削除し、開きカッコをロッカー番号に置き換える。
+                }
+                else // 後ろに進む☆　括弧内のメンバーの文字を削除し、開きカッコをロッカー番号に置き換える。
                 { //StringBuilder sb2 = new StringBuilder(); sb2.Append("back["); sb2.Append(iCursor); sb2.Append("]: "); sb2.Append(token); sb2.AppendLine(); Debug.Log(sb2.ToString());
-                    switch (token){
+                    switch (token)
+                    {
                         case "": break; // 無視
                         case "(":
                         case "[":
-                        case "{": if (openParen == token) {
+                        case "{":
+                            if (openParen == token)
+                            {
                                 tokens[iCursor] = lockers.Count.ToString(); // ロッカー番号に置換
                                 openParen = ""; lockersOperation.Add(token); lockers.Add(bufferTokens); bufferTokens = new List<string>();
-                            } else { throw new UnityException("Tokens_to_lockers パース・エラー？"); } break;
+                            }
+                            else { throw new UnityException("Tokens_to_lockers パース・エラー？"); }
+                            break;
                         default: bufferTokens.Add(token); tokens[iCursor] = ""; break;
                     }
                 }
                 if ("" == openParen) { iCursor++; } else { iCursor--; }
             }
-        }
-    }
-
-    /// <summary>
-    /// Query (文字列を与えて、レコード・インデックスを取ってくる)
-    /// </summary>
-    public abstract class Querier
-    {
-        /// <summary>
-        /// 列挙型の扱い方：「文字列を列挙体に変換する」（DOBON.NET） http://dobon.net/vb/dotnet/programing/enumparse.html
-        /// </summary>
-        /// <param name="query">例えば "( [ ( Alpha Cee ) ( Beta Dee ) ] { Eee } )" といった式。</param>
-        /// <returns></returns>
-        public static bool ExecuteStateSelect(string query, Type enumration, Dictionary<int, AstateRecordable> universe, out HashSet<int> recordIndexes)
-        {
-            recordIndexes = null;
-            QueryTokens sq;
-            if (!SyntaxP.ParseStatement_StateSelect(query, out sq)) { return false; }
-
-            List<string> tokens;
-            Util_AttrParenthesisParser.String_to_tokens(sq.Where_Attr, out tokens);
-
-            List<List<string>> tokenLockers;
-            List<string> tokenLockersOperation;
-            Util_AttrParenthesisParser.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
-
-            List<HashSet<int>> recordIndexesLockers;
-            Fetcher.TokenLockers_to_recordIndexesLockers(
-                tokenLockers, tokenLockersOperation, enumration, universe, out recordIndexesLockers);
-
-            recordIndexes = recordIndexesLockers[recordIndexesLockers.Count - 1];
-            return true;
         }
     }
 
@@ -256,9 +323,9 @@ namespace StellaQL
     /// </summary>
     public abstract class ElementSet
     {
-        public static List<int> RecordIndexes_FilteringStateFullNameRegex(string pattern, Dictionary<int, AstateRecordable> universe)
+        public static HashSet<int> RecordIndexes_FilteringStateFullNameRegex(string pattern, Dictionary<int, AstateRecordable> universe)
         {
-            List<int> hitRecordIndexes = new List<int>();
+            HashSet<int> hitRecordIndexes = new HashSet<int>();
 
             Regex regex = new Regex(pattern);
             foreach (KeyValuePair<int, AstateRecordable> pair in universe)
@@ -459,6 +526,12 @@ namespace StellaQL
             return numberSet;
         }
 
+        /// <summary>
+        /// 列挙型の扱い方：「文字列を列挙体に変換する」（DOBON.NET） http://dobon.net/vb/dotnet/programing/enumparse.html
+        /// </summary>
+        /// <param name="nameSet"></param>
+        /// <param name="enumration"></param>
+        /// <returns></returns>
         public static HashSet<int> Names_to_enums(HashSet<string> nameSet, Type enumration)
         {
             HashSet<int> enumSet = new HashSet<int>();

@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System;
 using System.Text;
 
-public class NewEditorTest {
+public class StellaQLTest {
 
-    static NewEditorTest()
+    static StellaQLTest()
     {
-        NewEditorTest.InstanceDatabase = new AstateDatabase();
+        StellaQLTest.InstanceDatabase = new AstateDatabase();
     }
 
     /// <summary>
@@ -113,9 +113,9 @@ public class NewEditorTest {
         }
     }
 
-    #region Query (文字列を与えて、レコード・インデックスを取ってくる)
+    #region N30 Query (文字列を与えて、レコード・インデックスを取ってくる)
     [Test]
-    public void Query_StateSelect()
+    public void N30_Query_StateSelect()
     {
         string query = @"STATE SELECT
                         WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})";
@@ -127,14 +127,32 @@ public class NewEditorTest {
         Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Cat));
         Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Rabbit));
     }
+
+    [Test]
+    public void N30_Query_TransitionSelect()
+    {
+        string query = @"TRANSITION SELECT
+                        FROM ""Base Layer.Zebra""
+                        TO ATTR ([(Alpha Cee)(Beta)]{Eee})";
+        HashSet<int> recordIndexesSrc;
+        HashSet<int> recordIndexesDst;
+        bool successful = Querier.ExecuteTransitionSelect(query, typeof(AstateDatabase.Attr), InstanceDatabase.index_to_record, out recordIndexesSrc, out recordIndexesDst);
+
+        Assert.AreEqual(1, recordIndexesSrc.Count);
+        Assert.IsTrue(recordIndexesSrc.Contains((int)AstateIndex.Zebra));
+        Assert.AreEqual(3, recordIndexesDst.Count);
+        Assert.IsTrue(recordIndexesDst.Contains((int)AstateIndex.Alpaca));
+        Assert.IsTrue(recordIndexesDst.Contains((int)AstateIndex.Cat));
+        Assert.IsTrue(recordIndexesDst.Contains((int)AstateIndex.Rabbit));
+    }
     #endregion
 
-    #region Fetch (レコード・インデックスを取ってくる)
+    #region N40 Fetch (レコード・インデックスを取ってくる)
     /// <summary>
     /// ロッカーを元に、レコード・インデックスを取得
     /// </summary>
     [Test]
-    public void Fetch_ByLockers()
+    public void N40_Fetch_ByLockers()
     {
         List<List<string>> tokenLockers = new List<List<string>>(){ // 元は "([(Alpha Cee)(Beta)]{Eee})"
             new List<string>() { "Cee", "Alpha", },
@@ -190,12 +208,12 @@ public class NewEditorTest {
     }
     #endregion
 
-    #region element set (要素集合)
+    #region N50 element set (要素集合)
     /// <summary>
     /// （　）要素フィルター
     /// </summary>
     [Test]
-    public void RecordIndexes_FilteringElementsAnd()
+    public void N50_RecordIndexes_FilteringElementsAnd()
     {
         // 条件は　「 Bear, Elephant 」 AND 「 Bear, Giraffe 」
         HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
@@ -218,7 +236,7 @@ public class NewEditorTest {
     /// [ ] 要素フィルター
     /// </summary>
     [Test]
-    public void RecordIndexes_FilteringElementsOr()
+    public void N50_RecordIndexes_FilteringElementsOr()
     {
         // 条件は　「 Bear, Elephant 」 OR 「 Bear, Giraffe 」
         HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
@@ -243,7 +261,7 @@ public class NewEditorTest {
     /// { } 要素フィルター
     /// </summary>
     [Test]
-    public void RecordIndexes_FilteringElementsNotAndNot()
+    public void N50_RecordIndexes_FilteringElementsNotAndNot()
     {
         // 条件は　NOT「 Bear, Elephant 」 AND NOT「 Bear, Giraffe 」
         HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
@@ -288,11 +306,11 @@ public class NewEditorTest {
     /// ステート名正規表現フィルター
     /// </summary>
     [Test]
-    public void RecordIndexes_FilteringStateFullNameRegex()
+    public void N50_RecordIndexes_FilteringStateFullNameRegex()
     {
         // 条件は、「Base Layer.」の下に、n または N が含まれるもの
         string pattern = @"Base Layer\.\w*[Nn]\w*";
-        List<int> recordIndexes = ElementSet.RecordIndexes_FilteringStateFullNameRegex(pattern, InstanceDatabase.index_to_record);
+        HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringStateFullNameRegex(pattern, InstanceDatabase.index_to_record);
 
         // 結果は　Elephant、Iguana、Kangaroo、Lion、Monkey、Nutria、Unicorn、Vixen、Xenopus
         Assert.AreEqual(9, recordIndexes.Count);
@@ -314,7 +332,7 @@ public class NewEditorTest {
     /// （　）属性フィルター
     /// </summary>
     [Test]
-    public void RecordIndexes_FilteringAttributesAnd()
+    public void N50_RecordIndexes_FilteringAttributesAnd()
     {
         // 条件は　Alpha | Eee
         HashSet<int> attrs = new HashSet<int>() { (int)AstateDatabase.Attr.Alpha | (int)AstateDatabase.Attr.Eee };
@@ -336,7 +354,7 @@ public class NewEditorTest {
     /// [　] 属性フィルター
     /// </summary>
     [Test]
-    public void RecordIndexes_FilteringAttributesOr()
+    public void N50_RecordIndexes_FilteringAttributesOr()
     {
         // 条件は　（Alpha | Eee）、Beta、Eee
         HashSet<int> attrs = new HashSet<int>() { (int)AstateDatabase.Attr.Alpha | (int)AstateDatabase.Attr.Eee, (int)AstateDatabase.Attr.Beta, (int)AstateDatabase.Attr.Eee };
@@ -366,7 +384,7 @@ public class NewEditorTest {
     /// ｛　｝ 属性フィルター
     /// </summary>
     [Test]
-    public void RecordIndexes_FilteringAttributesNotAndNot()
+    public void N50_RecordIndexes_FilteringAttributesNotAndNot()
     {
         // 条件は　（Alpha | Eee）、Beta、Eee
         HashSet<int> attrs = new HashSet<int>() { (int)AstateDatabase.Attr.Alpha | (int)AstateDatabase.Attr.Eee, (int)AstateDatabase.Attr.Beta, (int)AstateDatabase.Attr.Eee };
@@ -393,12 +411,12 @@ public class NewEditorTest {
     }
     #endregion
 
-    #region attribute set (属性集合)
+    #region N60 attribute set (属性集合)
     /// <summary>
     /// (　) で属性集合
     /// </summary>
     [Test]
-    public void ToAttrLocker_FromKeywordSet()
+    public void N60_ToAttrLocker_FromKeywordSet()
     {
         HashSet<int> set = new HashSet<int>() { (int)AstateDatabase.Attr.Beta, (int)AstateDatabase.Attr.Dee };
         HashSet<int> attrLocker = AttrSet.KeywordSet_to_attrLocker(set);//, typeof(AstateDatabase.Attr)
@@ -416,7 +434,7 @@ public class NewEditorTest {
     /// [　] で属性集合
     /// </summary>
     [Test]
-    public void ToAttrLocker_FromKeywordlistSet()
+    public void N60_ToAttrLocker_FromKeywordlistSet()
     {
         HashSet<int> set = new HashSet<int>() { (int)AstateDatabase.Attr.Beta, (int)AstateDatabase.Attr.Dee };
         HashSet<int> attrLocker = AttrSet.KeywordlistSet_to_attrLocker(set);
@@ -435,7 +453,7 @@ public class NewEditorTest {
     /// {　} で属性集合
     /// </summary>
     [Test]
-    public void ToAttrLocker_FromNGKeywordSet()
+    public void N60_ToAttrLocker_FromNGKeywordSet()
     {
         HashSet<int> set = new HashSet<int>() { (int)AstateDatabase.Attr.Beta, (int)AstateDatabase.Attr.Dee };
         HashSet<int> attrLocker = AttrSet.NGKeywordSet_to_attrLocker(set, typeof(AstateDatabase.Attr));
@@ -456,7 +474,7 @@ public class NewEditorTest {
     /// 補集合を取れるかテスト
     /// </summary>
     [Test]
-    public void ToAttrLocker_GetComplement()
+    public void N60_ToAttrLocker_GetComplement()
     {
         HashSet<int> set = new HashSet<int>() { (int)AstateDatabase.Attr.Beta, (int)AstateDatabase.Attr.Dee }; // int型にして持つ
         HashSet<int> attrLocker = AttrSet.Complement(set, typeof(AstateDatabase.Attr));
@@ -474,140 +492,17 @@ public class NewEditorTest {
     }
     #endregion
 
-    #region syntax parser (構文パーサー)
-    /// <summary>
-    /// 構文解析 STATE SELECT 文
-    /// </summary>
-    [Test]
-    public void ParseStatement_StateSelect()
-    {
-        string query = @"STATE SELECT
-                        WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})";
-        QueryTokens sq;
-        bool successful = SyntaxP.ParseStatement_StateSelect(query, out sq);
-
-        Assert.IsTrue(successful);
-        Assert.AreEqual(QueryTokens.STATE, sq.Target);
-        Assert.AreEqual(QueryTokens.SELECT, sq.Manipulation);
-        Assert.AreEqual(0, sq.Set.Count);
-        Assert.AreEqual("", sq.From_FullnameRegex);
-        Assert.AreEqual("", sq.From_Attr);
-        Assert.AreEqual("", sq.To_FullnameRegex);
-        Assert.AreEqual("", sq.To_Attr);
-        Assert.AreEqual("", sq.Where_FullnameRegex);
-        Assert.AreEqual("([(Alpha Cee)(Beta)]{Eee})", sq.Where_Attr);
-    }
-
-    /// <summary>
-    /// 構文解析 Transition Insert 文
-    /// </summary>
-    [Test]
-    public void ParseStatement_TransitionInsert()
-    {
-        string query = @"TRANSITION INSERT
-                        SET Duration 0 ExitTime 1
-                        FROM ""Base Layer.SMove""
-                        TO ATTR (BusyX Block)";
-        QueryTokens sq;
-        bool successful = SyntaxP.ParseStatement_TransitionInsert(query, out sq);
-
-        Assert.IsTrue(successful);
-        Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
-        Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
-        Assert.AreEqual(2, sq.Set.Count);
-        Assert.IsTrue(sq.Set.ContainsKey("Duration"));
-        Assert.AreEqual("0", sq.Set["Duration"]);
-        Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
-        Assert.AreEqual("1", sq.Set["ExitTime"]);
-        Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
-        Assert.AreEqual("", sq.From_Attr);
-        Assert.AreEqual("", sq.To_FullnameRegex);
-        Assert.AreEqual("(BusyX Block)", sq.To_Attr);
-    }
-
-    /// <summary>
-    /// 構文解析 Transition Update 文
-    /// </summary>
-    [Test]
-    public void ParseStatement_TransitionUpdate()
-    {
-        string query = @"TRANSITION UPDATE
-                        SET Duration 0.25 ExitTime 0.75
-                        FROM ""Base Layer.SMove""
-                        TO ATTR (BusyX Block)";
-        QueryTokens sq;
-        bool successful = SyntaxP.ParseStatement_TransitionUpdate(query, out sq);
-
-        Assert.IsTrue(successful);
-        Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
-        Assert.AreEqual(QueryTokens.UPDATE, sq.Manipulation);
-        Assert.AreEqual(2, sq.Set.Count);
-        Assert.IsTrue(sq.Set.ContainsKey("Duration"));
-        Assert.AreEqual("0.25", sq.Set["Duration"]);
-        Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
-        Assert.AreEqual("0.75", sq.Set["ExitTime"]);
-        Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
-        Assert.AreEqual("", sq.From_Attr);
-        Assert.AreEqual("", sq.To_FullnameRegex);
-        Assert.AreEqual("(BusyX Block)", sq.To_Attr);
-    }
-
-    /// <summary>
-    /// 構文解析 Transition Delete 文
-    /// </summary>
-    [Test]
-    public void ParseStatement_TransitionDelete()
-    {
-        string query = @"TRANSITION DELETE
-                        FROM ""Base Layer.SMove""
-                        TO ATTR (BusyX Block)";
-        QueryTokens sq;
-        bool successful = SyntaxP.ParseStatement_TransitionDelete(query, out sq);
-
-        Assert.IsTrue(successful);
-        Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
-        Assert.AreEqual(QueryTokens.DELETE, sq.Manipulation);
-        Assert.AreEqual(0, sq.Set.Count);
-        Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
-        Assert.AreEqual("", sq.From_Attr);
-        Assert.AreEqual("", sq.To_FullnameRegex);
-        Assert.AreEqual("(BusyX Block)", sq.To_Attr);
-    }
-
-    /// <summary>
-    /// 構文解析 Transition Select 文
-    /// </summary>
-    [Test]
-    public void ParseStatement_TransitionSelect()
-    {
-        string query = @"TRANSITION SELECT
-                        FROM ""Base Layer.SMove""
-                        TO ATTR (BusyX Block)";
-        QueryTokens sq;
-        bool successful = SyntaxP.ParseStatement_TransitionSelect(query, out sq);
-
-        Assert.IsTrue(successful);
-        Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
-        Assert.AreEqual(QueryTokens.SELECT, sq.Manipulation);
-        Assert.AreEqual(0, sq.Set.Count);
-        Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
-        Assert.AreEqual("", sq.From_Attr);
-        Assert.AreEqual("", sq.To_FullnameRegex);
-        Assert.AreEqual("(BusyX Block)", sq.To_Attr);
-    }
-    #endregion
-
-    #region lexical parser (字句パーサー)
+    #region N65 data builder (データ・ビルダー)
     /// <summary>
     /// ATTR部を解析（２）
     /// </summary>
     [Test]
-    public void Parse_AttrParentesis_TokensToLockers()
+    public void N65_Parse_AttrParentesis_TokensToLockers()
     {
         List<string> tokens = new List<string>() { "(", "[", "(", "Alpaca", "Bear", ")", "(", "Cat", "Dog", ")", "]", "{", "Elephant", "}", ")", };
         List<List<string>> tokenLockers;
         List<string> tokenLockersOperation;
-        Util_AttrParenthesisParser.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
+        Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
 
         Assert.AreEqual(5, tokenLockers.Count);
         Assert.AreEqual(5, tokenLockersOperation.Count);
@@ -636,16 +531,142 @@ public class NewEditorTest {
         Assert.AreEqual("2", tokenLockers[4][1]);
         Assert.AreEqual("(", tokenLockersOperation[4]);
     }
+    #endregion
+
+    #region N70 syntax parser (構文パーサー)
+    /// <summary>
+    /// 構文解析 STATE SELECT 文
+    /// </summary>
+    [Test]
+    public void N70_ParseStatement_StateSelect()
+    {
+        string query = @"STATE SELECT
+                        WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})";
+        QueryTokens sq;
+        bool successful = SyntaxP.ParseStatement_StateSelect(query, out sq);
+
+        Assert.IsTrue(successful);
+        Assert.AreEqual(QueryTokens.STATE, sq.Target);
+        Assert.AreEqual(QueryTokens.SELECT, sq.Manipulation);
+        Assert.AreEqual(0, sq.Set.Count);
+        Assert.AreEqual("", sq.From_FullnameRegex);
+        Assert.AreEqual("", sq.From_Attr);
+        Assert.AreEqual("", sq.To_FullnameRegex);
+        Assert.AreEqual("", sq.To_Attr);
+        Assert.AreEqual("", sq.Where_FullnameRegex);
+        Assert.AreEqual("([(Alpha Cee)(Beta)]{Eee})", sq.Where_Attr);
+    }
+
+    /// <summary>
+    /// 構文解析 Transition Insert 文
+    /// </summary>
+    [Test]
+    public void N70_ParseStatement_TransitionInsert()
+    {
+        string query = @"TRANSITION INSERT
+                        SET Duration 0 ExitTime 1
+                        FROM ""Base Layer.SMove""
+                        TO ATTR (BusyX Block)";
+        QueryTokens sq;
+        bool successful = SyntaxP.ParseStatement_TransitionInsert(query, out sq);
+
+        Assert.IsTrue(successful);
+        Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
+        Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
+        Assert.AreEqual(2, sq.Set.Count);
+        Assert.IsTrue(sq.Set.ContainsKey("Duration"));
+        Assert.AreEqual("0", sq.Set["Duration"]);
+        Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
+        Assert.AreEqual("1", sq.Set["ExitTime"]);
+        Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
+        Assert.AreEqual("", sq.From_Attr);
+        Assert.AreEqual("", sq.To_FullnameRegex);
+        Assert.AreEqual("(BusyX Block)", sq.To_Attr);
+    }
+
+    /// <summary>
+    /// 構文解析 Transition Update 文
+    /// </summary>
+    [Test]
+    public void N70_ParseStatement_TransitionUpdate()
+    {
+        string query = @"TRANSITION UPDATE
+                        SET Duration 0.25 ExitTime 0.75
+                        FROM ""Base Layer.SMove""
+                        TO ATTR (BusyX Block)";
+        QueryTokens sq;
+        bool successful = SyntaxP.ParseStatement_TransitionUpdate(query, out sq);
+
+        Assert.IsTrue(successful);
+        Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
+        Assert.AreEqual(QueryTokens.UPDATE, sq.Manipulation);
+        Assert.AreEqual(2, sq.Set.Count);
+        Assert.IsTrue(sq.Set.ContainsKey("Duration"));
+        Assert.AreEqual("0.25", sq.Set["Duration"]);
+        Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
+        Assert.AreEqual("0.75", sq.Set["ExitTime"]);
+        Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
+        Assert.AreEqual("", sq.From_Attr);
+        Assert.AreEqual("", sq.To_FullnameRegex);
+        Assert.AreEqual("(BusyX Block)", sq.To_Attr);
+    }
+
+    /// <summary>
+    /// 構文解析 Transition Delete 文
+    /// </summary>
+    [Test]
+    public void N70_ParseStatement_TransitionDelete()
+    {
+        string query = @"TRANSITION DELETE
+                        FROM ""Base Layer.SMove""
+                        TO ATTR (BusyX Block)";
+        QueryTokens sq;
+        bool successful = SyntaxP.ParseStatement_TransitionDelete(query, out sq);
+
+        Assert.IsTrue(successful);
+        Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
+        Assert.AreEqual(QueryTokens.DELETE, sq.Manipulation);
+        Assert.AreEqual(0, sq.Set.Count);
+        Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
+        Assert.AreEqual("", sq.From_Attr);
+        Assert.AreEqual("", sq.To_FullnameRegex);
+        Assert.AreEqual("(BusyX Block)", sq.To_Attr);
+    }
+
+    /// <summary>
+    /// 構文解析 Transition Select 文
+    /// </summary>
+    [Test]
+    public void N70_ParseStatement_TransitionSelect()
+    {
+        string query = @"TRANSITION SELECT
+                        FROM ""Base Layer.SMove""
+                        TO ATTR (BusyX Block)";
+        QueryTokens sq;
+        bool successful = SyntaxP.ParseStatement_TransitionSelect(query, out sq);
+
+        Assert.IsTrue(successful);
+        Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
+        Assert.AreEqual(QueryTokens.SELECT, sq.Manipulation);
+        Assert.AreEqual(0, sq.Set.Count);
+        Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
+        Assert.AreEqual("", sq.From_Attr);
+        Assert.AreEqual("", sq.To_FullnameRegex);
+        Assert.AreEqual("(BusyX Block)", sq.To_Attr);
+    }
+    #endregion
+
+    #region N80 lexical parser (字句パーサー)
 
     /// <summary>
     /// ATTR部を解析（１）
     /// </summary>
     [Test]
-    public void Parse_AttrParentesis_StringToTokens()
+    public void N80_Parse_AttrParentesis_StringToTokens()
     {
         string attrParentesis = "([(Alpaca Bear)(Cat Dog)]{Elephant})";
         List<string> tokens;
-        Util_AttrParenthesisParser.String_to_tokens(attrParentesis, out tokens);
+        QueryTokens.String_to_tokens(attrParentesis, out tokens);
 
         //{ int i = 0; foreach (string token in tokens) { Debug.Log("Token[" + i + "]: " + token); i++; } }
         Assert.AreEqual(15, tokens.Count);
@@ -670,7 +691,7 @@ public class NewEditorTest {
     /// Parser 改行テスト
     /// </summary>
     [Test]
-    public void Parse_Newline()
+    public void N80_Parse_Newline()
     {
         int caret = 0;
         bool hit;
@@ -686,7 +707,7 @@ a", ref caret);
     /// Parse関連のサブ関数。
     /// </summary>
     [Test]
-    public void Parse_SubFunctions()
+    public void N80_Parse_SubFunctions()
     {
         int caret = 0;
         //StellaQLScanner.SkipSpace("  a",ref caret);
