@@ -181,6 +181,8 @@ namespace StellaQL
         /// <returns></returns>
         public static bool ExecuteStateSelect(string query, Type enumration, Dictionary<int, AstateRecordable> universe, out HashSet<int> recordIndexes)
         {
+            LexcalP.DeleteLineCommentAndBlankLine(ref query);
+
             recordIndexes = null;
             QueryTokens sq;
             if (!SyntaxP.ParseStatement_StateSelect(query, out sq)) { return false; }
@@ -196,6 +198,8 @@ namespace StellaQL
         /// <returns></returns>
         public static bool ExecuteTransitionSelect(string query, Type enumration, Dictionary<int, AstateRecordable> universe, out HashSet<int> recordIndexesSrc, out HashSet<int> recordIndexesDst)
         {
+            LexcalP.DeleteLineCommentAndBlankLine(ref query);
+
             recordIndexesSrc = null;
             recordIndexesDst = null;
             QueryTokens sq;
@@ -920,10 +924,35 @@ namespace StellaQL
 
             gt_Finish:
             if (caret == query.Length) { parentesis = query.Substring(oldCaret); }
-            else { parentesis = query.Substring(oldCaret, caret); }
+            else { parentesis = query.Substring(oldCaret, caret - oldCaret); }
             VarSpaces(query, ref caret); return true;
             gt_Failure:
             parentesis = ""; return false;
+        }
+
+        /// <summary>
+        /// 「#」で始まる行はコメントだぜ☆（＾▽＾）
+        /// コメント行と、空行は削除するぜ☆（＾～＾）
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public static void DeleteLineCommentAndBlankLine(ref string query)
+        {
+            //Debug.Log("削除前 query="+ query);
+            string[] lines = query.Split(new [] { Environment.NewLine }, StringSplitOptions.None);
+            int caret;
+            for (int iLine = 0; iLine < lines.Length; iLine++) {
+                caret = 0;
+                VarSpaces(lines[iLine], ref caret);
+                if (FixedWord("#", lines[iLine], ref caret)) { lines[iLine] = ""; } // コメント行だ。 空行にしておけばいいだろう。
+            }
+            Debug.Log("コメント削除後 join=" + string.Join(Environment.NewLine, lines));
+
+            // 空行を消し飛ばして困ることはあるだろうか？
+            StringBuilder sb = new StringBuilder();
+            foreach (string line in lines) { if ("" != line.Trim()) { sb.AppendLine(line); } } // 空行以外を残す
+            query = sb.ToString();
+            Debug.Log("空行削除後 query=" + query);
         }
     }
 }

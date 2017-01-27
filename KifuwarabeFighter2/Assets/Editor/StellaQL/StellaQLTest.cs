@@ -128,6 +128,33 @@ public class StellaQLTest {
         Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Rabbit));
     }
 
+    /// <summary>
+    /// コメントと空行のテスト
+    /// </summary>
+    [Test]
+    public void N30_Query_Comment()
+    {
+        string query = @"# コメントＡ
+
+                        STATE SELECT
+
+                        # コメントＢ
+
+                        WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})
+
+                        # コメントＣ
+
+                        ";
+        // STATE SELECT文が動けば OK☆
+        HashSet<int> recordIndexes;
+        bool successful = Querier.ExecuteStateSelect(query, typeof(AstateDatabase.Attr), InstanceDatabase.index_to_record, out recordIndexes);
+
+        Assert.AreEqual(3, recordIndexes.Count);
+        Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Alpaca));
+        Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Cat));
+        Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Rabbit));
+    }
+
     [Test]
     public void N30_Query_TransitionSelect()
     {
@@ -695,12 +722,20 @@ public class StellaQLTest {
     {
         int caret = 0;
         bool hit;
+        string parenthesis;
 
         caret = 0;
         hit = LexcalP.VarSpaces(@"
 a", ref caret);
         Assert.IsTrue(hit);
         Assert.AreEqual(2, caret); // 改行は 2 ？ 改行の文字数は環境依存か☆？
+
+        caret = 0;
+        hit = LexcalP.VarParentesis(@"(alpaca bear)
+", ref caret, out parenthesis);
+        Assert.IsTrue(hit);
+        Assert.AreEqual(13 + 2, caret); // 改行は 2
+        Assert.AreEqual("(alpaca bear)", parenthesis);
     }
 
     /// <summary>
