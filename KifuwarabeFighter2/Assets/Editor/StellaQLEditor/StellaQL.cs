@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEditor.Animations;
 
 /// <summary>
 /// 解説: 「UnityEditorを使って2D格闘(2D Fighting game)作るときのモーション遷移図作成の半自動化に挑戦しよう＜その４＞」 http://qiita.com/muzudho1/items/baf4b06cdcda96ca9a11
@@ -174,7 +175,7 @@ namespace StellaQL
     /// </summary>
     public abstract class Querier
     {
-        public static bool Execute(string query, Type enumration, Dictionary<int, StateExRecordable> universe, out string message)
+        public static bool Execute(AnimatorController ac, string query, Type enumration, Dictionary<int, StateExRecordable> universe, out string message)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
@@ -191,7 +192,18 @@ namespace StellaQL
                 }
                 message = sb.ToString();
                 return true;
-            } else if (SyntaxP.ParseStatement_TransitionSelect(query, out sq)) {
+            }
+            else if (SyntaxP.ParseStatement_TransitionInsert(query, out sq))
+            {
+                HashSet<int> recordIndexesFrom = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);
+                HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);
+                AniconOpe_Transition.AddAll(ac,
+                    Fetcher.FetchAll(ac, recordIndexesFrom, universe),
+                    Fetcher.FetchAll(ac, recordIndexesTo, universe) );
+                message = "開発中";
+                return true;
+            }
+            else if (SyntaxP.ParseStatement_TransitionSelect(query, out sq)) {
                 HashSet<int> recordIndexesFrom = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);
                 HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);
                 message = "開発中";
@@ -347,6 +359,16 @@ namespace StellaQL
                     }
                 }
             }
+        }
+
+        public static HashSet<AnimatorState> FetchAll(AnimatorController ac, HashSet<int> recordIndexes, Dictionary<int, StateExRecordable> universe)
+        {
+            HashSet<AnimatorState> states = new HashSet<AnimatorState>();
+            foreach (int recordIndex in recordIndexes)
+            {
+                states.Add(AniconOpe_State.Lookup(ac, universe[recordIndex].BreadCrumb + universe[recordIndex].Name));
+            }
+            return states;
         }
     }
 

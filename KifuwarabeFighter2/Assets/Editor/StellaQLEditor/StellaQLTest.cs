@@ -7,13 +7,13 @@ public class StellaQLTest {
 
     static StellaQLTest()
     {
-        StellaQLTest.InstanceTable = new StateTable();
+        StellaQLTest.InstanceTable = new StateExTable();
     }
 
     /// <summary>
     /// Animator の State に一対一対応☆
     /// </summary>
-    public enum AstateIndex
+    public enum StateIndex
     {
         Alpaca,
         Bear,
@@ -47,9 +47,9 @@ public class StellaQLTest {
     /// <summary>
     /// アニメーターのステート
     /// </summary>
-    public class AstateRecord : AbstractStateExRecord
+    public class StateExRecord : AbstractStateExRecord
     {
-        public AstateRecord(string breadCrumb, string name, StateTable.Attr attribute)
+        public StateExRecord(string breadCrumb, string name, StateExTable.Attr attribute)
         {
             this.BreadCrumb = breadCrumb;
             this.Name = name;
@@ -58,17 +58,17 @@ public class StellaQLTest {
 
         public override bool HasFlag_attr(int enumration)
         {
-            return ((StateTable.Attr)this.AttributeEnum).HasFlag((StateTable.Attr)enumration);
+            return ((StateExTable.Attr)this.AttributeEnum).HasFlag((StateExTable.Attr)enumration);
         }
     }
 
-    public static StateTable InstanceTable;
-    public class StateTable : AbstractStateExTable
+    public static StateExTable InstanceTable;
+    public class StateExTable : AbstractStateExTable
     {
         [Flags]
         public enum Attr
         {
-            Zero = 0, // (0) 最初の要素は 0 であることが必要。あとで計算に使う。
+            Zero = 0, // (0) 別に 0 は無くてもいい。
             Alpha = 1, // (1)
             Beta = 1 << 1, // (2)
             Cee = 1 << 2, // (4)
@@ -76,36 +76,36 @@ public class StellaQLTest {
             Eee = 1 << 4, // (16)
         }
 
-        public StateTable()
+        public StateExTable()
         {
             index_to_exRecord = new Dictionary<int, StateExRecordable>()//AstateIndex
             {
-                {(int)AstateIndex.Alpaca, new AstateRecord(  "Base Layer.", "Alpaca", Attr.Alpha | Attr.Cee)},// {E}(1) AC(1) ([(A C)(B)]{E})(1)
-                {(int)AstateIndex.Bear, new AstateRecord(  "Base Layer.", "Bear", Attr.Alpha | Attr.Beta | Attr.Eee)},// B(1) AE(1) AE,B,E(1)
-                {(int)AstateIndex.Cat, new AstateRecord(  "Base Layer.", "Cat", Attr.Alpha | Attr.Cee)},// {E}(2) AC(2) ([(A C)(B)]{E})(2)
-                {(int)AstateIndex.Dog, new AstateRecord(  "Base Layer.", "Dog", Attr.Dee)},// {E}(3)
-                {(int)AstateIndex.Elephant, new AstateRecord(  "Base Layer.", "Elephant", Attr.Alpha | Attr.Eee)},//AE(2) AE,B,E(2) Nn(1)
-                {(int)AstateIndex.Fox, new AstateRecord(  "Base Layer.", "Fox", Attr.Zero)},// {E}(4)
-                {(int)AstateIndex.Giraffe, new AstateRecord(  "Base Layer.", "Giraffe", Attr.Alpha | Attr.Eee)},//AE(3) AE,B,E(3)
-                {(int)AstateIndex.Horse, new AstateRecord(  "Base Layer.", "Horse", Attr.Eee)},// AE,B,E(4)
-                {(int)AstateIndex.Iguana, new AstateRecord(  "Base Layer.", "Iguana", Attr.Alpha)},// {E}(5) Nn(2)
-                {(int)AstateIndex.Jellyfish, new AstateRecord(  "Base Layer.", "Jellyfish", Attr.Eee)},// AE,B,E(5)
-                {(int)AstateIndex.Kangaroo, new AstateRecord(  "Base Layer.", "Kangaroo", Attr.Alpha)},// {E}(6) Nn(3)
-                {(int)AstateIndex.Lion, new AstateRecord(  "Base Layer.", "Lion", Attr.Zero)},// {E}(7) Nn(4)
-                {(int)AstateIndex.Monkey, new AstateRecord(  "Base Layer.", "Monkey", Attr.Eee)},// AE,B,E(6) Nn(5)
-                {(int)AstateIndex.Nutria, new AstateRecord(  "Base Layer.", "Nutria", Attr.Alpha)},// {E}(8) Nn(6)
-                {(int)AstateIndex.Ox, new AstateRecord(  "Base Layer.", "Ox", Attr.Zero)},// {E}(9)
-                {(int)AstateIndex.Pig, new AstateRecord(  "Base Layer.", "Pig", Attr.Zero)},// {E}(10)
-                {(int)AstateIndex.Quetzal, new AstateRecord(  "Base Layer.", "Quetzal", Attr.Alpha | Attr.Eee)},//AE(4) AE,B,E(7)
-                {(int)AstateIndex.Rabbit, new AstateRecord(  "Base Layer.", "Rabbit", Attr.Alpha | Attr.Beta)},// {E}(11) B(2) ([(A C)(B)]{E})(3)  AE,B,E(8)
-                {(int)AstateIndex.Sheep, new AstateRecord(  "Base Layer.", "Sheep", Attr.Eee)},// AE,B,E(9)
-                {(int)AstateIndex.Tiger, new AstateRecord(  "Base Layer.", "Tiger", Attr.Eee)},// AE,B,E(10)
-                {(int)AstateIndex.Unicorn, new AstateRecord(  "Base Layer.", "Unicorn", Attr.Cee)},// {E}(12) Nn(7)
-                {(int)AstateIndex.Vixen, new AstateRecord(  "Base Layer.", "Vixen", Attr.Eee)},// AE,B,E(11) Nn(8)
-                {(int)AstateIndex.Wolf, new AstateRecord(  "Base Layer.", "Wolf", Attr.Zero)},// {E}(13)
-                {(int)AstateIndex.Xenopus, new AstateRecord(  "Base Layer.", "Xenopus", Attr.Eee)},// AE,B,E(12) Nn(9)
-                {(int)AstateIndex.Yak, new AstateRecord(  "Base Layer.", "Yak", Attr.Alpha)},// {E}(14)
-                {(int)AstateIndex.Zebra, new AstateRecord(  "Base Layer.", "Zebra", Attr.Alpha | Attr.Beta | Attr.Eee)},// B(3) AE(5) AE,B,E(13)
+                {(int)StateIndex.Alpaca, new StateExRecord(  "Base Layer.StellaQL Practice.", "Alpaca", Attr.Alpha | Attr.Cee)},// {E}(1) AC(1) ([(A C)(B)]{E})(1)
+                {(int)StateIndex.Bear, new StateExRecord(  "Base Layer.StellaQL Practice.", "Bear", Attr.Alpha | Attr.Beta | Attr.Eee)},// B(1) AE(1) AE,B,E(1)
+                {(int)StateIndex.Cat, new StateExRecord(  "Base Layer.StellaQL Practice.", "Cat", Attr.Alpha | Attr.Cee)},// {E}(2) AC(2) ([(A C)(B)]{E})(2)
+                {(int)StateIndex.Dog, new StateExRecord(  "Base Layer.StellaQL Practice.", "Dog", Attr.Dee)},// {E}(3)
+                {(int)StateIndex.Elephant, new StateExRecord(  "Base Layer.StellaQL Practice.", "Elephant", Attr.Alpha | Attr.Eee)},//AE(2) AE,B,E(2) Nn(1)
+                {(int)StateIndex.Fox, new StateExRecord(  "Base Layer.StellaQL Practice.", "Fox", Attr.Zero)},// {E}(4)
+                {(int)StateIndex.Giraffe, new StateExRecord(  "Base Layer.StellaQL Practice.", "Giraffe", Attr.Alpha | Attr.Eee)},//AE(3) AE,B,E(3)
+                {(int)StateIndex.Horse, new StateExRecord(  "Base Layer.StellaQL Practice.", "Horse", Attr.Eee)},// AE,B,E(4)
+                {(int)StateIndex.Iguana, new StateExRecord(  "Base Layer.StellaQL Practice.", "Iguana", Attr.Alpha)},// {E}(5) Nn(2)
+                {(int)StateIndex.Jellyfish, new StateExRecord(  "Base Layer.StellaQL Practice.", "Jellyfish", Attr.Eee)},// AE,B,E(5)
+                {(int)StateIndex.Kangaroo, new StateExRecord(  "Base Layer.StellaQL Practice.", "Kangaroo", Attr.Alpha)},// {E}(6) Nn(3)
+                {(int)StateIndex.Lion, new StateExRecord(  "Base Layer.StellaQL Practice.", "Lion", Attr.Zero)},// {E}(7) Nn(4)
+                {(int)StateIndex.Monkey, new StateExRecord(  "Base Layer.StellaQL Practice.", "Monkey", Attr.Eee)},// AE,B,E(6) Nn(5)
+                {(int)StateIndex.Nutria, new StateExRecord(  "Base Layer.StellaQL Practice.", "Nutria", Attr.Alpha)},// {E}(8) Nn(6)
+                {(int)StateIndex.Ox, new StateExRecord(  "Base Layer.StellaQL Practice.", "Ox", Attr.Zero)},// {E}(9)
+                {(int)StateIndex.Pig, new StateExRecord(  "Base Layer.StellaQL Practice.", "Pig", Attr.Zero)},// {E}(10)
+                {(int)StateIndex.Quetzal, new StateExRecord(  "Base Layer.StellaQL Practice.", "Quetzal", Attr.Alpha | Attr.Eee)},//AE(4) AE,B,E(7)
+                {(int)StateIndex.Rabbit, new StateExRecord(  "Base Layer.StellaQL Practice.", "Rabbit", Attr.Alpha | Attr.Beta)},// {E}(11) B(2) ([(A C)(B)]{E})(3)  AE,B,E(8)
+                {(int)StateIndex.Sheep, new StateExRecord(  "Base Layer.StellaQL Practice.", "Sheep", Attr.Eee)},// AE,B,E(9)
+                {(int)StateIndex.Tiger, new StateExRecord(  "Base Layer.StellaQL Practice.", "Tiger", Attr.Eee)},// AE,B,E(10)
+                {(int)StateIndex.Unicorn, new StateExRecord(  "Base Layer.StellaQL Practice.", "Unicorn", Attr.Cee)},// {E}(12) Nn(7)
+                {(int)StateIndex.Vixen, new StateExRecord(  "Base Layer.StellaQL Practice.", "Vixen", Attr.Eee)},// AE,B,E(11) Nn(8)
+                {(int)StateIndex.Wolf, new StateExRecord(  "Base Layer.StellaQL Practice.", "Wolf", Attr.Zero)},// {E}(13)
+                {(int)StateIndex.Xenopus, new StateExRecord(  "Base Layer.StellaQL Practice.", "Xenopus", Attr.Eee)},// AE,B,E(12) Nn(9)
+                {(int)StateIndex.Yak, new StateExRecord(  "Base Layer.StellaQL Practice.", "Yak", Attr.Alpha)},// {E}(14)
+                {(int)StateIndex.Zebra, new StateExRecord(  "Base Layer.StellaQL Practice.", "Zebra", Attr.Alpha | Attr.Beta | Attr.Eee)},// B(3) AE(5) AE,B,E(13)
             };
         }
     }
@@ -117,12 +117,12 @@ public class StellaQLTest {
         string query = @"STATE SELECT
                         WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})";
         HashSet<int> recordIndexes;
-        bool successful = Querier.ExecuteStateSelect(query, typeof(StateTable.Attr), InstanceTable.index_to_exRecord, out recordIndexes);
+        bool successful = Querier.ExecuteStateSelect(query, typeof(StateExTable.Attr), InstanceTable.index_to_exRecord, out recordIndexes);
 
         Assert.AreEqual(3, recordIndexes.Count);
-        Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Alpaca));
-        Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Cat));
-        Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Rabbit));
+        Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Alpaca));
+        Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Cat));
+        Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Rabbit));
     }
 
     /// <summary>
@@ -144,12 +144,12 @@ public class StellaQLTest {
                         ";
         // STATE SELECT文が動けば OK☆
         HashSet<int> recordIndexes;
-        bool successful = Querier.ExecuteStateSelect(query, typeof(StateTable.Attr), InstanceTable.index_to_exRecord, out recordIndexes);
+        bool successful = Querier.ExecuteStateSelect(query, typeof(StateExTable.Attr), InstanceTable.index_to_exRecord, out recordIndexes);
 
         Assert.AreEqual(3, recordIndexes.Count);
-        Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Alpaca));
-        Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Cat));
-        Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Rabbit));
+        Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Alpaca));
+        Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Cat));
+        Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Rabbit));
     }
 
     [Test]
@@ -160,14 +160,14 @@ public class StellaQLTest {
                         TO ATTR ([(Alpha Cee)(Beta)]{Eee})";
         HashSet<int> recordIndexesSrc;
         HashSet<int> recordIndexesDst;
-        bool successful = Querier.ExecuteTransitionSelect(query, typeof(StateTable.Attr), InstanceTable.index_to_exRecord, out recordIndexesSrc, out recordIndexesDst);
+        bool successful = Querier.ExecuteTransitionSelect(query, typeof(StateExTable.Attr), InstanceTable.index_to_exRecord, out recordIndexesSrc, out recordIndexesDst);
 
         Assert.AreEqual(1, recordIndexesSrc.Count);
-        Assert.IsTrue(recordIndexesSrc.Contains((int)AstateIndex.Zebra));
+        Assert.IsTrue(recordIndexesSrc.Contains((int)StateIndex.Zebra));
         Assert.AreEqual(3, recordIndexesDst.Count);
-        Assert.IsTrue(recordIndexesDst.Contains((int)AstateIndex.Alpaca));
-        Assert.IsTrue(recordIndexesDst.Contains((int)AstateIndex.Cat));
-        Assert.IsTrue(recordIndexesDst.Contains((int)AstateIndex.Rabbit));
+        Assert.IsTrue(recordIndexesDst.Contains((int)StateIndex.Alpaca));
+        Assert.IsTrue(recordIndexesDst.Contains((int)StateIndex.Cat));
+        Assert.IsTrue(recordIndexesDst.Contains((int)StateIndex.Rabbit));
     }
     #endregion
 
@@ -189,46 +189,46 @@ public class StellaQLTest {
 
         List<HashSet<int>> recordIndexesLockers;
         Fetcher.TokenLockers_to_recordIndexesLockers(
-            tokenLockers, tokenLockersOperation, typeof(StateTable.Attr), InstanceTable.index_to_exRecord, out recordIndexesLockers);
+            tokenLockers, tokenLockersOperation, typeof(StateExTable.Attr), InstanceTable.index_to_exRecord, out recordIndexesLockers);
 
         Assert.AreEqual(5, recordIndexesLockers.Count);
         // { Debug.Log("recordIndexesLockers[0].Count=" + recordIndexesLockers[0].Count); int i = 0; foreach (int astateIndex in recordIndexesLockers[0]) { Debug.Log("[0][" + i + "] astateIndex=[" + ((AstateIndex)astateIndex).ToString() + "]"); i++; } }
         Assert.AreEqual(2, recordIndexesLockers[0].Count);
-        Assert.IsTrue(recordIndexesLockers[0].Contains((int)AstateIndex.Alpaca));
-        Assert.IsTrue(recordIndexesLockers[0].Contains((int)AstateIndex.Cat));
+        Assert.IsTrue(recordIndexesLockers[0].Contains((int)StateIndex.Alpaca));
+        Assert.IsTrue(recordIndexesLockers[0].Contains((int)StateIndex.Cat));
         // { Debug.Log("recordIndexesLockers[1].Count=" + recordIndexesLockers[1].Count); int i = 0; foreach (int astateIndex in recordIndexesLockers[1]) { Debug.Log("[1][" + i + "] astateIndex=[" + ((AstateIndex)astateIndex).ToString() + "]"); i++; } }
         Assert.AreEqual(3, recordIndexesLockers[1].Count);
-        Assert.IsTrue(recordIndexesLockers[1].Contains((int)AstateIndex.Bear));
-        Assert.IsTrue(recordIndexesLockers[1].Contains((int)AstateIndex.Rabbit));
-        Assert.IsTrue(recordIndexesLockers[1].Contains((int)AstateIndex.Zebra));
+        Assert.IsTrue(recordIndexesLockers[1].Contains((int)StateIndex.Bear));
+        Assert.IsTrue(recordIndexesLockers[1].Contains((int)StateIndex.Rabbit));
+        Assert.IsTrue(recordIndexesLockers[1].Contains((int)StateIndex.Zebra));
         // { Debug.Log("recordIndexesLockers[2].Count=" + recordIndexesLockers[2].Count); int i = 0; foreach (int astateIndex in recordIndexesLockers[2]) { Debug.Log("[2][" + i + "] astateIndex=[" + ((AstateIndex)astateIndex).ToString() + "]"); i++; } }
         Assert.AreEqual(5, recordIndexesLockers[2].Count);
-        Assert.IsTrue(recordIndexesLockers[2].Contains((int)AstateIndex.Alpaca));
-        Assert.IsTrue(recordIndexesLockers[2].Contains((int)AstateIndex.Cat));
-        Assert.IsTrue(recordIndexesLockers[2].Contains((int)AstateIndex.Bear));
-        Assert.IsTrue(recordIndexesLockers[2].Contains((int)AstateIndex.Rabbit));
-        Assert.IsTrue(recordIndexesLockers[2].Contains((int)AstateIndex.Zebra));
+        Assert.IsTrue(recordIndexesLockers[2].Contains((int)StateIndex.Alpaca));
+        Assert.IsTrue(recordIndexesLockers[2].Contains((int)StateIndex.Cat));
+        Assert.IsTrue(recordIndexesLockers[2].Contains((int)StateIndex.Bear));
+        Assert.IsTrue(recordIndexesLockers[2].Contains((int)StateIndex.Rabbit));
+        Assert.IsTrue(recordIndexesLockers[2].Contains((int)StateIndex.Zebra));
         // { Debug.Log("recordIndexesLockers[3].Count=" + recordIndexesLockers[3].Count); int i = 0; foreach (int astateIndex in recordIndexesLockers[3]) { Debug.Log("[3][" + i + "] astateIndex=[" + ((AstateIndex)astateIndex).ToString() + "]"); i++; } }
         Assert.AreEqual(14, recordIndexesLockers[3].Count);
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Alpaca));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Cat));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Dog));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Fox));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Iguana));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Kangaroo));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Lion));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Nutria));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Ox));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Pig));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Rabbit));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Unicorn));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Wolf));
-        Assert.IsTrue(recordIndexesLockers[3].Contains((int)AstateIndex.Yak));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Alpaca));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Cat));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Dog));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Fox));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Iguana));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Kangaroo));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Lion));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Nutria));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Ox));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Pig));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Rabbit));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Unicorn));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Wolf));
+        Assert.IsTrue(recordIndexesLockers[3].Contains((int)StateIndex.Yak));
         // { Debug.Log("recordIndexesLockers[4].Count=" + recordIndexesLockers[4].Count); int i = 0; foreach (int astateIndex in recordIndexesLockers[4]) { Debug.Log("[4][" + i + "] astateIndex=[" + ((AstateIndex)astateIndex).ToString() + "]"); i++; } }
         Assert.AreEqual(3, recordIndexesLockers[4].Count);
-        Assert.IsTrue(recordIndexesLockers[4].Contains((int)AstateIndex.Alpaca));
-        Assert.IsTrue(recordIndexesLockers[4].Contains((int)AstateIndex.Cat));
-        Assert.IsTrue(recordIndexesLockers[4].Contains((int)AstateIndex.Rabbit));
+        Assert.IsTrue(recordIndexesLockers[4].Contains((int)StateIndex.Alpaca));
+        Assert.IsTrue(recordIndexesLockers[4].Contains((int)StateIndex.Cat));
+        Assert.IsTrue(recordIndexesLockers[4].Contains((int)StateIndex.Rabbit));
     }
     #endregion
 
@@ -243,8 +243,8 @@ public class StellaQLTest {
         HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
         List<HashSet<int>> reordIndexLockers = new List<HashSet<int>>()
         {
-            new HashSet<int>() { (int)AstateIndex.Bear, (int)AstateIndex.Elephant },
-            new HashSet<int>() { (int)AstateIndex.Bear, (int)AstateIndex.Giraffe },
+            new HashSet<int>() { (int)StateIndex.Bear, (int)StateIndex.Elephant },
+            new HashSet<int>() { (int)StateIndex.Bear, (int)StateIndex.Giraffe },
         };
         HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringElementsAnd(lockerNumbers, reordIndexLockers);
 
@@ -252,7 +252,7 @@ public class StellaQLTest {
         Assert.AreEqual(1, recordIndexes.Count);
         if (1 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Bear));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Bear));
         }
     }
 
@@ -266,8 +266,8 @@ public class StellaQLTest {
         HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
         List<HashSet<int>> recordIndexeslockers = new List<HashSet<int>>()
         {
-            new HashSet<int>() { (int)AstateIndex.Bear, (int)AstateIndex.Elephant },
-            new HashSet<int>() { (int)AstateIndex.Bear, (int)AstateIndex.Giraffe },
+            new HashSet<int>() { (int)StateIndex.Bear, (int)StateIndex.Elephant },
+            new HashSet<int>() { (int)StateIndex.Bear, (int)StateIndex.Giraffe },
         };
         HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringElementsOr(lockerNumbers, recordIndexeslockers);
 
@@ -275,9 +275,9 @@ public class StellaQLTest {
         Assert.AreEqual(3, recordIndexes.Count);
         if (3 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Bear));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Elephant));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Giraffe));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Bear));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Elephant));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Giraffe));
         }
     }
 
@@ -291,8 +291,8 @@ public class StellaQLTest {
         HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
         List<HashSet<int>> recordIndexesLockers = new List<HashSet<int>>()
         {
-            new HashSet<int>() { (int)AstateIndex.Bear, (int)AstateIndex.Elephant },
-            new HashSet<int>() { (int)AstateIndex.Bear, (int)AstateIndex.Giraffe },
+            new HashSet<int>() { (int)StateIndex.Bear, (int)StateIndex.Elephant },
+            new HashSet<int>() { (int)StateIndex.Bear, (int)StateIndex.Giraffe },
         };
         HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringElementsNotAndNot(lockerNumbers, recordIndexesLockers, InstanceTable.index_to_exRecord);
 
@@ -300,29 +300,29 @@ public class StellaQLTest {
         Assert.AreEqual(23, recordIndexes.Count);
         if (23 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Alpaca));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Cat));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Dog));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Fox));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Horse));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Iguana));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Jellyfish));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Kangaroo));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Lion));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Monkey));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Nutria));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Ox));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Pig));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Quetzal));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Rabbit));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Sheep));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Tiger));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Unicorn));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Vixen));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Wolf));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Xenopus));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Yak));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Zebra));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Alpaca));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Cat));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Dog));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Fox));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Horse));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Iguana));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Jellyfish));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Kangaroo));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Lion));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Monkey));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Nutria));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Ox));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Pig));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Quetzal));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Rabbit));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Sheep));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Tiger));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Unicorn));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Vixen));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Wolf));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Xenopus));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Yak));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Zebra));
         }
     }
 
@@ -340,15 +340,15 @@ public class StellaQLTest {
         Assert.AreEqual(9, recordIndexes.Count);
         if (9 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Elephant));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Iguana));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Kangaroo));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Lion));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Monkey));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Nutria));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Unicorn));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Vixen));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Xenopus));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Elephant));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Iguana));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Kangaroo));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Lion));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Monkey));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Nutria));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Unicorn));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Vixen));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Xenopus));
         }
     }
 
@@ -359,18 +359,18 @@ public class StellaQLTest {
     public void N50_RecordIndexes_FilteringAttributesAnd()
     {
         // 条件は　Alpha | Eee
-        HashSet<int> attrs = new HashSet<int>() { (int)StateTable.Attr.Alpha | (int)StateTable.Attr.Eee };
+        HashSet<int> attrs = new HashSet<int>() { (int)StateExTable.Attr.Alpha | (int)StateExTable.Attr.Eee };
         HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringAttributesAnd(attrs, InstanceTable.index_to_exRecord);
 
         // 結果は　Bear、Elephant、Giraffe、Quetzal、Zebra
         Assert.AreEqual(5, recordIndexes.Count);
         if (5 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Bear));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Elephant));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Giraffe));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Quetzal));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Zebra));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Bear));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Elephant));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Giraffe));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Quetzal));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Zebra));
         }
     }
 
@@ -381,26 +381,26 @@ public class StellaQLTest {
     public void N50_RecordIndexes_FilteringAttributesOr()
     {
         // 条件は　（Alpha | Eee）、Beta、Eee
-        HashSet<int> attrs = new HashSet<int>() { (int)StateTable.Attr.Alpha | (int)StateTable.Attr.Eee, (int)StateTable.Attr.Beta, (int)StateTable.Attr.Eee };
+        HashSet<int> attrs = new HashSet<int>() { (int)StateExTable.Attr.Alpha | (int)StateExTable.Attr.Eee, (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Eee };
         HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringAttributesOr(attrs, InstanceTable.index_to_exRecord);
 
         // 結果は　Bear、Elephant、Giraffe、Horse、Jellyfish、Monkey、Quetzal、Rabbit、Sheep、Tiger、Vixen、Xenopus、Zebra
         Assert.AreEqual(13, recordIndexes.Count);
         if (13 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Bear));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Elephant));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Giraffe));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Horse));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Jellyfish));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Monkey));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Quetzal));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Rabbit));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Sheep));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Tiger));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Vixen));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Xenopus));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Zebra));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Bear));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Elephant));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Giraffe));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Horse));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Jellyfish));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Monkey));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Quetzal));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Rabbit));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Sheep));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Tiger));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Vixen));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Xenopus));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Zebra));
         }
     }
 
@@ -411,26 +411,26 @@ public class StellaQLTest {
     public void N50_RecordIndexes_FilteringAttributesNotAndNot()
     {
         // 条件は　（Alpha | Eee）、Beta、Eee
-        HashSet<int> attrs = new HashSet<int>() { (int)StateTable.Attr.Alpha | (int)StateTable.Attr.Eee, (int)StateTable.Attr.Beta, (int)StateTable.Attr.Eee };
+        HashSet<int> attrs = new HashSet<int>() { (int)StateExTable.Attr.Alpha | (int)StateExTable.Attr.Eee, (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Eee };
         HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringAttributesNotAndNot(attrs, InstanceTable.index_to_exRecord);
 
         // 結果は　Alpaca、Cat、Dog、Fox、Iguana、Kangaroo、Lion、Nutria、Ox、Pig、Unicorn、Wolf、Yak
         Assert.AreEqual(13, recordIndexes.Count);
         if (13 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Alpaca));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Cat));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Dog));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Fox));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Iguana));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Kangaroo));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Lion));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Nutria));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Ox));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Pig));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Unicorn));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Wolf));
-            Assert.IsTrue(recordIndexes.Contains((int)AstateIndex.Yak));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Alpaca));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Cat));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Dog));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Fox));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Iguana));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Kangaroo));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Lion));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Nutria));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Ox));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Pig));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Unicorn));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Wolf));
+            Assert.IsTrue(recordIndexes.Contains((int)StateIndex.Yak));
         }
     }
     #endregion
@@ -442,7 +442,7 @@ public class StellaQLTest {
     [Test]
     public void N60_ToAttrLocker_FromKeywordSet()
     {
-        HashSet<int> set = new HashSet<int>() { (int)StateTable.Attr.Beta, (int)StateTable.Attr.Dee };
+        HashSet<int> set = new HashSet<int>() { (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Dee };
         HashSet<int> attrLocker = AttrSet.KeywordSet_to_attrLocker(set);//, typeof(AstateDatabase.Attr)
 
         //{ int i = 0; foreach (int attr in attrLocker) { Debug.Log("Attr[" + i + "]: " + (AstateDatabase.Attr)attr + " (" + attr + ")"); i++; } }
@@ -450,7 +450,7 @@ public class StellaQLTest {
         Assert.AreEqual(1, attrLocker.Count);
         if (1 == attrLocker.Count)
         {
-            Assert.IsTrue( attrLocker.Contains((int)StateTable.Attr.Beta | (int)StateTable.Attr.Dee));
+            Assert.IsTrue( attrLocker.Contains((int)StateExTable.Attr.Beta | (int)StateExTable.Attr.Dee));
         }
     }
 
@@ -460,7 +460,7 @@ public class StellaQLTest {
     [Test]
     public void N60_ToAttrLocker_FromKeywordlistSet()
     {
-        HashSet<int> set = new HashSet<int>() { (int)StateTable.Attr.Beta, (int)StateTable.Attr.Dee };
+        HashSet<int> set = new HashSet<int>() { (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Dee };
         HashSet<int> attrLocker = AttrSet.KeywordlistSet_to_attrLocker(set);
 
         // { int i = 0; foreach (int attr in attrLocker) { Debug.Log("Attr[" + i + "]: " + (AstateDatabase.Attr)attr + " (" + attr + ")"); i++; } }
@@ -468,8 +468,8 @@ public class StellaQLTest {
         Assert.AreEqual(2, attrLocker.Count);
         if (2 == attrLocker.Count)
         {
-            Assert.IsTrue( attrLocker.Contains((int)StateTable.Attr.Beta));
-            Assert.IsTrue( attrLocker.Contains((int)StateTable.Attr.Dee));
+            Assert.IsTrue( attrLocker.Contains((int)StateExTable.Attr.Beta));
+            Assert.IsTrue( attrLocker.Contains((int)StateExTable.Attr.Dee));
         }
     }
 
@@ -479,18 +479,18 @@ public class StellaQLTest {
     [Test]
     public void N60_ToAttrLocker_FromNGKeywordSet()
     {
-        HashSet<int> set = new HashSet<int>() { (int)StateTable.Attr.Beta, (int)StateTable.Attr.Dee };
-        HashSet<int> attrLocker = AttrSet.NGKeywordSet_to_attrLocker(set, typeof(StateTable.Attr));
+        HashSet<int> set = new HashSet<int>() { (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Dee };
+        HashSet<int> attrLocker = AttrSet.NGKeywordSet_to_attrLocker(set, typeof(StateExTable.Attr));
 
         // { int i = 0; foreach (int attr in attrLocker) { Debug.Log("Attr[" + i + "]: " + (AstateDatabase.Attr)attr + " (" + attr + ")"); i++; } }
 
         Assert.AreEqual(4, attrLocker.Count);
         if (4 == attrLocker.Count)
         {
-            Assert.IsTrue( attrLocker.Contains((int)StateTable.Attr.Zero));
-            Assert.IsTrue( attrLocker.Contains((int)StateTable.Attr.Alpha));
-            Assert.IsTrue( attrLocker.Contains((int)StateTable.Attr.Cee));
-            Assert.IsTrue( attrLocker.Contains((int)StateTable.Attr.Eee));
+            Assert.IsTrue( attrLocker.Contains((int)StateExTable.Attr.Zero));
+            Assert.IsTrue( attrLocker.Contains((int)StateExTable.Attr.Alpha));
+            Assert.IsTrue( attrLocker.Contains((int)StateExTable.Attr.Cee));
+            Assert.IsTrue( attrLocker.Contains((int)StateExTable.Attr.Eee));
         }
     }
 
@@ -500,18 +500,18 @@ public class StellaQLTest {
     [Test]
     public void N60_ToAttrLocker_GetComplement()
     {
-        HashSet<int> set = new HashSet<int>() { (int)StateTable.Attr.Beta, (int)StateTable.Attr.Dee }; // int型にして持つ
-        HashSet<int> attrLocker = AttrSet.Complement(set, typeof(StateTable.Attr));
+        HashSet<int> set = new HashSet<int>() { (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Dee }; // int型にして持つ
+        HashSet<int> attrLocker = AttrSet.Complement(set, typeof(StateExTable.Attr));
 
         // { int i = 0; foreach (int attr in attrLocker) { Debug.Log("Attr[" + i + "]: " + (AstateDatabase.Attr)attr + " (" + attr + ")"); i++; } }
 
         Assert.AreEqual(4, attrLocker.Count);
         if (4 == attrLocker.Count)
         {
-            Assert.IsTrue( attrLocker.Contains((int)StateTable.Attr.Zero));
-            Assert.IsTrue( attrLocker.Contains((int)StateTable.Attr.Alpha));
-            Assert.IsTrue( attrLocker.Contains((int)StateTable.Attr.Cee));
-            Assert.IsTrue( attrLocker.Contains((int)StateTable.Attr.Eee));
+            Assert.IsTrue( attrLocker.Contains((int)StateExTable.Attr.Zero));
+            Assert.IsTrue( attrLocker.Contains((int)StateExTable.Attr.Alpha));
+            Assert.IsTrue( attrLocker.Contains((int)StateExTable.Attr.Cee));
+            Assert.IsTrue( attrLocker.Contains((int)StateExTable.Attr.Eee));
         }
     }
     #endregion

@@ -36,6 +36,8 @@ namespace StellaQL
         {
             GUILayout.Label("Animator controller", EditorStyles.boldLabel);
             pathController = EditorGUILayout.TextField(pathController);
+            // アニメーター・コントローラーを取得。
+            AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>(pathController);//"Assets/Resources/AnimatorControllers/AniCon@Char3.controller"
 
             GUILayout.Label("Command line (StellaQL)");
             scroll = EditorGUILayout.BeginScrollView(scroll);
@@ -45,7 +47,7 @@ namespace StellaQL
             if (GUILayout.Button("Execute"))
             {
                 Debug.Log("Executeボタンを押した☆ myText2=" + commandline);
-                Querier.Execute(commandline, typeof(StellaQLTest.StateTable.Attr), StellaQLTest.InstanceTable.index_to_exRecord, out infoMessage);
+                Querier.Execute(ac, commandline, typeof(StellaQLTest.StateExTable.Attr), StellaQLTest.InstanceTable.index_to_exRecord, out infoMessage);
             }
 
             GUILayout.Space(4.0f);
@@ -53,9 +55,6 @@ namespace StellaQL
             {
                 filenameWE = Path.GetFileNameWithoutExtension(pathController);
                 Debug.Log("Start☆（＾～＾）！ filename(without extension) = " + filenameWE);
-
-                // アニメーター・コントローラーを取得。
-                AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>(pathController);//"Assets/Resources/AnimatorControllers/AniCon@Char3.controller"
 
                 StringBuilder sb = new StringBuilder();
                 string resultMessage;

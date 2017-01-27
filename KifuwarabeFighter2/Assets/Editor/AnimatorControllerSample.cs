@@ -71,7 +71,7 @@ public class AnimatorControllerSample : MonoBehaviour {
         // アニメーター・コントローラーを取得。
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
-        List<AnimatorState> states = new List<AnimatorState>() {
+        HashSet<AnimatorState> states = new HashSet<AnimatorState>() {
             AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi1"),
             AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi2"),
             AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi3"),

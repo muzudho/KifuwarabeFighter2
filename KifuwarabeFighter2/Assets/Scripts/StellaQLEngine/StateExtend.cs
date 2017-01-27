@@ -10,6 +10,7 @@ namespace StellaQL
     {
         string BreadCrumb { get; }
         string Name { get; }
+        //int FullPathHash { get; }
         bool HasFlag_attr(int enumration);
         /// <summary>
         /// ほんとは列挙型にしたい☆
@@ -21,6 +22,7 @@ namespace StellaQL
     {
         public string BreadCrumb { get; set; }
         public string Name { get; set; }
+        //public int FullPathHash { get; set; }
         public abstract bool HasFlag_attr(int attributeEnumration);
         /// <summary>
         /// ほんとは列挙型にしたい☆
@@ -71,7 +73,9 @@ namespace StellaQL
 
             if (this.index_to_exRecord.ContainsKey(stateIndex))
             {
-                return this.index_to_exRecord[stateIndex];
+                StateExRecordable stateExRecord = this.index_to_exRecord[stateIndex];
+                //((AbstractStateExRecord)stateExRecord).FullPathHash = state.fullPathHash;
+                return stateExRecord;
             }
 
             throw new UnityException("[" + stateIndex + "]のデータが無いぜ☆　なんでだろな☆？（＾～＾）");

@@ -116,7 +116,7 @@ namespace StellaQL
         /// ２つのステートを トランジションで結ぶ。ステートは複数指定でき、総当たりで全部結ぶ。
         /// </summary>
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
-        public static void AddAll(AnimatorController ac, List<AnimatorState> states_src, List<AnimatorState> states_dst)
+        public static void AddAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst)
         {
             foreach (AnimatorState state_src in states_src)
             {
