@@ -4,6 +4,7 @@ using NUnit.Framework;
 using StellaQL;
 using System.Collections.Generic;
 using System;
+using System.Text;
 
 public class NewEditorTest {
 
@@ -132,27 +133,91 @@ public class NewEditorTest {
     }
 
     /// <summary>
+    /// 属性検索部を解析
+    /// </summary>
+    [Test]
+    public void Parse_AttrParentesis_TokensToLockers()
+    {
+        List<string> tokens = new List<string>() {
+            "(","[","(","Alpaca","Bear",")","(","Cat","Dog",")","]","{","Elephant","}",")",
+        };
+        List<List<string>> lockers;
+        AttrParenthesisParser.Tokens_to_lockers(tokens, out lockers);
+
+        Assert.AreEqual(5, lockers.Count);
+        { int i = 0; foreach (string token in lockers[0]) { Debug.Log("[0][" + i + "]=" + token); i++; } }
+        Assert.AreEqual(2, lockers[0].Count);
+        { int i = 0; foreach (string token in lockers[1]) { Debug.Log("[1][" + i + "]=" + token); i++; } }
+        Assert.AreEqual(2, lockers[1].Count);
+        { int i = 0; foreach (string token in lockers[2]) { Debug.Log("[2][" + i + "]=" + token); i++; } }
+        Assert.AreEqual(2, lockers[2].Count);
+        { int i = 0; foreach (string token in lockers[3]) { Debug.Log("[3][" + i + "]=" + token); i++; } }
+        Assert.AreEqual(1, lockers[3].Count);
+        { int i = 0; foreach (string token in lockers[4]) { Debug.Log("[4][" + i + "]=" + token); i++; } }
+        Assert.AreEqual(2, lockers[4].Count);
+        Assert.AreEqual("Bear", lockers[0][0]);
+        Assert.AreEqual("Alpaca", lockers[0][1]);
+        Assert.AreEqual("Dog", lockers[1][0]);
+        Assert.AreEqual("Cat", lockers[1][1]);
+        Assert.AreEqual("1", lockers[2][0]);
+        Assert.AreEqual("0", lockers[2][1]);
+        Assert.AreEqual("Elephant", lockers[3][0]);
+        Assert.AreEqual("3", lockers[4][0]);
+        Assert.AreEqual("2", lockers[4][1]);
+    }
+
+    /// <summary>
+    /// 属性検索部を解析
+    /// </summary>
+    [Test]
+    public void Parse_AttrParentesis_StringToTokens()
+    {
+        string attrParentesis = "([(Alpaca Bear)(Cat Dog)]{Elephant})";
+        List<string> tokens;
+        AttrParenthesisParser.String_to_tokens(attrParentesis, out tokens);
+
+        //{ int i = 0; foreach (string token in tokens) { Debug.Log("Token[" + i + "]: " + token); i++; } }
+
+        Assert.AreEqual(15, tokens.Count);
+        Assert.AreEqual("(", tokens[0]);
+        Assert.AreEqual("[", tokens[1]);
+        Assert.AreEqual("(", tokens[2]);
+        Assert.AreEqual("Alpaca", tokens[3]);
+        Assert.AreEqual("Bear", tokens[4]);
+        Assert.AreEqual(")", tokens[5]);
+        Assert.AreEqual("(", tokens[6]);
+        Assert.AreEqual("Cat", tokens[7]);
+        Assert.AreEqual("Dog", tokens[8]);
+        Assert.AreEqual(")", tokens[9]);
+        Assert.AreEqual("]", tokens[10]);
+        Assert.AreEqual("{", tokens[11]);
+        Assert.AreEqual("Elephant", tokens[12]);
+        Assert.AreEqual("}", tokens[13]);
+        Assert.AreEqual(")", tokens[14]);
+    }
+
+    /// <summary>
     /// 構文解析 Insert 文
     /// </summary>
     [Test]
-    public void Parser_InsertStatement()
+    public void Parse_InsertStatement()
     {
         string query = @"TRANSITION INSERT
                         SET Duration 0 ExitTime 1
                         FROM ""Base Layer.SMove""
                         TO ATTR (BusyX Block)";
-        StructuredQuery sq = StellaQLScanner.Parser_InsertStatement(query);
+        QueryTokens sq = StellaQLScanner.Parser_InsertStatement(query);
 
-        Assert.AreEqual(StructuredQuery.TRANSITION, sq.Target);
-        Assert.AreEqual(StructuredQuery.INSERT, sq.Manipulation);
+        Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
+        Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
         Assert.AreEqual(2, sq.Set.Count);
         Assert.IsTrue(sq.Set.ContainsKey("Duration"));
         Assert.AreEqual("0", sq.Set["Duration"]);
         Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
         Assert.AreEqual("1", sq.Set["ExitTime"]);
-        Assert.AreEqual("Base Layer.SMove", sq.From_Fullname);
+        Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
         Assert.AreEqual("", sq.From_Attr);
-        Assert.AreEqual("", sq.To_Fullname);
+        Assert.AreEqual("", sq.To_FullnameRegex);
         Assert.AreEqual("(BusyX Block)", sq.To_Attr);
     }
 
@@ -160,24 +225,24 @@ public class NewEditorTest {
     /// 構文解析 Update 文
     /// </summary>
     [Test]
-    public void Parser_UpdateStatement()
+    public void Parse_UpdateStatement()
     {
         string query = @"TRANSITION UPDATE
                         SET Duration 0.25 ExitTime 0.75
                         FROM ""Base Layer.SMove""
                         TO ATTR (BusyX Block)";
-        StructuredQuery sq = StellaQLScanner.Parser_UpdateStatement(query);
+        QueryTokens sq = StellaQLScanner.Parser_UpdateStatement(query);
 
-        Assert.AreEqual(StructuredQuery.TRANSITION, sq.Target);
-        Assert.AreEqual(StructuredQuery.UPDATE, sq.Manipulation);
+        Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
+        Assert.AreEqual(QueryTokens.UPDATE, sq.Manipulation);
         Assert.AreEqual(2, sq.Set.Count);
         Assert.IsTrue(sq.Set.ContainsKey("Duration"));
         Assert.AreEqual("0.25", sq.Set["Duration"]);
         Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
         Assert.AreEqual("0.75", sq.Set["ExitTime"]);
-        Assert.AreEqual("Base Layer.SMove", sq.From_Fullname);
+        Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
         Assert.AreEqual("", sq.From_Attr);
-        Assert.AreEqual("", sq.To_Fullname);
+        Assert.AreEqual("", sq.To_FullnameRegex);
         Assert.AreEqual("(BusyX Block)", sq.To_Attr);
     }
 
@@ -185,19 +250,19 @@ public class NewEditorTest {
     /// 構文解析 Delete 文
     /// </summary>
     [Test]
-    public void Parser_DeleteStatement()
+    public void Parse_DeleteStatement()
     {
         string query = @"TRANSITION DELETE
                         FROM ""Base Layer.SMove""
                         TO ATTR (BusyX Block)";
-        StructuredQuery sq = StellaQLScanner.Parser_DeleteStatement(query);
+        QueryTokens sq = StellaQLScanner.Parser_DeleteStatement(query);
 
-        Assert.AreEqual(StructuredQuery.TRANSITION, sq.Target);
-        Assert.AreEqual(StructuredQuery.DELETE, sq.Manipulation);
+        Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
+        Assert.AreEqual(QueryTokens.DELETE, sq.Manipulation);
         Assert.AreEqual(0, sq.Set.Count);
-        Assert.AreEqual("Base Layer.SMove", sq.From_Fullname);
+        Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
         Assert.AreEqual("", sq.From_Attr);
-        Assert.AreEqual("", sq.To_Fullname);
+        Assert.AreEqual("", sq.To_FullnameRegex);
         Assert.AreEqual("(BusyX Block)", sq.To_Attr);
     }
 
@@ -205,19 +270,19 @@ public class NewEditorTest {
     /// 構文解析 Select 文
     /// </summary>
     [Test]
-    public void Parser_SelectStatement()
+    public void Parse_SelectStatement()
     {
         string query = @"TRANSITION SELECT
                         FROM ""Base Layer.SMove""
                         TO ATTR (BusyX Block)";
-        StructuredQuery sq = StellaQLScanner.Parser_SelectStatement(query);
+        QueryTokens sq = StellaQLScanner.Parser_SelectStatement(query);
 
-        Assert.AreEqual(StructuredQuery.TRANSITION, sq.Target);
-        Assert.AreEqual(StructuredQuery.SELECT, sq.Manipulation);
+        Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
+        Assert.AreEqual(QueryTokens.SELECT, sq.Manipulation);
         Assert.AreEqual(0, sq.Set.Count);
-        Assert.AreEqual("Base Layer.SMove", sq.From_Fullname);
+        Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
         Assert.AreEqual("", sq.From_Attr);
-        Assert.AreEqual("", sq.To_Fullname);
+        Assert.AreEqual("", sq.To_FullnameRegex);
         Assert.AreEqual("(BusyX Block)", sq.To_Attr);
     }
 
@@ -225,27 +290,27 @@ public class NewEditorTest {
     /// Parser 改行テスト
     /// </summary>
     [Test]
-    public void Parser_Newline()
+    public void Parse_Newline()
     {
         int caret = 0;
         bool hit;
 
         caret = 0;
-        hit = StellaQLScanner.HitSpaces(@"
+        hit = StellaQLScanner.VarSpaces(@"
 a", ref caret);
         Assert.IsTrue(hit);
         Assert.AreEqual(2, caret); // 改行は 2 ？ 改行の文字数は環境依存か☆？
     }
 
     /// <summary>
-    /// Parser
+    /// Parse関連のサブ関数。
     /// </summary>
     [Test]
-    public void Parser()
+    public void Parse_SubFunctions()
     {
         int caret = 0;
-        StellaQLScanner.SkipSpace("  a",ref caret);
-        Assert.AreEqual(2, caret);
+        //StellaQLScanner.SkipSpace("  a",ref caret);
+        //Assert.AreEqual(2, caret);
 
         bool hit;
         string word;
@@ -253,99 +318,99 @@ a", ref caret);
         string parenthesis;
 
         caret = 0;
-        hit = StellaQLScanner.HitSpaces("  a", ref caret);
+        hit = StellaQLScanner.VarSpaces("  a", ref caret);
         Assert.IsTrue(hit);
         Assert.AreEqual(2, caret);
 
         caret = 1;
-        hit = StellaQLScanner.HitSpaces("  a", ref caret);
+        hit = StellaQLScanner.VarSpaces("  a", ref caret);
         Assert.IsTrue(hit);
         Assert.AreEqual(2, caret);
 
         caret = 0;
-        hit = StellaQLScanner.HitSpaces("a  ", ref caret);
+        hit = StellaQLScanner.VarSpaces("a  ", ref caret);
         Assert.IsFalse(hit);
         Assert.AreEqual(0, caret);
 
         caret = 0;
-        hit = StellaQLScanner.HitWordAndSpace_IgnoreCase("alpaca", "alpaca bear cat ", ref caret);
+        hit = StellaQLScanner.FixedWord("alpaca", "alpaca bear cat ", ref caret);
         Assert.IsTrue(hit);
         Assert.AreEqual(6+1, caret);
-        hit = StellaQLScanner.HitWordAndSpace_IgnoreCase("bear", "alpaca bear cat ", ref caret);
+        hit = StellaQLScanner.FixedWord("bear", "alpaca bear cat ", ref caret);
         Assert.IsTrue(hit, "caret="+caret);
         Assert.AreEqual(11 + 1, caret);
 
         caret = 0;
-        hit = StellaQLScanner.HitWordAndSpace_IgnoreCase("alpaca", "alpaca  ", ref caret);
+        hit = StellaQLScanner.FixedWord("alpaca", "alpaca  ", ref caret);
         Assert.IsTrue(hit);
         Assert.AreEqual(6 + 2, caret);
 
         caret = 0;
-        hit = StellaQLScanner.HitWordAndSpace_IgnoreCase("alpaca", "alpaca", ref caret);
+        hit = StellaQLScanner.FixedWord("alpaca", "alpaca", ref caret);
         Assert.IsTrue(hit);
         Assert.AreEqual(6, caret);
 
         caret = 0;
-        hit = StellaQLScanner.HitWordAndSpace_IgnoreCase("alpaca", "alpxxx ", ref caret);
+        hit = StellaQLScanner.FixedWord("alpaca", "alpxxx ", ref caret);
         Assert.IsFalse(hit);
         Assert.AreEqual(0, caret);
 
         caret = 0;
-        hit = StellaQLScanner.GetWordAndSpace_IgnoreCase("alpaca ", ref caret, out word);
+        hit = StellaQLScanner.VarWord("alpaca ", ref caret, out word);
         Assert.IsTrue(hit);
         Assert.AreEqual(6+1, caret);
         Assert.AreEqual("alpaca", word);
 
         caret = 0;
-        hit = StellaQLScanner.GetWordAndSpace_IgnoreCase(" alpaca", ref caret, out word);
+        hit = StellaQLScanner.VarWord(" alpaca", ref caret, out word);
         Assert.IsFalse(hit);
         Assert.AreEqual(0, caret);
         Assert.AreEqual("", word);
 
         caret = 0;
-        hit = StellaQLScanner.GetStringAndSpace_IgnoreCase(@"""alpaca"" ", ref caret, out stringWithoutDoubleQuotation);
+        hit = StellaQLScanner.VarStringliteral(@"""alpaca"" ", ref caret, out stringWithoutDoubleQuotation);
         Assert.IsTrue(hit);
         Assert.AreEqual(8+1, caret);
         Assert.AreEqual("alpaca", stringWithoutDoubleQuotation);
 
         caret = 0;
-        hit = StellaQLScanner.GetStringAndSpace_IgnoreCase(@"""alpaca""", ref caret, out stringWithoutDoubleQuotation);
+        hit = StellaQLScanner.VarStringliteral(@"""alpaca""", ref caret, out stringWithoutDoubleQuotation);
         Assert.IsTrue(hit);
         Assert.AreEqual(8, caret);
         Assert.AreEqual("alpaca", stringWithoutDoubleQuotation);
 
         caret = 0;
-        hit = StellaQLScanner.GetWordAndSpace_IgnoreCase(@" alpaca ", ref caret, out stringWithoutDoubleQuotation);
+        hit = StellaQLScanner.VarWord(@" alpaca ", ref caret, out stringWithoutDoubleQuotation);
         Assert.IsFalse(hit);
         Assert.AreEqual(0, caret);
         Assert.AreEqual("", stringWithoutDoubleQuotation);
 
         caret = 0;
-        hit = StellaQLScanner.GetParentesisAndSpace_IgnoreCase(@"( alpaca ) ", ref caret, out parenthesis);
+        hit = StellaQLScanner.VarParentesis(@"( alpaca ) ", ref caret, out parenthesis);
         Assert.IsTrue(hit);
         Assert.AreEqual(10+1, caret);
         Assert.AreEqual("( alpaca )", parenthesis);
 
         caret = 0;
-        hit = StellaQLScanner.GetWordAndSpace_IgnoreCase(@"( alpaca ", ref caret, out parenthesis);
+        hit = StellaQLScanner.VarWord(@"( alpaca ", ref caret, out parenthesis);
         Assert.IsFalse(hit);
         Assert.AreEqual(0, caret);
         Assert.AreEqual("", parenthesis);
 
         caret = 0;
-        hit = StellaQLScanner.GetParentesisAndSpace_IgnoreCase(@"(alpaca) ", ref caret, out parenthesis);
+        hit = StellaQLScanner.VarParentesis(@"(alpaca) ", ref caret, out parenthesis);
         Assert.IsTrue(hit);
         Assert.AreEqual(8 + 1, caret);
         Assert.AreEqual("(alpaca)", parenthesis);
 
         caret = 0;
-        hit = StellaQLScanner.GetParentesisAndSpace_IgnoreCase(@"(alpaca bear) ", ref caret, out parenthesis);
+        hit = StellaQLScanner.VarParentesis(@"(alpaca bear) ", ref caret, out parenthesis);
         Assert.IsTrue(hit);
         Assert.AreEqual(13 + 1, caret);
         Assert.AreEqual("(alpaca bear)", parenthesis);
 
         caret = 0;
-        hit = StellaQLScanner.GetParentesisAndSpace_IgnoreCase(@"(alpaca bear)", ref caret, out parenthesis);
+        hit = StellaQLScanner.VarParentesis(@"(alpaca bear)", ref caret, out parenthesis);
         Assert.IsTrue(hit);
         Assert.AreEqual(13, caret);
         Assert.AreEqual("(alpaca bear)", parenthesis);

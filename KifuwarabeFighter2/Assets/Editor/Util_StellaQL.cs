@@ -20,11 +20,11 @@ namespace StellaQL
         public static List<int> Execute(string expression, Type enumration)
         {
             List<int> result = new List<int>();
-            List<string> tokens = new List<string>();
+            List<string> tokens;
 
             // 字句解析
             {
-                Util_StellaQL.String_to_tokens(expression, tokens);
+                AttrParenthesisParser.String_to_tokens(expression, out tokens);
                 //StringBuilder sb = new StringBuilder();
                 //foreach (string token in tokens)
                 //{
@@ -37,7 +37,7 @@ namespace StellaQL
             Stack<char> stack = new Stack<char>();
 
             // スキャン（XMLのSAX風）
-            StellaQLParenthesisScanner scanner = new StellaQLParenthesisScanner(enumration);
+            StellaQLParenthesisScanner1 scanner = new StellaQLParenthesisScanner1(enumration);
             scanner.Scan(tokens);
             {
             }
@@ -47,53 +47,18 @@ namespace StellaQL
 
             return result;
         }
-
-        private static void String_to_tokens(string expression, List<string> tokens)
-        {
-            StringBuilder word = new StringBuilder();
-
-            for (int iCaret = 0; iCaret < expression.Length; iCaret++)
-            {
-                char ch = expression[iCaret];
-                switch (ch)
-                {
-                    case ' ':
-                        if (0<word.Length)
-                        {
-                            tokens.Add(word.ToString());
-                            word.Length = 0;
-                        }
-                        break;
-                    case '(':
-                    case '[':
-                    case '{':
-                    case ')':
-                    case ']':
-                    case '}':
-                        tokens.Add(ch.ToString());
-                        break;
-                    default: word.Append(ch); break;
-                }
-            }
-
-            if (0 < word.Length)//構文エラー
-            {
-                tokens.Add(word.ToString());
-                word.Length = 0;
-            }
-        }
     }
 
-    public class StructuredQuery
+    public class QueryTokens
     {
-        public StructuredQuery()
+        public QueryTokens()
         {
             Target = "";
             Manipulation = "";
             Set = new Dictionary<string, string>();
-            From_Fullname = "";
+            From_FullnameRegex = "";
             From_Attr = "";
-            To_Fullname = "";
+            To_FullnameRegex = "";
             To_Attr = "";
         }
 
@@ -122,7 +87,7 @@ namespace StellaQL
         /// <summary>
         /// ステート・フルネーム が入る。
         /// </summary>
-        public string From_Fullname { get; set; }
+        public string From_FullnameRegex { get; set; }
         /// <summary>
         /// 括弧を使った式 が入る。
         /// </summary>
@@ -130,7 +95,7 @@ namespace StellaQL
         /// <summary>
         /// ステート・フルネーム が入る。
         /// </summary>
-        public string To_Fullname { get; set; }
+        public string To_FullnameRegex { get; set; }
         /// <summary>
         /// 括弧を使った式 が入る。
         /// </summary>
@@ -342,8 +307,141 @@ namespace StellaQL
         }
     }
 
-    public abstract class AbstractStellaQLParenthesisScanner
+    public abstract class AttrParenthesisParser
     {
+        /// <summary>
+        /// スキャンに渡すトークンを作るのが仕事。
+        /// 
+        /// ([(Alpaca Bear)(Cat Dog)]{Elephant})
+        /// を、
+        /// 「(」「[」「(」「Alpaca」「Bear」「)」「(」「Cat」「Dog」「)」「]」「{」「Elephant」「}」「)」
+        /// に分解する。
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="tokens"></param>
+        public static void String_to_tokens(string expression, out List<string> tokens)
+        {
+            tokens = new List<string>();
+            StringBuilder bufferWord = new StringBuilder();
+
+            for (int iCaret = 0; iCaret < expression.Length;)
+            {
+                if(StellaQLScanner.VarSpaces(expression, ref iCaret))
+                {
+                    // 空白を読み飛ばす。
+                    if (0 < bufferWord.Length)
+                    {
+                        // Debug.Log("iCaret=[" + iCaret + "] 空白読み飛ばし word.ToString()=[" + bufferWord.ToString() + "]");
+                        tokens.Add(bufferWord.ToString()); bufferWord.Length = 0;
+                    }
+                    //else
+                    //{
+                    //    Debug.Log("iCaret=[" + iCaret + "] 空白読み飛ばし word.ToString()=[" + bufferWord.ToString()+"]");
+                    //}
+                }
+                else
+                {
+                    char ch = expression[iCaret];
+                    switch (ch)
+                    {
+                        case '(':
+                        case '[':
+                        case '{':
+                        case ')':
+                        case ']':
+                        case '}':
+                            // Debug.Log("iCaret=[" + iCaret + "] tokens.Add(ch.ToString()) ch=[" + ch + "]");
+                            if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; }
+                            tokens.Add(ch.ToString());
+                            break;
+                        default:
+                            // Debug.Log("iCaret=["+ iCaret + "] word.Append(ch) ch=[" + ch + "]");
+                            bufferWord.Append(ch); break;
+                    }
+                    iCaret++;
+                }
+            }
+
+            if (0 < bufferWord.Length)//構文エラー
+            {
+                tokens.Add(bufferWord.ToString());
+                bufferWord.Length = 0;
+            }
+        }
+
+        /// <summary>
+        /// 「(」「[」「(」「Alpaca」「Bear」「)」「(」「Cat」「Dog」「)」「]」「{」「Elephant」「}」「)」
+        /// ※読み取り順 ) Bear Alpaca ( ) Dog Cat ( ] [ } Elephant { ) (
+        /// を、
+        /// 
+        /// 0: () Bear Alpaca
+        /// 1: () Dog Cat
+        /// 2: [] 1 0
+        /// 3: {} Elephant
+        /// 4: () 3 2
+        /// 
+        /// というロッカーに並べ替える。
+        /// </summary>
+        public static void Tokens_to_lockers(List<string> tokens, out List<List<string>> lockers)
+        {
+            string openParen = ""; // 閉じ括弧に対応する、「開きカッコ」
+            int iCursor = 0;
+
+            lockers = new List<List<string>>(); // 部室のロッカー。スタートは 0 番から。
+            List<string> bufferTokens = new List<string>(); // スキャン中のトークン。
+            while (iCursor < tokens.Count)
+            {
+                string token = tokens[iCursor];
+                if ("" == openParen)
+                {
+                    StringBuilder sb1 = new StringBuilder();
+                    sb1.Append("go["); sb1.Append(iCursor); sb1.Append("]: "); sb1.Append(token); sb1.AppendLine();
+                    Debug.Log(sb1.ToString());
+                    switch (token)
+                    {
+                        case ")": openParen = "("; tokens[iCursor] = ""; break;
+                        case "]": openParen = "["; tokens[iCursor] = ""; break;
+                        case "}": openParen = "{"; tokens[iCursor] = ""; break;
+                        default: break; // 無視して進む
+                    }
+                }
+                else // 後ろに進む☆　括弧内のメンバーの文字を削除し、開きカッコをロッカー番号に置き換える。
+                {
+                    StringBuilder sb2 = new StringBuilder();
+                    sb2.Append("back["); sb2.Append(iCursor); sb2.Append("]: "); sb2.Append(token); sb2.AppendLine();
+                    Debug.Log(sb2.ToString());
+                    switch (token)
+                    {
+                        case "": break; // 無視
+                        case "(":
+                        case "[":
+                        case "{": if (openParen == token)
+                            {
+                                tokens[iCursor] = lockers.Count.ToString(); // ロッカー番号に置換
+                                openParen = ""; lockers.Add(bufferTokens); bufferTokens = new List<string>();
+                            }
+                            else {
+                                throw new UnityException("Tokens_to_lockers パース・エラー？"); // エラー？
+                            }
+                            break;
+                        default: bufferTokens.Add(token); tokens[iCursor] = ""; break;
+                    }
+                }
+
+                if ("" == openParen) { iCursor++; }
+                else { iCursor--; }
+            }
+        }
+    }
+
+    public abstract class AbstractStellaQLParenthesisScanner1
+    {
+        /// <summary>
+        /// 
+        /// イベントハンドラを叩くのが仕事。
+        /// ロッカーに集計結果が入っていくとよい。
+        /// </summary>
+        /// <param name="tokens"></param>
         public void Scan(List<string> tokens)
         {
             string openParen = ""; // 閉じ括弧に対応する、「開きカッコ」
@@ -387,24 +485,34 @@ namespace StellaQL
         abstract public void OnOpenParen(int iCursor, string token);
     }
 
-    public class StellaQLParenthesisScanner : AbstractStellaQLParenthesisScanner
+    public class StellaQLParenthesisScanner1 : AbstractStellaQLParenthesisScanner1
     {
         /// <summary>
-        /// ほんとは列挙型の要素として持っておきたいが、型指定できないので int 型として持っておく。
+        /// 属性の列挙型。ほんとは列挙型の要素として持っておきたいが、型指定できないので int 型として持っておく。
         /// </summary>
-        private List<int> bufferKeywordEnums;
+        private List<int> bufferAttrKeyword;
         private Type enumration;
         /// <summary>
         /// ほんとは列挙型の要素として持っておきたいが、型指定できないので int 型として持っておく。
-        /// ２重のリストになっており、[ロッカー番号][要素番号] となる。
+        /// ２重のリストになっており、
+        /// [ロッカー番号][要素番号]
+        /// または、
+        /// [ロッカー番号][属性番号]
+        /// となる。
         /// </summary>
         private List<List<int>> lockerAttr;
+        /// <summary>
+        /// ロッカーの内容が属性なら真、それ以外なら偽。
+        /// </summary>
+        private List<bool> lockerIsAttr;
 
-        public StellaQLParenthesisScanner(Type enumration)
+        public StellaQLParenthesisScanner1(Type enumration)
         {
             this.enumration = enumration;
-            this.bufferKeywordEnums = new List<int>();
+            this.bufferAttrKeyword = new List<int>();
+
             this.lockerAttr = new List<List<int>>();
+            this.lockerIsAttr = new List<bool>();
         }
 
         public override void OnGo(int iCursor, string token)
@@ -413,38 +521,35 @@ namespace StellaQL
             sb1.Append("go["); sb1.Append(iCursor); sb1.Append("]: "); sb1.Append(token); sb1.AppendLine();
             Debug.Log(sb1.ToString());
         }
-
         public override void OnBack(int iCursor, string token)
         {
             StringBuilder sb2 = new StringBuilder();
             sb2.Append("back["); sb2.Append(iCursor); sb2.Append("]: "); sb2.Append(token); sb2.AppendLine();
             Debug.Log(sb2.ToString());
         }
-
         public override void OnKeywordGet(int iCursor, string token, int locker)
         {
             object enumElement = Enum.Parse(enumration, token); // 変換できなかったら例外を投げる
-            this.bufferKeywordEnums.Add((int)enumElement);// 列挙型だが、int 型に変換。
+            this.bufferAttrKeyword.Add((int)enumElement);// 列挙型だが、int 型に変換。
         }
-
         public override void OnOpenParen(int iCursor, string token)
         {
             switch (token)
             {
                 case "(":
-                    this.lockerAttr.Add(
-                        StellaQLAggregater.Keyword_to_locker(this.bufferKeywordEnums, enumration));
+                    this.lockerAttr.Add(StellaQLAggregater.Keyword_to_locker(this.bufferAttrKeyword, enumration));
+                    this.lockerIsAttr.Add(true);
                     break;
                 case "[":
-                    this.lockerAttr.Add(
-                        StellaQLAggregater.KeywordList_to_locker(this.bufferKeywordEnums, enumration));
+                    this.lockerAttr.Add(StellaQLAggregater.KeywordList_to_locker(this.bufferAttrKeyword, enumration));
+                    this.lockerIsAttr.Add(true);
                     break;
                 case "{":
-                    this.lockerAttr.Add(
-                        StellaQLAggregater.NGKeywordList_to_locker(this.bufferKeywordEnums, enumration));
+                    this.lockerAttr.Add(StellaQLAggregater.NGKeywordList_to_locker(this.bufferAttrKeyword, enumration));
+                    this.lockerIsAttr.Add(true);
                     break;
             }
-            this.bufferKeywordEnums.Clear();
+            this.bufferAttrKeyword.Clear();
         }
     }
 
@@ -453,74 +558,73 @@ namespace StellaQL
     /// </summary>
     public class StellaQLScanner
     {
-        public static void SkipSpace(string query, ref int caret)
-        {
-            while (caret < query.Length && ' ' == query[caret]) { caret++; }
-        }
         private static Regex regexSpaces = new Regex(@"^(\s+)");
-        public static bool HitSpaces(string query, ref int caret)
+        public static bool VarSpaces(string query, ref int caret)
         {
             Match match = regexSpaces.Match(query.Substring(caret));
             if (match.Success) { caret += match.Groups[1].Value.Length; return true; }
             return false;
         }
-        public static bool HitWordAndSpace_IgnoreCase(string word, string query, ref int caret)
+
+        public static bool FixedWord(string word, string query, ref int caret)
         {
             int oldCaret = caret;
             if (caret == query.IndexOf(word, caret, StringComparison.OrdinalIgnoreCase))
             {
                 caret += word.Length;
-                if (caret == query.Length || HitSpaces(query, ref caret)) { return true; }
+                if (caret == query.Length || VarSpaces(query, ref caret)) { return true; }
             }
             caret = oldCaret; return false;
         }
+
         /// <summary>
         /// "bear)" など後ろに半角スペースが付かないケースもあるので、スペースは 0 個も OK とする。
         /// </summary>
         private static Regex regexWordAndSpaces = new Regex(@"^(\w+)(\s*)", RegexOptions.IgnoreCase);
-        public static bool GetWordAndSpace_IgnoreCase(string query, ref int caret, out string word)
+        public static bool VarWord(string query, ref int caret, out string word)
         {
             Match match = regexWordAndSpaces.Match(query.Substring(caret));
             if (match.Success) { word = match.Groups[1].Value; caret += word.Length + match.Groups[2].Value.Length; return true; }
             word = ""; return false;
         }
+
         /// <summary>
         /// 浮動小数点の「.」もOKとする。
         /// </summary>
         private static Regex regexValueAndSpaces = new Regex(@"^((?:\w|\.)+)(\s*)", RegexOptions.IgnoreCase);
-        public static bool GetValueAndSpace_IgnoreCase(string query, ref int caret, out string word)
+        public static bool VarValue(string query, ref int caret, out string word)
         {
             Match match = regexValueAndSpaces.Match(query.Substring(caret));
             if (match.Success) { word = match.Groups[1].Value; caret += word.Length + match.Groups[2].Value.Length; return true; }
             word = ""; return false;
         }
-        private static Regex regexStringAndSpaces = new Regex(@"^""((?:(?:\\"")|[^""])*)""(\s*)", RegexOptions.IgnoreCase);
-        public static bool GetStringAndSpace_IgnoreCase(string query, ref int caret, out string stringWithoutDoubleQuotation)
+
+        private static Regex regexStringliteralAndSpaces = new Regex(@"^""((?:(?:\\"")|[^""])*)""(\s*)", RegexOptions.IgnoreCase);
+        public static bool VarStringliteral(string query, ref int caret, out string stringWithoutDoubleQuotation)
         {
-            Match match = regexStringAndSpaces.Match(query.Substring(caret));
+            Match match = regexStringliteralAndSpaces.Match(query.Substring(caret));
             // ダブルクォーテーションの２文字分を足す
             if (match.Success) {
                 stringWithoutDoubleQuotation = match.Groups[1].Value; caret += stringWithoutDoubleQuotation.Length + 2 + match.Groups[2].Value.Length;
-                Debug.Log("stringWithoutDoubleQuotation=["+ stringWithoutDoubleQuotation + "] match.Groups[2].Value=[" + match.Groups[2].Value + "] match.Groups[2].Value.Length=["+ match.Groups[2].Value.Length + "]");
                 return true;
             }
             stringWithoutDoubleQuotation = ""; return false;
         }
-        public static bool GetParentesisAndSpace_IgnoreCase(string query, ref int caret, out string parentesis)
+
+        public static bool VarParentesis(string query, ref int caret, out string parentesis)
         {
             int oldCaret = caret;
             string word;
             Stack<char> closeParen = new Stack<char>();
 
-            // 開始時
-            switch (query[caret])
+            switch (query[caret])// 開始時
             {
                 case '(': closeParen.Push(')'); caret++; break;
                 case '[': closeParen.Push(']'); caret++; break;
                 case '{': closeParen.Push('}'); caret++; break;
                 default: goto gt_Failure;
             }
-            HitSpaces(query, ref caret);
+            VarSpaces(query, ref caret);
 
             while (caret < query.Length)
             {
@@ -534,25 +638,16 @@ namespace StellaQL
                     case '}':
                         if (query[caret] != closeParen.Peek()) { goto gt_Failure; }
                         closeParen.Pop(); caret++; if (0 == closeParen.Count) { goto gt_Finish; } break;
-                    default: if (!GetWordAndSpace_IgnoreCase(query, ref caret, out word)) { goto gt_Failure; } break;
+                    default: if (!VarWord(query, ref caret, out word)) { goto gt_Failure; } break;
                 }
             }
 
-            gt_Finish:
-            Debug.Log("oldCaret=["+ oldCaret + "] caret=["+ caret + "] query.Length=[" + query.Length+ "] query=["+ query+"]");
-            if (caret==query.Length)
-            {
-                parentesis = query.Substring(oldCaret);
-            }
-            else
-            {
-                parentesis = query.Substring(oldCaret, caret);
-            }
-            HitSpaces(query, ref caret);
-            return true;
+        gt_Finish:
+            if (caret == query.Length) { parentesis = query.Substring(oldCaret); }
+            else { parentesis = query.Substring(oldCaret, caret); }
+            VarSpaces(query, ref caret); return true;
         gt_Failure:
-            parentesis = "";
-            return false;
+            parentesis = ""; return false;
         }
 
         /// <summary>
@@ -564,71 +659,70 @@ namespace StellaQL
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static StructuredQuery Parser_InsertStatement(string query)
+        public static QueryTokens Parser_InsertStatement(string query)
         {
-            StructuredQuery sq = new StructuredQuery();
+            QueryTokens qTokens = new QueryTokens();
             int caret = 0;
             string propertyName;
             string propertyValue;
             string stringWithoutDoubleQuotation;
             string parenthesis;
-            SkipSpace(query, ref caret);
+            VarSpaces(query, ref caret);
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.TRANSITION, query, ref caret)) { goto gt_endMethod; }
-            sq.Target = StructuredQuery.TRANSITION;
+            if (!FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return qTokens; }
+            qTokens.Target = QueryTokens.TRANSITION;
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.INSERT, query, ref caret)) { goto gt_endMethod; }
-            sq.Manipulation = StructuredQuery.INSERT;
+            if (!FixedWord(QueryTokens.INSERT, query, ref caret)) { return qTokens; }
+            qTokens.Manipulation = QueryTokens.INSERT;
 
-            if (HitWordAndSpace_IgnoreCase(StructuredQuery.SET, query, ref caret))
+            if (FixedWord(QueryTokens.SET, query, ref caret))
             {
                 // 「項目名、スペース、値、スペース」の繰り返し。項目名が FROM だった場合終わり。
-                while (caret < query.Length && !HitWordAndSpace_IgnoreCase(StructuredQuery.FROM, query, ref caret))
+                while (caret < query.Length && !FixedWord(QueryTokens.FROM, query, ref caret))
                 {
-                    if (!GetWordAndSpace_IgnoreCase(query, ref caret, out propertyName)) { goto gt_endMethod; }
-                    if (!GetValueAndSpace_IgnoreCase(query, ref caret, out propertyValue)) { goto gt_endMethod; }
-                    sq.Set.Add(propertyName, propertyValue);
+                    if (!VarWord(query, ref caret, out propertyName)) { return qTokens; }
+                    if (!VarValue(query, ref caret, out propertyValue)) { return qTokens; }
+                    qTokens.Set.Add(propertyName, propertyValue);
                 }
             }
             else
             {
-                if (!HitWordAndSpace_IgnoreCase(StructuredQuery.FROM, query, ref caret)) { goto gt_endMethod; }
+                if (!FixedWord(QueryTokens.FROM, query, ref caret)) { return qTokens; }
             }
 
             // 「"文字列"」か、「ATTR ～」のどちらか。
-            if (GetStringAndSpace_IgnoreCase(query, ref caret, out stringWithoutDoubleQuotation))
+            if (VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                sq.From_Fullname = stringWithoutDoubleQuotation;
+                qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (HitWordAndSpace_IgnoreCase(StructuredQuery.ATTR, query, ref caret))
+            else if (FixedWord(QueryTokens.ATTR, query, ref caret))
             {
-                if (!GetParentesisAndSpace_IgnoreCase(query, ref caret, out parenthesis)) { goto gt_endMethod; }
-                sq.From_Attr = parenthesis;
+                if (!VarParentesis(query, ref caret, out parenthesis)) { return qTokens; }
+                qTokens.From_Attr = parenthesis;
             }
             else
             {
-                goto gt_endMethod;
+                return qTokens;
             }
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.TO, query, ref caret)) { goto gt_endMethod; }
+            if (!FixedWord(QueryTokens.TO, query, ref caret)) { return qTokens; }
 
             // 「"文字列"」か、「ATTR ～」のどちらか。
-            if (GetStringAndSpace_IgnoreCase(query, ref caret, out stringWithoutDoubleQuotation))
+            if (VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                sq.To_Fullname = stringWithoutDoubleQuotation;
+                qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (HitWordAndSpace_IgnoreCase(StructuredQuery.ATTR, query, ref caret))
+            else if (FixedWord(QueryTokens.ATTR, query, ref caret))
             {
-                if (!GetParentesisAndSpace_IgnoreCase(query, ref caret, out parenthesis)) { goto gt_endMethod; }
-                sq.To_Attr = parenthesis;
+                if (!VarParentesis(query, ref caret, out parenthesis)) { return qTokens; }
+                qTokens.To_Attr = parenthesis;
             }
             else
             {
-                goto gt_endMethod;
+                return qTokens;
             }
 
-            gt_endMethod:
-            return sq;
+            return qTokens;
         }
 
         /// <summary>
@@ -640,71 +734,70 @@ namespace StellaQL
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static StructuredQuery Parser_UpdateStatement(string query)
+        public static QueryTokens Parser_UpdateStatement(string query)
         {
-            StructuredQuery sq = new StructuredQuery();
+            QueryTokens qTokens = new QueryTokens();
             int caret = 0;
             string propertyName;
             string propertyValue;
             string stringWithoutDoubleQuotation;
             string parenthesis;
-            SkipSpace(query, ref caret);
+            VarSpaces(query, ref caret);
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.TRANSITION, query, ref caret)) { goto gt_endMethod; }
-            sq.Target = StructuredQuery.TRANSITION;
+            if (!FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return qTokens; }
+            qTokens.Target = QueryTokens.TRANSITION;
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.UPDATE, query, ref caret)) { goto gt_endMethod; }
-            sq.Manipulation = StructuredQuery.UPDATE;
+            if (!FixedWord(QueryTokens.UPDATE, query, ref caret)) { return qTokens; }
+            qTokens.Manipulation = QueryTokens.UPDATE;
 
-            if (HitWordAndSpace_IgnoreCase(StructuredQuery.SET, query, ref caret))
+            if (FixedWord(QueryTokens.SET, query, ref caret))
             {
                 // 「項目名、スペース、値、スペース」の繰り返し。項目名が FROM だった場合終わり。
-                while (caret < query.Length && !HitWordAndSpace_IgnoreCase(StructuredQuery.FROM, query, ref caret))
+                while (caret < query.Length && !FixedWord(QueryTokens.FROM, query, ref caret))
                 {
-                    if (!GetWordAndSpace_IgnoreCase(query, ref caret, out propertyName)) { goto gt_endMethod; }
-                    if (!GetValueAndSpace_IgnoreCase(query, ref caret, out propertyValue)) { goto gt_endMethod; }
-                    sq.Set.Add(propertyName, propertyValue);
+                    if (!VarWord(query, ref caret, out propertyName)) { return qTokens; }
+                    if (!VarValue(query, ref caret, out propertyValue)) { return qTokens; }
+                    qTokens.Set.Add(propertyName, propertyValue);
                 }
             }
             else
             {
-                if (!HitWordAndSpace_IgnoreCase(StructuredQuery.FROM, query, ref caret)) { goto gt_endMethod; }
+                if (!FixedWord(QueryTokens.FROM, query, ref caret)) { return qTokens; }
             }
 
             // 「"文字列"」か、「ATTR ～」のどちらか。
-            if (GetStringAndSpace_IgnoreCase(query, ref caret, out stringWithoutDoubleQuotation))
+            if (VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                sq.From_Fullname = stringWithoutDoubleQuotation;
+                qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (HitWordAndSpace_IgnoreCase(StructuredQuery.ATTR, query, ref caret))
+            else if (FixedWord(QueryTokens.ATTR, query, ref caret))
             {
-                if (!GetParentesisAndSpace_IgnoreCase(query, ref caret, out parenthesis)) { goto gt_endMethod; }
-                sq.From_Attr = parenthesis;
+                if (!VarParentesis(query, ref caret, out parenthesis)) { return qTokens; }
+                qTokens.From_Attr = parenthesis;
             }
             else
             {
-                goto gt_endMethod;
+                return qTokens;
             }
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.TO, query, ref caret)) { goto gt_endMethod; }
+            if (!FixedWord(QueryTokens.TO, query, ref caret)) { return qTokens; }
 
             // 「"文字列"」か、「ATTR ～」のどちらか。
-            if (GetStringAndSpace_IgnoreCase(query, ref caret, out stringWithoutDoubleQuotation))
+            if (VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                sq.To_Fullname = stringWithoutDoubleQuotation;
+                qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (HitWordAndSpace_IgnoreCase(StructuredQuery.ATTR, query, ref caret))
+            else if (FixedWord(QueryTokens.ATTR, query, ref caret))
             {
-                if (!GetParentesisAndSpace_IgnoreCase(query, ref caret, out parenthesis)) { goto gt_endMethod; }
-                sq.To_Attr = parenthesis;
+                if (!VarParentesis(query, ref caret, out parenthesis)) { return qTokens; }
+                qTokens.To_Attr = parenthesis;
             }
             else
             {
-                goto gt_endMethod;
+                return qTokens;
             }
 
-            gt_endMethod:
-            return sq;
+            return qTokens;
         }
 
         /// <summary>
@@ -715,56 +808,55 @@ namespace StellaQL
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static StructuredQuery Parser_DeleteStatement(string query)
+        public static QueryTokens Parser_DeleteStatement(string query)
         {
-            StructuredQuery sq = new StructuredQuery();
+            QueryTokens qTokens = new QueryTokens();
             int caret = 0;
             string stringWithoutDoubleQuotation;
             string parenthesis;
-            SkipSpace(query, ref caret);
+            VarSpaces(query, ref caret);
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.TRANSITION, query, ref caret)) { goto gt_endMethod; }
-            sq.Target = StructuredQuery.TRANSITION;
+            if (!FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return qTokens; }
+            qTokens.Target = QueryTokens.TRANSITION;
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.DELETE, query, ref caret)) { goto gt_endMethod; }
-            sq.Manipulation = StructuredQuery.DELETE;
+            if (!FixedWord(QueryTokens.DELETE, query, ref caret)) { return qTokens; }
+            qTokens.Manipulation = QueryTokens.DELETE;
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.FROM, query, ref caret)) { goto gt_endMethod; }
+            if (!FixedWord(QueryTokens.FROM, query, ref caret)) { return qTokens; }
 
             // 「"文字列"」か、「ATTR ～」のどちらか。
-            if (GetStringAndSpace_IgnoreCase(query, ref caret, out stringWithoutDoubleQuotation))
+            if (VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                sq.From_Fullname = stringWithoutDoubleQuotation;
+                qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if(HitWordAndSpace_IgnoreCase(StructuredQuery.ATTR, query, ref caret))
+            else if(FixedWord(QueryTokens.ATTR, query, ref caret))
             {
-                if (!GetParentesisAndSpace_IgnoreCase(query, ref caret, out parenthesis)) { goto gt_endMethod; }
-                sq.From_Attr = parenthesis;
+                if (!VarParentesis(query, ref caret, out parenthesis)) { return qTokens; }
+                qTokens.From_Attr = parenthesis;
             }
             else
             {
-                goto gt_endMethod;
+                return qTokens;
             }
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.TO, query, ref caret)) { goto gt_endMethod; }
+            if (!FixedWord(QueryTokens.TO, query, ref caret)) { return qTokens; }
 
             // 「"文字列"」か、「ATTR ～」のどちらか。
-            if (GetStringAndSpace_IgnoreCase(query, ref caret, out stringWithoutDoubleQuotation))
+            if (VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                sq.To_Fullname = stringWithoutDoubleQuotation;
+                qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (HitWordAndSpace_IgnoreCase(StructuredQuery.ATTR, query, ref caret))
+            else if (FixedWord(QueryTokens.ATTR, query, ref caret))
             {
-                if (!GetParentesisAndSpace_IgnoreCase(query, ref caret, out parenthesis)) { goto gt_endMethod; }
-                sq.To_Attr = parenthesis;
+                if (!VarParentesis(query, ref caret, out parenthesis)) { return qTokens; }
+                qTokens.To_Attr = parenthesis;
             }
             else
             {
-                goto gt_endMethod;
+                return qTokens;
             }
 
-            gt_endMethod:
-            return sq;
+            return qTokens;
         }
 
         /// <summary>
@@ -774,56 +866,55 @@ namespace StellaQL
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static StructuredQuery Parser_SelectStatement(string query)
+        public static QueryTokens Parser_SelectStatement(string query)
         {
-            StructuredQuery sq = new StructuredQuery();
+            QueryTokens qTokens = new QueryTokens();
             int caret = 0;
             string stringWithoutDoubleQuotation;
             string parenthesis;
-            SkipSpace(query, ref caret);
+            VarSpaces(query, ref caret);
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.TRANSITION, query, ref caret)) { goto gt_endMethod; }
-            sq.Target = StructuredQuery.TRANSITION;
+            if (!FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return qTokens; }
+            qTokens.Target = QueryTokens.TRANSITION;
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.SELECT, query, ref caret)) { goto gt_endMethod; }
-            sq.Manipulation = StructuredQuery.SELECT;
+            if (!FixedWord(QueryTokens.SELECT, query, ref caret)) { return qTokens; }
+            qTokens.Manipulation = QueryTokens.SELECT;
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.FROM, query, ref caret)) { goto gt_endMethod; }
+            if (!FixedWord(QueryTokens.FROM, query, ref caret)) { return qTokens; }
 
             // 「"文字列"」か、「ATTR ～」のどちらか。
-            if (GetStringAndSpace_IgnoreCase(query, ref caret, out stringWithoutDoubleQuotation))
+            if (VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                sq.From_Fullname = stringWithoutDoubleQuotation;
+                qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (HitWordAndSpace_IgnoreCase(StructuredQuery.ATTR, query, ref caret))
+            else if (FixedWord(QueryTokens.ATTR, query, ref caret))
             {
-                if (!GetParentesisAndSpace_IgnoreCase(query, ref caret, out parenthesis)) { goto gt_endMethod; }
-                sq.From_Attr = parenthesis;
+                if (!VarParentesis(query, ref caret, out parenthesis)) { return qTokens; }
+                qTokens.From_Attr = parenthesis;
             }
             else
             {
-                goto gt_endMethod;
+                return qTokens;
             }
 
-            if (!HitWordAndSpace_IgnoreCase(StructuredQuery.TO, query, ref caret)) { goto gt_endMethod; }
+            if (!FixedWord(QueryTokens.TO, query, ref caret)) { return qTokens; }
 
             // 「"文字列"」か、「ATTR ～」のどちらか。
-            if (GetStringAndSpace_IgnoreCase(query, ref caret, out stringWithoutDoubleQuotation))
+            if (VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                sq.To_Fullname = stringWithoutDoubleQuotation;
+                qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (HitWordAndSpace_IgnoreCase(StructuredQuery.ATTR, query, ref caret))
+            else if (FixedWord(QueryTokens.ATTR, query, ref caret))
             {
-                if (!GetParentesisAndSpace_IgnoreCase(query, ref caret, out parenthesis)) { goto gt_endMethod; }
-                sq.To_Attr = parenthesis;
+                if (!VarParentesis(query, ref caret, out parenthesis)) { return qTokens; }
+                qTokens.To_Attr = parenthesis;
             }
             else
             {
-                goto gt_endMethod;
+                return qTokens;
             }
 
-            gt_endMethod:
-            return sq;
+            return qTokens;
         }
     }
 
