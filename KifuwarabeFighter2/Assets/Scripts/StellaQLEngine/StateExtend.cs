@@ -1,5 +1,5 @@
 ﻿//
-// Scene Template
+// State Extend
 //
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +16,10 @@ namespace StellaQL
         /// ほんとは列挙型にしたい☆
         /// </summary>
         int AttributeEnum { get; }
+        /// <summary>
+        /// オプション。使わなくても可。
+        /// </summary>
+        int Cliptype { get; set; }//[CliptypeIndex]
     }
 
     public abstract class AbstractStateExRecord : StateExRecordable
@@ -28,9 +32,18 @@ namespace StellaQL
         /// ほんとは列挙型にしたい☆
         /// </summary>
         public int AttributeEnum { get; set; }
+        /// <summary>
+        /// オプション。使わなくても可。
+        /// </summary>
+        public int Cliptype { get; set; }//[CliptypeIndex]
     }
 
-    public abstract class AbstractStateExTable
+    public interface StateExTableable
+    {
+    }
+
+
+    public abstract class AbstractStateExTable : StateExTableable
     {
         /// <summary>
         /// Animator の state の名前と、AnimationClipの種類の対応☆　手作業で入力しておく（２度手間）
@@ -79,6 +92,25 @@ namespace StellaQL
             }
 
             throw new UnityException("[" + stateIndex + "]のデータが無いぜ☆　なんでだろな☆？（＾～＾）");
+        }
+
+        /// <summary>
+        /// 現在のアニメーション・クリップに対応したデータを取得。
+        /// </summary>
+        /// <returns></returns>
+        public CliptypeExRecordable GetCurrentCliptypeExRecord(Animator animator, CliptypeExTableable cliptypeExTable)
+        {
+            AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+            //CliptypeIndex
+            int cliptype = (index_to_exRecord[hash_to_index[animeStateInfo.fullPathHash]]).Cliptype;
+
+            if (index_to_exRecord.ContainsKey(cliptype))
+            {
+                return cliptypeExTable.Index_to_exRecord[cliptype];
+            }
+
+            throw new UnityException("cliptype = [" + cliptype + "]に対応するアニメーション・クリップのレコードが無いぜ☆");
         }
 
         /// <summary>

@@ -54,7 +54,7 @@
      <Compile Include="Assets\Scripts\SceneMain\Hitbox2DScript.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_BulletScript.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_CameraScript.cs" />
-     <Compile Include="Assets\Scripts\SceneMain\Main_CliptypeDatabase.cs" />
+     <Compile Include="Assets\Scripts\SceneMain\Main_CliptypeExTable.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_PlayerScript.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_SceneCommon.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_StateExTable.cs" />
@@ -66,13 +66,11 @@
      <Compile Include="Assets\Scripts\SceneSelect\Select_SceneCommon.cs" />
      <Compile Include="Assets\Scripts\SceneSelect\Select_StateExTable.cs" />
      <Compile Include="Assets\Scripts\SceneTitle\Title_CameraScript.cs" />
+     <Compile Include="Assets\Scripts\StellaQLEngine\CliptypeExtend.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\StateExtend.cs" />
      <Compile Include="Assets\Scripts\TakoyakiParticleScript.cs" />
      <Compile Include="Assets\Scripts\TakoyakiTokenScript.cs" />
      <Compile Include="Assets\Scripts\TakoyakiUtilScript.cs" />
- <Reference Include="UnityEngine.Advertisements">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll</HintPath>
- </Reference>
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
@@ -87,9 +85,6 @@
  </Reference>
  <Reference Include="UnityEngine.HoloLens">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Purchasing">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityPurchasing/UnityEngine.Purchasing.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.VR">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>

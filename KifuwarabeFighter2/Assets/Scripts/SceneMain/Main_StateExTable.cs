@@ -99,13 +99,18 @@ namespace SceneMain
     /// </summary>
     public class StateExRecord : AbstractStateExRecord
     {
-        public CliptypeIndex acliptype;
-
-        public StateExRecord(string breadCrumb, string name, CliptypeIndex acliptype, StateExTable.Attr attribute)
+        public StateExRecord(string breadCrumb, string name, StateExTable.Attr attribute)
         {
             this.BreadCrumb = breadCrumb;
             this.Name = name;
-            this.acliptype = acliptype;
+            this.Cliptype = -1; // クリップタイプを使わない場合
+            this.AttributeEnum = (int)attribute;
+        }
+        public StateExRecord(string breadCrumb, string name, CliptypeIndex cliptype, StateExTable.Attr attribute)
+        {
+            this.BreadCrumb = breadCrumb;
+            this.Name = name;
+            this.Cliptype = (int)cliptype;
             this.AttributeEnum = (int)attribute;
         }
 
@@ -235,16 +240,15 @@ namespace SceneMain
         /// キャラクターと、モーション、現在のフレームを指定することで、通し画像番号とスライス番号を返す。
         /// これにより Hitbox2DScript と連携を取ることができる。
         /// </summary>
-        /// <param name="serialImageIndex"></param>
+        /// <param name="serialTilesetfileIndex"></param>
         /// <param name="slice"></param>
         /// <param name="character"></param>
         /// <param name="motion"></param>
         /// <param name="currentMotionFrame"></param>
-        public static void GetSlice(out int serialImageIndex, out int slice, CharacterIndex character, CliptypeRecord aclipTypeRecord, int currentMotionFrame)
+        public static void GetSlice(out int serialTilesetfileIndex, out int slice, CharacterIndex character, CliptypeExRecordable cliptypeExRecord, int currentMotionFrame)
         {
-            slice = aclipTypeRecord.slices[currentMotionFrame];
-
-            serialImageIndex = Hitbox2DOperationScript.GetSerialImageIndex(character, aclipTypeRecord.actioning);
+            serialTilesetfileIndex = Hitbox2DOperationScript.GetSerialImageIndex(character, (TilesetfileTypeIndex)cliptypeExRecord.TilesetfileTypeIndex);
+            slice = cliptypeExRecord.Slices[currentMotionFrame];
         }
     }
 }

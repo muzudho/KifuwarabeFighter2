@@ -2,24 +2,6 @@
 
 namespace SceneMain
 {
-    /// <summary>
-    /// キャラクターの行動、キャラクター画像とも対応。Unityで数字を直打ちしているので、対応する数字も保つこと。
-    /// </summary>
-    public enum ActioningIndex
-    {
-        /// <summary>
-        /// [0]
-        /// </summary>
-        Stand,
-        Jump,
-        Dash,
-        Crouch,
-        Other,
-        /// <summary>
-        /// 列挙型の要素数、または未使用の値として使用。
-        /// </summary>
-        Num
-    }
     public enum HitboxIndex
     {
         Hitbox,

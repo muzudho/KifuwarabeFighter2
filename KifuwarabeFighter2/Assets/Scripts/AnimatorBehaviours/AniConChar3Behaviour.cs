@@ -11,13 +11,13 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
         #region 立ち
         if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.SWait].Name)) // 立ち待機
         {
-            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
+            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Stand);
         }
         #endregion
         #region ジャンプ
         else if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.JMove0].Name)) // ジャンプに着手した。
         {
-            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Jump);
+            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Jump);
             animator.SetBool(SceneCommon.BOOL_JMOVE0, true);
         }
         else if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.JMove1].Name)) // 上昇
@@ -31,13 +31,13 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
         #region 屈み
         else if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.CWait].Name)) // かがみ待機
         {
-            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Crouch);
+            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Crouch);
         }
         #endregion
         #region その他
         else if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.OBackstep].Name)) // バックステップ
         {
-            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
+            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Stand);
         }
         else if (stateInfo.IsName(StateExTable.Instance.index_to_exRecord[(int)StateIndex.OGiveup].Name))
         {

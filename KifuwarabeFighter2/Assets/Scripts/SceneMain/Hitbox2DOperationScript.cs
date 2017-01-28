@@ -51,9 +51,9 @@ namespace SceneMain
         /// <param name="character"></param>
         /// <param name="actioning"></param>
         /// <returns></returns>
-        public static int GetSerialImageIndex(CharacterIndex character, ActioningIndex actioning)
+        public static int GetSerialImageIndex(CharacterIndex character, TilesetfileTypeIndex actioning)
         {
-            return (int)character * (int)ActioningIndex.Num + (int)actioning;
+            return (int)character * (int)TilesetfileTypeIndex.Num + (int)actioning;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using StellaQL;
 
 namespace SceneMain
 {
@@ -386,7 +387,7 @@ namespace SceneMain
 
                     if (isGrounded)// 接地していれば
                     {
-                        animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)ActioningIndex.Stand);
+                        animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Stand);
                     }
                 }
             }
@@ -468,27 +469,23 @@ namespace SceneMain
             UpdateHitbox2D();
         }
 
-        /// <summary>
-        /// 現在のアニメーション・クリップに対応したデータを取得。
-        /// </summary>
-        /// <returns></returns>
-        public CliptypeRecord GetCurrentAclipTypeRecord()
-        {
-            AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-            //if (!AstateDatabase.hash_to_acliptype.ContainsKey(animeStateInfo.fullPathHash))
-            //{
-            //    throw new UnityException("フルパスハッシュ[" + animeStateInfo.fullPathHash + "]に対応するアニメーションクリップ種類が無いぜ☆");
-            //}
+        ///// <summary>
+        ///// 現在のアニメーション・クリップに対応したデータを取得。
+        ///// </summary>
+        ///// <returns></returns>
+        //public CliptypeExRecordable GetCurrentCliptypeExRecord(CliptypeExTable cliptypeExTable)
+        //{
+        //    AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
-            CliptypeIndex aclipType = ((StateExRecord)StateExTable.Instance.index_to_exRecord[(int)StateExTable.Instance.hash_to_index[animeStateInfo.fullPathHash]]).acliptype;
+        //    CliptypeIndex aclipType = (CliptypeIndex)((StateExRecord)StateExTable.Instance.index_to_exRecord[StateExTable.Instance.hash_to_index[animeStateInfo.fullPathHash]]).Cliptype;
 
-            if (CliptypeDatabase.index_to_record.ContainsKey(aclipType))
-            {
-                return CliptypeDatabase.index_to_record[aclipType];
-            }
+        //    if (cliptypeExTable.index_to_exRecord.ContainsKey((int)aclipType))
+        //    {
+        //        return cliptypeExTable.index_to_exRecord[(int)aclipType];
+        //    }
 
-            throw new UnityException("aclipType = [" + aclipType + "]に対応するアニメーション・クリップのレコードが無いぜ☆");
-        }
+        //    throw new UnityException("aclipType = [" + aclipType + "]に対応するアニメーション・クリップのレコードが無いぜ☆");
+        //}
 
         /// <summary>
         /// 当たり判定くん☆
@@ -513,7 +510,7 @@ namespace SceneMain
                 AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
                 float stateSpeed = animeStateInfo.speed;
 
-                CliptypeRecord aclipTypeRecord = GetCurrentAclipTypeRecord();
+                CliptypeExRecordable aclipTypeRecord = StateExTable.Instance.GetCurrentCliptypeExRecord(animator, CliptypeExTable.Instance);
 
                 // 正規化時間取得（0～1 の数倍。時間経過で 1以上になる）
                 float normalizedTime = animeStateInfo.normalizedTime;
@@ -541,11 +538,11 @@ namespace SceneMain
                 int currentMotionFrame = Mathf.FloorToInt((normalizedTime % 1.0f) * clip.frameRate);
 
                 // 画像分類　スライス番号　取得
-                int serialImage;
+                int serialTilesetfile;
                 int slice;
                 CharacterIndex character = CommonScript.Player_to_useCharacter[playerIndex];
                 StateExTable.GetSlice(
-                    out serialImage,
+                    out serialTilesetfile,
                     out slice,
                     character, // キャラクター番号
                     aclipTypeRecord,
@@ -567,10 +564,10 @@ namespace SceneMain
                     float scaleY;
                     for (int iHitbox = 0; iHitbox < (int)HitboxIndex.Num; iHitbox++)
                     {
-                        offsetX = transform.position.x + Mathf.Sign(transform.localScale.x) * SceneCommon.GRAPHIC_SCALE * Hitbox2DOperationScript.GetOffsetX((HitboxIndex)iHitbox, serialImage, slice);
-                        offsetY = transform.position.y + SceneCommon.GRAPHIC_SCALE * Hitbox2DOperationScript.GetOffsetY((HitboxIndex)iHitbox, serialImage, slice);
-                        scaleX = SceneCommon.GRAPHIC_SCALE * Hitbox2DOperationScript.GetScaleX((HitboxIndex)iHitbox, serialImage, slice);
-                        scaleY = SceneCommon.GRAPHIC_SCALE * Hitbox2DOperationScript.GetScaleY((HitboxIndex)iHitbox, serialImage, slice);
+                        offsetX = transform.position.x + Mathf.Sign(transform.localScale.x) * SceneCommon.GRAPHIC_SCALE * Hitbox2DOperationScript.GetOffsetX((HitboxIndex)iHitbox, serialTilesetfile, slice);
+                        offsetY = transform.position.y + SceneCommon.GRAPHIC_SCALE * Hitbox2DOperationScript.GetOffsetY((HitboxIndex)iHitbox, serialTilesetfile, slice);
+                        scaleX = SceneCommon.GRAPHIC_SCALE * Hitbox2DOperationScript.GetScaleX((HitboxIndex)iHitbox, serialTilesetfile, slice);
+                        scaleY = SceneCommon.GRAPHIC_SCALE * Hitbox2DOperationScript.GetScaleY((HitboxIndex)iHitbox, serialTilesetfile, slice);
 
                         hitboxsSpriteRenderer[iHitbox].transform.position = new Vector3(offsetX, offsetY);
                         hitboxsSpriteRenderer[iHitbox].transform.localScale = new Vector3(scaleX, scaleY);

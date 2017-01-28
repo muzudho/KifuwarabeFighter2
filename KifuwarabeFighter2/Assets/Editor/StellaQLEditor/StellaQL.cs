@@ -193,6 +193,24 @@ namespace StellaQL
                 message = sb.ToString();
                 return true;
             }
+            else if (SyntaxP.ParseStatement_StateUpdate(query, out sq))
+            {
+                HashSet<int> recordIndexes = QueryTokensUtility.RecordIndexes_Where(sq, enumration, universe);
+                StringBuilder sb = new StringBuilder();
+                foreach (KeyValuePair<string, string> pair in sq.Set)
+                {
+                    sb.AppendLine(pair.Key + "=" + pair.Value);
+                }
+                AniconOpe_State.UpdateProperty(ac, sq.Set, Fetcher.FetchAll(ac, recordIndexes, universe));
+                int i = 0;
+                foreach (int recordIndex in recordIndexes)
+                {
+                    sb.AppendLine(i + ": record[" + recordIndex + "]"); i++;
+                    //sb.AppendLine(Convert.ChangeType(recordIndex,enumration).ToString());
+                }
+                message = sb.ToString();
+                return true;
+            }
             else if (SyntaxP.ParseStatement_TransitionInsert(query, out sq))
             {
                 HashSet<int> recordIndexesFrom = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);
@@ -201,6 +219,22 @@ namespace StellaQL
                     Fetcher.FetchAll(ac, recordIndexesFrom, universe),
                     Fetcher.FetchAll(ac, recordIndexesTo, universe) );
                 message = "開発中";
+                return true;
+            }
+            else if (SyntaxP.ParseStatement_TransitionUpdate(query, out sq))
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (KeyValuePair<string,string> pair in sq.Set)
+                {
+                    sb.AppendLine(pair.Key+"="+pair.Value);
+                }
+                HashSet<int> recordIndexesFrom = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);
+                HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);
+                AniconOpe_Transition.UpdateProperty(ac, sq.Set,
+                    Fetcher.FetchAll(ac, recordIndexesFrom, universe),
+                    Fetcher.FetchAll(ac, recordIndexesTo, universe)
+                    );
+                message = sb.ToString();
                 return true;
             }
             else if (SyntaxP.ParseStatement_TransitionDelete(query, out sq))
@@ -643,6 +677,61 @@ namespace StellaQL
                 qTokens.Where_Attr = parenthesis;
             }
             else { return false; }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 例
+        /// STATE UPDATE
+        /// SET ExitTime 0.75 Duration 0.25
+        /// WHERE “Base Layer.StellaQL Practice.Cat”
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public static bool ParseStatement_StateUpdate(string query, out QueryTokens qTokens)
+        {
+            qTokens = new QueryTokens();
+            int caret = 0;
+            string propertyName;
+            string propertyValue;
+            string stringWithoutDoubleQuotation;
+            string parenthesis;
+            LexcalP.VarSpaces(query, ref caret);
+
+            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return false; }
+            qTokens.Target = QueryTokens.STATE;
+
+            if (!LexcalP.FixedWord(QueryTokens.UPDATE, query, ref caret)) { return false; }
+            qTokens.Manipulation = QueryTokens.UPDATE;
+
+            if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
+            {
+                // 「項目名、スペース、値、スペース」の繰り返し。項目名が FROM だった場合終わり。
+                while (caret < query.Length && !LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret))
+                {
+                    if (!LexcalP.VarWord(query, ref caret, out propertyName)) { return false; }
+                    if (!LexcalP.VarValue(query, ref caret, out propertyValue)) { return false; }
+                    qTokens.Set.Add(propertyName, propertyValue);
+                }
+            }
+            else {
+                if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return false; }
+            }
+
+            // 「"文字列"」か、「ATTR ～」のどちらか。
+            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
+            {
+                qTokens.Where_FullnameRegex = stringWithoutDoubleQuotation;
+            }
+            else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret))
+            {
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
+                qTokens.Where_Attr = parenthesis;
+            }
+            else {
+                return false;
+            }
 
             return true;
         }

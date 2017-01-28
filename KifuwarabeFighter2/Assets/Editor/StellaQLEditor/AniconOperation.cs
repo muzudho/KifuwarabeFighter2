@@ -73,6 +73,40 @@ namespace StellaQL
             }
             return null;
         }
+
+        public static void UpdateProperty(AnimatorController ac, Dictionary<string,string> properties, HashSet<AnimatorState> states)
+        {
+            foreach (AnimatorState state in states) // 指定されたステート全て対象
+            {
+                foreach (KeyValuePair<string,string> pair in properties)
+                {
+                    switch (pair.Key)
+                    {
+                        // state.behaviours (not primal)
+                        case "cycleOffset": state.cycleOffset = float.Parse(pair.Value); break;
+                        case "cycleOffsetParameter": state.cycleOffsetParameter = pair.Value; break;
+                        case "cycleOffsetParameterActive": state.cycleOffsetParameterActive = bool.Parse(pair.Value); break;
+                        // state.hideFlags (not primal)
+                        case "iKOnFeet": state.iKOnFeet = bool.Parse(pair.Value); break;
+                        case "mirror": state.mirror = bool.Parse(pair.Value); break;
+                        case "mirrorParameter": state.mirrorParameter = pair.Value; break;
+                        case "mirrorParameterActive": state.mirrorParameterActive = bool.Parse(pair.Value); break;
+                        // state.motion (not primal)
+                        case "name": state.name = pair.Value; break;
+                        // state.nameHash (read only)
+                        case "speed": state.speed = float.Parse(pair.Value); break;
+                        case "speedParameter": state.speedParameter = pair.Value; break;
+                        case "speedParameterActive": state.speedParameterActive = bool.Parse(pair.Value); break;
+                        case "tag": state.tag = pair.Value; break;
+                        // state.transitions (not primal)
+                        // state.uniqueName (deprecated)
+                        // state.uniqueNameHash (deprecated)
+                        case "writeDefaultValues": state.writeDefaultValues = bool.Parse(pair.Value); break;
+                        default: throw new UnityException("未対応のステート・プロパティー ["+ pair.Key+ "]=[" + pair.Value + "]"); break;
+                    }
+                }
+            }
+        }
         #endregion
     }
 
@@ -131,11 +165,54 @@ namespace StellaQL
         {
             foreach (AnimatorState state_src in states_src)
             {
-                foreach (AnimatorState state_dst in states_dst) {
-                    for (int iTra=0; iTra< state_src.transitions.Length; iTra++)
+                foreach (AnimatorStateTransition transition in state_src.transitions)
+                {
+                    foreach (AnimatorState state_dst in states_dst)
                     {
-                        AnimatorStateTransition transition = state_src.transitions[iTra];
-                        if (state_dst == transition.destinationState) { state_src.RemoveTransition(transition); break; }
+                        if (state_dst == transition.destinationState)
+                        {
+                            state_src.RemoveTransition(transition);
+                            // break; // 複数、同じところにトランジションを貼れるみたいなんで、全部消そう☆
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void UpdateProperty(AnimatorController ac, Dictionary<string, string> properties, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst)
+        {
+            foreach (AnimatorState state_src in states_src) // 指定されたステート全て対象
+            {
+                foreach (AnimatorStateTransition transition in state_src.transitions)
+                {
+                    foreach (AnimatorState state_dst in states_dst) // 指定されたステート全て対象
+                    {
+                        if (state_dst == transition.destinationState)
+                        {
+                            foreach (KeyValuePair<string, string> pair in properties)
+                            {
+                                switch (pair.Key)
+                                {
+                                    case "canTransitionToSelf": transition.canTransitionToSelf = bool.Parse(pair.Value); break;
+                                    // transition.conditions (not primal)
+                                    // transition.destinationState (not primal)
+                                    // transition.destinationStateMachine (not primal)
+                                    case "duration": transition.duration = float.Parse(pair.Value); break;
+                                    case "exitTime": transition.exitTime = float.Parse(pair.Value); break;
+                                    case "hasExitTime": transition.hasExitTime = bool.Parse(pair.Value); break;
+                                    case "hasFixedDuration": transition.hasFixedDuration = bool.Parse(pair.Value); break;
+                                    // transition.hideFlags (not primal)
+                                    // transition.interruptionSource (not primal)
+                                    case "isExit": transition.isExit = bool.Parse(pair.Value); break;
+                                    case "mute": transition.mute = bool.Parse(pair.Value); break;
+                                    case "name": transition.name = pair.Value; break;
+                                    case "offset": transition.offset = float.Parse(pair.Value); break;
+                                    case "orderedInterruption": transition.orderedInterruption = bool.Parse(pair.Value); break;
+                                    case "solo": transition.solo = bool.Parse(pair.Value); break;
+                                    default: throw new UnityException("未対応のトランジション・プロパティー [" + pair.Key + "]=[" + pair.Value + "]"); break;
+                                }
+                            }
+                        }
                     }
                 }
             }
