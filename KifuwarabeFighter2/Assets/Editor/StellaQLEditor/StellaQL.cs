@@ -682,6 +682,27 @@ namespace StellaQL
         }
 
         /// <summary>
+        /// SET句だけ。
+        /// Example（代表例）: UPDATE文のSET句。
+        /// </summary>
+        /// <returns></returns>
+        public static bool ParsePhrase_AfterSet(string query, ref int caret, string delimiterWord, Dictionary<string,string> ref_properties)
+        {
+            string propertyName;
+            string propertyValue;
+
+            while (caret < query.Length && !LexcalP.FixedWord(delimiterWord, query, ref caret))
+            {   // 名前
+                if (!LexcalP.VarWord(query, ref caret, out propertyName)) { return false; }
+                // 値
+                if (LexcalP.VarStringliteral(query, ref caret, out propertyValue)) { } // 一致しなければelse～ifへ
+                else if (!LexcalP.VarValue(query, ref caret, out propertyValue)) { return false; }
+                ref_properties.Add(propertyName, propertyValue);
+            }
+            return true;
+        }
+
+        /// <summary>
         /// 例
         /// STATE UPDATE
         /// SET ExitTime 0.75 Duration 0.25
@@ -693,8 +714,6 @@ namespace StellaQL
         {
             qTokens = new QueryTokens();
             int caret = 0;
-            string propertyName;
-            string propertyValue;
             string stringWithoutDoubleQuotation;
             string parenthesis;
             LexcalP.VarSpaces(query, ref caret);
@@ -705,34 +724,19 @@ namespace StellaQL
             if (!LexcalP.FixedWord(QueryTokens.UPDATE, query, ref caret)) { return false; }
             qTokens.Manipulation = QueryTokens.UPDATE;
 
-            if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
-            {
-                // 「項目名、スペース、値、スペース」の繰り返し。項目名が FROM だった場合終わり。
-                while (caret < query.Length && !LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret))
-                {
-                    if (!LexcalP.VarWord(query, ref caret, out propertyName)) { return false; }
-                    if (!LexcalP.VarValue(query, ref caret, out propertyValue)) { return false; }
-                    qTokens.Set.Add(propertyName, propertyValue);
-                }
-            }
-            else {
-                if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return false; }
-            }
+            if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret)) {
+                // 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
+                if(!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qTokens.Set)) { return false; }
+            } else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return false; } }
 
             // 「"文字列"」か、「ATTR ～」のどちらか。
-            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
-            {
+            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)) {
                 qTokens.Where_FullnameRegex = stringWithoutDoubleQuotation;
-            }
-            else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret))
-            {
+            } else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret)) {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
                 qTokens.Where_Attr = parenthesis;
             }
-            else {
-                return false;
-            }
-
+            else { return false; }
             return true;
         }
 
@@ -1030,11 +1034,10 @@ namespace StellaQL
         public static bool VarStringliteral(string query, ref int caret, out string stringWithoutDoubleQuotation)
         {
             Match match = regexStringliteralAndSpaces.Match(query.Substring(caret));
-            // ダブルクォーテーションの２文字分を足す
-            if (match.Success)
-            {
-                stringWithoutDoubleQuotation = match.Groups[1].Value; caret += stringWithoutDoubleQuotation.Length + 2 + match.Groups[2].Value.Length;
-                return true;
+            if (match.Success) {
+                stringWithoutDoubleQuotation = match.Groups[1].Value;
+                // ダブルクォーテーションの２文字分を足す
+                caret += stringWithoutDoubleQuotation.Length + 2 + match.Groups[2].Value.Length; return true;
             }
             stringWithoutDoubleQuotation = ""; return false;
         }

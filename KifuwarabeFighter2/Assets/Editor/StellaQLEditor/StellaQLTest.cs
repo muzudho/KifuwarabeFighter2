@@ -156,7 +156,7 @@ public class StellaQLTest {
     public void N30_Query_TransitionSelect()
     {
         string query = @"TRANSITION SELECT
-                        FROM ""Base Layer.Zebra""
+                        FROM ""Base Layer\.StellaQL Practice\.Zebra""
                         TO ATTR ([(Alpha Cee)(Beta)]{Eee})";
         HashSet<int> recordIndexesSrc;
         HashSet<int> recordIndexesDst;
@@ -333,7 +333,7 @@ public class StellaQLTest {
     public void N50_RecordIndexes_FilteringStateFullNameRegex()
     {
         // 条件は、「Base Layer.」の下に、n または N が含まれるもの
-        string pattern = @"Base Layer\.\w*[Nn]\w*";
+        string pattern = @"Base Layer\.StellaQL Practice\.\w*[Nn]\w*";
         HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringStateFullNameRegex(pattern, InstanceTable.index_to_exRecord);
 
         // 結果は　Elephant、Iguana、Kangaroo、Lion、Monkey、Nutria、Unicorn、Vixen、Xenopus
@@ -558,6 +558,42 @@ public class StellaQLTest {
     #endregion
 
     #region N70 syntax parser (構文パーサー)
+    /// <summary>
+    /// 構文解析 SET 句
+    /// </summary>
+    [Test]
+    public void N70_ParsePhrase_AfterSet()
+    {
+        string phrase = @"Duration 0 ExitTime 1";
+        Dictionary<string, string> properties = new Dictionary<string, string>();
+        int caret = 0;
+        bool successful = SyntaxP.ParsePhrase_AfterSet(phrase, ref caret, QueryTokens.WHERE, properties);
+
+        Assert.IsTrue(successful);
+        Assert.AreEqual(2, properties.Count);
+        Assert.IsTrue(properties.ContainsKey("Duration"));
+        Assert.AreEqual("0", properties["Duration"]);
+        Assert.IsTrue(properties.ContainsKey("ExitTime"));
+        Assert.AreEqual("1", properties["ExitTime"]);
+    }
+
+    /// <summary>
+    /// 構文解析 SET 句
+    /// </summary>
+    [Test]
+    public void N70_ParsePhrase_AfterSet_Stringliteral()
+    {
+        string phrase = @"tag ""hello""";
+        Dictionary<string, string> properties = new Dictionary<string, string>();
+        int caret = 0;
+        bool successful = SyntaxP.ParsePhrase_AfterSet(phrase, ref caret, QueryTokens.WHERE, properties);
+
+        Assert.IsTrue(successful);
+        Assert.AreEqual(1, properties.Count);
+        Assert.IsTrue(properties.ContainsKey("tag"));
+        Assert.AreEqual("hello", properties["tag"]);
+    }
+
     /// <summary>
     /// 構文解析 STATE SELECT 文
     /// </summary>

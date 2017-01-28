@@ -102,7 +102,7 @@ namespace StellaQL
                         // state.uniqueName (deprecated)
                         // state.uniqueNameHash (deprecated)
                         case "writeDefaultValues": state.writeDefaultValues = bool.Parse(pair.Value); break;
-                        default: throw new UnityException("未対応のステート・プロパティー ["+ pair.Key+ "]=[" + pair.Value + "]"); break;
+                        default: throw new UnityException("未対応のステート・プロパティー ["+ pair.Key+ "]=[" + pair.Value + "]");
                     }
                 }
             }
@@ -209,7 +209,7 @@ namespace StellaQL
                                     case "offset": transition.offset = float.Parse(pair.Value); break;
                                     case "orderedInterruption": transition.orderedInterruption = bool.Parse(pair.Value); break;
                                     case "solo": transition.solo = bool.Parse(pair.Value); break;
-                                    default: throw new UnityException("未対応のトランジション・プロパティー [" + pair.Key + "]=[" + pair.Value + "]"); break;
+                                    default: throw new UnityException("未対応のトランジション・プロパティー [" + pair.Key + "]=[" + pair.Value + "]");
                                 }
                             }
                         }
