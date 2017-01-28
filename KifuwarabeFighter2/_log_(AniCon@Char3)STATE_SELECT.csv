@@ -1,2 +1,2 @@
-LayerNum,MachineStateNum,StateNum,CycleOffset,CycleOffsetParameter,HideFlags,IKOnFeet,Mirror,MirrorParameter,MirrorParameterActive,Motion,Name,NameHash,Speed,SpeedParameter,SpeedParameterActive,Tag,WriteDefaultValues,
-0,0,0,1,Wednesday,HideInHierarchy,True,True,Tuesday,True,,Cat,-1508702904,1.23,Monday,True,happy,False,
+LayerNum,MachineStateNum,StateNum,cycleOffset,cycleOffsetParameter,hideFlags,iKOnFeet,mirror,mirrorParameter,mirrorParameterActive,motion_name,name,nameHash,speed,speedParameter,speedParameterActive,tag,writeDefaultValues,
+0,0,0,1,,"HideInHierarchy, HideInInspector",False,False,,False,,Dog,-1184792675,1.2345,,False,Bow Wow,True,

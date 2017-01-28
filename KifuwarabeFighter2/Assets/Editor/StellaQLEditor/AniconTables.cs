@@ -68,19 +68,20 @@ namespace StellaQL
             syncedLayerIndex = layer.syncedLayerIndex;
         }
 
-        public void CreateCsv(StringBuilder sb)
+        public void CreateCsvLine(StringBuilder contents)
         {
-            sb.Append(layerNum); sb.Append(","); // レイヤー行番号
-            sb.Append(name); sb.Append(","); // レイヤー名
-            sb.Append(avatarMask); sb.Append(",");
-            sb.Append(blendingMode); sb.Append(",");
-            sb.Append(defaultWeight); sb.Append(",");
-            sb.Append(iKPass); sb.Append(",");
-            sb.Append(syncedLayerAffectsTiming); sb.Append(",");
-            sb.Append(syncedLayerIndex); sb.Append(",");
+            contents.Append(layerNum); contents.Append(","); // レイヤー行番号
+            contents.Append(CsvParser.EscapeCell( name)); contents.Append(","); // レイヤー名
+            contents.Append(CsvParser.EscapeCell(avatarMask)); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(blendingMode)); contents.Append(",");
+            contents.Append(defaultWeight); contents.Append(",");
+            contents.Append(iKPass); contents.Append(",");
+            contents.Append(syncedLayerAffectsTiming); contents.Append(",");
+            contents.Append(syncedLayerIndex); contents.Append(",");
+            contents.AppendLine();
         }
 
-        public static string ColumnNameCsv { get { return "LayerNum,LayerName,AvatarMask,BlendingMode,DefaultWeight,IKPass,SyncedLayerAffectsTiming,SyncedLayerIndex,"; } }
+        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine( "LayerNum,LayerName,avatarMask,blendingMode,defaultWeight,iKPass,syncedLayerAffectsTiming,syncedLayerIndex,"); }
     }
 
     /// <summary>
@@ -135,19 +136,20 @@ namespace StellaQL
             }
         }
 
-        public void CreateCsv(StringBuilder sb)
+        public void CreateCsvLine(StringBuilder contents)
         {
-            sb.Append(layerNum); sb.Append(",");
-            sb.Append(machineStateNum); sb.Append(",");
-            sb.Append(anyStateTransitions); sb.Append(",");
-            sb.Append(behaviours); sb.Append(",");
-            sb.Append(defaultState); sb.Append(",");
-            sb.Append(entryTransitions); sb.Append(",");
-            sb.Append(hideFlags); sb.Append(",");
-            sb.Append(name); sb.Append(",");
+            contents.Append(layerNum); contents.Append(",");
+            contents.Append(machineStateNum); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(anyStateTransitions)); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(behaviours)); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(defaultState)); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(entryTransitions)); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(hideFlags)); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(name)); contents.Append(",");
+            contents.AppendLine();
         }
 
-        public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,AnyStateTransitions,Behaviours,DefaultState,EntryTransitions,HideFlags,Name,"; } }
+        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine( "LayerNum,MachineStateNum,anyStateTransitions,behaviours,defaultState,entryTransitions,hideFlags,name,"); }
     }
 
     /// <summary>
@@ -206,31 +208,32 @@ namespace StellaQL
             writeDefaultValues = state.writeDefaultValues;
         }
 
-        public void CreateCsv(StringBuilder sb)
+        public void CreateCsvLine(StringBuilder contents)
         {
-            sb.Append(layerNum); sb.Append(",");
-            sb.Append(machineStateNum); sb.Append(",");
-            sb.Append(stateNum); sb.Append(",");
+            contents.Append(layerNum); contents.Append(",");
+            contents.Append(machineStateNum); contents.Append(",");
+            contents.Append(stateNum); contents.Append(",");
 
             //
-            sb.Append(cycleOffset); sb.Append(",");
-            sb.Append(cycleOffsetParameter); sb.Append(",");
-            sb.Append(hideFlags); sb.Append(",");
-            sb.Append(iKOnFeet); sb.Append(",");
-            sb.Append(mirror); sb.Append(",");
-            sb.Append(mirrorParameter); sb.Append(",");
-            sb.Append(mirrorParameterActive); sb.Append(",");
-            sb.Append(motion_name); sb.Append(",");
-            sb.Append(name); sb.Append(",");
-            sb.Append(nameHash); sb.Append(",");
-            sb.Append(speed); sb.Append(",");
-            sb.Append(speedParameter); sb.Append(",");
-            sb.Append(speedParameterActive); sb.Append(",");
-            sb.Append(tag); sb.Append(",");
-            sb.Append(writeDefaultValues); sb.Append(",");
+            contents.Append(cycleOffset); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(cycleOffsetParameter)); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(hideFlags)); contents.Append(",");
+            contents.Append(iKOnFeet); contents.Append(",");
+            contents.Append(mirror); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(mirrorParameter)); contents.Append(",");
+            contents.Append(mirrorParameterActive); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(motion_name)); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(name)); contents.Append(",");
+            contents.Append(nameHash); contents.Append(",");
+            contents.Append(speed); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(speedParameter)); contents.Append(",");
+            contents.Append(speedParameterActive); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(tag)); contents.Append(",");
+            contents.Append(writeDefaultValues); contents.Append(",");
+            contents.AppendLine();
         }
 
-        public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,StateNum,CycleOffset,CycleOffsetParameter,HideFlags,IKOnFeet,Mirror,MirrorParameter,MirrorParameterActive,Motion,Name,NameHash,Speed,SpeedParameter,SpeedParameterActive,Tag,WriteDefaultValues,"; } }
+        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine("LayerNum,MachineStateNum,StateNum,cycleOffset,cycleOffsetParameter,hideFlags,iKOnFeet,mirror,mirrorParameter,mirrorParameterActive,motion_name,name,nameHash,speed,speedParameter,speedParameterActive,tag,writeDefaultValues,"); }
     }
 
     /// <summary>
@@ -295,32 +298,33 @@ namespace StellaQL
             solo = transition.solo;
         }
 
-        public void CreateCsvLine(StringBuilder sb)
+        public void CreateCsvLine(StringBuilder contents)
         {
-            sb.Append(layerNum); sb.Append(",");
-            sb.Append(machineStateNum); sb.Append(",");
-            sb.Append(stateNum); sb.Append(",");
-            sb.Append(transitionNum); sb.Append(",");
-            sb.Append(canTransitionToSelf); sb.Append(",");
-            sb.Append(destinationState_name); sb.Append(",");
-            sb.Append(destinationState_nameHash); sb.Append(",");
-            sb.Append(destinationStateMachine_name); sb.Append(",");
-            sb.Append(duration); sb.Append(",");
-            sb.Append(exitTime); sb.Append(",");
-            sb.Append(hasExitTime); sb.Append(",");
-            sb.Append(hasFixedDuration); sb.Append(",");
-            sb.Append(hideFlags); sb.Append(",");
-            sb.Append(interruptionSource); sb.Append(",");
-            sb.Append(isExit); sb.Append(",");
-            sb.Append(mute); sb.Append(",");
-            sb.Append(name); sb.Append(",");
-            sb.Append(offset); sb.Append(",");
-            sb.Append(orderedInterruption); sb.Append(",");
-            sb.Append(solo); sb.Append(",");
-            sb.AppendLine();
+            contents.Append(layerNum); contents.Append(",");
+            contents.Append(machineStateNum); contents.Append(",");
+            contents.Append(stateNum); contents.Append(",");
+            contents.Append(transitionNum); contents.Append(",");
+
+            contents.Append(canTransitionToSelf); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(destinationState_name)); contents.Append(",");
+            contents.Append(destinationState_nameHash); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(destinationStateMachine_name)); contents.Append(",");
+            contents.Append(duration); contents.Append(",");
+            contents.Append(exitTime); contents.Append(",");
+            contents.Append(hasExitTime); contents.Append(",");
+            contents.Append(hasFixedDuration); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(hideFlags)); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(interruptionSource)); contents.Append(",");
+            contents.Append(isExit); contents.Append(",");
+            contents.Append(mute); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(name)); contents.Append(",");
+            contents.Append(offset); contents.Append(",");
+            contents.Append(orderedInterruption); contents.Append(",");
+            contents.Append(solo); contents.Append(",");
+            contents.AppendLine();
         }
 
-        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine("LayerNum,MachineStateNum,StateNum,TransitionNum,CanTransitionToSelf,DestinationState_Name,DestinationState_NameHash,DestinationStateMachine,Duration,ExitTime,HasExitTime,HasFixedDuration,HideFlags,InterruptionSource,IsExit,Mute,Name,Offset,OrderedInterruption,Solo,"); }
+        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine("LayerNum,MachineStateNum,StateNum,TransitionNum,canTransitionToSelf,destinationState_name,destinationState_nameHash,destinationStateMachine,duration,exitTime,hasExitTime,hasFixedDuration,hideFlags,interruptionSource,isExit,mute,name,offset,orderedInterruption,solo,"); }
     }
 
     /// <summary>
@@ -349,19 +353,21 @@ namespace StellaQL
             threshold = condition.threshold;
         }
 
-        public void CreateCsv(StringBuilder sb)
+        public void CreateCsvLine(StringBuilder contents)
         {
-            sb.Append(layerNum); sb.Append(",");
-            sb.Append(machineStateNum); sb.Append(",");
-            sb.Append(stateNum); sb.Append(",");
-            sb.Append(transitionNum); sb.Append(",");
-            sb.Append(conditionNum); sb.Append(",");
-            sb.Append(mode); sb.Append(",");
-            sb.Append(parameter); sb.Append(",");
-            sb.Append(threshold); sb.Append(",");
+            contents.Append(layerNum); contents.Append(",");
+            contents.Append(machineStateNum); contents.Append(",");
+            contents.Append(stateNum); contents.Append(",");
+            contents.Append(transitionNum); contents.Append(",");
+            contents.Append(conditionNum); contents.Append(",");
+
+            contents.Append(CsvParser.EscapeCell(mode)); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(parameter)); contents.Append(",");
+            contents.Append(threshold); contents.Append(",");
+            contents.AppendLine();
         }
 
-        public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,StateNum,TransitionNum,ConditionNum,Mode,Parameter,Threshold,"; } }
+        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine( "LayerNum,MachineStateNum,StateNum,TransitionNum,ConditionNum,mode,parameter,threshold,"); }
     }
 
     /// <summary>
@@ -407,7 +413,7 @@ namespace StellaQL
 
             magnitude = position.magnitude;
             //normalized = position.normalized == null ? "" : "(解析未対応)";
-            normalized = position.normalized == null ? "" : Util_CsvParser.EscapeCell(position.normalized.ToString());
+            normalized = position.normalized == null ? "" : position.normalized.ToString();
             //normalized = position.normalized == null ? "" : Util_CsvParser.CellList_to_csvLine( Util_CsvParser.CsvLine_to_cellList(position.normalized.ToString()));
             normalizedX = position.x;
             normalizedY = position.y;
@@ -418,27 +424,28 @@ namespace StellaQL
             z = position.z;
         }
 
-        public void CreateCsv(StringBuilder sb)
+        public void CreateCsvLine(StringBuilder contents)
         {
-            sb.Append(layerNum); sb.Append(",");
-            sb.Append(machineStateNum); sb.Append(",");
-            sb.Append(stateNum); sb.Append(",");
-            sb.Append(transitionNum); sb.Append(",");
-            sb.Append(conditionNum); sb.Append(",");
-            sb.Append(proertyName); sb.Append(",");
+            contents.Append(layerNum); contents.Append(",");
+            contents.Append(machineStateNum); contents.Append(",");
+            contents.Append(stateNum); contents.Append(",");
+            contents.Append(transitionNum); contents.Append(",");
+            contents.Append(conditionNum); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(proertyName)); contents.Append(",");
 
-            sb.Append(magnitude); sb.Append(",");
-            sb.Append(normalized); sb.Append(",");
-            sb.Append(normalizedX); sb.Append(",");
-            sb.Append(normalizedY); sb.Append(",");
-            sb.Append(normalizedZ); sb.Append(",");
-            sb.Append(sqrMagnitude); sb.Append(",");
-            sb.Append(x); sb.Append(",");
-            sb.Append(y); sb.Append(",");
-            sb.Append(z); sb.Append(",");
+            contents.Append(magnitude); contents.Append(",");
+            contents.Append(CsvParser.EscapeCell(normalized)); contents.Append(",");
+            contents.Append(normalizedX); contents.Append(",");
+            contents.Append(normalizedY); contents.Append(",");
+            contents.Append(normalizedZ); contents.Append(",");
+            contents.Append(sqrMagnitude); contents.Append(",");
+            contents.Append(x); contents.Append(",");
+            contents.Append(y); contents.Append(",");
+            contents.Append(z); contents.Append(",");
+            contents.AppendLine();
         }
 
-        public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,StateNum,TransitionNum,ConditionNum,PropertyName,Magnitude,Normalized,NormalizedX,NormalizedY,NormalizedZ,SqrMagnitude,X,Y,Z,"; } }
+        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine( "LayerNum,MachineStateNum,StateNum,TransitionNum,ConditionNum,PropertyName,magnitude,normalized,normalizedX,normalizedY,normalizedZ,sqrMagnitude,x,y,z,"); }
     }
 
     public abstract class AniconTables
@@ -485,37 +492,23 @@ namespace StellaQL
         public static void WriteCsv_Layer(string aniconName, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            contents.Append(LayerRecord.ColumnNameCsv); contents.AppendLine();
-
-            foreach (LayerRecord layerRecord in table_layer) {
-                layerRecord.CreateCsv(contents);
-                contents.AppendLine();
-            }
-
+            LayerRecord.ColumnNameCsvLine(contents);
+            foreach (LayerRecord record in table_layer) {record.CreateCsvLine(contents);}
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogLayer(aniconName), contents, message);
         }
 
         public static void WriteCsv_Statemachine(string aniconName, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            contents.Append(StatemachineRecord.ColumnNameCsv); contents.AppendLine();
-
-            foreach (StatemachineRecord stateMachine in table_statemachine) {
-                stateMachine.CreateCsv(contents);
-                contents.AppendLine();
-            }
-
+            StatemachineRecord.ColumnNameCsvLine(contents);
+            foreach (StatemachineRecord record in table_statemachine) {record.CreateCsvLine(contents);}
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogStatemachine(aniconName), contents, message);
         }
 
         public static void CreateCsvTable_State(HashSet<StateRecord> table, StringBuilder contents)
         {
-            contents.Append(StateRecord.ColumnNameCsv); contents.AppendLine();
-            foreach (StateRecord stateRecord in table)
-            {
-                stateRecord.CreateCsv(contents);
-                contents.AppendLine();
-            }
+            StateRecord.ColumnNameCsvLine(contents);
+            foreach (StateRecord stateRecord in table) { stateRecord.CreateCsvLine(contents); }
         }
         public static void WriteCsv_State(string aniconName, StringBuilder message)
         {
@@ -539,28 +532,16 @@ namespace StellaQL
         public static void WriteCsv_Condition(string aniconName, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            contents.Append(ConditionRecord.ColumnNameCsv); contents.AppendLine();
-
-            foreach (ConditionRecord conditionRecord in table_condition)
-            {
-                conditionRecord.CreateCsv(contents);
-                contents.AppendLine();
-            }
-
+            ConditionRecord.ColumnNameCsvLine(contents);
+            foreach (ConditionRecord conditionRecord in table_condition) { conditionRecord.CreateCsvLine(contents); }
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogConditions(aniconName), contents, message);
         }
 
         public static void WriteCsv_Position(string aniconName, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            contents.Append(PositionRecord.ColumnNameCsv); contents.AppendLine();
-
-            foreach (PositionRecord positionRecord in table_position)
-            {
-                positionRecord.CreateCsv(contents);
-                contents.AppendLine();
-            }
-
+            PositionRecord.ColumnNameCsvLine(contents);
+            foreach (PositionRecord record in table_position) { record.CreateCsvLine(contents); }
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogPositions(aniconName), contents, message);
         }
 

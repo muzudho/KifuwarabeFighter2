@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
-using System.IO;
+using System;
 using System.Text;
 
 namespace StellaQL
@@ -15,15 +15,20 @@ namespace StellaQL
     /// </summary>
     public class StateCmdline : EditorWindow
     {
-        string commandline = "now constraction";
-        string infoMessage = "Hello World";
+        /// <summary>
+        /// "\n" だけの改行は対応していないので、Environment.NewLine を使うこと。
+        /// </summary>
+        string commandline = "# Sample" + Environment.NewLine+
+            "STATE SELECT" + Environment.NewLine +
+            "WHERE \".*Dog\"" + Environment.NewLine;
+        string infoMessage = "Konnichiwa.";
         string pathController = "Assets/Resources/AnimatorControllers/AniCon@Char3.controller";
         Vector2 scroll;
 
         /// <summary>
         /// メニューからクリックしたとき。
         /// </summary>
-        [MenuItem("Window/State Command line (StellaQL)")]
+        [MenuItem("Window/State Machine Command line (StellaQL)")]
         static void Init()
         {
             // ウィンドウのインスタンスを取得して開くことだけする。

@@ -6,7 +6,7 @@ namespace StellaQL
     /// <summary>
     /// 手作りの CSVの１行分のパーサーだぜ☆（＾▽＾）
     /// </summary>
-    public abstract class Util_CsvParser
+    public abstract class CsvParser
     {
         public static List<string> CsvLine_to_cellList(string source)
         {

@@ -1,2 +1,0 @@
-LayerNum,MachineStateNum,StateNum,TransitionNum,CanTransitionToSelf,DestinationState_Name,DestinationState_NameHash,DestinationStateMachine,Duration,ExitTime,HasExitTime,HasFixedDuration,HideFlags,InterruptionSource,IsExit,Mute,Name,Offset,OrderedInterruption,Solo,
-0,0,0,0,True,Dog,-1184792675,,0.1,0.9,True,True,HideInHierarchy,None,False,False,,0,True,False,
