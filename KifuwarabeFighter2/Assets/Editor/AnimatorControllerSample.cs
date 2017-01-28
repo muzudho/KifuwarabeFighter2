@@ -94,7 +94,7 @@ public class AnimatorControllerSample : MonoBehaviour {
         Debug.Log("結果：" + recordset.Count + "件");
         foreach (StateExRecordable record in recordset)
         {
-            Debug.Log("結果："+ record.BreadCrumb+record.Name);
+            Debug.Log("結果："+ record.Fullpath);
         }
     }
 

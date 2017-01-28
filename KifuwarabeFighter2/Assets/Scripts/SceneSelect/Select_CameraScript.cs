@@ -35,9 +35,9 @@ namespace SceneSelect
             StateExRecordable astateRecord0 = StateExTable.Instance.GetCurrentStateExRecord(player_to_animator[(int)PlayerIndex.Player1]);
             StateExRecordable astateRecord1 = StateExTable.Instance.GetCurrentStateExRecord(player_to_animator[(int)PlayerIndex.Player2]);
             if (
-                StateExTable.Instance.index_to_exRecord[(int)StateIndex.Ready].Name == astateRecord0.Name
+                StateExTable.Instance.index_to_exRecord[StateExTable.fullpath_to_index[StateExTable.FULLNAME_READY]].Name == astateRecord0.Name
                 &&
-                StateExTable.Instance.index_to_exRecord[(int)StateIndex.Ready].Name == astateRecord1.Name
+                StateExTable.Instance.index_to_exRecord[StateExTable.fullpath_to_index[StateExTable.FULLNAME_READY]].Name == astateRecord1.Name
                 )
             {
                 // １プレイヤー、２プレイヤー　ともに Ready ステートなら。

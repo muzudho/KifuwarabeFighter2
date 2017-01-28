@@ -6,26 +6,16 @@ using StellaQL;
 namespace SceneSelect {
 
     /// <summary>
-    /// Animator の State に一対一対応☆
-    /// </summary>
-    public enum StateIndex
-    {
-        Stay,
-        Move,
-        Ready,
-        Timeover,
-        Num,
-    }
-
-    /// <summary>
     /// アニメーターのステート
     /// </summary>
     public class StateExRecord : AbstractStateExRecord
     {
-        public StateExRecord(string breadCrumb, string name)
+        public static StateExRecord Build(string fullpath)
         {
-            this.BreadCrumb = breadCrumb;
-            this.Name = name;
+            return new StateExRecord(fullpath, Animator.StringToHash(fullpath));
+        }
+        public StateExRecord(string fullpath, int fullpathHash) :base(fullpath, fullpathHash, - 1)
+        {
         }
 
         public override bool HasFlag_attr(int enumration)
@@ -36,6 +26,11 @@ namespace SceneSelect {
 
     public class StateExTable : AbstractStateExTable
     {
+        public const string FULLNAME_STAY = "Base Layer.Stay";
+        public const string FULLNAME_MOVE = "Base Layer.Move";
+        public const string FULLNAME_READY = "Base Layer.Ready";
+        public const string FULLNAME_TIMEOVER = "Base Layer.Timeover";
+
         static StateExTable()
         {
             Instance = new StateExTable();
@@ -45,12 +40,19 @@ namespace SceneSelect {
 
         private StateExTable()
         {
+            fullpath_to_index = new Dictionary<string, int>()
+            {
+                {FULLNAME_STAY,0 },
+                {FULLNAME_MOVE,1 },
+                {FULLNAME_READY,2},
+                {FULLNAME_TIMEOVER,3 },
+            };
             index_to_exRecord = new Dictionary<int, StateExRecordable> ()//AstateIndex
             {
-                {(int)StateIndex.Stay, new StateExRecord(  "Base Layer.", "Stay")},
-                {(int)StateIndex.Move, new StateExRecord(  "Base Layer.", "Move")},
-                {(int)StateIndex.Ready, new StateExRecord(  "Base Layer.", "Ready")},
-                {(int)StateIndex.Timeover, new StateExRecord(  "Base Layer.", "Timeover")},
+                {fullpath_to_index[FULLNAME_STAY], StateExRecord.Build( StateExTable.FULLNAME_STAY)},
+                {fullpath_to_index[FULLNAME_MOVE], StateExRecord.Build( StateExTable.FULLNAME_MOVE)},
+                {fullpath_to_index[FULLNAME_READY], StateExRecord.Build( StateExTable.FULLNAME_READY)},
+                {fullpath_to_index[FULLNAME_TIMEOVER], StateExRecord.Build( StateExTable.FULLNAME_TIMEOVER)},
             };
         }
     }

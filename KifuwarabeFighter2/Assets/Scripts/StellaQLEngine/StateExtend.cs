@@ -8,9 +8,13 @@ namespace StellaQL
 {
     public interface StateExRecordable
     {
-        string BreadCrumb { get; }
+        /// <summary>
+        /// 末尾にドットを含む
+        /// </summary>
+        string GetBreadCrumb();
         string Name { get; }
-        //int FullPathHash { get; }
+        string Fullpath { get; }
+        int FullPathHash { get; }
         bool HasFlag_attr(int enumration);
         /// <summary>
         /// ほんとは列挙型にしたい☆
@@ -24,9 +28,21 @@ namespace StellaQL
 
     public abstract class AbstractStateExRecord : StateExRecordable
     {
-        public string BreadCrumb { get; set; }
+        public AbstractStateExRecord(string fullpath, int fullpathHash, int attributeEnum)
+        {
+            Fullpath = fullpath;
+            Name = Fullpath.Substring(Fullpath.LastIndexOf('.') + 1); // ドットを含まない
+            FullPathHash = fullpathHash;// Animator.StringToHash(Fullpath);
+            //Debug.Log("fullpath=["+this.Fullpath+"] name=["+this.Name+"]");
+            this.AttributeEnum = attributeEnum;//StateExTable.Attr
+        }
+
+        public string GetBreadCrumb() {
+            return Fullpath.Substring(0, Fullpath.LastIndexOf('.') + 1);// 末尾にドットを含む
+        }
+        public string Fullpath { get; set; }
         public string Name { get; set; }
-        //public int FullPathHash { get; set; }
+        public int FullPathHash { get; set; }
         public abstract bool HasFlag_attr(int attributeEnumration);
         /// <summary>
         /// ほんとは列挙型にしたい☆
@@ -47,13 +63,17 @@ namespace StellaQL
     {
         /// <summary>
         /// Animator の state の名前と、AnimationClipの種類の対応☆　手作業で入力しておく（２度手間）
-        /// ほんとは キーを StateIndex にしたかった。
+        /// ほんとは キーを ステートインデックス にしたかった。
         /// </summary>
         public Dictionary<int, StateExRecordable> index_to_exRecord;
         /// <summary>
         /// Animator の state の hash を、state番号に変換☆
         /// </summary>
-        public Dictionary<int, int> hash_to_index;//<hash,StateIndex>
+        public Dictionary<int, int> hash_to_index;//<hash,ステートインデックス>
+        /// <summary>
+        /// TODO: あとでフルパスtoハッシュに置き換える。
+        /// </summary>
+        public static Dictionary<string, int> fullpath_to_index;
 
 
         /// <summary>
@@ -61,12 +81,10 @@ namespace StellaQL
         /// </summary>
         public void InsertAllStates()
         {
-            hash_to_index = new Dictionary<int, int>(); // <hash,StateIndex>
-
+            hash_to_index = new Dictionary<int, int>(); // <hash,ステートインデックス>
             for (int iState = 0; iState < index_to_exRecord.Count; iState++)
             {
-                StateExRecordable astate = index_to_exRecord[iState];
-                hash_to_index.Add(Animator.StringToHash(astate.BreadCrumb + astate.Name), iState);
+                hash_to_index.Add(Animator.StringToHash(index_to_exRecord[iState].Fullpath), iState);
             }
         }
 

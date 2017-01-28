@@ -416,7 +416,7 @@ namespace StellaQL
             HashSet<AnimatorState> states = new HashSet<AnimatorState>();
             foreach (int recordIndex in recordIndexes)
             {
-                states.Add(AniconOpe_State.Lookup(ac, universe[recordIndex].BreadCrumb + universe[recordIndex].Name));
+                states.Add(AniconOpe_State.Lookup(ac, universe[recordIndex].Fullpath));//.Name
             }
             return states;
         }
@@ -434,7 +434,7 @@ namespace StellaQL
             Regex regex = new Regex(pattern);
             foreach (KeyValuePair<int, StateExRecordable> pair in universe)
             {
-                if (regex.IsMatch(pair.Value.BreadCrumb + pair.Value.Name))
+                if (regex.IsMatch(pair.Value.Fullpath))
                 {
                     hitRecordIndexes.Add(pair.Key);
                 }

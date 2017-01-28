@@ -91,7 +91,7 @@ namespace SceneSelect
             }
             #endregion
 
-            if (StateExTable.Instance.index_to_exRecord[(int)StateIndex.Stay].Name == astateRecord.Name)
+            if (StateExTable.Instance.index_to_exRecord[StateExTable.fullpath_to_index[StateExTable.FULLNAME_STAY]].Name == astateRecord.Name)
             {
                 //カーソル移動中でなければ。
 
@@ -152,10 +152,10 @@ namespace SceneSelect
                     myRigidbody2D.velocity = new Vector2(0, myRigidbody2D.velocity.y);
                 }
             }
-            else if (StateExTable.Instance.index_to_exRecord[(int)StateIndex.Move].Name == astateRecord.Name)
+            else if (StateExTable.Instance.index_to_exRecord[StateExTable.fullpath_to_index[StateExTable.FULLNAME_MOVE]].Name == astateRecord.Name)
             {
             }
-            else if (StateExTable.Instance.index_to_exRecord[(int)StateIndex.Ready].Name == astateRecord.Name)
+            else if (StateExTable.Instance.index_to_exRecord[StateExTable.fullpath_to_index[StateExTable.FULLNAME_READY]].Name == astateRecord.Name)
             {
                 // キャラクター選択済みのとき
 
