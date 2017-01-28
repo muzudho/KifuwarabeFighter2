@@ -122,9 +122,9 @@ namespace StellaQL
 
     public abstract class QueryTokensUtility
     {
-        public static HashSet<int> RecordIndexes_From(QueryTokens qt, Type enumration, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_From(QueryTokens qt, Type enumration, Dictionary<int, StateExRecordable> universe)
         {
-            if ("" != qt.From_FullnameRegex) { return ElementSet.RecordIndexes_FilteringStateFullNameRegex(qt.From_FullnameRegex, universe); }
+            if ("" != qt.From_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.From_FullnameRegex, universe); }
             else {
                 List<string> tokens; QueryTokens.String_to_tokens(qt.From_Attr, out tokens);
 
@@ -132,15 +132,15 @@ namespace StellaQL
                 List<string> tokenLockersOperation;
                 Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
 
-                List<HashSet<int>> recordIndexesLockers;
-                Fetcher.TokenLockers_to_recordIndexesLockers(tokenLockers, tokenLockersOperation, enumration, universe, out recordIndexesLockers);
-                return recordIndexesLockers[recordIndexesLockers.Count - 1];
+                List<HashSet<int>> recordHashesLockers;
+                Fetcher.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, enumration, universe, out recordHashesLockers);
+                return recordHashesLockers[recordHashesLockers.Count - 1];
             }
         }
 
-        public static HashSet<int> RecordIndexes_To(QueryTokens qt, Type enumration, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_To(QueryTokens qt, Type enumration, Dictionary<int, StateExRecordable> universe)
         {
-            if ("" != qt.To_FullnameRegex) { return ElementSet.RecordIndexes_FilteringStateFullNameRegex(qt.To_FullnameRegex, universe); }
+            if ("" != qt.To_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.To_FullnameRegex, universe); }
             else {
                 List<string> tokens; QueryTokens.String_to_tokens(qt.To_Attr, out tokens);
 
@@ -148,15 +148,15 @@ namespace StellaQL
                 List<string> tokenLockersOperation;
                 Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
 
-                List<HashSet<int>> recordIndexesLockers;
-                Fetcher.TokenLockers_to_recordIndexesLockers(tokenLockers, tokenLockersOperation, enumration, universe, out recordIndexesLockers);
-                return recordIndexesLockers[recordIndexesLockers.Count - 1];
+                List<HashSet<int>> recordHashesLockers;
+                Fetcher.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, enumration, universe, out recordHashesLockers);
+                return recordHashesLockers[recordHashesLockers.Count - 1];
             }
         }
 
-        public static HashSet<int> RecordIndexes_Where(QueryTokens qt, Type enumration, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_Where(QueryTokens qt, Type enumration, Dictionary<int, StateExRecordable> universe)
         {
-            if ("" != qt.Where_FullnameRegex) { return ElementSet.RecordIndexes_FilteringStateFullNameRegex(qt.Where_FullnameRegex, universe); }
+            if ("" != qt.Where_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.Where_FullnameRegex, universe); }
             else {
                 List<string> tokens; QueryTokens.String_to_tokens(qt.Where_Attr, out tokens);
 
@@ -164,9 +164,9 @@ namespace StellaQL
                 List<string> tokenLockersOperation;
                 Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
 
-                List<HashSet<int>> recordIndexesLockers;
-                Fetcher.TokenLockers_to_recordIndexesLockers(tokenLockers, tokenLockersOperation, enumration, universe, out recordIndexesLockers);
-                return recordIndexesLockers[recordIndexesLockers.Count - 1];
+                List<HashSet<int>> recordHashesLockers;
+                Fetcher.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, enumration, universe, out recordHashesLockers);
+                return recordHashesLockers[recordHashesLockers.Count - 1];
             }
         }
     }
@@ -187,25 +187,24 @@ namespace StellaQL
 
             if (SyntaxP.ParseStatement_StateUpdate(query, out sq))
             {
-                HashSet<int> recordIndexes = QueryTokensUtility.RecordIndexes_Where(sq, enumration, universe);
+                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, enumration, universe);
                 foreach (KeyValuePair<string, string> pair in sq.Set)
                 {
                     message.AppendLine(pair.Key + "=" + pair.Value);
                 }
-                AniconOpe_State.UpdateProperty(ac, sq.Set, Fetcher.FetchAll(ac, recordIndexes, universe), message);
+                AniconOpe_State.UpdateProperty(ac, sq.Set, Fetcher.FetchAll(ac, recordHashes, universe), message);
                 int i = 0;
-                foreach (int recordIndex in recordIndexes)
+                foreach (int recordHash in recordHashes)
                 {
-                    message.AppendLine(i + ": record[" + recordIndex + "]"); i++;
-                    //sb.AppendLine(Convert.ChangeType(recordIndex,enumration).ToString());
+                    message.AppendLine(i + ": record[" + recordHash + "]"); i++;
                 }
                 return true;
             }
             else if (SyntaxP.ParseStatement_StateSelect(query, out sq))
             {
-                HashSet<int> recordIndexes = QueryTokensUtility.RecordIndexes_Where(sq, enumration, universe);
+                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, enumration, universe);
                 HashSet<StateRecord> recordSet;
-                AniconOpe_State.Select(ac, Fetcher.FetchAll(ac, recordIndexes, universe), out recordSet, message);
+                AniconOpe_State.Select(ac, Fetcher.FetchAll(ac, recordHashes, universe), out recordSet, message);
                 StringBuilder contents = new StringBuilder();
                 AniconTables.CreateCsvTable_State(recordSet, contents);
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogStateSelect(ac.name), contents, message);
@@ -213,11 +212,11 @@ namespace StellaQL
             }
             else if (SyntaxP.ParseStatement_TransitionInsert(query, out sq))
             {
-                HashSet<int> recordIndexesFrom = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);
-                HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);
+                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, enumration, universe);
+                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, enumration, universe);
                 AniconOpe_Transition.AddAll(ac,
-                    Fetcher.FetchAll(ac, recordIndexesFrom, universe),
-                    Fetcher.FetchAll(ac, recordIndexesTo, universe),
+                    Fetcher.FetchAll(ac, recordHashesFrom, universe),
+                    Fetcher.FetchAll(ac, recordHashesTo, universe),
                     message);
                 return true;
             }
@@ -227,31 +226,31 @@ namespace StellaQL
                 {
                     message.AppendLine(pair.Key+"="+pair.Value);
                 }
-                HashSet<int> recordIndexesFrom = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);
-                HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);
+                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, enumration, universe);
+                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, enumration, universe);
                 AniconOpe_Transition.UpdateProperty(ac, sq.Set,
-                    Fetcher.FetchAll(ac, recordIndexesFrom, universe),
-                    Fetcher.FetchAll(ac, recordIndexesTo, universe),
+                    Fetcher.FetchAll(ac, recordHashesFrom, universe),
+                    Fetcher.FetchAll(ac, recordHashesTo, universe),
                     message);
                 return true;
             }
             else if (SyntaxP.ParseStatement_TransitionDelete(query, out sq))
             {
-                HashSet<int> recordIndexesFrom = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);
-                HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);
+                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, enumration, universe);
+                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, enumration, universe);
                 AniconOpe_Transition.RemoveAll(ac,
-                    Fetcher.FetchAll(ac, recordIndexesFrom, universe),
-                    Fetcher.FetchAll(ac, recordIndexesTo, universe),
+                    Fetcher.FetchAll(ac, recordHashesFrom, universe),
+                    Fetcher.FetchAll(ac, recordHashesTo, universe),
                     message);
                 return true;
             }
             else if (SyntaxP.ParseStatement_TransitionSelect(query, out sq)) {
-                HashSet<int> recordIndexesFrom = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);
-                HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);
+                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, enumration, universe);
+                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, enumration, universe);
                 HashSet<TransitionRecord> recordSet;
                 AniconOpe_Transition.Select(ac,
-                    Fetcher.FetchAll(ac, recordIndexesFrom, universe),
-                    Fetcher.FetchAll(ac, recordIndexesTo, universe),
+                    Fetcher.FetchAll(ac, recordHashesFrom, universe),
+                    Fetcher.FetchAll(ac, recordHashesTo, universe),
                     out recordSet,
                     message);
                 StringBuilder contents = new StringBuilder();
@@ -269,15 +268,15 @@ namespace StellaQL
         /// </summary>
         /// <param name="query">例えば 「STATE SELECT WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})」 といった式。</param>
         /// <returns></returns>
-        public static bool ExecuteStateSelect(string query, Type enumration, Dictionary<int, StateExRecordable> universe, out HashSet<int> recordIndexes)
+        public static bool ExecuteStateSelect(string query, Type enumration, Dictionary<int, StateExRecordable> universe, out HashSet<int> recordHashes)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
-            recordIndexes = null;
+            recordHashes = null;
             QueryTokens sq;
             if (!SyntaxP.ParseStatement_StateSelect(query, out sq)) { return false; }
 
-            recordIndexes = QueryTokensUtility.RecordIndexes_Where(sq, enumration, universe);
+            recordHashes = QueryTokensUtility.RecordHashes_Where(sq, enumration, universe);
             return true;
         }
 
@@ -286,17 +285,17 @@ namespace StellaQL
         /// </summary>
         /// <param name="query">例えば 「TRANSITION SELECT FROM "Base Layer.Zebra" TO ATTR ([(Alpha Cee)(Beta)]{Eee})」 といった式。</param>
         /// <returns></returns>
-        public static bool ExecuteTransitionSelect(string query, Type enumration, Dictionary<int, StateExRecordable> universe, out HashSet<int> recordIndexesSrc, out HashSet<int> recordIndexesDst)
+        public static bool ExecuteTransitionSelect(string query, Type enumration, Dictionary<int, StateExRecordable> universe, out HashSet<int> recordHashesSrc, out HashSet<int> recordHashesDst)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
-            recordIndexesSrc = null;
-            recordIndexesDst = null;
+            recordHashesSrc = null;
+            recordHashesDst = null;
             QueryTokens sq;
             if (!SyntaxP.ParseStatement_TransitionSelect(query, out sq)) { return false; }
 
-            recordIndexesSrc = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);// FROM
-            recordIndexesDst = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);// TO
+            recordHashesSrc = QueryTokensUtility.RecordHashes_From(sq, enumration, universe);// FROM
+            recordHashesDst = QueryTokensUtility.RecordHashes_To(sq, enumration, universe);// TO
             return true;
         }
 
@@ -366,10 +365,10 @@ namespace StellaQL
         /// トークン・ロッカーを元に、ロッカー別の検索結果を返す。
         /// </summary>
         /// <param name="tokens"></param>
-        public static void TokenLockers_to_recordIndexesLockers(List<List<string>> lockerNumber_to_tokens, List<string> lockerNumber_to_operation, Type attrEnumration,
-            Dictionary<int, StateExRecordable> universe, out List<HashSet<int>> lockerNumber_to_recordIndexes)
+        public static void TokenLockers_to_recordHashesLockers(List<List<string>> lockerNumber_to_tokens, List<string> lockerNumber_to_operation, Type attrEnumration,
+            Dictionary<int, StateExRecordable> universe, out List<HashSet<int>> lockerNumber_to_recordHashes)
         {
-            lockerNumber_to_recordIndexes = new List<HashSet<int>>();
+            lockerNumber_to_recordHashes = new List<HashSet<int>>();
 
             for (int iLockerNumber = 0; iLockerNumber < lockerNumber_to_tokens.Count; iLockerNumber++)// 部室のロッカー番号。スタートは 0 番から。
             {
@@ -382,11 +381,11 @@ namespace StellaQL
                     HashSet<int> lockerNumbers = AttrSet.Tokens_to_numbers(index_to_token, attrEnumration);
                     switch (operation) // ロッカー同士を演算して、まとめた答えを出す
                     {
-                        case "(": lockerNumber_to_recordIndexes.Add(ElementSet.RecordIndexes_FilteringElementsAnd(lockerNumbers, lockerNumber_to_recordIndexes)); break;
-                        case "[": lockerNumber_to_recordIndexes.Add(ElementSet.RecordIndexes_FilteringElementsOr(lockerNumbers, lockerNumber_to_recordIndexes)); break;
+                        case "(": lockerNumber_to_recordHashes.Add(ElementSet.RecordHashes_FilteringElementsAnd(lockerNumbers, lockerNumber_to_recordHashes)); break;
+                        case "[": lockerNumber_to_recordHashes.Add(ElementSet.RecordHashes_FilteringElementsOr(lockerNumbers, lockerNumber_to_recordHashes)); break;
                         case "{":
-                            lockerNumber_to_recordIndexes.Add(ElementSet.RecordIndexes_FilteringElementsNotAndNot(
-                      lockerNumbers, lockerNumber_to_recordIndexes, universe)); break;
+                            lockerNumber_to_recordHashes.Add(ElementSet.RecordHashes_FilteringElementsNotAndNot(
+                      lockerNumbers, lockerNumber_to_recordHashes, universe)); break;
                         default: throw new UnityException("未対応1のtokenOperation=[" + operation + "]");
                     }
                 }
@@ -397,26 +396,26 @@ namespace StellaQL
                     {
                         case "(":
                             attrEnumSet_calc = AttrSet.KeywordSet_to_attrLocker(attrEnumSet_src);
-                            lockerNumber_to_recordIndexes.Add(ElementSet.RecordIndexes_FilteringAttributesAnd(attrEnumSet_calc, universe)); break;
+                            lockerNumber_to_recordHashes.Add(ElementSet.RecordHashes_FilteringAttributesAnd(attrEnumSet_calc, universe)); break;
                         case "[":
                             attrEnumSet_calc = AttrSet.KeywordlistSet_to_attrLocker(attrEnumSet_src);
-                            lockerNumber_to_recordIndexes.Add(ElementSet.RecordIndexes_FilteringAttributesOr(attrEnumSet_calc, universe)); break;
+                            lockerNumber_to_recordHashes.Add(ElementSet.RecordHashes_FilteringAttributesOr(attrEnumSet_calc, universe)); break;
                         case "{":
                             //attrEnumSet_calc = StellaQLAggregater.NGKeywordSet_to_attrLocker(attrEnumSet_src, attrEnumration);
                             attrEnumSet_calc = AttrSet.KeywordlistSet_to_attrLocker(attrEnumSet_src); // NOT キーワードは NOT結合ではなく OR結合 で取る。
-                            lockerNumber_to_recordIndexes.Add(ElementSet.RecordIndexes_FilteringAttributesNotAndNot(attrEnumSet_calc, universe)); break;
+                            lockerNumber_to_recordHashes.Add(ElementSet.RecordHashes_FilteringAttributesNotAndNot(attrEnumSet_calc, universe)); break;
                         default: throw new UnityException("未対応2のtokenOperation=[" + operation + "]");
                     }
                 }
             }
         }
 
-        public static HashSet<AnimatorState> FetchAll(AnimatorController ac, HashSet<int> recordIndexes, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<AnimatorState> FetchAll(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, StateExRecordable> universe)
         {
             HashSet<AnimatorState> states = new HashSet<AnimatorState>();
-            foreach (int recordIndex in recordIndexes)
+            foreach (int recordHash in recordHashes)
             {
-                states.Add(AniconOpe_State.Lookup(ac, universe[recordIndex].Fullpath));//.Name
+                states.Add(AniconOpe_State.Lookup(ac, universe[recordHash].Fullpath));//.Name
             }
             return states;
         }
@@ -427,153 +426,151 @@ namespace StellaQL
     /// </summary>
     public abstract class ElementSet
     {
-        public static HashSet<int> RecordIndexes_FilteringStateFullNameRegex(string pattern, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_FilteringStateFullNameRegex(string pattern, Dictionary<int, StateExRecordable> universe)
         {
-            HashSet<int> hitRecordIndexes = new HashSet<int>();
+            HashSet<int> hitRecordHashes = new HashSet<int>();
 
             Regex regex = new Regex(pattern);
             foreach (KeyValuePair<int, StateExRecordable> pair in universe)
             {
                 if (regex.IsMatch(pair.Value.Fullpath))
                 {
-                    hitRecordIndexes.Add(pair.Key);
+                    hitRecordHashes.Add(pair.Key);
                 }
             }
 
-            return hitRecordIndexes;
+            return hitRecordHashes;
         }
 
-        public static HashSet<int> RecordIndexes_FilteringElementsAnd(HashSet<int> lockerNumbers, List<HashSet<int>> recordIndexeslockers)
+        public static HashSet<int> RecordHashes_FilteringElementsAnd(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers)
         {
-            List<int> recordIndexes = new List<int>();// レコード・インデックスを入れたり、削除したりする
+            List<int> recordHashes = new List<int>();// レコード・インデックスを入れたり、削除したりする
             int iLocker = 0;
             foreach (int lockerNumber in lockerNumbers)
             {
-                HashSet<int> locker = recordIndexeslockers[lockerNumber];
+                HashSet<int> locker = recordHasheslockers[lockerNumber];
                 if (0 == iLocker) // 最初のロッカーは丸ごと入れる。
                 {
-                    foreach (int recordIndex in locker) { recordIndexes.Add(recordIndex); }
+                    foreach (int recordHash in locker) { recordHashes.Add(recordHash); }
                 }
                 else // ２つ目以降のロッカーは、全てのロッカーに共通する要素のみ残るようにする。
                 {
-                    for (int iElem = recordIndexes.Count - 1; -1 < iElem; iElem--)// 後ろから指定の要素を削除する。
+                    for (int iElem = recordHashes.Count - 1; -1 < iElem; iElem--)// 後ろから指定の要素を削除する。
                     {
-                        if (!locker.Contains(recordIndexes[iElem])) { recordIndexes.RemoveAt(iElem); }
+                        if (!locker.Contains(recordHashes[iElem])) { recordHashes.RemoveAt(iElem); }
                     }
                 }
                 iLocker++;
             }
 
-            HashSet<int> distinctRecordIndexes = new HashSet<int>();// 一応、重複を消しておく
-            foreach (int recordIndex in recordIndexes) { distinctRecordIndexes.Add(recordIndex); }
+            HashSet<int> distinctRecordHashes = new HashSet<int>();// 一応、重複を消しておく
+            foreach (int recordHash in recordHashes) { distinctRecordHashes.Add(recordHash); }
 
-            return distinctRecordIndexes;
+            return distinctRecordHashes;
         }
 
-        public static HashSet<int> RecordIndexes_FilteringElementsOr(HashSet<int> lockerNumbers, List<HashSet<int>> recordIndexeslockers)
+        public static HashSet<int> RecordHashes_FilteringElementsOr(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers)
         {
-            HashSet<int> hitRecordIndexes = new HashSet<int>();// どんどんレコード・インデックスを追加していく
+            HashSet<int> hitRecordHashes = new HashSet<int>();// どんどんレコード・インデックスを追加していく
             foreach (int lockerNumber in lockerNumbers)
             {
-                HashSet<int> locker = recordIndexeslockers[lockerNumber];
-                if (0 == locker.Count) { throw new UnityException("#RecordIndexes_FilteringElementsOr: lockerNumber=[" + lockerNumber + "]のメンバーが空っぽ☆"); }
-                foreach (int recordIndex in locker)
+                HashSet<int> locker = recordHasheslockers[lockerNumber];
+                if (0 == locker.Count) { throw new UnityException("#RecordHashes_FilteringElementsOr: lockerNumber=[" + lockerNumber + "]のメンバーが空っぽ☆"); }
+                foreach (int recordHash in locker)
                 {
-                    hitRecordIndexes.Add(recordIndex);
+                    hitRecordHashes.Add(recordHash);
                 }
             }
 
-            if (0 == hitRecordIndexes.Count) { throw new UnityException("#RecordIndexes_FilteringElementsOr: 結果が空っぽ☆"); }
-            return hitRecordIndexes;
+            if (0 == hitRecordHashes.Count) { throw new UnityException("#RecordHashes_FilteringElementsOr: 結果が空っぽ☆"); }
+            return hitRecordHashes;
         }
 
-        public static HashSet<int> RecordIndexes_FilteringElementsNotAndNot(HashSet<int> lockerNumbers, List<HashSet<int>> recordIndexeslockers, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_FilteringElementsNotAndNot(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers, Dictionary<int, StateExRecordable> universe)
         {
-            HashSet<int> recordIndexesSet = new HashSet<int>();// どんどんレコード・インデックスを追加していく
+            HashSet<int> recordHashesSet = new HashSet<int>();// どんどんレコード・インデックスを追加していく
             foreach (int lockerNumber in lockerNumbers)
             {
-                HashSet<int> locker = recordIndexeslockers[lockerNumber];
-                foreach (int recordIndex in locker)
+                HashSet<int> locker = recordHasheslockers[lockerNumber];
+                foreach (int recordHash in locker)
                 {
-                    recordIndexesSet.Add(recordIndex);
+                    recordHashesSet.Add(recordHash);
                 }
             }
 
-            List<int> complementRecordIndexes = new List<int>(universe.Keys); // 補集合を取る（全集合から要素を除外していく）
+            List<int> complementRecordHashes = new List<int>(universe.Keys); // 補集合を取る（全集合から要素を除外していく）
             {
-                for (int iComp = complementRecordIndexes.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
+                for (int iComp = complementRecordHashes.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
                 {
-                    if (recordIndexesSet.Contains(complementRecordIndexes[iComp])) // 集合にある要素を削除
+                    if (recordHashesSet.Contains(complementRecordHashes[iComp])) // 集合にある要素を削除
                     {
-                        complementRecordIndexes.RemoveAt(iComp);
+                        complementRecordHashes.RemoveAt(iComp);
                     }
                 }
             }
 
-            return new HashSet<int>(complementRecordIndexes);
+            return new HashSet<int>(complementRecordHashes);
         }
 
-        public static HashSet<int> RecordIndexes_FilteringAttributesAnd(HashSet<int> attrs, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_FilteringAttributesAnd(HashSet<int> attrs, Dictionary<int, StateExRecordable> universe)
         {
-            HashSet<int> hitRecordIndexes = new HashSet<int>(universe.Keys);
+            HashSet<int> hitRecordHashes = new HashSet<int>(universe.Keys);
             foreach (int attr in attrs)
             {
                 HashSet<int> records_empty = new HashSet<int>();
-                foreach (int recordIndex in hitRecordIndexes)
+                foreach (int recordHash in hitRecordHashes)
                 {
-                    if (universe[recordIndex].HasFlag_attr(attr)) { records_empty.Add(recordIndex); }// 該当したもの
+                    if (universe[recordHash].HasFlag_attr(attr)) { records_empty.Add(recordHash); }// 該当したもの
                 }
-                hitRecordIndexes = records_empty;
+                hitRecordHashes = records_empty;
             }
-            return hitRecordIndexes;
+            return hitRecordHashes;
         }
 
-        public static HashSet<int> RecordIndexes_FilteringAttributesOr(HashSet<int> attrs, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_FilteringAttributesOr(HashSet<int> attrs, Dictionary<int, StateExRecordable> universe)
         {
             HashSet<int> distinctAttr = new HashSet<int>();// まず属性の重複を除外
             foreach (int attr in attrs) { distinctAttr.Add(attr); }
 
-            HashSet<int> hitRecordIndexes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
+            HashSet<int> hitRecordHashes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
             foreach (KeyValuePair<int, StateExRecordable> pair in universe)
             {
                 foreach (int attr in distinctAttr)
                 {
-                    if (pair.Value.HasFlag_attr(attr)) { hitRecordIndexes.Add(pair.Key); }
+                    if (pair.Value.HasFlag_attr(attr)) { hitRecordHashes.Add(pair.Key); }
                 }
             }
 
-            return hitRecordIndexes;
+            return hitRecordHashes;
         }
 
-        public static HashSet<int> RecordIndexes_FilteringAttributesNotAndNot(HashSet<int> attrs, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_FilteringAttributesNotAndNot(HashSet<int> attrs, Dictionary<int, StateExRecordable> universe)
         {
             HashSet<int> distinctAttr = new HashSet<int>();// まず属性の重複を除外
             foreach (int attr in attrs) { distinctAttr.Add(attr); }
 
-            HashSet<int> hitRecordIndexes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
+            HashSet<int> hitRecordHashes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
             foreach (KeyValuePair<int, StateExRecordable> pair in universe)
             {
                 foreach (int attr in distinctAttr)
                 {
-                    if (pair.Value.HasFlag_attr(attr)) { hitRecordIndexes.Add(pair.Key); }
+                    if (pair.Value.HasFlag_attr(attr)) { hitRecordHashes.Add(pair.Key); }
                 }
             }
 
-            List<int> complementRecordIndexes = new List<int>();// 補集合を取る
+            List<int> complementRecordHashes = new List<int>();// 補集合を取る
             {
-                foreach (int recordIndex in universe.Keys) { complementRecordIndexes.Add(recordIndex); }// 列挙型の中身をリストに移動。
-                for (int iComp = complementRecordIndexes.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
+                foreach (int recordHash in universe.Keys) { complementRecordHashes.Add(recordHash); }// 列挙型の中身をリストに移動。
+                for (int iComp = complementRecordHashes.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
                 {
-                    if (hitRecordIndexes.Contains(complementRecordIndexes[iComp]))
+                    if (hitRecordHashes.Contains(complementRecordHashes[iComp]))
                     {
-                        // Debug.Log("Remove[" + iComp + "] (" + complementRecordIndexes[iComp] + ")");
-                        complementRecordIndexes.RemoveAt(iComp);
+                        complementRecordHashes.RemoveAt(iComp);
                     }
-                    // else { Debug.Log("Tick[" + iComp + "] (" + complementRecordIndexes[iComp] + ")"); }
                 }
             }
 
-            return new HashSet<int>(complementRecordIndexes);
+            return new HashSet<int>(complementRecordHashes);
         }
     }
 
