@@ -4,6 +4,7 @@
 using UnityEditor.Animations;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Text;
 
 namespace StellaQL
 {
@@ -73,11 +74,13 @@ namespace StellaQL
             }
             return null;
         }
+        #endregion
 
-        public static void UpdateProperty(AnimatorController ac, Dictionary<string,string> properties, HashSet<AnimatorState> states)
+        public static void UpdateProperty(AnimatorController ac, Dictionary<string,string> properties, HashSet<AnimatorState> states, StringBuilder message)
         {
             foreach (AnimatorState state in states) // 指定されたステート全て対象
             {
+                message.Append("Update: "); message.AppendLine(state.name);
                 foreach (KeyValuePair<string,string> pair in properties)
                 {
                     switch (pair.Key)
@@ -107,7 +110,16 @@ namespace StellaQL
                 }
             }
         }
-        #endregion
+
+        public static void Select(AnimatorController ac, HashSet<AnimatorState> states, out HashSet<StateRecord> recordSet, StringBuilder message)
+        {
+            recordSet = new HashSet<StateRecord>();
+            foreach (AnimatorState state in states) // 指定されたステート全て対象
+            {
+                recordSet.Add(new StateRecord(0,0,0,state));
+            }
+            message.Append("result: "); message.Append(recordSet.Count); message.AppendLine(" records.");
+        }
     }
 
     /// <summary>
@@ -150,10 +162,16 @@ namespace StellaQL
         /// ２つのステートを トランジションで結ぶ。ステートは複数指定でき、src→dst方向の総当たりで全部結ぶ。
         /// </summary>
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
-        public static void AddAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst)
+        public static void AddAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, StringBuilder message)
         {
             foreach (AnimatorState state_src in states_src) {
-                foreach (AnimatorState state_dst in states_dst) { state_src.AddTransition(state_dst); }
+                foreach (AnimatorState state_dst in states_dst) {
+                    message.Append("Insert: ");
+                    message.Append(state_src.name);
+                    message.Append(" -> ");
+                    message.Append(state_dst.name);
+                    state_src.AddTransition(state_dst);
+                }
             }
         }
 
@@ -161,7 +179,7 @@ namespace StellaQL
         /// ２つのステート間の トランジションを削除する。ステートは複数指定でき、src→dst方向の総当たりで全部削除する。
         /// </summary>
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
-        public static void RemoveAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst)
+        public static void RemoveAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, StringBuilder message)
         {
             foreach (AnimatorState state_src in states_src)
             {
@@ -172,6 +190,11 @@ namespace StellaQL
                         if (state_dst == transition.destinationState)
                         {
                             state_src.RemoveTransition(transition);
+                            message.Append("deleted: ");
+                            message.Append(state_src.name);
+                            message.Append(" -> ");
+                            message.Append(state_dst.name);
+                            message.AppendLine();
                             // break; // 複数、同じところにトランジションを貼れるみたいなんで、全部消そう☆
                         }
                     }
@@ -179,7 +202,7 @@ namespace StellaQL
             }
         }
 
-        public static void UpdateProperty(AnimatorController ac, Dictionary<string, string> properties, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst)
+        public static void UpdateProperty(AnimatorController ac, Dictionary<string, string> properties, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, StringBuilder message)
         {
             foreach (AnimatorState state_src in states_src) // 指定されたステート全て対象
             {
@@ -189,6 +212,10 @@ namespace StellaQL
                     {
                         if (state_dst == transition.destinationState)
                         {
+                            message.Append("Update: ");
+                            message.Append(state_src.name);
+                            message.Append(" -> ");
+                            message.Append(state_dst.name);
                             foreach (KeyValuePair<string, string> pair in properties)
                             {
                                 switch (pair.Key)
@@ -216,6 +243,28 @@ namespace StellaQL
                     }
                 }
             }
+        }
+
+        public static void Select(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, out HashSet<TransitionRecord> recordSet, StringBuilder message)
+        {
+            recordSet = new HashSet<TransitionRecord>();
+            StringBuilder stellaQLComment = new StringBuilder();
+            foreach (AnimatorState state_src in states_src) // 指定されたステート全て対象
+            {
+                foreach (AnimatorStateTransition transition in state_src.transitions)
+                {
+                    foreach (AnimatorState state_dst in states_dst) // 指定されたステート全て対象
+                    {
+                        if (state_dst == transition.destinationState)
+                        {
+                            stellaQLComment.Append("Select: "); stellaQLComment.Append(state_src.name); stellaQLComment.Append(" -> "); stellaQLComment.AppendLine(state_dst.name);
+                            recordSet.Add(new TransitionRecord(0,0,0,0,transition, stellaQLComment.ToString()));
+                            stellaQLComment.Length = 0;
+                        }
+                    }
+                }
+            }
+            message.Append("Select: result "); message.Append(recordSet.Count); message.AppendLine(" transitions.");;
         }
     }
 

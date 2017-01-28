@@ -178,15 +178,17 @@ namespace StellaQL
         public bool writeDefaultValues;
         #endregion
 
-        public StateRecord(int layerNum, int machineStateNum, int stateNum, ChildAnimatorState caState, List<PositionRecord> positionsTable)
+        public static StateRecord CreateInstance(int layerNum, int machineStateNum, int stateNum, ChildAnimatorState caState, List<PositionRecord> positionsTable)
+        {
+            positionsTable.Add(new PositionRecord(layerNum, machineStateNum, stateNum, -1, -1, "position", caState.position));
+            return new StateRecord(layerNum, machineStateNum, stateNum, caState.state);
+        }
+        public StateRecord(int layerNum, int machineStateNum, int stateNum, AnimatorState state)
         {
             this.layerNum = layerNum;
             this.machineStateNum = machineStateNum;
             this.stateNum = stateNum;
 
-            positionsTable.Add(new PositionRecord(layerNum, machineStateNum, stateNum, -1, -1, "position", caState.position));
-
-            AnimatorState state = caState.state; ;
             cycleOffset = state.cycleOffset;
             cycleOffsetParameter = state.cycleOffsetParameter;
             hideFlags = state.hideFlags.ToString();
@@ -258,14 +260,17 @@ namespace StellaQL
         public float offset;
         public bool orderedInterruption;
         public bool solo;
+        public string stellaQLComment;
         #endregion
 
-        public TransitionRecord(int layerNum, int machineStateNum, int stateNum, int transitionNum, AnimatorStateTransition transition)
+        public TransitionRecord(int layerNum, int machineStateNum, int stateNum, int transitionNum, AnimatorStateTransition transition, string stellaQLComment)
         {
             this.layerNum = layerNum;
             this.machineStateNum = machineStateNum;
             this.stateNum = stateNum;
             this.transitionNum = transitionNum;
+            this.stellaQLComment = stellaQLComment;
+
             canTransitionToSelf = transition.canTransitionToSelf;
             //conditions = transition.conditions.ToString();
 
@@ -290,7 +295,7 @@ namespace StellaQL
             solo = transition.solo;
         }
 
-        public void CreateCsv(StringBuilder sb)
+        public void CreateCsvLine(StringBuilder sb)
         {
             sb.Append(layerNum); sb.Append(",");
             sb.Append(machineStateNum); sb.Append(",");
@@ -312,10 +317,10 @@ namespace StellaQL
             sb.Append(offset); sb.Append(",");
             sb.Append(orderedInterruption); sb.Append(",");
             sb.Append(solo); sb.Append(",");
+            sb.AppendLine();
         }
 
-        public static string ColumnNameCsv { get { return "LayerNum,MachineStateNum,StateNum,TransitionNum,CanTransitionToSelf,DestinationState_Name,DestinationState_NameHash,DestinationStateMachine,Duration,ExitTime,HasExitTime,HasFixedDuration,HideFlags,InterruptionSource,IsExit,Mute,Name,Offset,OrderedInterruption,Solo,"; } }
-        //,Conditions
+        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine("LayerNum,MachineStateNum,StateNum,TransitionNum,CanTransitionToSelf,DestinationState_Name,DestinationState_NameHash,DestinationStateMachine,Duration,ExitTime,HasExitTime,HasFixedDuration,HideFlags,InterruptionSource,IsExit,Mute,Name,Offset,OrderedInterruption,Solo,"); }
     }
 
     /// <summary>
@@ -440,147 +445,123 @@ namespace StellaQL
     {
         public static List<LayerRecord> table_layer = new List<LayerRecord>();
         public static List<StatemachineRecord> table_statemachine = new List<StatemachineRecord>();
-        public static List<StateRecord> table_state = new List<StateRecord>();
-        public static List<TransitionRecord> table_transition = new List<TransitionRecord>();
+        public static HashSet<StateRecord> table_state = new HashSet<StateRecord>();
+        public static HashSet<TransitionRecord> table_transition = new HashSet<TransitionRecord>();
         public static List<ConditionRecord> table_condition = new List<ConditionRecord>();
         public static List<PositionRecord> table_position = new List<PositionRecord>();
 
-        public static void WriteCsv_Parameters(AnimatorController ac, out string resultMessage)
+        public static void WriteCsv_Parameters(AnimatorController ac, StringBuilder message)
         {
-            Debug.Log("Parameters Scanning...☆（＾～＾）");
+            message.AppendLine("Parameters Scanning...☆（＾～＾）");
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder contents = new StringBuilder();
             // 見出し列
-            sb.AppendLine("Num,Name,Bool,Float,Int,NameHash");
+            contents.AppendLine("Num,Name,Bool,Float,Int,NameHash");
 
             AnimatorControllerParameter[] acpArray = ac.parameters;
             int num = 0;
             foreach (AnimatorControllerParameter acp in acpArray)
             {
-                sb.Append(num);
-                sb.Append(",");
-                sb.Append(acp.name);
-                sb.Append(",");
-                sb.Append(acp.defaultBool);
-                sb.Append(",");
-                sb.Append(acp.defaultFloat);
-                sb.Append(",");
-                sb.Append(acp.defaultInt);
-                sb.Append(",");
-                sb.Append(acp.nameHash);
-                sb.Append(",");
+                contents.Append(num);
+                contents.Append(",");
+                contents.Append(acp.name);
+                contents.Append(",");
+                contents.Append(acp.defaultBool);
+                contents.Append(",");
+                contents.Append(acp.defaultFloat);
+                contents.Append(",");
+                contents.Append(acp.defaultInt);
+                contents.Append(",");
+                contents.Append(acp.nameHash);
+                contents.Append(",");
 
-                sb.AppendLine();
+                contents.AppendLine();
                 num++;
             }
 
-            //Debug.Log(sb.ToString());
-            string filepath = "./_log_anicon_parameters.csv";
-            File.WriteAllText(filepath, sb.ToString());
-            resultMessage = "Writed☆（＾▽＾） " + Path.GetFullPath(filepath);
-            Debug.Log(resultMessage);
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogParameters(ac.name), contents, message);
         }
 
-        public static void WriteCsv_Layer(string filenameWE, out string resultMessage)
+        public static void WriteCsv_Layer(string aniconName, StringBuilder message)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(LayerRecord.ColumnNameCsv); sb.AppendLine();
+            StringBuilder contents = new StringBuilder();
+            contents.Append(LayerRecord.ColumnNameCsv); contents.AppendLine();
 
-            foreach (LayerRecord layerRecord in table_layer)
-            {
-                layerRecord.CreateCsv(sb);
-                sb.AppendLine();
+            foreach (LayerRecord layerRecord in table_layer) {
+                layerRecord.CreateCsv(contents);
+                contents.AppendLine();
             }
 
-            string filepath = "./_log_(" + filenameWE + ")layers.csv";
-            File.WriteAllText(filepath, sb.ToString());
-            resultMessage = "Writed☆（＾▽＾） " + Path.GetFullPath(filepath);
-            Debug.Log(resultMessage);
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogLayer(aniconName), contents, message);
         }
 
-        public static void WriteCsv_Statemachine(string filenameWE, out string resultMessage)
+        public static void WriteCsv_Statemachine(string aniconName, StringBuilder message)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(StatemachineRecord.ColumnNameCsv); sb.AppendLine();
+            StringBuilder contents = new StringBuilder();
+            contents.Append(StatemachineRecord.ColumnNameCsv); contents.AppendLine();
 
-            foreach (StatemachineRecord stateMachine in table_statemachine)
-            {
-                stateMachine.CreateCsv(sb);
-                sb.AppendLine();
+            foreach (StatemachineRecord stateMachine in table_statemachine) {
+                stateMachine.CreateCsv(contents);
+                contents.AppendLine();
             }
 
-            string filepath = "./_log_(" + filenameWE + ")stateMachines.csv";
-            File.WriteAllText(filepath, sb.ToString());
-            resultMessage = "Writed☆（＾▽＾） " + Path.GetFullPath(filepath);
-            Debug.Log(resultMessage);
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogStatemachine(aniconName), contents, message);
         }
 
-        public static void WriteCsv_State(string filenameWE, out string resultMessage)
+        public static void CreateCsvTable_State(HashSet<StateRecord> table, StringBuilder contents)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(StateRecord.ColumnNameCsv); sb.AppendLine();
-
-            foreach (StateRecord stateRecord in table_state)
+            contents.Append(StateRecord.ColumnNameCsv); contents.AppendLine();
+            foreach (StateRecord stateRecord in table)
             {
-                stateRecord.CreateCsv(sb);
-                sb.AppendLine();
+                stateRecord.CreateCsv(contents);
+                contents.AppendLine();
             }
-
-            string filepath = "./_log_(" + filenameWE + ")states.csv";
-            File.WriteAllText(filepath, sb.ToString());
-            resultMessage = "Writed☆（＾▽＾） " + Path.GetFullPath(filepath);
-            Debug.Log(resultMessage);
+        }
+        public static void WriteCsv_State(string aniconName, StringBuilder message)
+        {
+            StringBuilder contents = new StringBuilder();
+            CreateCsvTable_State(table_state, contents);
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogStates(aniconName), contents, message);
         }
 
-        public static void WriteCsv_Transition(string filenameWE, out string resultMessage)
+        public static void CreateCsvTable_Transition(HashSet<TransitionRecord> table, StringBuilder contents)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(TransitionRecord.ColumnNameCsv); sb.AppendLine();
-
-            foreach (TransitionRecord transitionRecord in table_transition)
-            {
-                transitionRecord.CreateCsv(sb);
-                sb.AppendLine();
-            }
-
-            string filepath = "./_log_(" + filenameWE + ")transitions.csv";
-            File.WriteAllText(filepath, sb.ToString());
-            resultMessage = "Writed☆（＾▽＾） " + Path.GetFullPath(filepath);
-            Debug.Log(resultMessage);
+            TransitionRecord.ColumnNameCsvLine(contents);
+            foreach (TransitionRecord record in table) { record.CreateCsvLine(contents); }
+        }
+        public static void WriteCsv_Transition(string aniconName, StringBuilder message)
+        {
+            StringBuilder contents = new StringBuilder();
+            CreateCsvTable_Transition(table_transition, contents);
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransition(aniconName), contents, message);
         }
 
-        public static void WriteCsv_Condition(string filenameWE, out string resultMessage)
+        public static void WriteCsv_Condition(string aniconName, StringBuilder message)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(ConditionRecord.ColumnNameCsv); sb.AppendLine();
+            StringBuilder contents = new StringBuilder();
+            contents.Append(ConditionRecord.ColumnNameCsv); contents.AppendLine();
 
             foreach (ConditionRecord conditionRecord in table_condition)
             {
-                conditionRecord.CreateCsv(sb);
-                sb.AppendLine();
+                conditionRecord.CreateCsv(contents);
+                contents.AppendLine();
             }
 
-            string filepath = "./_log_(" + filenameWE + ")conditions.csv";
-            File.WriteAllText(filepath, sb.ToString());
-            resultMessage = "Writed☆（＾▽＾） " + Path.GetFullPath(filepath);
-            Debug.Log(resultMessage);
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogConditions(aniconName), contents, message);
         }
 
-        public static void WriteCsv_Position(string filenameWE, out string resultMessage)
+        public static void WriteCsv_Position(string aniconName, StringBuilder message)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(PositionRecord.ColumnNameCsv); sb.AppendLine();
+            StringBuilder contents = new StringBuilder();
+            contents.Append(PositionRecord.ColumnNameCsv); contents.AppendLine();
 
             foreach (PositionRecord positionRecord in table_position)
             {
-                positionRecord.CreateCsv(sb);
-                sb.AppendLine();
+                positionRecord.CreateCsv(contents);
+                contents.AppendLine();
             }
 
-            string filepath = "./_log_(" + filenameWE + ")positions.csv";
-            File.WriteAllText(filepath, sb.ToString());
-            resultMessage = "Writed☆（＾▽＾） " + Path.GetFullPath(filepath);
-            Debug.Log(resultMessage);
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogPositions(aniconName), contents, message);
         }
 
         private static void ScanRecursive(List<AnimatorStateMachine> aStateMachineList, AnimatorStateMachine stateMachine)
@@ -593,9 +574,9 @@ namespace StellaQL
             }
         }
 
-        public static void ScanAnimatorController(AnimatorController ac, out string resultMessage)
+        public static void ScanAnimatorController(AnimatorController ac, StringBuilder message)
         {
-            Debug.Log("States Scanning...☆（＾～＾）");
+            message.AppendLine("States Scanning...☆（＾～＾）");
             table_layer.Clear();
             table_state.Clear();
             table_transition.Clear();
@@ -617,12 +598,12 @@ namespace StellaQL
 
                     foreach (ChildAnimatorState caState in stateMachine.states)
                     {
-                        StateRecord stateRecord = new StateRecord(table_layer.Count, table_statemachine.Count, table_state.Count, caState, table_position);
+                        StateRecord stateRecord = StateRecord.CreateInstance(table_layer.Count, table_statemachine.Count, table_state.Count, caState, table_position);
                         table_state.Add(stateRecord);
 
                         foreach (AnimatorStateTransition transition in caState.state.transitions)
                         {
-                            TransitionRecord transitionRecord = new TransitionRecord(table_layer.Count, table_statemachine.Count, table_state.Count, table_transition.Count, transition);
+                            TransitionRecord transitionRecord = new TransitionRecord(table_layer.Count, table_statemachine.Count, table_state.Count, table_transition.Count, transition, "");
                             table_transition.Add(transitionRecord);
 
                             foreach (AnimatorCondition aniCondition in transition.conditions)
@@ -636,8 +617,7 @@ namespace StellaQL
 
             }//レイヤー
 
-            resultMessage = "Scanned☆（＾▽＾）";
-            Debug.Log(resultMessage);
+            message.AppendLine( "Scanned☆（＾▽＾）");
         }
 
     }

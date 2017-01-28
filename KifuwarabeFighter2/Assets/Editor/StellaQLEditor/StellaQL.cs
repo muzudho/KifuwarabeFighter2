@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor.Animations;
+using System.IO;
 
 /// <summary>
 /// 解説: 「UnityEditorを使って2D格闘(2D Fighting game)作るときのモーション遷移図作成の半自動化に挑戦しよう＜その４＞」 http://qiita.com/muzudho1/items/baf4b06cdcda96ca9a11
@@ -175,40 +176,36 @@ namespace StellaQL
     /// </summary>
     public abstract class Querier
     {
-        public static bool Execute(AnimatorController ac, string query, Type enumration, Dictionary<int, StateExRecordable> universe, out string message)
+        public static bool Execute(AnimatorController ac, string query, Type enumration, Dictionary<int, StateExRecordable> universe, out StringBuilder message)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
-
             QueryTokens sq;
+            message = new StringBuilder();
 
-            if (SyntaxP.ParseStatement_StateSelect(query, out sq)) {
-                HashSet<int> recordIndexes = QueryTokensUtility.RecordIndexes_Where(sq, enumration, universe);
-                StringBuilder sb = new StringBuilder();
-                int i = 0;
-                foreach (int recordIndex in recordIndexes)
-                {
-                    sb.AppendLine(i+": record["+ recordIndex+"]"); i++;
-                    //sb.AppendLine(Convert.ChangeType(recordIndex,enumration).ToString());
-                }
-                message = sb.ToString();
-                return true;
-            }
-            else if (SyntaxP.ParseStatement_StateUpdate(query, out sq))
+            if (SyntaxP.ParseStatement_StateUpdate(query, out sq))
             {
                 HashSet<int> recordIndexes = QueryTokensUtility.RecordIndexes_Where(sq, enumration, universe);
-                StringBuilder sb = new StringBuilder();
                 foreach (KeyValuePair<string, string> pair in sq.Set)
                 {
-                    sb.AppendLine(pair.Key + "=" + pair.Value);
+                    message.AppendLine(pair.Key + "=" + pair.Value);
                 }
-                AniconOpe_State.UpdateProperty(ac, sq.Set, Fetcher.FetchAll(ac, recordIndexes, universe));
+                AniconOpe_State.UpdateProperty(ac, sq.Set, Fetcher.FetchAll(ac, recordIndexes, universe), message);
                 int i = 0;
                 foreach (int recordIndex in recordIndexes)
                 {
-                    sb.AppendLine(i + ": record[" + recordIndex + "]"); i++;
+                    message.AppendLine(i + ": record[" + recordIndex + "]"); i++;
                     //sb.AppendLine(Convert.ChangeType(recordIndex,enumration).ToString());
                 }
-                message = sb.ToString();
+                return true;
+            }
+            else if (SyntaxP.ParseStatement_StateSelect(query, out sq))
+            {
+                HashSet<int> recordIndexes = QueryTokensUtility.RecordIndexes_Where(sq, enumration, universe);
+                HashSet<StateRecord> recordSet;
+                AniconOpe_State.Select(ac, Fetcher.FetchAll(ac, recordIndexes, universe), out recordSet, message);
+                StringBuilder contents = new StringBuilder();
+                AniconTables.CreateCsvTable_State(recordSet, contents);
+                StellaQLWriter.Write(StellaQLWriter.Filepath_LogStateSelect(ac.name), contents, message);
                 return true;
             }
             else if (SyntaxP.ParseStatement_TransitionInsert(query, out sq))
@@ -217,24 +214,22 @@ namespace StellaQL
                 HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);
                 AniconOpe_Transition.AddAll(ac,
                     Fetcher.FetchAll(ac, recordIndexesFrom, universe),
-                    Fetcher.FetchAll(ac, recordIndexesTo, universe) );
-                message = "開発中";
+                    Fetcher.FetchAll(ac, recordIndexesTo, universe),
+                    message);
                 return true;
             }
             else if (SyntaxP.ParseStatement_TransitionUpdate(query, out sq))
             {
-                StringBuilder sb = new StringBuilder();
                 foreach (KeyValuePair<string,string> pair in sq.Set)
                 {
-                    sb.AppendLine(pair.Key+"="+pair.Value);
+                    message.AppendLine(pair.Key+"="+pair.Value);
                 }
                 HashSet<int> recordIndexesFrom = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);
                 HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);
                 AniconOpe_Transition.UpdateProperty(ac, sq.Set,
                     Fetcher.FetchAll(ac, recordIndexesFrom, universe),
-                    Fetcher.FetchAll(ac, recordIndexesTo, universe)
-                    );
-                message = sb.ToString();
+                    Fetcher.FetchAll(ac, recordIndexesTo, universe),
+                    message);
                 return true;
             }
             else if (SyntaxP.ParseStatement_TransitionDelete(query, out sq))
@@ -243,18 +238,26 @@ namespace StellaQL
                 HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);
                 AniconOpe_Transition.RemoveAll(ac,
                     Fetcher.FetchAll(ac, recordIndexesFrom, universe),
-                    Fetcher.FetchAll(ac, recordIndexesTo, universe));
-                message = "開発中";
+                    Fetcher.FetchAll(ac, recordIndexesTo, universe),
+                    message);
                 return true;
             }
             else if (SyntaxP.ParseStatement_TransitionSelect(query, out sq)) {
                 HashSet<int> recordIndexesFrom = QueryTokensUtility.RecordIndexes_From(sq, enumration, universe);
                 HashSet<int> recordIndexesTo = QueryTokensUtility.RecordIndexes_To(sq, enumration, universe);
-                message = "開発中";
+                HashSet<TransitionRecord> recordSet;
+                AniconOpe_Transition.Select(ac,
+                    Fetcher.FetchAll(ac, recordIndexesFrom, universe),
+                    Fetcher.FetchAll(ac, recordIndexesTo, universe),
+                    out recordSet,
+                    message);
+                StringBuilder contents = new StringBuilder();
+                AniconTables.CreateCsvTable_Transition(recordSet, contents);
+                StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransitionSelect(ac.name), contents, message);
                 return true;
             }
 
-            message = "構文該当無し";
+            message.AppendLine( "構文該当無し");
             return false;
         }
 

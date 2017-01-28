@@ -18,7 +18,6 @@ namespace StellaQL
         string commandline = "now constraction";
         string infoMessage = "Hello World";
         string pathController = "Assets/Resources/AnimatorControllers/AniCon@Char3.controller";
-        string filenameWE = "";
         Vector2 scroll;
 
         /// <summary>
@@ -47,43 +46,28 @@ namespace StellaQL
             if (GUILayout.Button("Execute"))
             {
                 Debug.Log("Executeボタンを押した☆ myText2=" + commandline);
-                Querier.Execute(ac, commandline, typeof(StellaQLTest.StateExTable.Attr), StellaQLTest.InstanceTable.index_to_exRecord, out infoMessage);
+                StringBuilder message;
+                Querier.Execute(ac, commandline, typeof(StellaQLTest.StateExTable.Attr), StellaQLTest.InstanceTable.index_to_exRecord, out message);
+                infoMessage = message.ToString();
             }
 
             GUILayout.Space(4.0f);
             if (GUILayout.Button("Export CSV"))
             {
-                filenameWE = Path.GetFileNameWithoutExtension(pathController);
-                Debug.Log("Start☆（＾～＾）！ filename(without extension) = " + filenameWE);
+                Debug.Log("Start☆（＾～＾）！ filename(without extension) = " + ac.name);
 
-                StringBuilder sb = new StringBuilder();
-                string resultMessage;
+                StringBuilder message = new StringBuilder();
 
-                AniconTables.WriteCsv_Parameters(ac, out resultMessage);
-                sb.AppendLine(resultMessage);
+                AniconTables.WriteCsv_Parameters(ac, message);
+                AniconTables.ScanAnimatorController(ac, message);
+                AniconTables.WriteCsv_Layer(ac.name, message);
+                AniconTables.WriteCsv_Statemachine(ac.name, message);
+                AniconTables.WriteCsv_State(ac.name, message);
+                AniconTables.WriteCsv_Transition(ac.name, message);
+                AniconTables.WriteCsv_Condition(ac.name, message);
+                AniconTables.WriteCsv_Position(ac.name, message);
 
-                AniconTables.ScanAnimatorController(ac, out resultMessage);
-                sb.AppendLine(resultMessage);
-
-                AniconTables.WriteCsv_Layer(filenameWE, out resultMessage);
-                sb.AppendLine(resultMessage);
-
-                AniconTables.WriteCsv_Statemachine(filenameWE, out resultMessage);
-                sb.AppendLine(resultMessage);
-
-                AniconTables.WriteCsv_State(filenameWE, out resultMessage);
-                sb.AppendLine(resultMessage);
-
-                AniconTables.WriteCsv_Transition(filenameWE, out resultMessage);
-                sb.AppendLine(resultMessage);
-
-                AniconTables.WriteCsv_Condition(filenameWE, out resultMessage);
-                sb.AppendLine(resultMessage);
-
-                AniconTables.WriteCsv_Position(filenameWE, out resultMessage);
-                sb.AppendLine(resultMessage);
-
-                infoMessage = sb.ToString();
+                infoMessage = message.ToString();
                 Repaint();
             }
 

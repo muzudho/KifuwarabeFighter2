@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
 using System;
+using System.Text;
 using StellaQL;
 
 //[ExecuteInEditMode]
@@ -79,7 +80,8 @@ public class AnimatorControllerSample : MonoBehaviour {
             AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi5"),
         };
         Debug.Log("states.Count = " + states.Count);
-        AniconOpe_Transition.AddAll(ac, states, states);
+        StringBuilder message = new StringBuilder();
+        AniconOpe_Transition.AddAll(ac, states, states, message);
     }
 
     [MenuItem("(^_^)Menu/TestWhere 4")]
