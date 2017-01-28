@@ -73,93 +73,38 @@ public class StellaQLTest {
 
         public StateExTable()
         {
-            fullpath_to_index = new Dictionary<string, int>()
+            List<StateExRecordable> temp = new List<StateExRecordable>()
             {
-                {FULLPATH_ALPACA, 0 },
-                {FULLPATH_BEAR, 1 },
-                {FULLPATH_CAT, 2 },
-                {FULLPATH_DOG, 3 },
-                {FULLPATH_ELEPHANT, 4 },
-                {FULLPATH_FOX, 5 },
-                {FULLPATH_GIRAFFE, 6 },
-                {FULLPATH_HORSE, 7 },
-                {FULLPATH_IGUANA, 8 },
-                {FULLPATH_JELLYFISH, 9 },
-                {FULLPATH_KANGAROO, 10 },
-                {FULLPATH_LION, 11 },
-                {FULLPATH_MONKEY, 12 },
-                {FULLPATH_NUTRIA, 13 },
-                {FULLPATH_OX, 14 },
-                {FULLPATH_PIG, 15 },
-                {FULLPATH_QUETZAL, 16 },
-                {FULLPATH_RABBIT, 17 },
-                {FULLPATH_SHEEP, 18 },
-                {FULLPATH_TIGER, 19 },
-                {FULLPATH_UNICORN, 20 },
-                {FULLPATH_VIXEN, 21 },
-                {FULLPATH_WOLF, 22 },
-                {FULLPATH_XENOPUS, 23 },
-                {FULLPATH_YAK, 24 },
-                {FULLPATH_ZEBRA, 25 },
+                StateExRecord.Build(  FULLPATH_ALPACA, Attr.Alpha | Attr.Cee),// {E}(1) AC(1) ([(A C)(B)]{E})(1)
+                StateExRecord.Build(  FULLPATH_BEAR, Attr.Alpha | Attr.Beta | Attr.Eee),// B(1) AE(1) AE,B,E(1)
+                StateExRecord.Build(  FULLPATH_CAT, Attr.Alpha | Attr.Cee),// {E}(2) AC(2) ([(A C)(B)]{E})(2)
+                StateExRecord.Build(  FULLPATH_DOG, Attr.Dee),// {E}(3)
+                StateExRecord.Build(  FULLPATH_ELEPHANT, Attr.Alpha | Attr.Eee),//AE(2) AE,B,E(2) Nn(1)
+                StateExRecord.Build(  FULLPATH_FOX, Attr.Zero),// {E}(4)
+                StateExRecord.Build(  FULLPATH_GIRAFFE, Attr.Alpha | Attr.Eee),//AE(3) AE,B,E(3)
+                StateExRecord.Build(  FULLPATH_HORSE, Attr.Eee),// AE,B,E(4)
+                StateExRecord.Build(  FULLPATH_IGUANA, Attr.Alpha),// {E}(5) Nn(2)
+                StateExRecord.Build(  FULLPATH_JELLYFISH, Attr.Eee),// AE,B,E(5)
+                StateExRecord.Build(  FULLPATH_KANGAROO, Attr.Alpha),// {E}(6) Nn(3)
+                StateExRecord.Build(  FULLPATH_LION, Attr.Zero),// {E}(7) Nn(4)
+                StateExRecord.Build(  FULLPATH_MONKEY, Attr.Eee),// AE,B,E(6) Nn(5)
+                StateExRecord.Build(  FULLPATH_NUTRIA, Attr.Alpha),// {E}(8) Nn(6)
+                StateExRecord.Build(  FULLPATH_OX, Attr.Zero),// {E}(9)
+                StateExRecord.Build(  FULLPATH_PIG, Attr.Zero),// {E}(10)
+                StateExRecord.Build(  FULLPATH_QUETZAL, Attr.Alpha | Attr.Eee),//AE(4) AE,B,E(7)
+                StateExRecord.Build(  FULLPATH_RABBIT, Attr.Alpha | Attr.Beta),// {E}(11) B(2) ([(A C)(B)]{E})(3)  AE,B,E(8)
+                StateExRecord.Build(  FULLPATH_SHEEP, Attr.Eee),// AE,B,E(9)
+                StateExRecord.Build(  FULLPATH_TIGER, Attr.Eee),// AE,B,E(10)
+                StateExRecord.Build(  FULLPATH_UNICORN, Attr.Cee),// {E}(12) Nn(7)
+                StateExRecord.Build(  FULLPATH_VIXEN, Attr.Eee),// AE,B,E(11) Nn(8)
+                StateExRecord.Build(  FULLPATH_WOLF, Attr.Zero),// {E}(13)
+                StateExRecord.Build(  FULLPATH_XENOPUS, Attr.Eee),// AE,B,E(12) Nn(9)
+                StateExRecord.Build(  FULLPATH_YAK, Attr.Alpha),// {E}(14)
+                StateExRecord.Build(  FULLPATH_ZEBRA, Attr.Alpha | Attr.Beta | Attr.Eee),// B(3) AE(5) AE,B,E(13)
             };
-            Dictionary<string, int> fullpath_to_hash = new Dictionary<string, int>()
-            {
-                {FULLPATH_ALPACA, Animator.StringToHash(FULLPATH_ALPACA) },
-                {FULLPATH_BEAR, Animator.StringToHash(FULLPATH_BEAR) },
-                {FULLPATH_CAT, Animator.StringToHash(FULLPATH_CAT) },
-                {FULLPATH_DOG, Animator.StringToHash(FULLPATH_DOG) },
-                {FULLPATH_ELEPHANT, Animator.StringToHash(FULLPATH_ELEPHANT) },
-                {FULLPATH_FOX, Animator.StringToHash(FULLPATH_FOX) },
-                {FULLPATH_GIRAFFE, Animator.StringToHash(FULLPATH_GIRAFFE) },
-                {FULLPATH_HORSE, Animator.StringToHash(FULLPATH_HORSE) },
-                {FULLPATH_IGUANA, Animator.StringToHash(FULLPATH_IGUANA) },
-                {FULLPATH_JELLYFISH, Animator.StringToHash(FULLPATH_JELLYFISH) },
-                {FULLPATH_KANGAROO, Animator.StringToHash(FULLPATH_KANGAROO) },
-                {FULLPATH_LION, Animator.StringToHash(FULLPATH_LION) },
-                {FULLPATH_MONKEY, Animator.StringToHash(FULLPATH_MONKEY) },
-                {FULLPATH_NUTRIA, Animator.StringToHash(FULLPATH_NUTRIA) },
-                {FULLPATH_OX, Animator.StringToHash(FULLPATH_OX) },
-                {FULLPATH_PIG, Animator.StringToHash(FULLPATH_PIG) },
-                {FULLPATH_QUETZAL, Animator.StringToHash(FULLPATH_QUETZAL) },
-                {FULLPATH_RABBIT, Animator.StringToHash(FULLPATH_RABBIT) },
-                {FULLPATH_SHEEP, Animator.StringToHash(FULLPATH_SHEEP) },
-                {FULLPATH_TIGER, Animator.StringToHash(FULLPATH_TIGER) },
-                {FULLPATH_UNICORN, Animator.StringToHash(FULLPATH_UNICORN) },
-                {FULLPATH_VIXEN, Animator.StringToHash(FULLPATH_VIXEN) },
-                {FULLPATH_WOLF, Animator.StringToHash(FULLPATH_WOLF) },
-                {FULLPATH_XENOPUS, Animator.StringToHash(FULLPATH_XENOPUS) },
-                {FULLPATH_YAK, Animator.StringToHash(FULLPATH_YAK) },
-                {FULLPATH_ZEBRA, Animator.StringToHash(FULLPATH_ZEBRA) },
-            };
-            index_to_exRecord = new Dictionary<int, StateExRecordable>()//AstateIndex
-            {
-                {fullpath_to_index[FULLPATH_ALPACA], StateExRecord.Build(  FULLPATH_ALPACA, Attr.Alpha | Attr.Cee)},// {E}(1) AC(1) ([(A C)(B)]{E})(1)
-                {fullpath_to_index[FULLPATH_BEAR], StateExRecord.Build(  FULLPATH_BEAR, Attr.Alpha | Attr.Beta | Attr.Eee)},// B(1) AE(1) AE,B,E(1)
-                {fullpath_to_index[FULLPATH_CAT], StateExRecord.Build(  FULLPATH_CAT, Attr.Alpha | Attr.Cee)},// {E}(2) AC(2) ([(A C)(B)]{E})(2)
-                {fullpath_to_index[FULLPATH_DOG], StateExRecord.Build(  FULLPATH_DOG, Attr.Dee)},// {E}(3)
-                {fullpath_to_index[FULLPATH_ELEPHANT], StateExRecord.Build(  FULLPATH_ELEPHANT, Attr.Alpha | Attr.Eee)},//AE(2) AE,B,E(2) Nn(1)
-                {fullpath_to_index[FULLPATH_FOX], StateExRecord.Build(  FULLPATH_FOX, Attr.Zero)},// {E}(4)
-                {fullpath_to_index[FULLPATH_GIRAFFE], StateExRecord.Build(  FULLPATH_GIRAFFE, Attr.Alpha | Attr.Eee)},//AE(3) AE,B,E(3)
-                {fullpath_to_index[FULLPATH_HORSE], StateExRecord.Build(  FULLPATH_HORSE, Attr.Eee)},// AE,B,E(4)
-                {fullpath_to_index[FULLPATH_IGUANA], StateExRecord.Build(  FULLPATH_IGUANA, Attr.Alpha)},// {E}(5) Nn(2)
-                {fullpath_to_index[FULLPATH_JELLYFISH], StateExRecord.Build(  FULLPATH_JELLYFISH, Attr.Eee)},// AE,B,E(5)
-                {fullpath_to_index[FULLPATH_KANGAROO], StateExRecord.Build(  FULLPATH_KANGAROO, Attr.Alpha)},// {E}(6) Nn(3)
-                {fullpath_to_index[FULLPATH_LION], StateExRecord.Build(  FULLPATH_LION, Attr.Zero)},// {E}(7) Nn(4)
-                {fullpath_to_index[FULLPATH_MONKEY], StateExRecord.Build(  FULLPATH_MONKEY, Attr.Eee)},// AE,B,E(6) Nn(5)
-                {fullpath_to_index[FULLPATH_NUTRIA], StateExRecord.Build(  FULLPATH_NUTRIA, Attr.Alpha)},// {E}(8) Nn(6)
-                {fullpath_to_index[FULLPATH_OX], StateExRecord.Build(  FULLPATH_OX, Attr.Zero)},// {E}(9)
-                {fullpath_to_index[FULLPATH_PIG], StateExRecord.Build(  FULLPATH_PIG, Attr.Zero)},// {E}(10)
-                {fullpath_to_index[FULLPATH_QUETZAL], StateExRecord.Build(  FULLPATH_QUETZAL, Attr.Alpha | Attr.Eee)},//AE(4) AE,B,E(7)
-                {fullpath_to_index[FULLPATH_RABBIT], StateExRecord.Build(  FULLPATH_RABBIT, Attr.Alpha | Attr.Beta)},// {E}(11) B(2) ([(A C)(B)]{E})(3)  AE,B,E(8)
-                {fullpath_to_index[FULLPATH_SHEEP], StateExRecord.Build(  FULLPATH_SHEEP, Attr.Eee)},// AE,B,E(9)
-                {fullpath_to_index[FULLPATH_TIGER], StateExRecord.Build(  FULLPATH_TIGER, Attr.Eee)},// AE,B,E(10)
-                {fullpath_to_index[FULLPATH_UNICORN], StateExRecord.Build(  FULLPATH_UNICORN, Attr.Cee)},// {E}(12) Nn(7)
-                {fullpath_to_index[FULLPATH_VIXEN], StateExRecord.Build(  FULLPATH_VIXEN, Attr.Eee)},// AE,B,E(11) Nn(8)
-                {fullpath_to_index[FULLPATH_WOLF], StateExRecord.Build(  FULLPATH_WOLF, Attr.Zero)},// {E}(13)
-                {fullpath_to_index[FULLPATH_XENOPUS], StateExRecord.Build(  FULLPATH_XENOPUS, Attr.Eee)},// AE,B,E(12) Nn(9)
-                {fullpath_to_index[FULLPATH_YAK], StateExRecord.Build(  FULLPATH_YAK, Attr.Alpha)},// {E}(14)
-                {fullpath_to_index[FULLPATH_ZEBRA], StateExRecord.Build(  FULLPATH_ZEBRA, Attr.Alpha | Attr.Beta | Attr.Eee)},// B(3) AE(5) AE,B,E(13)
-            };
+
+            hash_to_exRecord = new Dictionary<int, StateExRecordable>();
+            foreach (StateExRecordable record in temp) { hash_to_exRecord.Add(record.FullPathHash, record); }
         }
     }
 
@@ -170,12 +115,12 @@ public class StellaQLTest {
         string query = @"STATE SELECT
                         WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})";
         HashSet<int> recordIndexes;
-        bool successful = Querier.ExecuteStateSelect(query, typeof(StateExTable.Attr), InstanceTable.index_to_exRecord, out recordIndexes);
+        bool successful = Querier.ExecuteStateSelect(query, typeof(StateExTable.Attr), InstanceTable.hash_to_exRecord, out recordIndexes);
 
         Assert.AreEqual(3, recordIndexes.Count);
-        Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ALPACA]));
-        Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_CAT]));
-        Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_RABBIT]));
+        Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_ALPACA)));
+        Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_CAT)));
+        Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_RABBIT)));
     }
 
     /// <summary>
@@ -197,12 +142,12 @@ public class StellaQLTest {
                         ";
         // STATE SELECT文が動けば OK☆
         HashSet<int> recordIndexes;
-        bool successful = Querier.ExecuteStateSelect(query, typeof(StateExTable.Attr), InstanceTable.index_to_exRecord, out recordIndexes);
+        bool successful = Querier.ExecuteStateSelect(query, typeof(StateExTable.Attr), InstanceTable.hash_to_exRecord, out recordIndexes);
 
         Assert.AreEqual(3, recordIndexes.Count);
-        Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ALPACA]));
-        Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_CAT]));
-        Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_RABBIT]));
+        Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_ALPACA)));
+        Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_CAT)));
+        Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_RABBIT)));
     }
 
     [Test]
@@ -213,14 +158,14 @@ public class StellaQLTest {
                         TO ATTR ([(Alpha Cee)(Beta)]{Eee})";
         HashSet<int> recordIndexesSrc;
         HashSet<int> recordIndexesDst;
-        bool successful = Querier.ExecuteTransitionSelect(query, typeof(StateExTable.Attr), InstanceTable.index_to_exRecord, out recordIndexesSrc, out recordIndexesDst);
+        bool successful = Querier.ExecuteTransitionSelect(query, typeof(StateExTable.Attr), InstanceTable.hash_to_exRecord, out recordIndexesSrc, out recordIndexesDst);
 
         Assert.AreEqual(1, recordIndexesSrc.Count);
-        Assert.IsTrue(recordIndexesSrc.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ZEBRA]));
+        Assert.IsTrue(recordIndexesSrc.Contains(Animator.StringToHash(StateExTable.FULLPATH_ZEBRA)));
         Assert.AreEqual(3, recordIndexesDst.Count);
-        Assert.IsTrue(recordIndexesDst.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ALPACA]));
-        Assert.IsTrue(recordIndexesDst.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_CAT]));
-        Assert.IsTrue(recordIndexesDst.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_RABBIT]));
+        Assert.IsTrue(recordIndexesDst.Contains(Animator.StringToHash(StateExTable.FULLPATH_ALPACA)));
+        Assert.IsTrue(recordIndexesDst.Contains(Animator.StringToHash(StateExTable.FULLPATH_CAT)));
+        Assert.IsTrue(recordIndexesDst.Contains(Animator.StringToHash(StateExTable.FULLPATH_RABBIT)));
     }
     #endregion
 
@@ -242,46 +187,46 @@ public class StellaQLTest {
 
         List<HashSet<int>> recordIndexesLockers;
         Fetcher.TokenLockers_to_recordIndexesLockers(
-            tokenLockers, tokenLockersOperation, typeof(StateExTable.Attr), InstanceTable.index_to_exRecord, out recordIndexesLockers);
+            tokenLockers, tokenLockersOperation, typeof(StateExTable.Attr), InstanceTable.hash_to_exRecord, out recordIndexesLockers);
 
         Assert.AreEqual(5, recordIndexesLockers.Count);
         // { Debug.Log("recordIndexesLockers[0].Count=" + recordIndexesLockers[0].Count); int i = 0; foreach (int astateIndex in recordIndexesLockers[0]) { Debug.Log("[0][" + i + "] astateIndex=[" + ((AstateIndex)astateIndex).ToString() + "]"); i++; } }
         Assert.AreEqual(2, recordIndexesLockers[0].Count);
-        Assert.IsTrue(recordIndexesLockers[0].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ALPACA]));
-        Assert.IsTrue(recordIndexesLockers[0].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_CAT]));
+        Assert.IsTrue(recordIndexesLockers[0].Contains(Animator.StringToHash(StateExTable.FULLPATH_ALPACA)));
+        Assert.IsTrue(recordIndexesLockers[0].Contains(Animator.StringToHash(StateExTable.FULLPATH_CAT)));
         // { Debug.Log("recordIndexesLockers[1].Count=" + recordIndexesLockers[1].Count); int i = 0; foreach (int astateIndex in recordIndexesLockers[1]) { Debug.Log("[1][" + i + "] astateIndex=[" + ((AstateIndex)astateIndex).ToString() + "]"); i++; } }
         Assert.AreEqual(3, recordIndexesLockers[1].Count);
-        Assert.IsTrue(recordIndexesLockers[1].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_BEAR]));
-        Assert.IsTrue(recordIndexesLockers[1].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_RABBIT]));
-        Assert.IsTrue(recordIndexesLockers[1].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ZEBRA]));
+        Assert.IsTrue(recordIndexesLockers[1].Contains(Animator.StringToHash(StateExTable.FULLPATH_BEAR)));
+        Assert.IsTrue(recordIndexesLockers[1].Contains(Animator.StringToHash(StateExTable.FULLPATH_RABBIT)));
+        Assert.IsTrue(recordIndexesLockers[1].Contains(Animator.StringToHash(StateExTable.FULLPATH_ZEBRA)));
         // { Debug.Log("recordIndexesLockers[2].Count=" + recordIndexesLockers[2].Count); int i = 0; foreach (int astateIndex in recordIndexesLockers[2]) { Debug.Log("[2][" + i + "] astateIndex=[" + ((AstateIndex)astateIndex).ToString() + "]"); i++; } }
         Assert.AreEqual(5, recordIndexesLockers[2].Count);
-        Assert.IsTrue(recordIndexesLockers[2].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ALPACA]));
-        Assert.IsTrue(recordIndexesLockers[2].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_CAT]));
-        Assert.IsTrue(recordIndexesLockers[2].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_BEAR]));
-        Assert.IsTrue(recordIndexesLockers[2].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_RABBIT]));
-        Assert.IsTrue(recordIndexesLockers[2].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ZEBRA]));
+        Assert.IsTrue(recordIndexesLockers[2].Contains(Animator.StringToHash(StateExTable.FULLPATH_ALPACA)));
+        Assert.IsTrue(recordIndexesLockers[2].Contains(Animator.StringToHash(StateExTable.FULLPATH_CAT)));
+        Assert.IsTrue(recordIndexesLockers[2].Contains(Animator.StringToHash(StateExTable.FULLPATH_BEAR)));
+        Assert.IsTrue(recordIndexesLockers[2].Contains(Animator.StringToHash(StateExTable.FULLPATH_RABBIT)));
+        Assert.IsTrue(recordIndexesLockers[2].Contains(Animator.StringToHash(StateExTable.FULLPATH_ZEBRA)));
         // { Debug.Log("recordIndexesLockers[3].Count=" + recordIndexesLockers[3].Count); int i = 0; foreach (int astateIndex in recordIndexesLockers[3]) { Debug.Log("[3][" + i + "] astateIndex=[" + ((AstateIndex)astateIndex).ToString() + "]"); i++; } }
         Assert.AreEqual(14, recordIndexesLockers[3].Count);
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ALPACA]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_CAT]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_DOG]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_FOX]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_IGUANA]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_KANGAROO]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_LION]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_NUTRIA]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_OX]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_PIG]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_RABBIT]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_UNICORN]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_WOLF]));
-        Assert.IsTrue(recordIndexesLockers[3].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_YAK]));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_ALPACA)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_CAT)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_DOG)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_FOX)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_IGUANA)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_KANGAROO)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_LION)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_NUTRIA)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_OX)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_PIG)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_RABBIT)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_UNICORN)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_WOLF)));
+        Assert.IsTrue(recordIndexesLockers[3].Contains(Animator.StringToHash(StateExTable.FULLPATH_YAK)));
         // { Debug.Log("recordIndexesLockers[4].Count=" + recordIndexesLockers[4].Count); int i = 0; foreach (int astateIndex in recordIndexesLockers[4]) { Debug.Log("[4][" + i + "] astateIndex=[" + ((AstateIndex)astateIndex).ToString() + "]"); i++; } }
         Assert.AreEqual(3, recordIndexesLockers[4].Count);
-        Assert.IsTrue(recordIndexesLockers[4].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ALPACA]));
-        Assert.IsTrue(recordIndexesLockers[4].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_CAT]));
-        Assert.IsTrue(recordIndexesLockers[4].Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_RABBIT]));
+        Assert.IsTrue(recordIndexesLockers[4].Contains(Animator.StringToHash(StateExTable.FULLPATH_ALPACA)));
+        Assert.IsTrue(recordIndexesLockers[4].Contains(Animator.StringToHash(StateExTable.FULLPATH_CAT)));
+        Assert.IsTrue(recordIndexesLockers[4].Contains(Animator.StringToHash(StateExTable.FULLPATH_RABBIT)));
     }
     #endregion
 
@@ -296,8 +241,8 @@ public class StellaQLTest {
         HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
         List<HashSet<int>> reordIndexLockers = new List<HashSet<int>>()
         {
-            new HashSet<int>() { StateExTable.fullpath_to_index[StateExTable.FULLPATH_BEAR],StateExTable.fullpath_to_index[StateExTable.FULLPATH_ELEPHANT] },
-            new HashSet<int>() { StateExTable.fullpath_to_index[StateExTable.FULLPATH_BEAR], StateExTable.fullpath_to_index[StateExTable.FULLPATH_GIRAFFE] },
+            new HashSet<int>() { Animator.StringToHash(StateExTable.FULLPATH_BEAR),Animator.StringToHash(StateExTable.FULLPATH_ELEPHANT) },
+            new HashSet<int>() { Animator.StringToHash(StateExTable.FULLPATH_BEAR), Animator.StringToHash(StateExTable.FULLPATH_GIRAFFE) },
         };
         HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringElementsAnd(lockerNumbers, reordIndexLockers);
 
@@ -305,7 +250,7 @@ public class StellaQLTest {
         Assert.AreEqual(1, recordIndexes.Count);
         if (1 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_BEAR]));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_BEAR)));
         }
     }
 
@@ -319,8 +264,8 @@ public class StellaQLTest {
         HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
         List<HashSet<int>> recordIndexeslockers = new List<HashSet<int>>()
         {
-            new HashSet<int>() { StateExTable.fullpath_to_index[StateExTable.FULLPATH_BEAR],StateExTable.fullpath_to_index[StateExTable.FULLPATH_ELEPHANT] },
-            new HashSet<int>() { StateExTable.fullpath_to_index[StateExTable.FULLPATH_BEAR],StateExTable.fullpath_to_index[StateExTable.FULLPATH_GIRAFFE] },
+            new HashSet<int>() { Animator.StringToHash(StateExTable.FULLPATH_BEAR),Animator.StringToHash(StateExTable.FULLPATH_ELEPHANT) },
+            new HashSet<int>() { Animator.StringToHash(StateExTable.FULLPATH_BEAR),Animator.StringToHash(StateExTable.FULLPATH_GIRAFFE) },
         };
         HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringElementsOr(lockerNumbers, recordIndexeslockers);
 
@@ -328,9 +273,9 @@ public class StellaQLTest {
         Assert.AreEqual(3, recordIndexes.Count);
         if (3 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_BEAR]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ELEPHANT]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_GIRAFFE]));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_BEAR)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_ELEPHANT)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_GIRAFFE)));
         }
     }
 
@@ -344,38 +289,38 @@ public class StellaQLTest {
         HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
         List<HashSet<int>> recordIndexesLockers = new List<HashSet<int>>()
         {
-            new HashSet<int>() { StateExTable.fullpath_to_index[StateExTable.FULLPATH_BEAR],StateExTable.fullpath_to_index[StateExTable.FULLPATH_ELEPHANT] },
-            new HashSet<int>() { StateExTable.fullpath_to_index[StateExTable.FULLPATH_BEAR],StateExTable.fullpath_to_index[StateExTable.FULLPATH_GIRAFFE] },
+            new HashSet<int>() { Animator.StringToHash(StateExTable.FULLPATH_BEAR),Animator.StringToHash(StateExTable.FULLPATH_ELEPHANT) },
+            new HashSet<int>() { Animator.StringToHash(StateExTable.FULLPATH_BEAR),Animator.StringToHash(StateExTable.FULLPATH_GIRAFFE) },
         };
-        HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringElementsNotAndNot(lockerNumbers, recordIndexesLockers, InstanceTable.index_to_exRecord);
+        HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringElementsNotAndNot(lockerNumbers, recordIndexesLockers, InstanceTable.hash_to_exRecord);
 
         // 結果は　Alpaca,Cat,Dog,Fox,Horse,Iguana,Jellyfish,Kangaroo,Lion,Monkey,Nutria,Ox,Pig,Quetzal,Rabbit,Sheep,Tiger,Unicorn,Vixen,Wolf,Xenopus,Yak,Zebra
         Assert.AreEqual(23, recordIndexes.Count);
         if (23 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ALPACA]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_CAT]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_DOG]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_FOX]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_HORSE]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_IGUANA]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_JELLYFISH]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_KANGAROO]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_LION]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_MONKEY]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_NUTRIA]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_OX]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_PIG]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_QUETZAL]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_RABBIT]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_SHEEP]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_TIGER]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_UNICORN]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_VIXEN]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_WOLF]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_XENOPUS]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_YAK]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ZEBRA]));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_ALPACA)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_CAT)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_DOG)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_FOX)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_HORSE)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_IGUANA)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_JELLYFISH)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_KANGAROO)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_LION)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_MONKEY)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_NUTRIA)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_OX)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_PIG)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_QUETZAL)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_RABBIT)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_SHEEP)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_TIGER)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_UNICORN)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_VIXEN)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_WOLF)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_XENOPUS)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_YAK)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_ZEBRA)));
         }
     }
 
@@ -387,21 +332,21 @@ public class StellaQLTest {
     {
         // 条件は、「Base Layer.」の下に、n または N が含まれるもの
         string pattern = @"Base Layer\.StellaQL Practice\.\w*[Nn]\w*";
-        HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringStateFullNameRegex(pattern, InstanceTable.index_to_exRecord);
+        HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringStateFullNameRegex(pattern, InstanceTable.hash_to_exRecord);
 
         // 結果は　Elephant、Iguana、Kangaroo、Lion、Monkey、Nutria、Unicorn、Vixen、Xenopus
         Assert.AreEqual(9, recordIndexes.Count);
         if (9 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ELEPHANT]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_IGUANA]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_KANGAROO]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_LION]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_MONKEY]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_NUTRIA]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_UNICORN]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_VIXEN]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_XENOPUS]));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_ELEPHANT)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_IGUANA)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_KANGAROO)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_LION)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_MONKEY)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_NUTRIA)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_UNICORN)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_VIXEN)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_XENOPUS)));
         }
     }
 
@@ -413,17 +358,17 @@ public class StellaQLTest {
     {
         // 条件は　Alpha | Eee
         HashSet<int> attrs = new HashSet<int>() { (int)StateExTable.Attr.Alpha | (int)StateExTable.Attr.Eee };
-        HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringAttributesAnd(attrs, InstanceTable.index_to_exRecord);
+        HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringAttributesAnd(attrs, InstanceTable.hash_to_exRecord);
 
         // 結果は　Bear、Elephant、Giraffe、Quetzal、Zebra
         Assert.AreEqual(5, recordIndexes.Count);
         if (5 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_BEAR]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ELEPHANT]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_GIRAFFE]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_QUETZAL]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ZEBRA]));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_BEAR)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_ELEPHANT)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_GIRAFFE)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_QUETZAL)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_ZEBRA)));
         }
     }
 
@@ -435,25 +380,25 @@ public class StellaQLTest {
     {
         // 条件は　（Alpha | Eee）、Beta、Eee
         HashSet<int> attrs = new HashSet<int>() { (int)StateExTable.Attr.Alpha | (int)StateExTable.Attr.Eee, (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Eee };
-        HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringAttributesOr(attrs, InstanceTable.index_to_exRecord);
+        HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringAttributesOr(attrs, InstanceTable.hash_to_exRecord);
 
         // 結果は　Bear、Elephant、Giraffe、Horse、Jellyfish、Monkey、Quetzal、Rabbit、Sheep、Tiger、Vixen、Xenopus、Zebra
         Assert.AreEqual(13, recordIndexes.Count);
         if (13 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_BEAR]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ELEPHANT]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_GIRAFFE]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_HORSE]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_JELLYFISH]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_MONKEY]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_QUETZAL]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_RABBIT]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_SHEEP]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_TIGER]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_VIXEN]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_XENOPUS]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ZEBRA]));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_BEAR)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_ELEPHANT)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_GIRAFFE)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_HORSE)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_JELLYFISH)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_MONKEY)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_QUETZAL)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_RABBIT)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_SHEEP)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_TIGER)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_VIXEN)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_XENOPUS)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_ZEBRA)));
         }
     }
 
@@ -465,25 +410,25 @@ public class StellaQLTest {
     {
         // 条件は　（Alpha | Eee）、Beta、Eee
         HashSet<int> attrs = new HashSet<int>() { (int)StateExTable.Attr.Alpha | (int)StateExTable.Attr.Eee, (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Eee };
-        HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringAttributesNotAndNot(attrs, InstanceTable.index_to_exRecord);
+        HashSet<int> recordIndexes = ElementSet.RecordIndexes_FilteringAttributesNotAndNot(attrs, InstanceTable.hash_to_exRecord);
 
         // 結果は　Alpaca、Cat、Dog、Fox、Iguana、Kangaroo、Lion、Nutria、Ox、Pig、Unicorn、Wolf、Yak
         Assert.AreEqual(13, recordIndexes.Count);
         if (13 == recordIndexes.Count)
         {
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_ALPACA]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_CAT]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_DOG]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_FOX]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_IGUANA]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_KANGAROO]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_LION]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_NUTRIA]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_OX]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_PIG]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_UNICORN]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_WOLF]));
-            Assert.IsTrue(recordIndexes.Contains(StateExTable.fullpath_to_index[StateExTable.FULLPATH_YAK]));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_ALPACA)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_CAT)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_DOG)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_FOX)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_IGUANA)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_KANGAROO)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_LION)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_NUTRIA)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_OX)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_PIG)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_UNICORN)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_WOLF)));
+            Assert.IsTrue(recordIndexes.Contains(Animator.StringToHash(StateExTable.FULLPATH_YAK)));
         }
     }
     #endregion

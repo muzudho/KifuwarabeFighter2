@@ -40,11 +40,11 @@ namespace StellaQL
     /// </summary>
     public interface CliptypeExTableable
     {
-        Dictionary<int, CliptypeExRecordable> Index_to_exRecord { get; set; } // [CliptypeIndex]
+        Dictionary<int, CliptypeExRecordable> Cliptype_to_exRecord { get; set; } // [CliptypeIndex]
     }
 
     public abstract class AbstractCliptypeExTable : CliptypeExTableable
     {
-        public Dictionary<int, CliptypeExRecordable> Index_to_exRecord { get; set; } // [CliptypeIndex]
+        public Dictionary<int, CliptypeExRecordable> Cliptype_to_exRecord { get; set; } // [CliptypeIndex]
     }
 }

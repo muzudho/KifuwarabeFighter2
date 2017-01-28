@@ -119,7 +119,7 @@ namespace SceneMain
 
         CliptypeExTable()
         {
-            Index_to_exRecord = new Dictionary<int, CliptypeExRecordable>()//[CliptypeIndex]
+            Cliptype_to_exRecord = new Dictionary<int, CliptypeExRecordable>()//[CliptypeIndex]
             {
                 { (int)CliptypeIndex.SWait, new CliptypeExRecord( new int[] { 0,1,2,3 } ,TilesetfileTypeIndex.Stand)},
                 { (int)CliptypeIndex.SMove, new CliptypeExRecord( new int[] { 4,5,6,7 } ,TilesetfileTypeIndex.Stand)},

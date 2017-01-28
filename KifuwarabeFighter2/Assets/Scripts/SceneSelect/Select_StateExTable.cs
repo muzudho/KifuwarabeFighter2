@@ -38,22 +38,25 @@ namespace SceneSelect {
 
         public static StateExTable Instance { get; set; }
 
+        public static Dictionary<string, int> fullpath_to_hash;
         private StateExTable()
         {
-            fullpath_to_index = new Dictionary<string, int>()
+            fullpath_to_hash = new Dictionary<string, int>()
             {
-                {FULLNAME_STAY,0 },
-                {FULLNAME_MOVE,1 },
-                {FULLNAME_READY,2},
-                {FULLNAME_TIMEOVER,3 },
+                { StateExTable.FULLNAME_STAY, Animator.StringToHash(StateExTable.FULLNAME_STAY) },
+                { StateExTable.FULLNAME_MOVE, Animator.StringToHash(StateExTable.FULLNAME_MOVE) },
+                { StateExTable.FULLNAME_READY, Animator.StringToHash(StateExTable.FULLNAME_READY) },
+                { StateExTable.FULLNAME_TIMEOVER, Animator.StringToHash(StateExTable.FULLNAME_TIMEOVER) },
             };
-            index_to_exRecord = new Dictionary<int, StateExRecordable> ()//AstateIndex
+            List<StateExRecordable> temp = new List<StateExRecordable>()
             {
-                {fullpath_to_index[FULLNAME_STAY], StateExRecord.Build( StateExTable.FULLNAME_STAY)},
-                {fullpath_to_index[FULLNAME_MOVE], StateExRecord.Build( StateExTable.FULLNAME_MOVE)},
-                {fullpath_to_index[FULLNAME_READY], StateExRecord.Build( StateExTable.FULLNAME_READY)},
-                {fullpath_to_index[FULLNAME_TIMEOVER], StateExRecord.Build( StateExTable.FULLNAME_TIMEOVER)},
+                StateExRecord.Build( StateExTable.FULLNAME_STAY),
+                StateExRecord.Build( StateExTable.FULLNAME_MOVE),
+                StateExRecord.Build( StateExTable.FULLNAME_READY),
+                StateExRecord.Build( StateExTable.FULLNAME_TIMEOVER),
             };
+            hash_to_exRecord = new Dictionary<int, StateExRecordable>();
+            foreach (StateExRecordable record in temp) { hash_to_exRecord.Add(record.FullPathHash, record); }
         }
     }
 
