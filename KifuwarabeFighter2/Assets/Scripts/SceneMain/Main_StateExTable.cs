@@ -83,6 +83,10 @@ namespace SceneMain
             /// ブロック・モーションなら
             /// </summary>
             Block = BusyY << 1,
+            /// <summary>
+            /// 立ちなら
+            /// </summary>
+            Stand = Block << 1,
         }
 
         #region フルパス一覧

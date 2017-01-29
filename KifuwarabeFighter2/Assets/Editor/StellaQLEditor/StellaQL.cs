@@ -378,7 +378,7 @@ namespace StellaQL
                 int firstItem_temp;
                 if (int.TryParse(index_to_token[0], out firstItem_temp))
                 { // 数字だったら、ロッカー番号だ。
-                    HashSet<int> lockerNumbers = AttrSet.Tokens_to_numbers(index_to_token);
+                    HashSet<int> lockerNumbers = AttrSet_Enumration.Tokens_to_bitfields(index_to_token);
                     switch (operation) // ロッカー同士を演算して、まとめた答えを出す
                     {
                         case "(": lockerNumber_to_recordHashes.Add(ElementSet.RecordHashes_FilteringElementsAnd(lockerNumbers, lockerNumber_to_recordHashes)); break;
@@ -390,19 +390,19 @@ namespace StellaQL
                     }
                 }
                 else { // 数字じゃなかったら、属性名のリストだ
-                    HashSet<int> attrEnumSet_src = AttrSet.Names_to_enums(new HashSet<string>(index_to_token), attrEnumration);
+                    HashSet<int> attrEnumSet_src = AttrSet_Enumration.Names_to_enums(new HashSet<string>(index_to_token), attrEnumration);
                     HashSet<int> attrEnumSet_calc;
                     switch (operation) // 属性結合（演算）を解消する
                     {
                         case "(":
-                            attrEnumSet_calc = AttrSet.KeywordSet_to_attrLocker(attrEnumSet_src);
+                            attrEnumSet_calc = AttrSet_Enumration.KeywordSet_to_attrLocker(attrEnumSet_src);
                             lockerNumber_to_recordHashes.Add(ElementSet.RecordHashes_FilteringAttributesAnd(attrEnumSet_calc, universe)); break;
                         case "[":
-                            attrEnumSet_calc = AttrSet.KeywordlistSet_to_attrLocker(attrEnumSet_src);
+                            attrEnumSet_calc = AttrSet_Enumration.KeywordlistSet_to_attrLocker(attrEnumSet_src);
                             lockerNumber_to_recordHashes.Add(ElementSet.RecordHashes_FilteringAttributesOr(attrEnumSet_calc, universe)); break;
                         case "{":
                             //attrEnumSet_calc = StellaQLAggregater.NGKeywordSet_to_attrLocker(attrEnumSet_src, attrEnumration);
-                            attrEnumSet_calc = AttrSet.KeywordlistSet_to_attrLocker(attrEnumSet_src); // NOT キーワードは NOT結合ではなく OR結合 で取る。
+                            attrEnumSet_calc = AttrSet_Enumration.KeywordlistSet_to_attrLocker(attrEnumSet_src); // NOT キーワードは NOT結合ではなく OR結合 で取る。
                             lockerNumber_to_recordHashes.Add(ElementSet.RecordHashes_FilteringAttributesNotAndNot(attrEnumSet_calc, universe)); break;
                         default: throw new UnityException("未対応2のtokenOperation=[" + operation + "]");
                     }
@@ -576,38 +576,46 @@ namespace StellaQL
 
     /// <summary>
     /// Attribute set (属性集合)
+    /// TODO: 列挙型の使用は止め、タグの総当たり検索にしたい。
     /// </summary>
-    public abstract class AttrSet
+    public abstract class AttrSet_Enumration
     {
-        public static HashSet<int> KeywordSet_to_attrLocker(HashSet<int> set)//, Type enumration
-        { // 列挙型要素を OR 結合して持つ。
+        public static HashSet<int> KeywordSet_to_attrLocker(HashSet<int> bitfieldSet)//, Type enumration
+        {
+            /*
+            // 列挙型要素を １つ１つ　ばらばらに持つ。
+            return bitfieldSet;
+            //*/
+            //*
+            // 列挙型要素を OR 結合して持つ。
             HashSet<int> attrs = new HashSet<int>();
             int sum = 0;// (int)Enum.GetValues(enumration).GetValue(0);//最初の要素は 0 にしておくこと。 列挙型だが、int 型に変換。
-            foreach (object elem in set) { sum |= (int)elem; }// OR結合
+            foreach (object elem in bitfieldSet) { sum |= (int)elem; }// OR結合
             attrs.Add(sum); // 列挙型の要素を結合したものを int型として入れておく。
             return attrs;
+            //*/
         }
 
-        public static HashSet<int> KeywordlistSet_to_attrLocker(HashSet<int> set)
+        public static HashSet<int> KeywordlistSet_to_attrLocker(HashSet<int> bitfieldSet)
         { // 列挙型要素を １つ１つ　ばらばらに持つ。
-            return set;
+            return bitfieldSet;
         }
 
-        public static HashSet<int> NGKeywordSet_to_attrLocker(HashSet<int> set, Type enumration)
+        public static HashSet<int> NGKeywordSet_to_attrLocker(HashSet<int> bitfieldSet, Type enumration)
         {
-            return Complement(set, enumration); // 補集合を返すだけ☆
+            return Complement(bitfieldSet, enumration); // 補集合を返すだけ☆
         }
 
         /// <summary>
         /// 補集合
         /// </summary>
-        public static HashSet<int> Complement(HashSet<int> set, Type enumration)
+        public static HashSet<int> Complement(HashSet<int> bitfieldSet, Type enumration)
         {
             List<int> complement = new List<int>();
             foreach (int elem in Enum.GetValues(enumration)) { complement.Add(elem); }// 列挙型の中身をリストに移動。
             for (int iComp = complement.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
             {
-                if (set.Contains(complement[iComp]))
+                if (bitfieldSet.Contains(complement[iComp]))
                 {
                     //Debug.Log("Remove[" + iComp + "] (" + complement[iComp] + ")");
                     complement.RemoveAt(iComp);
@@ -620,11 +628,11 @@ namespace StellaQL
             return new HashSet<int>(complement);
         }
 
-        public static HashSet<int> Tokens_to_numbers(List<string> tokens)
+        public static HashSet<int> Tokens_to_bitfields(List<string> tokens)
         {
-            HashSet<int> numberSet = new HashSet<int>();
-            foreach (string numberString in tokens) { numberSet.Add(int.Parse(numberString)); }// 変換できなかったら例外を投げる
-            return numberSet;
+            HashSet<int> bitfieldSet = new HashSet<int>();
+            foreach (string numberString in tokens) { bitfieldSet.Add(int.Parse(numberString)); }// 変換できなかったら例外を投げる
+            return bitfieldSet;
         }
 
         /// <summary>
@@ -649,7 +657,6 @@ namespace StellaQL
     {
         /// <summary>
         /// STATE SELECT
-        /// WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
@@ -706,10 +713,7 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 例
         /// STATE UPDATE
-        /// SET ExitTime 0.75 Duration 0.25
-        /// WHERE “Base Layer.Cat”
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
@@ -744,11 +748,7 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 例
         /// TRANSITION INSERT
-        /// SET Duration 0 ExitTime 1
-        /// FROM “Base Layer.SMove”
-        /// TO ATTR (BusyX Block)
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
@@ -812,11 +812,7 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 例
         /// TRANSITION UPDATE
-        /// SET Duration 0.25 ExitTime 0.75
-        /// FROM “Base Layer.SMove”
-        /// TO ATTR (BusyX Block)
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
@@ -882,10 +878,7 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 例
         /// TRANSITION DELETE
-        /// FROM “Base Layer.SMove”
-        /// TO ATTR (BusyX Block)
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
@@ -936,8 +929,6 @@ namespace StellaQL
 
         /// <summary>
         /// TRANSITION SELECT
-        /// FROM “Base Layer.SMove”
-        /// TO ATTR (BusyX Block)
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
@@ -1093,7 +1084,6 @@ namespace StellaQL
         /// <returns></returns>
         public static void DeleteLineCommentAndBlankLine(ref string query)
         {
-            //Debug.Log("削除前 query="+ query);
             string[] lines = query.Split(new [] { Environment.NewLine }, StringSplitOptions.None);
             int caret;
             for (int iLine = 0; iLine < lines.Length; iLine++) {
@@ -1101,13 +1091,11 @@ namespace StellaQL
                 VarSpaces(lines[iLine], ref caret);
                 if (FixedWord("#", lines[iLine], ref caret)) { lines[iLine] = ""; } // コメント行だ。 空行にしておけばいいだろう。
             }
-            //Debug.Log("コメント削除後 join=" + string.Join(Environment.NewLine, lines));
 
             // 空行を消し飛ばして困ることはあるだろうか？
             StringBuilder sb = new StringBuilder();
             foreach (string line in lines) { if ("" != line.Trim()) { sb.AppendLine(line); } } // 空行以外を残す
             query = sb.ToString();
-            //Debug.Log("空行削除後 query=" + query);
         }
     }
 }
