@@ -14,7 +14,7 @@ namespace StellaQL
         public void N30_Query_StateSelect()
         {
             string query = @"STATE SELECT
-                        WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})";
+                        WHERE TAG ([(Alpha Cee)(Beta)]{Eee})";
             HashSet<int> recordHashes;
             bool successful = Querier.ExecuteStateSelect(query, StateExTable.Instance.Hash_to_exRecord, out recordHashes);
 
@@ -37,7 +37,7 @@ namespace StellaQL
 
                         # コメントＢ
 
-                        WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})
+                        WHERE TAG ([(Alpha Cee)(Beta)]{Eee})
 
                         # コメントＣ
 
@@ -58,7 +58,7 @@ namespace StellaQL
         {
             string query = @"TRANSITION SELECT
                         FROM ""Base Layer\.Zebra""
-                        TO ATTR ([(Alpha Cee)(Beta)]{Eee})";
+                        TO TAG ([(Alpha Cee)(Beta)]{Eee})";
             HashSet<int> recordHashesSrc;
             HashSet<int> recordHashesDst;
             bool successful = Querier.ExecuteTransitionSelect(query, StateExTable.Instance.Hash_to_exRecord, out recordHashesSrc, out recordHashesDst);
@@ -379,10 +379,10 @@ namespace StellaQL
 
         #region N65 data builder (データ・ビルダー)
         /// <summary>
-        /// ATTR部を解析（２）
+        /// TAG部を解析（２）
         /// </summary>
         [Test]
-        public void N65_Parse_AttrParentesis_TokensToLockers()
+        public void N65_Parse_TagParentesis_TokensToLockers()
         {
             List<string> tokens = new List<string>() { "(", "[", "(", "Alpaca", "Bear", ")", "(", "Cat", "Dog", ")", "]", "{", "Elephant", "}", ")", };
             List<List<string>> tokenLockers;
@@ -462,7 +462,7 @@ namespace StellaQL
         public void N70_ParseStatement_StateSelect()
         {
             string query = @"STATE SELECT
-                        WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})";
+                        WHERE TAG ([(Alpha Cee)(Beta)]{Eee})";
             QueryTokens sq;
             bool successful = SyntaxP.ParseStatement_StateSelect(query, out sq);
 
@@ -473,9 +473,9 @@ namespace StellaQL
             Assert.AreEqual("", sq.From_FullnameRegex);
             Assert.AreEqual("", sq.From_Attr);
             Assert.AreEqual("", sq.To_FullnameRegex);
-            Assert.AreEqual("", sq.To_Attr);
+            Assert.AreEqual("", sq.To_Tag);
             Assert.AreEqual("", sq.Where_FullnameRegex);
-            Assert.AreEqual("([(Alpha Cee)(Beta)]{Eee})", sq.Where_Attr);
+            Assert.AreEqual("([(Alpha Cee)(Beta)]{Eee})", sq.Where_Tag);
         }
 
         /// <summary>
@@ -486,8 +486,8 @@ namespace StellaQL
         {
             string query = @"TRANSITION INSERT
                         SET Duration 0 ExitTime 1
-                        FROM ""Base Layer.SMove""
-                        TO ATTR (BusyX Block)";
+                        FROM ""Base Layer\.Cat""
+                        TO ""Base Layer\.Dog""";
             QueryTokens sq;
             bool successful = SyntaxP.ParseStatement_TransitionInsert(query, out sq);
 
@@ -499,10 +499,10 @@ namespace StellaQL
             Assert.AreEqual("0", sq.Set["Duration"]);
             Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
             Assert.AreEqual("1", sq.Set["ExitTime"]);
-            Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
+            Assert.AreEqual(@"Base Layer\.Cat", sq.From_FullnameRegex);
             Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual("", sq.To_FullnameRegex);
-            Assert.AreEqual("(BusyX Block)", sq.To_Attr);
+            Assert.AreEqual(@"Base Layer\.Dog", sq.To_FullnameRegex);
+            Assert.AreEqual("", sq.To_Tag);
         }
 
         /// <summary>
@@ -511,25 +511,39 @@ namespace StellaQL
         [Test]
         public void N70_ParseStatement_TransitionUpdate()
         {
-            string query = @"TRANSITION UPDATE
-                        SET Duration 0.25 ExitTime 0.75
-                        FROM ""Base Layer.SMove""
-                        TO ATTR (BusyX Block)";
-            QueryTokens sq;
-            bool successful = SyntaxP.ParseStatement_TransitionUpdate(query, out sq);
+            // まず、線を引く。
+            {
+                string query = @"TRANSITION INSERT
+                        SET Duration 0 ExitTime 1
+                        FROM ""Base Layer\.Cat""
+                        TO ""Base Layer\.Dog""";
+                QueryTokens sq;
+                bool successful = SyntaxP.ParseStatement_TransitionInsert(query, out sq);
+                Assert.IsTrue(successful);
+            }
 
-            Assert.IsTrue(successful);
-            Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
-            Assert.AreEqual(QueryTokens.UPDATE, sq.Manipulation);
-            Assert.AreEqual(2, sq.Set.Count);
-            Assert.IsTrue(sq.Set.ContainsKey("Duration"));
-            Assert.AreEqual("0.25", sq.Set["Duration"]);
-            Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
-            Assert.AreEqual("0.75", sq.Set["ExitTime"]);
-            Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
-            Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual("", sq.To_FullnameRegex);
-            Assert.AreEqual("(BusyX Block)", sq.To_Attr);
+            // こっから本番
+            {
+                string query = @"TRANSITION UPDATE
+                        SET Duration 0.25 ExitTime 0.75
+                        FROM ""Base Layer\.Cat""
+                        TO ""Base Layer\.Dog""";
+                QueryTokens sq;
+                bool successful = SyntaxP.ParseStatement_TransitionUpdate(query, out sq);
+
+                Assert.IsTrue(successful);
+                Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
+                Assert.AreEqual(QueryTokens.UPDATE, sq.Manipulation);
+                Assert.AreEqual(2, sq.Set.Count);
+                Assert.IsTrue(sq.Set.ContainsKey("Duration"));
+                Assert.AreEqual("0.25", sq.Set["Duration"]);
+                Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
+                Assert.AreEqual("0.75", sq.Set["ExitTime"]);
+                Assert.AreEqual(@"Base Layer\.Cat", sq.From_FullnameRegex);
+                Assert.AreEqual("", sq.From_Attr);
+                Assert.AreEqual(@"Base Layer\.Dog", sq.To_FullnameRegex);
+                Assert.AreEqual("", sq.To_Tag);
+            }
         }
 
         /// <summary>
@@ -540,7 +554,7 @@ namespace StellaQL
         {
             string query = @"TRANSITION DELETE
                         FROM ""Base Layer.SMove""
-                        TO ATTR (BusyX Block)";
+                        TO TAG (BusyX Block)";
             QueryTokens sq;
             bool successful = SyntaxP.ParseStatement_TransitionDelete(query, out sq);
 
@@ -551,7 +565,7 @@ namespace StellaQL
             Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
             Assert.AreEqual("", sq.From_Attr);
             Assert.AreEqual("", sq.To_FullnameRegex);
-            Assert.AreEqual("(BusyX Block)", sq.To_Attr);
+            Assert.AreEqual("(BusyX Block)", sq.To_Tag);
         }
 
         /// <summary>
@@ -562,7 +576,7 @@ namespace StellaQL
         {
             string query = @"TRANSITION SELECT
                         FROM ""Base Layer.SMove""
-                        TO ATTR (BusyX Block)";
+                        TO TAG (BusyX Block)";
             QueryTokens sq;
             bool successful = SyntaxP.ParseStatement_TransitionSelect(query, out sq);
 
@@ -573,17 +587,17 @@ namespace StellaQL
             Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
             Assert.AreEqual("", sq.From_Attr);
             Assert.AreEqual("", sq.To_FullnameRegex);
-            Assert.AreEqual("(BusyX Block)", sq.To_Attr);
+            Assert.AreEqual("(BusyX Block)", sq.To_Tag);
         }
         #endregion
 
         #region N80 lexical parser (字句パーサー)
 
         /// <summary>
-        /// ATTR部を解析（１）
+        /// TAG部を解析（１）
         /// </summary>
         [Test]
-        public void N80_Parse_AttrParentesis_StringToTokens()
+        public void N80_Parse_TagParentesis_StringToTokens()
         {
             string attrParentesis = "([(Alpaca Bear)(Cat Dog)]{Elephant})";
             List<string> tokens;

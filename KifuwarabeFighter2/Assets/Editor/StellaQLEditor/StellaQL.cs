@@ -22,9 +22,9 @@ namespace StellaQL
             From_FullnameRegex = "";
             From_Attr = "";
             To_FullnameRegex = "";
-            To_Attr = "";
+            To_Tag = "";
             Where_FullnameRegex = "";
-            Where_Attr = "";
+            Where_Tag = "";
         }
 
         public const string TRANSITION = "TRANSITION";
@@ -37,7 +37,7 @@ namespace StellaQL
         public const string FROM = "FROM";
         public const string TO = "TO";
         public const string WHERE = "WHERE";
-        public const string ATTR = "ATTR";
+        public const string TAG = "TAG";
 
         /// <summary>
         /// Transition の１つ。大文字小文字は区別しない。
@@ -66,7 +66,7 @@ namespace StellaQL
         /// <summary>
         /// 括弧を使った式 が入る。
         /// </summary>
-        public string To_Attr { get; set; }
+        public string To_Tag { get; set; }
         /// <summary>
         /// ステート・フルネーム が入る。
         /// </summary>
@@ -74,7 +74,7 @@ namespace StellaQL
         /// <summary>
         /// 括弧を使った式 が入る。
         /// </summary>
-        public string Where_Attr { get; set; }
+        public string Where_Tag { get; set; }
 
         /// <summary>
         /// スキャンに渡すトークンを作るのが仕事。
@@ -142,7 +142,7 @@ namespace StellaQL
         {
             if ("" != qt.To_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.To_FullnameRegex, universe); }
             else {
-                List<string> tokens; QueryTokens.String_to_tokens(qt.To_Attr, out tokens);
+                List<string> tokens; QueryTokens.String_to_tokens(qt.To_Tag, out tokens);
 
                 List<List<string>> tokenLockers;
                 List<string> tokenLockersOperation;
@@ -158,7 +158,7 @@ namespace StellaQL
         {
             if ("" != qt.Where_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.Where_FullnameRegex, universe); }
             else {
-                List<string> tokens; QueryTokens.String_to_tokens(qt.Where_Attr, out tokens);
+                List<string> tokens; QueryTokens.String_to_tokens(qt.Where_Tag, out tokens);
 
                 List<List<string>> tokenLockers;
                 List<string> tokenLockersOperation;
@@ -265,7 +265,7 @@ namespace StellaQL
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="query">例えば 「STATE SELECT WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})」 といった式。</param>
+        /// <param name="query"></param>
         /// <returns></returns>
         public static bool ExecuteStateSelect(string query, Dictionary<int, StateExRecordable> universe, out HashSet<int> recordHashes)
         {
@@ -282,7 +282,7 @@ namespace StellaQL
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="query">例えば 「TRANSITION SELECT FROM "Base Layer.Zebra" TO ATTR ([(Alpha Cee)(Beta)]{Eee})」 といった式。</param>
+        /// <param name="query"></param>
         /// <returns></returns>
         public static bool ExecuteTransitionSelect(string query, Dictionary<int, StateExRecordable> universe, out HashSet<int> recordHashesSrc, out HashSet<int> recordHashesDst)
         {
@@ -653,15 +653,15 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return false; }
 
-            // 「"文字列"」か、「ATTR ～」のどちらか。
+            // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qTokens.Where_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret))
+            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.Where_Attr = parenthesis;
+                qTokens.Where_Tag = parenthesis;
             }
             else { return false; }
 
@@ -713,12 +713,12 @@ namespace StellaQL
                 if(!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qTokens.Set)) { return false; }
             } else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return false; } }
 
-            // 「"文字列"」か、「ATTR ～」のどちらか。
+            // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)) {
                 qTokens.Where_FullnameRegex = stringWithoutDoubleQuotation;
-            } else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret)) {
+            } else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)) {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.Where_Attr = parenthesis;
+                qTokens.Where_Tag = parenthesis;
             }
             else { return false; }
             return true;
@@ -759,12 +759,12 @@ namespace StellaQL
                 if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return false; }
             }
 
-            // 「"文字列"」か、「ATTR ～」のどちらか。
+            // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret))
+            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
                 qTokens.From_Attr = parenthesis;
@@ -773,15 +773,15 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return false; }
 
-            // 「"文字列"」か、「ATTR ～」のどちらか。
+            // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret))
+            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.To_Attr = parenthesis;
+                qTokens.To_Tag = parenthesis;
             }
             else { return false; }
 
@@ -823,12 +823,12 @@ namespace StellaQL
                 if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return false; }
             }
 
-            // 「"文字列"」か、「ATTR ～」のどちらか。
+            // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret))
+            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
                 qTokens.From_Attr = parenthesis;
@@ -839,15 +839,15 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return false; }
 
-            // 「"文字列"」か、「ATTR ～」のどちらか。
+            // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret))
+            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.To_Attr = parenthesis;
+                qTokens.To_Tag = parenthesis;
             }
             else { return false; }
 
@@ -875,12 +875,12 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return false; }
 
-            // 「"文字列"」か、「ATTR ～」のどちらか。
+            // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret))
+            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
                 qTokens.From_Attr = parenthesis;
@@ -889,15 +889,15 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return false; }
 
-            // 「"文字列"」か、「ATTR ～」のどちらか。
+            // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret))
+            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.To_Attr = parenthesis;
+                qTokens.To_Tag = parenthesis;
             }
             else { return false; }
 
@@ -925,12 +925,12 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return false; }
 
-            // 「"文字列"」か、「ATTR ～」のどちらか。
+            // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret))
+            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
                 qTokens.From_Attr = parenthesis;
@@ -939,15 +939,15 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return false; }
 
-            // 「"文字列"」か、「ATTR ～」のどちらか。
+            // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else if (LexcalP.FixedWord(QueryTokens.ATTR, query, ref caret))
+            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.To_Attr = parenthesis;
+                qTokens.To_Tag = parenthesis;
             }
             else { return false; }
 
