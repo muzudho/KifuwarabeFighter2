@@ -57,7 +57,7 @@ namespace SceneMain
             //Debug.Log("InFlag[" + ((AstateDatabase.Attr)enumration).HasFlag(this.attribute) + "] = [" + ((AstateDatabase.Attr)enumration) + "].HasFlag(" + this.attribute + ")");
             //return ((AstateDatabase.Attr)enumration).HasFlag(this.attribute);
 
-            Debug.Log("InFlag[" + ((StateExTable.Attr)this.AttributeEnum).HasFlag((StateExTable.Attr)enumration) + "] = [" + this.AttributeEnum + "].HasFlag(" + ((StateExTable.Attr)enumration) + ")");
+            //Debug.Log("InFlag[" + ((StateExTable.Attr)this.AttributeEnum).HasFlag((StateExTable.Attr)enumration) + "] = [" + this.AttributeEnum + "].HasFlag(" + ((StateExTable.Attr)enumration) + ")");
             return ((StateExTable.Attr)this.AttributeEnum).HasFlag((StateExTable.Attr)enumration);
         }
     }
@@ -78,11 +78,11 @@ namespace SceneMain
             /// <summary>
             /// キャラクターが、レバーのＹ軸の入力を受け取れる状態でないとき。
             /// </summary>
-            BusyY = 0x01 << 1,
+            BusyY = BusyX << 1,
             /// <summary>
             /// ブロック・モーションなら
             /// </summary>
-            Block = 0x01 << 2,
+            Block = BusyY << 1,
         }
 
         #region フルパス一覧

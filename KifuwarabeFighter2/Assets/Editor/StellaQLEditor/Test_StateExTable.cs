@@ -6,44 +6,47 @@ using UnityEngine;
 /// <summary>
 /// Main シーン
 /// </summary>
-namespace SceneMain
+namespace SceneStellaQLTest
 {
     /// <summary>
     /// アニメーターのステート
     /// </summary>
-    public class StateExRecord_Test : StateExRecord
+    public class StateExRecord : AbstractStateExRecord
     {
-        public static StateExRecord_Test Build(string fullpath, StateExTable_Test.Attr_Test attribute)
+        public static StateExRecord Build(string fullpath, StateExTable.Attr_Test attribute)
         {
-            return new StateExRecord_Test(fullpath, Animator.StringToHash(fullpath), attribute);
+            return new StateExRecord(fullpath, Animator.StringToHash(fullpath), attribute);
         }
-        public StateExRecord_Test(string fullpath, int fullpathHash, StateExTable_Test.Attr_Test attribute) : base(fullpath, fullpathHash, (int)attribute)
+        public StateExRecord(string fullpath, int fullpathHash, StateExTable.Attr_Test attribute) : base(fullpath, fullpathHash, (int)attribute)
         {
         }
 
         public override bool HasFlag_attr(int enumration)
         {
-            return ((StateExTable.Attr)this.AttributeEnum).HasFlag((StateExTable.Attr)enumration);
+            return ((StateExTable.Attr_Test)this.AttributeEnum).HasFlag((StateExTable.Attr_Test)enumration);
         }
     }
 
-    public class StateExTable_Test : StateExTable
+    public class StateExTable : AbstractStateExTable
     {
-        static StateExTable_Test()
+        static StateExTable()
         {
-            StateExTable_Test.Instance = new StateExTable_Test();
+            StateExTable.Instance = new StateExTable();
         }
-        public static StateExTable_Test Instance;
+        public static StateExTable Instance;
 
+        /// <summary>
+        /// 列挙型は拡張できないし、どうしたものか。
+        /// </summary>
         [Flags]
         public enum Attr_Test
         {
-            Zero = 0, // (0) 別に 0 は無くてもいい。
-            Alpha = 1, // (1)
-            Beta = 1 << 1, // (2)
-            Cee = 1 << 2, // (4)
-            Dee = 1 << 3, // (8)
-            Eee = 1 << 4, // (16)
+            Zero = 0,
+            Alpha = 1,
+            Beta = Alpha << 1,
+            Cee = Beta << 1,
+            Dee = Cee << 1,
+            Eee = Dee << 1,
         }
 
         public const string FULLPATH_ALPACA = "Base Layer.StellaQL Practice.Alpaca";
@@ -73,36 +76,36 @@ namespace SceneMain
         public const string FULLPATH_YAK = "Base Layer.StellaQL Practice.Yak";
         public const string FULLPATH_ZEBRA = "Base Layer.StellaQL Practice.Zebra";
 
-        protected StateExTable_Test() // : base() // 親コンストラクタに記載しているレコードを追加しておく。
+        protected StateExTable()
         {
             List<StateExRecordable> temp = new List<StateExRecordable>()
             {
-                StateExRecord_Test.Build(  FULLPATH_ALPACA, Attr_Test.Alpha | Attr_Test.Cee),// {E}(1) AC(1) ([(A C)(B)]{E})(1)
-                StateExRecord_Test.Build(  FULLPATH_BEAR, Attr_Test.Alpha | Attr_Test.Beta | Attr_Test.Eee),// B(1) AE(1) AE,B,E(1)
-                StateExRecord_Test.Build(  FULLPATH_CAT, Attr_Test.Alpha | Attr_Test.Cee),// {E}(2) AC(2) ([(A C)(B)]{E})(2)
-                StateExRecord_Test.Build(  FULLPATH_DOG, Attr_Test.Dee),// {E}(3)
-                StateExRecord_Test.Build(  FULLPATH_ELEPHANT, Attr_Test.Alpha | Attr_Test.Eee),//AE(2) AE,B,E(2) Nn(1)
-                StateExRecord_Test.Build(  FULLPATH_FOX, Attr_Test.Zero),// {E}(4)
-                StateExRecord_Test.Build(  FULLPATH_GIRAFFE, Attr_Test.Alpha | Attr_Test.Eee),//AE(3) AE,B,E(3)
-                StateExRecord_Test.Build(  FULLPATH_HORSE, Attr_Test.Eee),// AE,B,E(4)
-                StateExRecord_Test.Build(  FULLPATH_IGUANA, Attr_Test.Alpha),// {E}(5) Nn(2)
-                StateExRecord_Test.Build(  FULLPATH_JELLYFISH, Attr_Test.Eee),// AE,B,E(5)
-                StateExRecord_Test.Build(  FULLPATH_KANGAROO, Attr_Test.Alpha),// {E}(6) Nn(3)
-                StateExRecord_Test.Build(  FULLPATH_LION, Attr_Test.Zero),// {E}(7) Nn(4)
-                StateExRecord_Test.Build(  FULLPATH_MONKEY, Attr_Test.Eee),// AE,B,E(6) Nn(5)
-                StateExRecord_Test.Build(  FULLPATH_NUTRIA, Attr_Test.Alpha),// {E}(8) Nn(6)
-                StateExRecord_Test.Build(  FULLPATH_OX, Attr_Test.Zero),// {E}(9)
-                StateExRecord_Test.Build(  FULLPATH_PIG, Attr_Test.Zero),// {E}(10)
-                StateExRecord_Test.Build(  FULLPATH_QUETZAL, Attr_Test.Alpha | Attr_Test.Eee),//AE(4) AE,B,E(7)
-                StateExRecord_Test.Build(  FULLPATH_RABBIT, Attr_Test.Alpha | Attr_Test.Beta),// {E}(11) B(2) ([(A C)(B)]{E})(3)  AE,B,E(8)
-                StateExRecord_Test.Build(  FULLPATH_SHEEP, Attr_Test.Eee),// AE,B,E(9)
-                StateExRecord_Test.Build(  FULLPATH_TIGER, Attr_Test.Eee),// AE,B,E(10)
-                StateExRecord_Test.Build(  FULLPATH_UNICORN, Attr_Test.Cee),// {E}(12) Nn(7)
-                StateExRecord_Test.Build(  FULLPATH_VIXEN, Attr_Test.Eee),// AE,B,E(11) Nn(8)
-                StateExRecord_Test.Build(  FULLPATH_WOLF, Attr_Test.Zero),// {E}(13)
-                StateExRecord_Test.Build(  FULLPATH_XENOPUS, Attr_Test.Eee),// AE,B,E(12) Nn(9)
-                StateExRecord_Test.Build(  FULLPATH_YAK, Attr_Test.Alpha),// {E}(14)
-                StateExRecord_Test.Build(  FULLPATH_ZEBRA, Attr_Test.Alpha | Attr_Test.Beta | Attr_Test.Eee),// B(3) AE(5) AE,B,E(13)
+                StateExRecord.Build(  FULLPATH_ALPACA, Attr_Test.Alpha | Attr_Test.Cee),// {E}(1) AC(1) ([(A C)(B)]{E})(1)
+                StateExRecord.Build(  FULLPATH_BEAR, Attr_Test.Alpha | Attr_Test.Beta | Attr_Test.Eee),// B(1) AE(1) AE,B,E(1)
+                StateExRecord.Build(  FULLPATH_CAT, Attr_Test.Alpha | Attr_Test.Cee),// {E}(2) AC(2) ([(A C)(B)]{E})(2)
+                StateExRecord.Build(  FULLPATH_DOG, Attr_Test.Dee),// {E}(3)
+                StateExRecord.Build(  FULLPATH_ELEPHANT, Attr_Test.Alpha | Attr_Test.Eee),//AE(2) AE,B,E(2) Nn(1)
+                StateExRecord.Build(  FULLPATH_FOX, Attr_Test.Zero),// {E}(4)
+                StateExRecord.Build(  FULLPATH_GIRAFFE, Attr_Test.Alpha | Attr_Test.Eee),//AE(3) AE,B,E(3)
+                StateExRecord.Build(  FULLPATH_HORSE, Attr_Test.Eee),// AE,B,E(4)
+                StateExRecord.Build(  FULLPATH_IGUANA, Attr_Test.Alpha),// {E}(5) Nn(2)
+                StateExRecord.Build(  FULLPATH_JELLYFISH, Attr_Test.Eee),// AE,B,E(5)
+                StateExRecord.Build(  FULLPATH_KANGAROO, Attr_Test.Alpha),// {E}(6) Nn(3)
+                StateExRecord.Build(  FULLPATH_LION, Attr_Test.Zero),// {E}(7) Nn(4)
+                StateExRecord.Build(  FULLPATH_MONKEY, Attr_Test.Eee),// AE,B,E(6) Nn(5)
+                StateExRecord.Build(  FULLPATH_NUTRIA, Attr_Test.Alpha),// {E}(8) Nn(6)
+                StateExRecord.Build(  FULLPATH_OX, Attr_Test.Zero),// {E}(9)
+                StateExRecord.Build(  FULLPATH_PIG, Attr_Test.Zero),// {E}(10)
+                StateExRecord.Build(  FULLPATH_QUETZAL, Attr_Test.Alpha | Attr_Test.Eee),//AE(4) AE,B,E(7)
+                StateExRecord.Build(  FULLPATH_RABBIT, Attr_Test.Alpha | Attr_Test.Beta),// {E}(11) B(2) ([(A C)(B)]{E})(3)  AE,B,E(8)
+                StateExRecord.Build(  FULLPATH_SHEEP, Attr_Test.Eee),// AE,B,E(9)
+                StateExRecord.Build(  FULLPATH_TIGER, Attr_Test.Eee),// AE,B,E(10)
+                StateExRecord.Build(  FULLPATH_UNICORN, Attr_Test.Cee),// {E}(12) Nn(7)
+                StateExRecord.Build(  FULLPATH_VIXEN, Attr_Test.Eee),// AE,B,E(11) Nn(8)
+                StateExRecord.Build(  FULLPATH_WOLF, Attr_Test.Zero),// {E}(13)
+                StateExRecord.Build(  FULLPATH_XENOPUS, Attr_Test.Eee),// AE,B,E(12) Nn(9)
+                StateExRecord.Build(  FULLPATH_YAK, Attr_Test.Alpha),// {E}(14)
+                StateExRecord.Build(  FULLPATH_ZEBRA, Attr_Test.Alpha | Attr_Test.Beta | Attr_Test.Eee),// B(3) AE(5) AE,B,E(13)
             };
             foreach (StateExRecordable record in temp) { hash_to_exRecord.Add(record.FullPathHash, record); }
         }
