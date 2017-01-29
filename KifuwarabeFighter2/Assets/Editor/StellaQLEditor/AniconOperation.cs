@@ -8,6 +8,89 @@ using System.Text;
 
 namespace StellaQL
 {
+    /// <summary>
+    /// ステートマシン関連
+    /// </summary>
+    public abstract class AniconOpe_Statemachine
+    {
+        #region 検索
+        /// <summary>
+        /// パスを指定すると ステートマシンを返す。
+        /// </summary>
+        /// <param name="path">"Base Layer.JMove" といった文字列。</param>
+        public static AnimatorStateMachine Lookup(AnimatorController ac, string path)
+        {
+            string[] nodes = path.Split('.');
+            // [0～length-1] ステートマシン名
+
+            if (nodes.Length < 1) { throw new UnityException("ノード数が１つ未満だったぜ☆（＾～＾） ステートマシン名は無いのかだぜ☆？"); }
+
+            // 最初の名前[0]は、レイヤーを検索する。
+            AnimatorStateMachine currentMachine = null;
+            foreach (AnimatorControllerLayer layer in ac.layers)
+            {
+                if (nodes[0] == layer.name) { currentMachine = layer.stateMachine; break; }
+            }
+            if (null == currentMachine) { throw new UnityException("見つからないぜ☆（＾～＾）nodes=[" + string.Join("][", nodes) + "]"); }
+
+            if (2 < nodes.Length) // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
+            {
+                currentMachine = GetLeafMachine(currentMachine, nodes);
+                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", nodes) + "]"); }
+            }
+
+            return currentMachine;
+        }
+
+        /// <summary>
+        /// 分かりづらいが、ノードの[1]～[length-1]を辿って、最後のステートマシンを返す。
+        /// </summary>
+        private static AnimatorStateMachine GetLeafMachine(AnimatorStateMachine currentMachine, string[] nodes)
+        {
+            for (int i = AniconOpe_Common.ROOT_NODE_IS_LAYER; i < nodes.Length + AniconOpe_Common.LEAF_NODE_IS_STATE; i++)
+            {
+                currentMachine = GetChildMachine(currentMachine, nodes[i]);
+                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）10 i=[" + i + "] node=[" + nodes[i] + "]"); }
+            }
+            return currentMachine;
+        }
+
+        private static AnimatorStateMachine GetChildMachine(AnimatorStateMachine machine, string childName)
+        {
+            foreach (ChildAnimatorStateMachine wrapper in machine.stateMachines)
+            {
+                if (wrapper.stateMachine.name == childName) { return wrapper.stateMachine; }
+            }
+            return null;
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// ステートマシン・エニーステート関連
+    /// </summary>
+    public abstract class AniconOpe_StatemachineAnystate
+    {
+        /// <summary>
+        /// STATEMACHINE ANYSTATE INSERT 用
+        /// ２つのステートを トランジションで結ぶ。ステートは複数指定でき、src→dst方向の総当たりで全部結ぶ。
+        /// </summary>
+        /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
+        public static void AddAll(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines_dst, HashSet<AnimatorState> states_dst, StringBuilder message)
+        {
+            foreach (AnimatorStateMachine statemachine_src in statemachines_dst)
+            {
+                foreach (AnimatorState state_dst in states_dst)
+                {
+                    message.Append("Insert: Any State");
+                    message.Append(" -> ");
+                    message.Append(state_dst.name);
+
+                    statemachine_src.AddAnyStateTransition(state_dst);
+                }
+            }
+        }
+    }
 
     /// <summary>
     /// ステート関連
@@ -25,7 +108,7 @@ namespace StellaQL
             // [0～length-2] ステートマシン名
             // [length-1] ステート名
 
-            if (nodes.Length < 2) { throw new UnityException("ノード数が２つ未満だったぜ☆（＾～＾） レイヤー番号か、ステート名は無いのかだぜ☆？"); }
+            if (nodes.Length < 2) { throw new UnityException("ノード数が２つ未満だったぜ☆（＾～＾） ステートマシン名か、ステート名は無いのかだぜ☆？"); }
 
             // 最初の名前[0]は、レイヤーを検索する。
             AnimatorStateMachine currentMachine = null;
@@ -75,6 +158,42 @@ namespace StellaQL
             return null;
         }
         #endregion
+
+        /// <summary>
+        /// ステートマシンに、ステートを追加する。
+        /// </summary>
+        public static void AddAll(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines, Dictionary<string,string> set, StringBuilder message)
+        {
+            foreach (AnimatorStateMachine statemachine in statemachines)
+            {
+                foreach (string name in set.Values)// プロパティー名は見ない。
+                {
+                    message.Append("Insert: "); message.AppendLine(name);
+                    statemachine.AddState(name);
+                }
+            }
+        }
+
+        /// <summary>
+        /// ステートマシンから、ステートを削除する。
+        /// </summary>
+        public static void RemoveAll(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines, Dictionary<string, string> set, StringBuilder message)
+        {
+            foreach (AnimatorStateMachine statemachine in statemachines)
+            {
+                foreach (string name in set.Values)// プロパティー名は見ない。
+                {
+                    message.Append("Remove: "); message.AppendLine(name);
+                    foreach (ChildAnimatorState caState in statemachine.states)
+                    {
+                        if (caState.state.name == name)
+                        {
+                            statemachine.RemoveState(caState.state);
+                        }
+                    }
+                }
+            }
+        }
 
         public static void UpdateProperty(AnimatorController ac, Dictionary<string,string> properties, HashSet<AnimatorState> states, StringBuilder message)
         {
@@ -144,18 +263,6 @@ namespace StellaQL
                 }
             }
             return null;
-        }
-
-        /// <summary>
-        /// ２つのステートを トランジションで結ぶ。
-        /// </summary>
-        /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
-        public static void Add(AnimatorController ac, string path_src, string path_dst)
-        {
-            AnimatorState state_src = AniconOpe_State.Lookup(ac, path_src);
-            AnimatorState state_dst = AniconOpe_State.Lookup(ac, path_dst);
-
-            state_src.AddTransition(state_dst);
         }
 
         /// <summary>

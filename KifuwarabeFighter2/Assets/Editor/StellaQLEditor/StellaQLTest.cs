@@ -106,7 +106,8 @@ namespace StellaQL
             Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(StateExTable.STATE_BEAR)));
             Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(StateExTable.STATE_RABBIT)));
             Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(StateExTable.STATE_ZEBRA)));
-            Assert.AreEqual(15, recordHashesLockers[3].Count);
+            Assert.AreEqual(16, recordHashesLockers[3].Count);
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(StateExTable.STATEMACHINE_BASELAYER)));
             Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(StateExTable.STATE_FOO)));
             Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(StateExTable.STATE_ALPACA)));
             Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(StateExTable.STATE_CAT)));
@@ -193,8 +194,9 @@ namespace StellaQL
             };
             HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringElementsNotAndNot(lockerNumbers, recordHashesLockers, StateExTable.Instance.Hash_to_exRecord);
 
-            // 結果は　Foo,Alpaca,Cat,Dog,Fox,Horse,Iguana,Jellyfish,Kangaroo,Lion,Monkey,Nutria,Ox,Pig,Quetzal,Rabbit,Sheep,Tiger,Unicorn,Vixen,Wolf,Xenopus,Yak,Zebra
-            Assert.AreEqual(24, recordHashes.Count);
+            // 結果は　"Base Layout",Foo,Alpaca,Cat,Dog,Fox,Horse,Iguana,Jellyfish,Kangaroo,Lion,Monkey,Nutria,Ox,Pig,Quetzal,Rabbit,Sheep,Tiger,Unicorn,Vixen,Wolf,Xenopus,Yak,Zebra
+            Assert.AreEqual(25, recordHashes.Count);
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(StateExTable.STATEMACHINE_BASELAYER)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(StateExTable.STATE_FOO)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(StateExTable.STATE_ALPACA)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(StateExTable.STATE_CAT)));
@@ -305,8 +307,9 @@ namespace StellaQL
             HashSet<int> attrs = new HashSet<int>() { StateExTable.Instance.String_to_tagHash[StateExTable.TAG_BETA], StateExTable.Instance.String_to_tagHash[StateExTable.TAG_EEE] };
             HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringAttributesNotAndNot(attrs, StateExTable.Instance.Hash_to_exRecord);
 
-            // 結果は　Foo, Alpaca、Cat、Dog、Fox、Iguana、Kangaroo、Lion、Nutria、Ox、Pig、Unicorn、Wolf、Yak
-            Assert.AreEqual(14, recordHashes.Count);
+            // 結果は　"Base Layout",Foo, Alpaca、Cat、Dog、Fox、Iguana、Kangaroo、Lion、Nutria、Ox、Pig、Unicorn、Wolf、Yak
+            Assert.AreEqual(15, recordHashes.Count);
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(StateExTable.STATEMACHINE_BASELAYER)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(StateExTable.STATE_FOO)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(StateExTable.STATE_ALPACA)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(StateExTable.STATE_CAT)));
@@ -453,6 +456,84 @@ namespace StellaQL
             Assert.AreEqual(1, properties.Count);
             Assert.IsTrue(properties.ContainsKey("tag"));
             Assert.AreEqual("hello", properties["tag"]);
+        }
+
+        /// <summary>
+        /// 構文解析 STATE INSERT 文
+        /// </summary>
+        [Test]
+        public void N70_ParseStatement_StateInsert()
+        {
+            string query = @"STATE INSERT
+                        SET name0 ""WhiteCat"" name1 ""WhiteDog""
+                        WHERE ""Base Layout""";
+            QueryTokens sq;
+            bool successful = SyntaxP.ParseStatement_StateInsert(query, out sq);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.STATE, sq.Target);
+            Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
+            Assert.AreEqual(2, sq.Set.Count);
+            Assert.AreEqual("WhiteCat", sq.Set["name0"]);
+            Assert.AreEqual("WhiteDog", sq.Set["name1"]);
+            Assert.AreEqual("", sq.From_FullnameRegex);
+            Assert.AreEqual("", sq.From_Attr);
+            Assert.AreEqual("", sq.To_FullnameRegex);
+            Assert.AreEqual("", sq.To_Tag);
+            Assert.AreEqual("Base Layout", sq.Where_FullnameRegex);
+            Assert.AreEqual("", sq.Where_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 STATE UPDATE 文
+        /// </summary>
+        [Test]
+        public void N70_ParseStatement_StateUpdate()
+        {
+            string query = @"STATE UPDATE
+                        SET name ""WhiteCat"" age 7
+                        WHERE TAG ([(Alpha Cee)(Beta)]{Eee})";
+            QueryTokens sq;
+            bool successful = SyntaxP.ParseStatement_StateUpdate(query, out sq);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.STATE, sq.Target);
+            Assert.AreEqual(QueryTokens.UPDATE, sq.Manipulation);
+            Assert.AreEqual(2, sq.Set.Count);
+            Assert.AreEqual("WhiteCat", sq.Set["name"]);
+            Assert.AreEqual("7", sq.Set["age"]);
+            Assert.AreEqual("", sq.From_FullnameRegex);
+            Assert.AreEqual("", sq.From_Attr);
+            Assert.AreEqual("", sq.To_FullnameRegex);
+            Assert.AreEqual("", sq.To_Tag);
+            Assert.AreEqual("", sq.Where_FullnameRegex);
+            Assert.AreEqual("([(Alpha Cee)(Beta)]{Eee})", sq.Where_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 STATE DELETE 文
+        /// </summary>
+        [Test]
+        public void N70_ParseStatement_StateDelete()
+        {
+            string query = @"STATE DELETE
+                        SET name0 ""WhiteCat"" name1 ""WhiteDog""
+                        WHERE ""Base Layout""";
+            QueryTokens sq;
+            bool successful = SyntaxP.ParseStatement_StateDelete(query, out sq);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.STATE, sq.Target);
+            Assert.AreEqual(QueryTokens.DELETE, sq.Manipulation);
+            Assert.AreEqual(2, sq.Set.Count);
+            Assert.AreEqual("WhiteCat", sq.Set["name0"]);
+            Assert.AreEqual("WhiteDog", sq.Set["name1"]);
+            Assert.AreEqual("", sq.From_FullnameRegex);
+            Assert.AreEqual("", sq.From_Attr);
+            Assert.AreEqual("", sq.To_FullnameRegex);
+            Assert.AreEqual("", sq.To_Tag);
+            Assert.AreEqual("Base Layout", sq.Where_FullnameRegex);
+            Assert.AreEqual("", sq.Where_Tag);
         }
 
         /// <summary>

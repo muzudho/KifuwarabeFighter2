@@ -48,6 +48,7 @@ namespace SceneStellaQLTest
         public const string TAG_HORN = "Horn";
 
 
+        public const string STATEMACHINE_BASELAYER = "Base Layer";
         public const string STATE_FOO = "Base Layer.Foo";
         public const string STATE_ALPACA = "Base Layer.Alpaca";
         public const string STATE_BEAR = "Base Layer.Bear";
@@ -90,6 +91,7 @@ namespace SceneStellaQLTest
 
             List<StateExRecordable> temp = new List<StateExRecordable>()
             {
+                StateExRecord.Build(  STATEMACHINE_BASELAYER,         new []{TAG_ZERO}),
                 StateExRecord.Build(  STATE_FOO,         new []{TAG_ZERO}),
                 StateExRecord.Build(  STATE_ALPACA,      new []{TAG_ALPHA, TAG_CEE}),
                 StateExRecord.Build(  STATE_BEAR,        new []{TAG_ALPHA, TAG_BETA, TAG_EEE}),

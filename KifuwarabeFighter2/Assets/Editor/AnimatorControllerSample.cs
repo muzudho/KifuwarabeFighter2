@@ -63,7 +63,8 @@ public class AnimatorControllerSample : MonoBehaviour {
         // アニメーター・コントローラーを取得。
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
-        AniconOpe_Transition.Add(ac, "Base Layer.JMove.Tamesi1 0", "Base Layer.JMove.Tamesi1");
+        StringBuilder message = new StringBuilder();
+        AniconOpe_Transition.AddAll(ac, new HashSet<AnimatorState>() { AniconOpe_State.Lookup(ac, "Base Layer.JMove.Tamesi1 0") }, new HashSet<AnimatorState>() { AniconOpe_State.Lookup(ac, "Base Layer.JMove.Tamesi1") }, message);
     }
 
     [MenuItem("(^_^)Menu/Add 5x5 Transitions 1")]

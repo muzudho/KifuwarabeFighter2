@@ -184,14 +184,20 @@ namespace StellaQL
             QueryTokens sq;
             message = new StringBuilder();
 
-            if (SyntaxP.ParseStatement_StateUpdate(query, out sq))
+            if (SyntaxP.ParseStatement_StateInsert(query, out sq))
+            {
+                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
+                AniconOpe_State.AddAll(ac, Fetcher.FetchAll_Statemachine(ac, recordHashes, universe), sq.Set, message);
+                return true;
+            }
+            else if (SyntaxP.ParseStatement_StateUpdate(query, out sq))
             {
                 HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
                 foreach (KeyValuePair<string, string> pair in sq.Set)
                 {
                     message.AppendLine(pair.Key + "=" + pair.Value);
                 }
-                AniconOpe_State.UpdateProperty(ac, sq.Set, Fetcher.FetchAll(ac, recordHashes, universe), message);
+                AniconOpe_State.UpdateProperty(ac, sq.Set, Fetcher.FetchAll_State(ac, recordHashes, universe), message);
                 int i = 0;
                 foreach (int recordHash in recordHashes)
                 {
@@ -199,11 +205,17 @@ namespace StellaQL
                 }
                 return true;
             }
+            else if (SyntaxP.ParseStatement_StateDelete(query, out sq))
+            {
+                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
+                AniconOpe_State.RemoveAll(ac, Fetcher.FetchAll_Statemachine(ac, recordHashes, universe), sq.Set, message);
+                return true;
+            }
             else if (SyntaxP.ParseStatement_StateSelect(query, out sq))
             {
                 HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
                 HashSet<StateRecord> recordSet;
-                AniconOpe_State.Select(ac, Fetcher.FetchAll(ac, recordHashes, universe), out recordSet, message);
+                AniconOpe_State.Select(ac, Fetcher.FetchAll_State(ac, recordHashes, universe), out recordSet, message);
                 StringBuilder contents = new StringBuilder();
                 AniconDataUtility.CreateCsvTable_State(recordSet, contents);
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogStateSelect(ac.name), contents, message);
@@ -214,8 +226,8 @@ namespace StellaQL
                 HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe);
                 HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe);
                 AniconOpe_Transition.AddAll(ac,
-                    Fetcher.FetchAll(ac, recordHashesFrom, universe),
-                    Fetcher.FetchAll(ac, recordHashesTo, universe),
+                    Fetcher.FetchAll_State(ac, recordHashesFrom, universe),
+                    Fetcher.FetchAll_State(ac, recordHashesTo, universe),
                     message);
                 return true;
             }
@@ -228,8 +240,8 @@ namespace StellaQL
                 HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe);
                 HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe);
                 AniconOpe_Transition.UpdateProperty(ac, sq.Set,
-                    Fetcher.FetchAll(ac, recordHashesFrom, universe),
-                    Fetcher.FetchAll(ac, recordHashesTo, universe),
+                    Fetcher.FetchAll_State(ac, recordHashesFrom, universe),
+                    Fetcher.FetchAll_State(ac, recordHashesTo, universe),
                     message);
                 return true;
             }
@@ -238,8 +250,8 @@ namespace StellaQL
                 HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe);
                 HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe);
                 AniconOpe_Transition.RemoveAll(ac,
-                    Fetcher.FetchAll(ac, recordHashesFrom, universe),
-                    Fetcher.FetchAll(ac, recordHashesTo, universe),
+                    Fetcher.FetchAll_State(ac, recordHashesFrom, universe),
+                    Fetcher.FetchAll_State(ac, recordHashesTo, universe),
                     message);
                 return true;
             }
@@ -248,8 +260,8 @@ namespace StellaQL
                 HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe);
                 HashSet<TransitionRecord> recordSet;
                 AniconOpe_Transition.Select(ac,
-                    Fetcher.FetchAll(ac, recordHashesFrom, universe),
-                    Fetcher.FetchAll(ac, recordHashesTo, universe),
+                    Fetcher.FetchAll_State(ac, recordHashesFrom, universe),
+                    Fetcher.FetchAll_State(ac, recordHashesTo, universe),
                     out recordSet,
                     message);
                 StringBuilder contents = new StringBuilder();
@@ -409,7 +421,17 @@ namespace StellaQL
             }
         }
 
-        public static HashSet<AnimatorState> FetchAll(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<AnimatorStateMachine> FetchAll_Statemachine(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, StateExRecordable> universe)
+        {
+            HashSet<AnimatorStateMachine> statemachines = new HashSet<AnimatorStateMachine>();
+            foreach (int recordHash in recordHashes)
+            {
+                statemachines.Add(AniconOpe_Statemachine.Lookup(ac, universe[recordHash].Fullpath));
+            }
+            return statemachines;
+        }
+
+        public static HashSet<AnimatorState> FetchAll_State(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, StateExRecordable> universe)
         {
             HashSet<AnimatorState> states = new HashSet<AnimatorState>();
             foreach (int recordHash in recordHashes)
@@ -690,6 +712,40 @@ namespace StellaQL
         }
 
         /// <summary>
+        /// STATE INSERT
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public static bool ParseStatement_StateInsert(string query, out QueryTokens qTokens)
+        {
+            qTokens = new QueryTokens();
+            int caret = 0;
+            string stringWithoutDoubleQuotation;
+            LexcalP.VarSpaces(query, ref caret);
+
+            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return false; }
+            qTokens.Target = QueryTokens.STATE;
+
+            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return false; }
+            qTokens.Manipulation = QueryTokens.INSERT;
+
+            if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
+            {
+                // 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
+                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qTokens.Set)) { return false; }
+            }
+            else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return false; } }
+
+            // 正規表現。
+            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
+            {
+                qTokens.Where_FullnameRegex = stringWithoutDoubleQuotation;
+            }
+            else { return false; }
+            return true;
+        }
+
+        /// <summary>
         /// STATE UPDATE
         /// </summary>
         /// <param name="query"></param>
@@ -719,6 +775,40 @@ namespace StellaQL
             } else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)) {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
                 qTokens.Where_Tag = parenthesis;
+            }
+            else { return false; }
+            return true;
+        }
+
+        /// <summary>
+        /// STATE DELETE
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public static bool ParseStatement_StateDelete(string query, out QueryTokens qTokens)
+        {
+            qTokens = new QueryTokens();
+            int caret = 0;
+            string stringWithoutDoubleQuotation;
+            LexcalP.VarSpaces(query, ref caret);
+
+            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return false; }
+            qTokens.Target = QueryTokens.STATE;
+
+            if (!LexcalP.FixedWord(QueryTokens.DELETE, query, ref caret)) { return false; }
+            qTokens.Manipulation = QueryTokens.DELETE;
+
+            if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
+            {
+                // 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
+                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qTokens.Set)) { return false; }
+            }
+            else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return false; } }
+
+            // 正規表現。
+            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
+            {
+                qTokens.Where_FullnameRegex = stringWithoutDoubleQuotation;
             }
             else { return false; }
             return true;

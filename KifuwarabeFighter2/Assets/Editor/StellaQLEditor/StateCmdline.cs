@@ -108,12 +108,12 @@ public class StateCmdline : EditorWindow
 
         if (GUILayout.Button("Execute"))
         {
-            Debug.Log("Executeボタンを押した☆ テスト以外のStateExTableの取得方法はまだ");
+            Debug.Log("Executeボタンを押した☆");
             StringBuilder message;
             if (StateExtendDatabase.AniconFilePath_to_tables.ContainsKey(path_animatorController))
             {
                 Querier.Execute(ac, commandline,
-                    StateExtendDatabase.AniconFilePath_to_tables[path_animatorController], // FIXME: テスト以外のStateExTableの取得方法はまだ
+                    StateExtendDatabase.AniconFilePath_to_tables[path_animatorController],
                     out message);
             }
             else
