@@ -448,14 +448,29 @@ namespace StellaQL
         public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine( "LayerNum,MachineStateNum,StateNum,TransitionNum,ConditionNum,PropertyName,magnitude,normalized,normalizedX,normalizedY,normalizedZ,sqrMagnitude,x,y,z,"); }
     }
 
-    public abstract class AniconTables
+    public class AniconData
     {
-        public static List<LayerRecord> table_layer = new List<LayerRecord>();
-        public static List<StatemachineRecord> table_statemachine = new List<StatemachineRecord>();
-        public static HashSet<StateRecord> table_state = new HashSet<StateRecord>();
-        public static HashSet<TransitionRecord> table_transition = new HashSet<TransitionRecord>();
-        public static List<ConditionRecord> table_condition = new List<ConditionRecord>();
-        public static List<PositionRecord> table_position = new List<PositionRecord>();
+        public AniconData()
+        {
+            table_layer = new List<LayerRecord>();
+            table_statemachine = new List<StatemachineRecord>();
+            table_state = new HashSet<StateRecord>();
+            table_transition = new HashSet<TransitionRecord>();
+            table_condition = new List<ConditionRecord>();
+            table_position = new List<PositionRecord>();
+        }
+
+        public List<LayerRecord> table_layer { get; set; }
+        public List<StatemachineRecord> table_statemachine { get; set; }
+        public HashSet<StateRecord> table_state { get; set; }
+        public HashSet<TransitionRecord> table_transition { get; set; }
+        public List<ConditionRecord> table_condition { get; set; }
+        public List<PositionRecord> table_position { get; set; }
+    }
+
+
+    public abstract class AniconDataUtility
+    {
 
         public static void WriteCsv_Parameters(AnimatorController ac, StringBuilder message)
         {
@@ -489,19 +504,19 @@ namespace StellaQL
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogParameters(ac.name), contents, message);
         }
 
-        public static void WriteCsv_Layer(string aniconName, StringBuilder message)
+        public static void WriteCsv_Layer(AniconData aniconData, string aniconName, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
             LayerRecord.ColumnNameCsvLine(contents);
-            foreach (LayerRecord record in table_layer) {record.CreateCsvLine(contents);}
+            foreach (LayerRecord record in aniconData.table_layer) {record.CreateCsvLine(contents);}
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogLayer(aniconName), contents, message);
         }
 
-        public static void WriteCsv_Statemachine(string aniconName, StringBuilder message)
+        public static void WriteCsv_Statemachine(AniconData aniconData, string aniconName, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
             StatemachineRecord.ColumnNameCsvLine(contents);
-            foreach (StatemachineRecord record in table_statemachine) {record.CreateCsvLine(contents);}
+            foreach (StatemachineRecord record in aniconData.table_statemachine) {record.CreateCsvLine(contents);}
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogStatemachine(aniconName), contents, message);
         }
 
@@ -510,10 +525,10 @@ namespace StellaQL
             StateRecord.ColumnNameCsvLine(contents);
             foreach (StateRecord stateRecord in table) { stateRecord.CreateCsvLine(contents); }
         }
-        public static void WriteCsv_State(string aniconName, StringBuilder message)
+        public static void WriteCsv_State(AniconData aniconData, string aniconName, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            CreateCsvTable_State(table_state, contents);
+            CreateCsvTable_State(aniconData.table_state, contents);
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogStates(aniconName), contents, message);
         }
 
@@ -522,26 +537,26 @@ namespace StellaQL
             TransitionRecord.ColumnNameCsvLine(contents);
             foreach (TransitionRecord record in table) { record.CreateCsvLine(contents); }
         }
-        public static void WriteCsv_Transition(string aniconName, StringBuilder message)
+        public static void WriteCsv_Transition(AniconData aniconData, string aniconName, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            CreateCsvTable_Transition(table_transition, contents);
+            CreateCsvTable_Transition(aniconData.table_transition, contents);
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransition(aniconName), contents, message);
         }
 
-        public static void WriteCsv_Condition(string aniconName, StringBuilder message)
+        public static void WriteCsv_Condition(AniconData aniconData, string aniconName, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
             ConditionRecord.ColumnNameCsvLine(contents);
-            foreach (ConditionRecord conditionRecord in table_condition) { conditionRecord.CreateCsvLine(contents); }
+            foreach (ConditionRecord conditionRecord in aniconData.table_condition) { conditionRecord.CreateCsvLine(contents); }
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogConditions(aniconName), contents, message);
         }
 
-        public static void WriteCsv_Position(string aniconName, StringBuilder message)
+        public static void WriteCsv_Position(AniconData aniconData, string aniconName, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
             PositionRecord.ColumnNameCsvLine(contents);
-            foreach (PositionRecord record in table_position) { record.CreateCsvLine(contents); }
+            foreach (PositionRecord record in aniconData.table_position) { record.CreateCsvLine(contents); }
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogPositions(aniconName), contents, message);
         }
 
@@ -555,42 +570,43 @@ namespace StellaQL
             }
         }
 
-        public static void ScanAnimatorController(AnimatorController ac, StringBuilder message)
+        public static void ScanAnimatorController(AnimatorController ac, out AniconData aniconData, StringBuilder message)
         {
             message.AppendLine("States Scanning...☆（＾～＾）");
-            table_layer.Clear();
-            table_state.Clear();
-            table_transition.Clear();
-            table_condition.Clear();
-            table_position.Clear();
+            aniconData = new AniconData();
+            //table_layer.Clear();
+            //table_state.Clear();
+            //table_transition.Clear();
+            //table_condition.Clear();
+            //table_position.Clear();
 
             foreach (AnimatorControllerLayer layer in ac.layers)//レイヤー
             {
-                LayerRecord layerRecord = new LayerRecord(table_layer.Count, layer);
-                table_layer.Add(layerRecord);
+                LayerRecord layerRecord = new LayerRecord(aniconData.table_layer.Count, layer);
+                aniconData.table_layer.Add(layerRecord);
 
                 // ステート・マシン
                 List<AnimatorStateMachine> stateMachineList = new List<AnimatorStateMachine>();
                 ScanRecursive(stateMachineList, layer.stateMachine);
                 foreach (AnimatorStateMachine stateMachine in stateMachineList)
                 {
-                    StatemachineRecord stateMachineRecord = new StatemachineRecord(table_layer.Count, table_statemachine.Count, stateMachine, table_position);
-                    table_statemachine.Add(stateMachineRecord);
+                    StatemachineRecord stateMachineRecord = new StatemachineRecord(aniconData.table_layer.Count, aniconData.table_statemachine.Count, stateMachine, aniconData.table_position);
+                    aniconData.table_statemachine.Add(stateMachineRecord);
 
                     foreach (ChildAnimatorState caState in stateMachine.states)
                     {
-                        StateRecord stateRecord = StateRecord.CreateInstance(table_layer.Count, table_statemachine.Count, table_state.Count, caState, table_position);
-                        table_state.Add(stateRecord);
+                        StateRecord stateRecord = StateRecord.CreateInstance(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, caState, aniconData.table_position);
+                        aniconData.table_state.Add(stateRecord);
 
                         foreach (AnimatorStateTransition transition in caState.state.transitions)
                         {
-                            TransitionRecord transitionRecord = new TransitionRecord(table_layer.Count, table_statemachine.Count, table_state.Count, table_transition.Count, transition, "");
-                            table_transition.Add(transitionRecord);
+                            TransitionRecord transitionRecord = new TransitionRecord(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, aniconData.table_transition.Count, transition, "");
+                            aniconData.table_transition.Add(transitionRecord);
 
                             foreach (AnimatorCondition aniCondition in transition.conditions)
                             {
-                                ConditionRecord conditionRecord = new ConditionRecord(table_layer.Count, table_statemachine.Count, table_state.Count, table_transition.Count, table_condition.Count, aniCondition);
-                                table_condition.Add(conditionRecord);
+                                ConditionRecord conditionRecord = new ConditionRecord(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, aniconData.table_transition.Count, aniconData.table_condition.Count, aniCondition);
+                                aniconData.table_condition.Add(conditionRecord);
                             } // コンディション
                         }//トランジション
                     }//ステート

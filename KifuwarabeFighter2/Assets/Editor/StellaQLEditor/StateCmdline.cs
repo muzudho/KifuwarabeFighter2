@@ -109,9 +109,22 @@ namespace StellaQL
             {
                 Debug.Log("Executeボタンを押した☆ テスト以外のStateExTableの取得方法はまだ");
                 StringBuilder message;
-                Querier.Execute(ac, commandline,
-                    StateExTable.Instance, // FIXME: テスト以外のStateExTableの取得方法はまだ
-                    out message);
+                if (StateExtendDatabase.AniconFilePath_to_tables.ContainsKey(path_animatorController))
+                {
+                    Querier.Execute(ac, commandline,
+                        StateExtendDatabase.AniconFilePath_to_tables[path_animatorController], // FIXME: テスト以外のStateExTableの取得方法はまだ
+                        out message);
+                }
+                else
+                {
+                    message = new StringBuilder();
+                    message.AppendLine("指定されたパスは登録されていないぜ☆（＾～＾） path_animatorController=["+ path_animatorController + "]");
+                    message.AppendLine("登録されている拡張テーブル " + StateExtendDatabase.AniconFilePath_to_tables.Count + " 件");
+                    foreach (string path in StateExtendDatabase.AniconFilePath_to_tables.Keys)
+                    {
+                        message.AppendLine("[" + path + "]");
+                    }
+                }
                 infoMessage = message.ToString();
             }
 
@@ -122,14 +135,15 @@ namespace StellaQL
 
                 StringBuilder message = new StringBuilder();
 
-                AniconTables.WriteCsv_Parameters(ac, message);
-                AniconTables.ScanAnimatorController(ac, message);
-                AniconTables.WriteCsv_Layer(ac.name, message);
-                AniconTables.WriteCsv_Statemachine(ac.name, message);
-                AniconTables.WriteCsv_State(ac.name, message);
-                AniconTables.WriteCsv_Transition(ac.name, message);
-                AniconTables.WriteCsv_Condition(ac.name, message);
-                AniconTables.WriteCsv_Position(ac.name, message);
+                AniconDataUtility.WriteCsv_Parameters(ac, message);
+                AniconData aniconData;
+                AniconDataUtility.ScanAnimatorController(ac, out aniconData, message);
+                AniconDataUtility.WriteCsv_Layer(aniconData, ac.name, message);
+                AniconDataUtility.WriteCsv_Statemachine(aniconData, ac.name, message);
+                AniconDataUtility.WriteCsv_State(aniconData, ac.name, message);
+                AniconDataUtility.WriteCsv_Transition(aniconData, ac.name, message);
+                AniconDataUtility.WriteCsv_Condition(aniconData, ac.name, message);
+                AniconDataUtility.WriteCsv_Position(aniconData, ac.name, message);
 
                 infoMessage = message.ToString();
                 Repaint();

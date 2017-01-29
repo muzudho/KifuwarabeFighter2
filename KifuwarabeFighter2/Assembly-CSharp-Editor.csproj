@@ -48,14 +48,13 @@
   <ItemGroup>
      <Compile Include="Assets\Editor\AnimatorControllerSample.cs" />
      <Compile Include="Assets\Editor\SM.cs" />
+     <Compile Include="Assets\Editor\StellaQLEditor\AniconData.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\AniconOperation.cs" />
-     <Compile Include="Assets\Editor\StellaQLEditor\AniconTables.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\CsvParser.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\StateCmdline.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\StellaQL.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\StellaQLTest.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\StellaQLWriter.cs" />
-     <Compile Include="Assets\Editor\StellaQLEditor\Test_StateExTable.cs" />
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>
  </Reference>

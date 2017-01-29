@@ -68,6 +68,8 @@
      <Compile Include="Assets\Scripts\SceneTitle\Title_CameraScript.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\CliptypeExtend.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\StateExtend.cs" />
+     <Compile Include="Assets\Scripts\StellaQLEngine\StateExtendDatabase.cs" />
+     <Compile Include="Assets\Scripts\StellaQLEngine\Test_StateExTable.cs" />
      <Compile Include="Assets\Scripts\TakoyakiParticleScript.cs" />
      <Compile Include="Assets\Scripts\TakoyakiTokenScript.cs" />
      <Compile Include="Assets\Scripts\TakoyakiUtilScript.cs" />

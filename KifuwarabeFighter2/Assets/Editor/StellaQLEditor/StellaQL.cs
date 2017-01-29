@@ -206,7 +206,7 @@ namespace StellaQL
                 HashSet<StateRecord> recordSet;
                 AniconOpe_State.Select(ac, Fetcher.FetchAll(ac, recordHashes, universe), out recordSet, message);
                 StringBuilder contents = new StringBuilder();
-                AniconTables.CreateCsvTable_State(recordSet, contents);
+                AniconDataUtility.CreateCsvTable_State(recordSet, contents);
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogStateSelect(ac.name), contents, message);
                 return true;
             }
@@ -254,7 +254,7 @@ namespace StellaQL
                     out recordSet,
                     message);
                 StringBuilder contents = new StringBuilder();
-                AniconTables.CreateCsvTable_Transition(recordSet, contents);
+                AniconDataUtility.CreateCsvTable_Transition(recordSet, contents);
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransitionSelect(ac.name), contents, message);
                 return true;
             }
