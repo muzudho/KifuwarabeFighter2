@@ -15,11 +15,11 @@ namespace SceneSelect {
         {
             return new StateExRecord(fullpath, Animator.StringToHash(fullpath));
         }
-        public StateExRecord(string fullpath, int fullpathHash) :base(fullpath, fullpathHash, - 1)
+        public StateExRecord(string fullpath, int fullpathHash) :base(fullpath, fullpathHash, new HashSet<int>() { })
         {
         }
 
-        public override bool HasFlag_attr(int enumration)
+        public override bool HasFlag_attr(HashSet<int> attributeBitfield)
         {
             return false;
         }
@@ -27,38 +27,32 @@ namespace SceneSelect {
 
     public class StateExTable : AbstractStateExTable
     {
-        /// <summary>
-        /// AstateAttribute. 略したいので子クラスとして名称を縮めた。
-        /// </summary>
-        [Flags]
-        public enum Attr
-        {
-            None = 0,
-        }
-
-        public const string FULLNAME_STAY = "Base Layer.Stay";
-        public const string FULLNAME_MOVE = "Base Layer.Move";
-        public const string FULLNAME_READY = "Base Layer.Ready";
-        public const string FULLNAME_TIMEOVER = "Base Layer.Timeover";
-
         static StateExTable()
         {
             Instance = new StateExTable();
         }
-
         public static StateExTable Instance { get; set; }
-        public override Type GetAttributeEnumration() { return typeof(StateExTable.Attr); }
+
+        public const string TAG_ZERO = "Zero";
+
+        public const string STATE_STAY = "Base Layer.Stay";
+        public const string STATE_MOVE = "Base Layer.Move";
+        public const string STATE_READY = "Base Layer.Ready";
+        public const string STATE_TIMEOVER = "Base Layer.Timeover";
 
         protected StateExTable()
         {
+            String_to_tagHash = Code.HashsDic(new []{
+                TAG_ZERO
+            });
+
             List<StateExRecordable> temp = new List<StateExRecordable>()
             {
-                StateExRecord.Build( StateExTable.FULLNAME_STAY),
-                StateExRecord.Build( StateExTable.FULLNAME_MOVE),
-                StateExRecord.Build( StateExTable.FULLNAME_READY),
-                StateExRecord.Build( StateExTable.FULLNAME_TIMEOVER),
+                StateExRecord.Build( STATE_STAY),
+                StateExRecord.Build( STATE_MOVE),
+                StateExRecord.Build( STATE_READY),
+                StateExRecord.Build( STATE_TIMEOVER),
             };
-            //hash_to_exRecord = new Dictionary<int, StateExRecordable>();
             foreach (StateExRecordable record in temp) { Hash_to_exRecord.Add(record.FullPathHash, record); }
         }
     }

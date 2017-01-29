@@ -122,7 +122,7 @@ namespace StellaQL
 
     public abstract class QueryTokensUtility
     {
-        public static HashSet<int> RecordHashes_From(QueryTokens qt, Type enumration, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_From(QueryTokens qt, Dictionary<int, StateExRecordable> universe)
         {
             if ("" != qt.From_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.From_FullnameRegex, universe); }
             else {
@@ -133,12 +133,12 @@ namespace StellaQL
                 Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
 
                 List<HashSet<int>> recordHashesLockers;
-                Fetcher.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, enumration, universe, out recordHashesLockers);
+                Fetcher.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, universe, out recordHashesLockers);
                 return recordHashesLockers[recordHashesLockers.Count - 1];
             }
         }
 
-        public static HashSet<int> RecordHashes_To(QueryTokens qt, Type enumration, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_To(QueryTokens qt, Dictionary<int, StateExRecordable> universe)
         {
             if ("" != qt.To_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.To_FullnameRegex, universe); }
             else {
@@ -149,12 +149,12 @@ namespace StellaQL
                 Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
 
                 List<HashSet<int>> recordHashesLockers;
-                Fetcher.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, enumration, universe, out recordHashesLockers);
+                Fetcher.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, universe, out recordHashesLockers);
                 return recordHashesLockers[recordHashesLockers.Count - 1];
             }
         }
 
-        public static HashSet<int> RecordHashes_Where(QueryTokens qt, Type enumration, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_Where(QueryTokens qt, Dictionary<int, StateExRecordable> universe)
         {
             if ("" != qt.Where_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.Where_FullnameRegex, universe); }
             else {
@@ -165,7 +165,7 @@ namespace StellaQL
                 Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
 
                 List<HashSet<int>> recordHashesLockers;
-                Fetcher.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, enumration, universe, out recordHashesLockers);
+                Fetcher.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, universe, out recordHashesLockers);
                 return recordHashesLockers[recordHashesLockers.Count - 1];
             }
         }
@@ -178,7 +178,6 @@ namespace StellaQL
     {
         public static bool Execute(AnimatorController ac, string query, StateExTableable stateExTable, out StringBuilder message)
         {
-            Type enumration = stateExTable.GetAttributeEnumration();
             Dictionary<int, StateExRecordable> universe = stateExTable.Hash_to_exRecord;
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
@@ -187,7 +186,7 @@ namespace StellaQL
 
             if (SyntaxP.ParseStatement_StateUpdate(query, out sq))
             {
-                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, enumration, universe);
+                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
                 foreach (KeyValuePair<string, string> pair in sq.Set)
                 {
                     message.AppendLine(pair.Key + "=" + pair.Value);
@@ -202,7 +201,7 @@ namespace StellaQL
             }
             else if (SyntaxP.ParseStatement_StateSelect(query, out sq))
             {
-                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, enumration, universe);
+                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
                 HashSet<StateRecord> recordSet;
                 AniconOpe_State.Select(ac, Fetcher.FetchAll(ac, recordHashes, universe), out recordSet, message);
                 StringBuilder contents = new StringBuilder();
@@ -212,8 +211,8 @@ namespace StellaQL
             }
             else if (SyntaxP.ParseStatement_TransitionInsert(query, out sq))
             {
-                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, enumration, universe);
-                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, enumration, universe);
+                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe);
+                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe);
                 AniconOpe_Transition.AddAll(ac,
                     Fetcher.FetchAll(ac, recordHashesFrom, universe),
                     Fetcher.FetchAll(ac, recordHashesTo, universe),
@@ -226,8 +225,8 @@ namespace StellaQL
                 {
                     message.AppendLine(pair.Key+"="+pair.Value);
                 }
-                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, enumration, universe);
-                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, enumration, universe);
+                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe);
+                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe);
                 AniconOpe_Transition.UpdateProperty(ac, sq.Set,
                     Fetcher.FetchAll(ac, recordHashesFrom, universe),
                     Fetcher.FetchAll(ac, recordHashesTo, universe),
@@ -236,8 +235,8 @@ namespace StellaQL
             }
             else if (SyntaxP.ParseStatement_TransitionDelete(query, out sq))
             {
-                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, enumration, universe);
-                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, enumration, universe);
+                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe);
+                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe);
                 AniconOpe_Transition.RemoveAll(ac,
                     Fetcher.FetchAll(ac, recordHashesFrom, universe),
                     Fetcher.FetchAll(ac, recordHashesTo, universe),
@@ -245,8 +244,8 @@ namespace StellaQL
                 return true;
             }
             else if (SyntaxP.ParseStatement_TransitionSelect(query, out sq)) {
-                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, enumration, universe);
-                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, enumration, universe);
+                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe);
+                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe);
                 HashSet<TransitionRecord> recordSet;
                 AniconOpe_Transition.Select(ac,
                     Fetcher.FetchAll(ac, recordHashesFrom, universe),
@@ -268,7 +267,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="query">例えば 「STATE SELECT WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})」 といった式。</param>
         /// <returns></returns>
-        public static bool ExecuteStateSelect(string query, Type enumration, Dictionary<int, StateExRecordable> universe, out HashSet<int> recordHashes)
+        public static bool ExecuteStateSelect(string query, Dictionary<int, StateExRecordable> universe, out HashSet<int> recordHashes)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
@@ -276,7 +275,7 @@ namespace StellaQL
             QueryTokens sq;
             if (!SyntaxP.ParseStatement_StateSelect(query, out sq)) { return false; }
 
-            recordHashes = QueryTokensUtility.RecordHashes_Where(sq, enumration, universe);
+            recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
             return true;
         }
 
@@ -285,7 +284,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="query">例えば 「TRANSITION SELECT FROM "Base Layer.Zebra" TO ATTR ([(Alpha Cee)(Beta)]{Eee})」 といった式。</param>
         /// <returns></returns>
-        public static bool ExecuteTransitionSelect(string query, Type enumration, Dictionary<int, StateExRecordable> universe, out HashSet<int> recordHashesSrc, out HashSet<int> recordHashesDst)
+        public static bool ExecuteTransitionSelect(string query, Dictionary<int, StateExRecordable> universe, out HashSet<int> recordHashesSrc, out HashSet<int> recordHashesDst)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
@@ -294,8 +293,8 @@ namespace StellaQL
             QueryTokens sq;
             if (!SyntaxP.ParseStatement_TransitionSelect(query, out sq)) { return false; }
 
-            recordHashesSrc = QueryTokensUtility.RecordHashes_From(sq, enumration, universe);// FROM
-            recordHashesDst = QueryTokensUtility.RecordHashes_To(sq, enumration, universe);// TO
+            recordHashesSrc = QueryTokensUtility.RecordHashes_From(sq, universe);// FROM
+            recordHashesDst = QueryTokensUtility.RecordHashes_To(sq, universe);// TO
             return true;
         }
 
@@ -365,7 +364,7 @@ namespace StellaQL
         /// トークン・ロッカーを元に、ロッカー別の検索結果を返す。
         /// </summary>
         /// <param name="tokens"></param>
-        public static void TokenLockers_to_recordHashesLockers(List<List<string>> lockerNumber_to_tokens, List<string> lockerNumber_to_operation, Type attrEnumration,
+        public static void TokenLockers_to_recordHashesLockers(List<List<string>> lockerNumber_to_tokens, List<string> lockerNumber_to_operation,
             Dictionary<int, StateExRecordable> universe, out List<HashSet<int>> lockerNumber_to_recordHashes)
         {
             lockerNumber_to_recordHashes = new List<HashSet<int>>();
@@ -390,12 +389,12 @@ namespace StellaQL
                     }
                 }
                 else { // 数字じゃなかったら、属性名のリストだ
-                    HashSet<int> attrEnumSet_src = AttrSet_Enumration.Names_to_enums(new HashSet<string>(index_to_token), attrEnumration);
+                    HashSet<int> attrEnumSet_src = AttrSet_Enumration.Names_to_enums(new HashSet<string>(index_to_token));
                     HashSet<int> attrEnumSet_calc;
                     switch (operation) // 属性結合（演算）を解消する
                     {
                         case "(":
-                            attrEnumSet_calc = AttrSet_Enumration.KeywordSet_to_attrLocker(attrEnumSet_src);
+                            attrEnumSet_calc = AttrSet_Enumration.KeywordlistSet_to_attrLocker(attrEnumSet_src);
                             lockerNumber_to_recordHashes.Add(ElementSet.RecordHashes_FilteringAttributesAnd(attrEnumSet_calc, universe)); break;
                         case "[":
                             attrEnumSet_calc = AttrSet_Enumration.KeywordlistSet_to_attrLocker(attrEnumSet_src);
@@ -520,47 +519,41 @@ namespace StellaQL
                 HashSet<int> records_empty = new HashSet<int>();
                 foreach (int recordHash in hitRecordHashes)
                 {
-                    if (universe[recordHash].HasFlag_attr(attr)) { records_empty.Add(recordHash); }// 該当したもの
+                    if (universe[recordHash].HasFlag_attr(new HashSet<int>() { attr })) { records_empty.Add(recordHash); }// 該当したもの
                 }
                 hitRecordHashes = records_empty;
             }
             return hitRecordHashes;
         }
 
-        public static HashSet<int> RecordHashes_FilteringAttributesOr(HashSet<int> attrs, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_FilteringAttributesOr(HashSet<int> orAllTags, Dictionary<int, StateExRecordable> universe)
         {
-            HashSet<int> distinctAttr = new HashSet<int>();// まず属性の重複を除外
-            foreach (int attr in attrs) { distinctAttr.Add(attr); }
-
             HashSet<int> hitRecordHashes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
             foreach (KeyValuePair<int, StateExRecordable> pair in universe)
             {
-                foreach (int attr in distinctAttr)
+                foreach (int attr in orAllTags)
                 {
-                    if (pair.Value.HasFlag_attr(attr)) { hitRecordHashes.Add(pair.Key); }
+                    if (pair.Value.HasFlag_attr(new HashSet<int>() { attr })) { hitRecordHashes.Add(pair.Key); }
                 }
             }
 
             return hitRecordHashes;
         }
 
-        public static HashSet<int> RecordHashes_FilteringAttributesNotAndNot(HashSet<int> attrs, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_FilteringAttributesNotAndNot(HashSet<int> requireAllTags, Dictionary<int, StateExRecordable> recordUniverse)
         {
-            HashSet<int> distinctAttr = new HashSet<int>();// まず属性の重複を除外
-            foreach (int attr in attrs) { distinctAttr.Add(attr); }
-
             HashSet<int> hitRecordHashes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
-            foreach (KeyValuePair<int, StateExRecordable> pair in universe)
+            foreach (KeyValuePair<int, StateExRecordable> pair in recordUniverse)
             {
-                foreach (int attr in distinctAttr)
+                foreach (int attr in requireAllTags)
                 {
-                    if (pair.Value.HasFlag_attr(attr)) { hitRecordHashes.Add(pair.Key); }
+                    if (pair.Value.HasFlag_attr(new HashSet<int>() { attr })) { hitRecordHashes.Add(pair.Key); }
                 }
             }
 
             List<int> complementRecordHashes = new List<int>();// 補集合を取る
             {
-                foreach (int recordHash in universe.Keys) { complementRecordHashes.Add(recordHash); }// 列挙型の中身をリストに移動。
+                foreach (int recordHash in recordUniverse.Keys) { complementRecordHashes.Add(recordHash); }// 列挙型の中身をリストに移動。
                 for (int iComp = complementRecordHashes.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
                 {
                     if (hitRecordHashes.Contains(complementRecordHashes[iComp]))
@@ -580,39 +573,23 @@ namespace StellaQL
     /// </summary>
     public abstract class AttrSet_Enumration
     {
-        public static HashSet<int> KeywordSet_to_attrLocker(HashSet<int> bitfieldSet)//, Type enumration
-        {
-            /*
-            // 列挙型要素を １つ１つ　ばらばらに持つ。
-            return bitfieldSet;
-            //*/
-            //*
-            // 列挙型要素を OR 結合して持つ。
-            HashSet<int> attrs = new HashSet<int>();
-            int sum = 0;// (int)Enum.GetValues(enumration).GetValue(0);//最初の要素は 0 にしておくこと。 列挙型だが、int 型に変換。
-            foreach (object elem in bitfieldSet) { sum |= (int)elem; }// OR結合
-            attrs.Add(sum); // 列挙型の要素を結合したものを int型として入れておく。
-            return attrs;
-            //*/
-        }
-
         public static HashSet<int> KeywordlistSet_to_attrLocker(HashSet<int> bitfieldSet)
         { // 列挙型要素を １つ１つ　ばらばらに持つ。
             return bitfieldSet;
         }
 
-        public static HashSet<int> NGKeywordSet_to_attrLocker(HashSet<int> bitfieldSet, Type enumration)
+        public static HashSet<int> NGKeywordSet_to_attrLocker(HashSet<int> bitfieldSet, HashSet<int> tagUniverse)
         {
-            return Complement(bitfieldSet, enumration); // 補集合を返すだけ☆
+            return Complement(bitfieldSet, tagUniverse); // 補集合を返すだけ☆
         }
 
         /// <summary>
         /// 補集合
         /// </summary>
-        public static HashSet<int> Complement(HashSet<int> bitfieldSet, Type enumration)
+        public static HashSet<int> Complement(HashSet<int> bitfieldSet, HashSet<int> tagUniverse)
         {
             List<int> complement = new List<int>();
-            foreach (int elem in Enum.GetValues(enumration)) { complement.Add(elem); }// 列挙型の中身をリストに移動。
+            foreach (int elem in tagUniverse) { complement.Add(elem); }// 列挙型の中身をリストに移動。
             for (int iComp = complement.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
             {
                 if (bitfieldSet.Contains(complement[iComp]))
@@ -641,10 +618,10 @@ namespace StellaQL
         /// <param name="nameSet"></param>
         /// <param name="enumration"></param>
         /// <returns></returns>
-        public static HashSet<int> Names_to_enums(HashSet<string> nameSet, Type enumration)
+        public static HashSet<int> Names_to_enums(HashSet<string> nameSet)
         {
             HashSet<int> enumSet = new HashSet<int>();
-            foreach (string name in nameSet) { enumSet.Add((int)Enum.Parse(enumration, name)); }// 変換できなかったら例外を投げる
+            foreach (string name in nameSet) { enumSet.Add( Animator.StringToHash(name)); }// 変換できなかったら例外を投げる
             return enumSet;
         }
     }

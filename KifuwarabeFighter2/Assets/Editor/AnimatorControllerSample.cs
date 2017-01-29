@@ -87,9 +87,9 @@ public class AnimatorControllerSample : MonoBehaviour {
     [MenuItem("(^_^)Menu/TestWhere 4")]
     static void TestWhere()
     {
-        //List<AstateRecordable> recordset = SceneMain.AstateDatabase.Instance.Where((int)SceneMain.AstateDatabase.Attr.BusyX);
-        //List<AstateRecordable> recordset = SceneMain.AstateDatabase.Instance.Where((int)(SceneMain.AstateDatabase.Attr.BusyX | SceneMain.AstateDatabase.Attr.BusyY));
-        List<StateExRecordable> recordset = SceneMain.StateExTable.Instance.Where((int)(SceneMain.StateExTable.Attr.BusyX | SceneMain.StateExTable.Attr.Block));
+        List<StateExRecordable> recordset = SceneMain.StateExTable.Instance.Where(new HashSet<int>(){
+            SceneMain.StateExTable.Instance.String_to_tagHash[SceneMain.StateExTable.TAG_BUSYX], SceneMain.StateExTable.Instance.String_to_tagHash[SceneMain.StateExTable.TAG_BLOCK]
+        });
 
         Debug.Log("結果：" + recordset.Count + "件");
         foreach (StateExRecordable record in recordset)

@@ -16,11 +16,11 @@ namespace StellaQL
         string Name { get; }
         string Fullpath { get; }
         int FullPathHash { get; }
-        bool HasFlag_attr(int enumration);
+        bool HasFlag_attr(HashSet<int> attributeBitfield);
         /// <summary>
         /// ほんとは列挙型にしたい☆
         /// </summary>
-        int AttributeEnum { get; }
+        HashSet<int> Tags { get; }
         /// <summary>
         /// オプション。使わなくても可。
         /// </summary>
@@ -29,13 +29,12 @@ namespace StellaQL
 
     public abstract class AbstractStateExRecord : StateExRecordable
     {
-        public AbstractStateExRecord(string fullpath, int fullpathHash, int attributeEnum)
+        public AbstractStateExRecord(string fullpath, int fullpathHash, HashSet<int> attributeBitfield)
         {
             Fullpath = fullpath;
             Name = Fullpath.Substring(Fullpath.LastIndexOf('.') + 1); // ドットを含まない
-            FullPathHash = fullpathHash;// Animator.StringToHash(Fullpath);
-            //Debug.Log("fullpath=["+this.Fullpath+"] name=["+this.Name+"]");
-            this.AttributeEnum = attributeEnum;//StateExTable.Attr
+            FullPathHash = fullpathHash;
+            this.Tags = attributeBitfield;
         }
 
         public string GetBreadCrumb() {
@@ -44,11 +43,11 @@ namespace StellaQL
         public string Fullpath { get; set; }
         public string Name { get; set; }
         public int FullPathHash { get; set; }
-        public abstract bool HasFlag_attr(int attributeEnumration);
+        public abstract bool HasFlag_attr(HashSet<int> attributeBitfield);
         /// <summary>
         /// ほんとは列挙型にしたい☆
         /// </summary>
-        public int AttributeEnum { get; set; }
+        public HashSet<int> Tags { get; set; }
         /// <summary>
         /// オプション。使わなくても可。
         /// </summary>
@@ -58,11 +57,7 @@ namespace StellaQL
     public interface StateExTableable
     {
         Dictionary<int, StateExRecordable> Hash_to_exRecord { get; }
-        /// <summary>
-        /// 属性検索のとき、名前の一致を調べるために使う。
-        /// </summary>
-        /// <returns></returns>
-        Type GetAttributeEnumration();
+        Dictionary<string, int> String_to_tagHash { get; }
     }
 
 
@@ -71,6 +66,7 @@ namespace StellaQL
         public AbstractStateExTable()
         {
             Hash_to_exRecord = new Dictionary<int, StateExRecordable>();
+            String_to_tagHash = new Dictionary<string, int>();
         }
 
         /// <summary>
@@ -79,7 +75,7 @@ namespace StellaQL
         /// クラスの継承で拡張するので、レコードはあとで追加できるようにすること。
         /// </summary>
         public Dictionary<int, StateExRecordable> Hash_to_exRecord { get; set; }
-        public abstract Type GetAttributeEnumration();
+        public Dictionary<string, int> String_to_tagHash { get; set; }
 
         /// <summary>
         /// 現在のアニメーター・ステートに対応したデータを取得。
@@ -118,7 +114,7 @@ namespace StellaQL
         /// <summary>
         /// 属性検索
         /// </summary>
-        public List<StateExRecordable> Where(int enumration_attr)
+        public List<StateExRecordable> Where(HashSet<int> enumration_attr)
         {
             List<StateExRecordable> recordset = new List<StateExRecordable>();
 

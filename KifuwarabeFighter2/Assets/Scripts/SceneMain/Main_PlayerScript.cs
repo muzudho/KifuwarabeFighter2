@@ -174,7 +174,7 @@ namespace SceneMain
 
             FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(input.leverX);
 
-            if (((StateExTable.Attr)astateRecord.AttributeEnum).HasFlag(StateExTable.Attr.Block))
+            if (astateRecord.Tags.Contains((int)StateExTable.Instance.String_to_tagHash[StateExTable.TAG_BLOCK]))
             {
                 // ブロック中
                 if(FacingOpponentMoveFwBkSt.Back != facingOpponentMoveFwBkSt)
@@ -316,7 +316,7 @@ namespace SceneMain
             //{
             if (input.leverX != 0)//左か右を入力したら
             {
-                if (!((StateExTable.Attr)astateRecord.AttributeEnum).HasFlag(StateExTable.Attr.BusyX))
+                if (!astateRecord.Tags.Contains((int)StateExTable.Instance.String_to_tagHash[StateExTable.TAG_BUSYX]))
                 {
                     //入力方向へ移動
                     Rigidbody2D.velocity = new Vector2(Mathf.Sign(input.leverX) * speedX, Rigidbody2D.velocity.y);
@@ -396,7 +396,7 @@ namespace SceneMain
 
             if (0 != input.leverY)// 上か下キーを入力していたら
             {
-                if (!((StateExTable.Attr)astateRecord.AttributeEnum).HasFlag(StateExTable.Attr.BusyY))
+                if (!astateRecord.Tags.Contains((int)StateExTable.Instance.String_to_tagHash[StateExTable.TAG_BUSYY]))
                 {
                     if (0 < input.leverY)// 上キーを入力したら
                     {
