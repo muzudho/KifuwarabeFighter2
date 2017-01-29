@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using StellaQL;
+using System;
 
 namespace SceneSelect {
 
@@ -26,6 +27,15 @@ namespace SceneSelect {
 
     public class StateExTable : AbstractStateExTable
     {
+        /// <summary>
+        /// AstateAttribute. 略したいので子クラスとして名称を縮めた。
+        /// </summary>
+        [Flags]
+        public enum Attr
+        {
+            None = 0,
+        }
+
         public const string FULLNAME_STAY = "Base Layer.Stay";
         public const string FULLNAME_MOVE = "Base Layer.Move";
         public const string FULLNAME_READY = "Base Layer.Ready";
@@ -37,6 +47,7 @@ namespace SceneSelect {
         }
 
         public static StateExTable Instance { get; set; }
+        public override Type GetAttributeEnumration() { return typeof(StateExTable.Attr); }
 
         protected StateExTable()
         {
@@ -48,7 +59,7 @@ namespace SceneSelect {
                 StateExRecord.Build( StateExTable.FULLNAME_TIMEOVER),
             };
             //hash_to_exRecord = new Dictionary<int, StateExRecordable>();
-            foreach (StateExRecordable record in temp) { hash_to_exRecord.Add(record.FullPathHash, record); }
+            foreach (StateExRecordable record in temp) { Hash_to_exRecord.Add(record.FullPathHash, record); }
         }
     }
 

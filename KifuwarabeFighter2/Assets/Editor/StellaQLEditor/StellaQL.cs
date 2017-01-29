@@ -176,8 +176,10 @@ namespace StellaQL
     /// </summary>
     public abstract class Querier
     {
-        public static bool Execute(AnimatorController ac, string query, Type enumration, Dictionary<int, StateExRecordable> universe, out StringBuilder message)
+        public static bool Execute(AnimatorController ac, string query, StateExTableable stateExTable, out StringBuilder message)
         {
+            Type enumration = stateExTable.GetAttributeEnumration();
+            Dictionary<int, StateExRecordable> universe = stateExTable.Hash_to_exRecord;
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
             QueryTokens sq;
@@ -376,7 +378,7 @@ namespace StellaQL
                 int firstItem_temp;
                 if (int.TryParse(index_to_token[0], out firstItem_temp))
                 { // 数字だったら、ロッカー番号だ。
-                    HashSet<int> lockerNumbers = AttrSet.Tokens_to_numbers(index_to_token, attrEnumration);
+                    HashSet<int> lockerNumbers = AttrSet.Tokens_to_numbers(index_to_token);
                     switch (operation) // ロッカー同士を演算して、まとめた答えを出す
                     {
                         case "(": lockerNumber_to_recordHashes.Add(ElementSet.RecordHashes_FilteringElementsAnd(lockerNumbers, lockerNumber_to_recordHashes)); break;
@@ -618,7 +620,7 @@ namespace StellaQL
             return new HashSet<int>(complement);
         }
 
-        public static HashSet<int> Tokens_to_numbers(List<string> tokens, Type enumration)
+        public static HashSet<int> Tokens_to_numbers(List<string> tokens)
         {
             HashSet<int> numberSet = new HashSet<int>();
             foreach (string numberString in tokens) { numberSet.Add(int.Parse(numberString)); }// 変換できなかったら例外を投げる

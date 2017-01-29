@@ -169,6 +169,7 @@ namespace SceneMain
         }
 
         public static StateExTable Instance { get; set; }
+        public override Type GetAttributeEnumration() { return typeof(StateExTable.Attr); }
 
         protected StateExTable()
         {
@@ -251,7 +252,7 @@ namespace SceneMain
                 StateExRecord.Build(  StateExTable.FULLNAME_CDAMAGEH, CliptypeIndex.CDamageH,Attr.None),
             };
             //hash_to_exRecord = new Dictionary<int, StateExRecordable>();
-            foreach (StateExRecord record in temp) { hash_to_exRecord.Add(record.FullPathHash, record); }
+            foreach (StateExRecord record in temp) { Hash_to_exRecord.Add(record.FullPathHash, record); }
         }
 
         /// <summary>

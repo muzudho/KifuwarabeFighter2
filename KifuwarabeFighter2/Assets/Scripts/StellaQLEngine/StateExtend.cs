@@ -3,6 +3,7 @@
 //
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace StellaQL
 {
@@ -56,6 +57,12 @@ namespace StellaQL
 
     public interface StateExTableable
     {
+        Dictionary<int, StateExRecordable> Hash_to_exRecord { get; }
+        /// <summary>
+        /// 属性検索のとき、名前の一致を調べるために使う。
+        /// </summary>
+        /// <returns></returns>
+        Type GetAttributeEnumration();
     }
 
 
@@ -63,7 +70,7 @@ namespace StellaQL
     {
         public AbstractStateExTable()
         {
-            hash_to_exRecord = new Dictionary<int, StateExRecordable>();
+            Hash_to_exRecord = new Dictionary<int, StateExRecordable>();
         }
 
         /// <summary>
@@ -71,7 +78,8 @@ namespace StellaQL
         /// レコードを対応させる。
         /// クラスの継承で拡張するので、レコードはあとで追加できるようにすること。
         /// </summary>
-        public Dictionary<int, StateExRecordable> hash_to_exRecord;
+        public Dictionary<int, StateExRecordable> Hash_to_exRecord { get; set; }
+        public abstract Type GetAttributeEnumration();
 
         /// <summary>
         /// 現在のアニメーター・ステートに対応したデータを取得。
@@ -81,9 +89,9 @@ namespace StellaQL
         {
             AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
 
-            if (this.hash_to_exRecord.ContainsKey(state.fullPathHash))
+            if (this.Hash_to_exRecord.ContainsKey(state.fullPathHash))
             {
-                return this.hash_to_exRecord[state.fullPathHash];
+                return this.Hash_to_exRecord[state.fullPathHash];
             }
 
             throw new UnityException("[" + state.fullPathHash + "]のデータが無いぜ☆　なんでだろな☆？（＾～＾）");
@@ -97,7 +105,7 @@ namespace StellaQL
         {
             AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
-            int cliptype = (hash_to_exRecord[animeStateInfo.fullPathHash]).Cliptype;
+            int cliptype = (Hash_to_exRecord[animeStateInfo.fullPathHash]).Cliptype;
 
             if (cliptypeExTable.Cliptype_to_exRecord.ContainsKey(cliptype))
             {
@@ -114,7 +122,7 @@ namespace StellaQL
         {
             List<StateExRecordable> recordset = new List<StateExRecordable>();
 
-            foreach (StateExRecordable record in hash_to_exRecord.Values)
+            foreach (StateExRecordable record in Hash_to_exRecord.Values)
             {
                 if (record.HasFlag_attr(enumration_attr)) // if(attribute.HasFlag(record.attribute))
                 {

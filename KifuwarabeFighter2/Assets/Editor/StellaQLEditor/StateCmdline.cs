@@ -23,7 +23,7 @@ namespace StellaQL
             "STATE SELECT" + Environment.NewLine +
             "WHERE \".*Dog\"" + Environment.NewLine;
         string infoMessage = "Konnichiwa.";
-        string pathController = "Assets/Scripts/StellaQLEngine/Anicon@StellaQL.controller"; //"Assets/Resources/AnimatorControllers/AniCon@Char3.controller";
+        string path_animatorController = "Assets/Scripts/StellaQLEngine/Anicon@StellaQL.controller"; //"Assets/Resources/AnimatorControllers/AniCon@Char3.controller";
         Vector2 scroll;
 
         /// <summary>
@@ -40,9 +40,65 @@ namespace StellaQL
         void OnGUI()
         {
             GUILayout.Label("Animator controller", EditorStyles.boldLabel);
-            pathController = EditorGUILayout.TextField(pathController);
+
+            var evt = Event.current;
+            var dropArea = GUILayoutUtility.GetRect(0.0f, 20.0f, GUILayout.ExpandWidth(true));
+            GUI.Box(dropArea, "Animation Controller Drag & Drop");
+            path_animatorController = EditorGUILayout.TextField(path_animatorController);
+            //マウス位置が GUI の範囲内であれば
+            if (dropArea.Contains(evt.mousePosition))
+            {
+                switch (evt.type)
+                {
+                    case EventType.DragUpdated: // マウス・ホバー中☆
+                        {
+                            // ドラッグしているのが参照可能なオブジェクトの場合
+                            if (0 < DragAndDrop.objectReferences.Length)
+                            {
+                                //Debug.Log("DragAndDrop.objectReferences.Length=[" + DragAndDrop.objectReferences.Length + "]");
+                                //オブジェクトを受け入れる
+                                DragAndDrop.AcceptDrag();
+
+                                // マウス・カーソルの形状を、このオブジェクトを受け入れられるという見た目にする
+                                DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
+                            }
+                        }
+                        break;
+
+                    case EventType.DragPerform: // ドロップしたら☆
+                        {
+                            // ドラッグしているものを現在のコントロール ID と紐付ける
+                            DragAndDrop.activeControlID = DragAndDrop.objectReferences[0].GetInstanceID();
+
+                            //ドロップしているのが参照可能なオブジェクトの場合
+                            if (DragAndDrop.objectReferences.Length == 1)
+                            {
+                                foreach (var draggedObject in DragAndDrop.objectReferences)
+                                {
+                                    AnimatorController anicon = draggedObject as AnimatorController;
+                                    if (null!= anicon)
+                                    {
+                                        path_animatorController = AssetDatabase.GetAssetPath(anicon.GetInstanceID());
+                                    }
+                                }
+                                HandleUtility.Repaint();
+                            }
+                            //else
+                            //{
+                            //    Debug.Log("ドロップするものがないぜ☆！");
+                            //}
+                        }
+                        break;
+
+                    //case EventType.DragExited: // ドロップ？？
+                    //    Debug.Log("ドロップ抜け☆（＾～＾）");
+                    //    break;
+                }
+            }
             // アニメーター・コントローラーを取得。
-            AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>(pathController);//"Assets/Resources/AnimatorControllers/AniCon@Char3.controller"
+            AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>(path_animatorController);//"Assets/Resources/AnimatorControllers/AniCon@Char3.controller"
+
+
 
             GUILayout.Label("Command line (StellaQL)");
             scroll = EditorGUILayout.BeginScrollView(scroll);
@@ -51,9 +107,11 @@ namespace StellaQL
 
             if (GUILayout.Button("Execute"))
             {
-                Debug.Log("Executeボタンを押した☆ myText2=" + commandline);
+                Debug.Log("Executeボタンを押した☆ テスト以外のStateExTableの取得方法はまだ");
                 StringBuilder message;
-                Querier.Execute(ac, commandline, typeof(StateExTable.Attr_Test), StateExTable.Instance.hash_to_exRecord, out message);
+                Querier.Execute(ac, commandline,
+                    StateExTable.Instance, // FIXME: テスト以外のStateExTableの取得方法はまだ
+                    out message);
                 infoMessage = message.ToString();
             }
 

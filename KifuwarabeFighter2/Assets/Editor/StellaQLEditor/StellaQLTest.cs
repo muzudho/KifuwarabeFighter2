@@ -16,7 +16,7 @@ namespace StellaQL
             string query = @"STATE SELECT
                         WHERE ATTR ([(Alpha Cee)(Beta)]{Eee})";
             HashSet<int> recordHashes;
-            bool successful = Querier.ExecuteStateSelect(query, typeof(StateExTable.Attr_Test), StateExTable.Instance.hash_to_exRecord, out recordHashes);
+            bool successful = Querier.ExecuteStateSelect(query, typeof(StateExTable.Attr), StateExTable.Instance.Hash_to_exRecord, out recordHashes);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(3, recordHashes.Count);
@@ -44,7 +44,7 @@ namespace StellaQL
                         ";
             // STATE SELECT文が動けば OK☆
             HashSet<int> recordHashes;
-            bool successful = Querier.ExecuteStateSelect(query, typeof(StateExTable.Attr_Test), StateExTable.Instance.hash_to_exRecord, out recordHashes);
+            bool successful = Querier.ExecuteStateSelect(query, typeof(StateExTable.Attr), StateExTable.Instance.Hash_to_exRecord, out recordHashes);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(3, recordHashes.Count);
@@ -61,7 +61,7 @@ namespace StellaQL
                         TO ATTR ([(Alpha Cee)(Beta)]{Eee})";
             HashSet<int> recordHashesSrc;
             HashSet<int> recordHashesDst;
-            bool successful = Querier.ExecuteTransitionSelect(query, typeof(StateExTable.Attr_Test), StateExTable.Instance.hash_to_exRecord, out recordHashesSrc, out recordHashesDst);
+            bool successful = Querier.ExecuteTransitionSelect(query, typeof(StateExTable.Attr), StateExTable.Instance.Hash_to_exRecord, out recordHashesSrc, out recordHashesDst);
 
             Assert.AreEqual(1, recordHashesSrc.Count);
             Assert.IsTrue(recordHashesSrc.Contains(Animator.StringToHash(StateExTable.FULLPATH_ZEBRA)));
@@ -90,7 +90,7 @@ namespace StellaQL
 
             List<HashSet<int>> recordHashesLockers;
             Fetcher.TokenLockers_to_recordHashesLockers(
-                tokenLockers, tokenLockersOperation, typeof(StateExTable.Attr_Test), StateExTable.Instance.hash_to_exRecord, out recordHashesLockers);
+                tokenLockers, tokenLockersOperation, typeof(StateExTable.Attr), StateExTable.Instance.Hash_to_exRecord, out recordHashesLockers);
 
             Assert.AreEqual(5, recordHashesLockers.Count);
             Assert.AreEqual(2, recordHashesLockers[0].Count);
@@ -190,7 +190,7 @@ namespace StellaQL
             new HashSet<int>() { Animator.StringToHash(StateExTable.FULLPATH_BEAR),Animator.StringToHash(StateExTable.FULLPATH_ELEPHANT) },
             new HashSet<int>() { Animator.StringToHash(StateExTable.FULLPATH_BEAR),Animator.StringToHash(StateExTable.FULLPATH_GIRAFFE) },
         };
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringElementsNotAndNot(lockerNumbers, recordHashesLockers, StateExTable.Instance.hash_to_exRecord);
+            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringElementsNotAndNot(lockerNumbers, recordHashesLockers, StateExTable.Instance.Hash_to_exRecord);
 
             // 結果は　Alpaca,Cat,Dog,Fox,Horse,Iguana,Jellyfish,Kangaroo,Lion,Monkey,Nutria,Ox,Pig,Quetzal,Rabbit,Sheep,Tiger,Unicorn,Vixen,Wolf,Xenopus,Yak,Zebra
             Assert.AreEqual(23, recordHashes.Count);
@@ -230,7 +230,7 @@ namespace StellaQL
         {
             // 条件は、「Base Layer.」の下に、n または N が含まれるもの
             string pattern = @"Base Layer\.\w*[Nn]\w*";
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringStateFullNameRegex(pattern, StateExTable.Instance.hash_to_exRecord);
+            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringStateFullNameRegex(pattern, StateExTable.Instance.Hash_to_exRecord);
 
             // 結果は　Elephant、Iguana、Kangaroo、Lion、Monkey、Nutria、Unicorn、Vixen、Xenopus
             Assert.AreEqual(9, recordHashes.Count);
@@ -255,8 +255,8 @@ namespace StellaQL
         public void N50_RecordHashes_FilteringAttributesAnd()
         {
             // 条件は　Alpha | Eee
-            HashSet<int> attrs = new HashSet<int>() { (int)StateExTable.Attr_Test.Alpha | (int)StateExTable.Attr_Test.Eee };
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringAttributesAnd(attrs, StateExTable.Instance.hash_to_exRecord);
+            HashSet<int> attrs = new HashSet<int>() { (int)StateExTable.Attr.Alpha | (int)StateExTable.Attr.Eee };
+            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringAttributesAnd(attrs, StateExTable.Instance.Hash_to_exRecord);
 
             // 結果は　Bear、Elephant、Giraffe、Quetzal、Zebra
             Assert.AreEqual(5, recordHashes.Count);
@@ -277,8 +277,8 @@ namespace StellaQL
         public void N50_RecordHashes_FilteringAttributesOr()
         {
             // 条件は　（Alpha | Eee）、Beta、Eee
-            HashSet<int> attrs = new HashSet<int>() { (int)StateExTable.Attr_Test.Alpha | (int)StateExTable.Attr_Test.Eee, (int)StateExTable.Attr_Test.Beta, (int)StateExTable.Attr_Test.Eee };
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringAttributesOr(attrs, StateExTable.Instance.hash_to_exRecord);
+            HashSet<int> attrs = new HashSet<int>() { (int)StateExTable.Attr.Alpha | (int)StateExTable.Attr.Eee, (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Eee };
+            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringAttributesOr(attrs, StateExTable.Instance.Hash_to_exRecord);
 
             // 結果は　Bear、Elephant、Giraffe、Horse、Jellyfish、Monkey、Quetzal、Rabbit、Sheep、Tiger、Vixen、Xenopus、Zebra
             Assert.AreEqual(13, recordHashes.Count);
@@ -307,8 +307,8 @@ namespace StellaQL
         public void N50_RecordHashes_FilteringAttributesNotAndNot()
         {
             // 条件は　（Alpha | Eee）、Beta、Eee
-            HashSet<int> attrs = new HashSet<int>() { (int)StateExTable.Attr_Test.Alpha | (int)StateExTable.Attr_Test.Eee, (int)StateExTable.Attr_Test.Beta, (int)StateExTable.Attr_Test.Eee };
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringAttributesNotAndNot(attrs, StateExTable.Instance.hash_to_exRecord);
+            HashSet<int> attrs = new HashSet<int>() { (int)StateExTable.Attr.Alpha | (int)StateExTable.Attr.Eee, (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Eee };
+            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringAttributesNotAndNot(attrs, StateExTable.Instance.Hash_to_exRecord);
 
             // 結果は　Alpaca、Cat、Dog、Fox、Iguana、Kangaroo、Lion、Nutria、Ox、Pig、Unicorn、Wolf、Yak
             Assert.AreEqual(13, recordHashes.Count);
@@ -338,7 +338,7 @@ namespace StellaQL
         [Test]
         public void N60_ToAttrLocker_FromKeywordSet()
         {
-            HashSet<int> set = new HashSet<int>() { (int)StateExTable.Attr_Test.Beta, (int)StateExTable.Attr_Test.Dee };
+            HashSet<int> set = new HashSet<int>() { (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Dee };
             HashSet<int> attrLocker = AttrSet.KeywordSet_to_attrLocker(set);//, typeof(AstateDatabase.Attr)
 
             //{ int i = 0; foreach (int attr in attrLocker) { Debug.Log("Attr[" + i + "]: " + (AstateDatabase.Attr)attr + " (" + attr + ")"); i++; } }
@@ -346,7 +346,7 @@ namespace StellaQL
             Assert.AreEqual(1, attrLocker.Count);
             if (1 == attrLocker.Count)
             {
-                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr_Test.Beta | (int)StateExTable.Attr_Test.Dee));
+                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr.Beta | (int)StateExTable.Attr.Dee));
             }
         }
 
@@ -356,7 +356,7 @@ namespace StellaQL
         [Test]
         public void N60_ToAttrLocker_FromKeywordlistSet()
         {
-            HashSet<int> set = new HashSet<int>() { (int)StateExTable.Attr_Test.Beta, (int)StateExTable.Attr_Test.Dee };
+            HashSet<int> set = new HashSet<int>() { (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Dee };
             HashSet<int> attrLocker = AttrSet.KeywordlistSet_to_attrLocker(set);
 
             // { int i = 0; foreach (int attr in attrLocker) { Debug.Log("Attr[" + i + "]: " + (AstateDatabase.Attr)attr + " (" + attr + ")"); i++; } }
@@ -364,8 +364,8 @@ namespace StellaQL
             Assert.AreEqual(2, attrLocker.Count);
             if (2 == attrLocker.Count)
             {
-                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr_Test.Beta));
-                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr_Test.Dee));
+                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr.Beta));
+                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr.Dee));
             }
         }
 
@@ -375,18 +375,18 @@ namespace StellaQL
         [Test]
         public void N60_ToAttrLocker_FromNGKeywordSet()
         {
-            HashSet<int> set = new HashSet<int>() { (int)StateExTable.Attr_Test.Beta, (int)StateExTable.Attr_Test.Dee };
-            HashSet<int> attrLocker = AttrSet.NGKeywordSet_to_attrLocker(set, typeof(StateExTable.Attr_Test));
+            HashSet<int> set = new HashSet<int>() { (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Dee };
+            HashSet<int> attrLocker = AttrSet.NGKeywordSet_to_attrLocker(set, typeof(StateExTable.Attr));
 
             // { int i = 0; foreach (int attr in attrLocker) { Debug.Log("Attr[" + i + "]: " + (AstateDatabase.Attr)attr + " (" + attr + ")"); i++; } }
 
             Assert.AreEqual(4, attrLocker.Count);
             if (4 == attrLocker.Count)
             {
-                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr_Test.Zero));
-                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr_Test.Alpha));
-                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr_Test.Cee));
-                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr_Test.Eee));
+                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr.Zero));
+                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr.Alpha));
+                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr.Cee));
+                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr.Eee));
             }
         }
 
@@ -396,18 +396,18 @@ namespace StellaQL
         [Test]
         public void N60_ToAttrLocker_GetComplement()
         {
-            HashSet<int> set = new HashSet<int>() { (int)StateExTable.Attr_Test.Beta, (int)StateExTable.Attr_Test.Dee }; // int型にして持つ
-            HashSet<int> attrLocker = AttrSet.Complement(set, typeof(StateExTable.Attr_Test));
+            HashSet<int> set = new HashSet<int>() { (int)StateExTable.Attr.Beta, (int)StateExTable.Attr.Dee }; // int型にして持つ
+            HashSet<int> attrLocker = AttrSet.Complement(set, typeof(StateExTable.Attr));
 
             // { int i = 0; foreach (int attr in attrLocker) { Debug.Log("Attr[" + i + "]: " + (AstateDatabase.Attr)attr + " (" + attr + ")"); i++; } }
 
             Assert.AreEqual(4, attrLocker.Count);
             if (4 == attrLocker.Count)
             {
-                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr_Test.Zero));
-                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr_Test.Alpha));
-                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr_Test.Cee));
-                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr_Test.Eee));
+                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr.Zero));
+                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr.Alpha));
+                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr.Cee));
+                Assert.IsTrue(attrLocker.Contains((int)StateExTable.Attr.Eee));
             }
         }
         #endregion
