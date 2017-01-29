@@ -48,8 +48,13 @@ namespace SceneStellaQLTest
             Cee = Beta << 1,
             Dee = Cee << 1,
             Eee = Dee << 1,
+            /// <summary>
+            /// ツノを持っている。
+            /// </summary>
+            Horn = Eee << 1,
         }
 
+        public const string FULLPATH_FOO = "Base Layer.Foo";
         public const string FULLPATH_ALPACA = "Base Layer.Alpaca";
         public const string FULLPATH_BEAR = "Base Layer.Bear";
         public const string FULLPATH_CAT = "Base Layer.Cat";
@@ -81,6 +86,7 @@ namespace SceneStellaQLTest
         {
             List<StateExRecordable> temp = new List<StateExRecordable>()
             {
+                StateExRecord.Build(  FULLPATH_FOO, Attr.Zero),
                 StateExRecord.Build(  FULLPATH_ALPACA, Attr.Alpha | Attr.Cee),// {E}(1) AC(1) ([(A C)(B)]{E})(1)
                 StateExRecord.Build(  FULLPATH_BEAR, Attr.Alpha | Attr.Beta | Attr.Eee),// B(1) AE(1) AE,B,E(1)
                 StateExRecord.Build(  FULLPATH_CAT, Attr.Alpha | Attr.Cee),// {E}(2) AC(2) ([(A C)(B)]{E})(2)
@@ -95,17 +101,17 @@ namespace SceneStellaQLTest
                 StateExRecord.Build(  FULLPATH_LION, Attr.Zero),// {E}(7) Nn(4)
                 StateExRecord.Build(  FULLPATH_MONKEY, Attr.Eee),// AE,B,E(6) Nn(5)
                 StateExRecord.Build(  FULLPATH_NUTRIA, Attr.Alpha),// {E}(8) Nn(6)
-                StateExRecord.Build(  FULLPATH_OX, Attr.Zero),// {E}(9)
+                StateExRecord.Build(  FULLPATH_OX, Attr.Horn),// {E}(9)
                 StateExRecord.Build(  FULLPATH_PIG, Attr.Zero),// {E}(10)
                 StateExRecord.Build(  FULLPATH_QUETZAL, Attr.Alpha | Attr.Eee),//AE(4) AE,B,E(7)
                 StateExRecord.Build(  FULLPATH_RABBIT, Attr.Alpha | Attr.Beta),// {E}(11) B(2) ([(A C)(B)]{E})(3)  AE,B,E(8)
                 StateExRecord.Build(  FULLPATH_SHEEP, Attr.Eee),// AE,B,E(9)
                 StateExRecord.Build(  FULLPATH_TIGER, Attr.Eee),// AE,B,E(10)
-                StateExRecord.Build(  FULLPATH_UNICORN, Attr.Cee),// {E}(12) Nn(7)
+                StateExRecord.Build(  FULLPATH_UNICORN, Attr.Cee | Attr.Horn),// {E}(12) Nn(7)
                 StateExRecord.Build(  FULLPATH_VIXEN, Attr.Eee),// AE,B,E(11) Nn(8)
                 StateExRecord.Build(  FULLPATH_WOLF, Attr.Zero),// {E}(13)
                 StateExRecord.Build(  FULLPATH_XENOPUS, Attr.Eee),// AE,B,E(12) Nn(9)
-                StateExRecord.Build(  FULLPATH_YAK, Attr.Alpha),// {E}(14)
+                StateExRecord.Build(  FULLPATH_YAK, Attr.Alpha | Attr.Horn),// {E}(14)
                 StateExRecord.Build(  FULLPATH_ZEBRA, Attr.Alpha | Attr.Beta | Attr.Eee),// B(3) AE(5) AE,B,E(13)
             };
             foreach (StateExRecordable record in temp) { Hash_to_exRecord.Add(record.FullPathHash, record); }
