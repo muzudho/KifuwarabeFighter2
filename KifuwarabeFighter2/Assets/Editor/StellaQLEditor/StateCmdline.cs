@@ -23,7 +23,7 @@ namespace StellaQL
             "STATE SELECT" + Environment.NewLine +
             "WHERE \".*Dog\"" + Environment.NewLine;
         string infoMessage = "Konnichiwa.";
-        string pathController = "Assets/Resources/AnimatorControllers/AniCon@Char3.controller";
+        string pathController = "Assets/Scripts/StellaQLEngine/Anicon@StellaQL.controller"; //"Assets/Resources/AnimatorControllers/AniCon@Char3.controller";
         Vector2 scroll;
 
         /// <summary>

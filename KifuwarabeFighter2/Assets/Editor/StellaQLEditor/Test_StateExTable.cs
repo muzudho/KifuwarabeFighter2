@@ -49,32 +49,32 @@ namespace SceneStellaQLTest
             Eee = Dee << 1,
         }
 
-        public const string FULLPATH_ALPACA = "Base Layer.StellaQL Practice.Alpaca";
-        public const string FULLPATH_BEAR = "Base Layer.StellaQL Practice.Bear";
-        public const string FULLPATH_CAT = "Base Layer.StellaQL Practice.Cat";
-        public const string FULLPATH_DOG = "Base Layer.StellaQL Practice.Dog";
-        public const string FULLPATH_ELEPHANT = "Base Layer.StellaQL Practice.Elephant";
-        public const string FULLPATH_FOX = "Base Layer.StellaQL Practice.Fox";
-        public const string FULLPATH_GIRAFFE = "Base Layer.StellaQL Practice.Giraffe";
-        public const string FULLPATH_HORSE = "Base Layer.StellaQL Practice.Horse";
-        public const string FULLPATH_IGUANA = "Base Layer.StellaQL Practice.Iguana";
-        public const string FULLPATH_JELLYFISH = "Base Layer.StellaQL Practice.Jellyfish";
-        public const string FULLPATH_KANGAROO = "Base Layer.StellaQL Practice.Kangaroo";
-        public const string FULLPATH_LION = "Base Layer.StellaQL Practice.Lion";
-        public const string FULLPATH_MONKEY = "Base Layer.StellaQL Practice.Monkey";
-        public const string FULLPATH_NUTRIA = "Base Layer.StellaQL Practice.Nutria";
-        public const string FULLPATH_OX = "Base Layer.StellaQL Practice.Ox";
-        public const string FULLPATH_PIG = "Base Layer.StellaQL Practice.Pig";
-        public const string FULLPATH_QUETZAL = "Base Layer.StellaQL Practice.Quetzal";
-        public const string FULLPATH_RABBIT = "Base Layer.StellaQL Practice.Rabbit";
-        public const string FULLPATH_SHEEP = "Base Layer.StellaQL Practice.Sheep";
-        public const string FULLPATH_TIGER = "Base Layer.StellaQL Practice.Tiger";
-        public const string FULLPATH_UNICORN = "Base Layer.StellaQL Practice.Unicorn";
-        public const string FULLPATH_VIXEN = "Base Layer.StellaQL Practice.Vixen";
-        public const string FULLPATH_WOLF = "Base Layer.StellaQL Practice.Wolf";
-        public const string FULLPATH_XENOPUS = "Base Layer.StellaQL Practice.Xenopus";
-        public const string FULLPATH_YAK = "Base Layer.StellaQL Practice.Yak";
-        public const string FULLPATH_ZEBRA = "Base Layer.StellaQL Practice.Zebra";
+        public const string FULLPATH_ALPACA = "Base Layer.Alpaca";
+        public const string FULLPATH_BEAR = "Base Layer.Bear";
+        public const string FULLPATH_CAT = "Base Layer.Cat";
+        public const string FULLPATH_DOG = "Base Layer.Dog";
+        public const string FULLPATH_ELEPHANT = "Base Layer.Elephant";
+        public const string FULLPATH_FOX = "Base Layer.Fox";
+        public const string FULLPATH_GIRAFFE = "Base Layer.Giraffe";
+        public const string FULLPATH_HORSE = "Base Layer.Horse";
+        public const string FULLPATH_IGUANA = "Base Layer.Iguana";
+        public const string FULLPATH_JELLYFISH = "Base Layer.Jellyfish";
+        public const string FULLPATH_KANGAROO = "Base Layer.Kangaroo";
+        public const string FULLPATH_LION = "Base Layer.Lion";
+        public const string FULLPATH_MONKEY = "Base Layer.Monkey";
+        public const string FULLPATH_NUTRIA = "Base Layer.Nutria";
+        public const string FULLPATH_OX = "Base Layer.Ox";
+        public const string FULLPATH_PIG = "Base Layer.Pig";
+        public const string FULLPATH_QUETZAL = "Base Layer.Quetzal";
+        public const string FULLPATH_RABBIT = "Base Layer.Rabbit";
+        public const string FULLPATH_SHEEP = "Base Layer.Sheep";
+        public const string FULLPATH_TIGER = "Base Layer.Tiger";
+        public const string FULLPATH_UNICORN = "Base Layer.Unicorn";
+        public const string FULLPATH_VIXEN = "Base Layer.Vixen";
+        public const string FULLPATH_WOLF = "Base Layer.Wolf";
+        public const string FULLPATH_XENOPUS = "Base Layer.Xenopus";
+        public const string FULLPATH_YAK = "Base Layer.Yak";
+        public const string FULLPATH_ZEBRA = "Base Layer.Zebra";
 
         protected StateExTable()
         {

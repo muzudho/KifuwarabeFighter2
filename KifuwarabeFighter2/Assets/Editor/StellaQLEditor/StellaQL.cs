@@ -707,7 +707,7 @@ namespace StellaQL
         /// 例
         /// STATE UPDATE
         /// SET ExitTime 0.75 Duration 0.25
-        /// WHERE “Base Layer.StellaQL Practice.Cat”
+        /// WHERE “Base Layer.Cat”
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>

@@ -57,7 +57,7 @@ namespace StellaQL
         public void N30_Query_TransitionSelect()
         {
             string query = @"TRANSITION SELECT
-                        FROM ""Base Layer\.StellaQL Practice\.Zebra""
+                        FROM ""Base Layer\.Zebra""
                         TO ATTR ([(Alpha Cee)(Beta)]{Eee})";
             HashSet<int> recordHashesSrc;
             HashSet<int> recordHashesDst;
@@ -229,7 +229,7 @@ namespace StellaQL
         public void N50_RecordHashes_FilteringStateFullNameRegex()
         {
             // 条件は、「Base Layer.」の下に、n または N が含まれるもの
-            string pattern = @"Base Layer\.StellaQL Practice\.\w*[Nn]\w*";
+            string pattern = @"Base Layer\.\w*[Nn]\w*";
             HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringStateFullNameRegex(pattern, StateExTable.Instance.hash_to_exRecord);
 
             // 結果は　Elephant、Iguana、Kangaroo、Lion、Monkey、Nutria、Unicorn、Vixen、Xenopus
