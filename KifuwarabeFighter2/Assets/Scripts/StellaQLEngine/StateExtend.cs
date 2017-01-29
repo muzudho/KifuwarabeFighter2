@@ -61,8 +61,15 @@ namespace StellaQL
 
     public abstract class AbstractStateExTable : StateExTableable
     {
+        public AbstractStateExTable()
+        {
+            hash_to_exRecord = new Dictionary<int, StateExRecordable>();
+        }
+
         /// <summary>
-        /// Animator の state の名前と、AnimationClipの種類の対応☆　手作業で入力しておく（２度手間）
+        /// アニメーター・コントローラーのステートのフルパスを Animator.StringToHash( ) でハッシュの数字を算出してこれをキーにし、
+        /// レコードを対応させる。
+        /// クラスの継承で拡張するので、レコードはあとで追加できるようにすること。
         /// </summary>
         public Dictionary<int, StateExRecordable> hash_to_exRecord;
 

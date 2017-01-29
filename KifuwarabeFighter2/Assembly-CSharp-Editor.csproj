@@ -55,6 +55,7 @@
      <Compile Include="Assets\Editor\StellaQLEditor\StellaQL.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\StellaQLTest.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\StellaQLWriter.cs" />
+     <Compile Include="Assets\Editor\StellaQLEditor\Test_StateExTable.cs" />
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>
  </Reference>

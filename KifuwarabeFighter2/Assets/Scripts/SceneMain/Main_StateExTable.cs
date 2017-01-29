@@ -16,17 +16,38 @@ namespace SceneMain
     {
         public static StateExRecord Build(string fullpath, StateExTable.Attr attributeEnum)
         {
-            return new StateExRecord(fullpath, Animator.StringToHash(fullpath), attributeEnum);
+            return new StateExRecord(fullpath, Animator.StringToHash(fullpath), (int)attributeEnum);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fullpath"></param>
+        /// <param name="cliptype"></param>
+        /// <param name="attributeEnum"></param>
+        /// <returns></returns>
         public static StateExRecord Build(string fullpath, CliptypeIndex cliptype, StateExTable.Attr attributeEnum)
         {
-            return new StateExRecord(fullpath, Animator.StringToHash(fullpath), cliptype, attributeEnum);
+            return new StateExRecord(fullpath, Animator.StringToHash(fullpath), cliptype, (int)attributeEnum);
         }
-        public StateExRecord(string fullpath, int fullpathHash, StateExTable.Attr attributeEnum):base(fullpath, fullpathHash, (int)attributeEnum)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fullpath"></param>
+        /// <param name="fullpathHash"></param>
+        /// <param name="attributeEnum">StateExTable.Attr 列挙型にはインターフェースが付けられないので拡張できず不便。int 型にしておくと拡張できる。</param>
+        public StateExRecord(string fullpath, int fullpathHash, int attributeEnum) :base(fullpath, fullpathHash, attributeEnum)
         {
             this.Cliptype = -1; // クリップタイプを使わない場合
         }
-        public StateExRecord(string fullpath, int fullpathHash, CliptypeIndex cliptype, StateExTable.Attr attributeEnum):base(fullpath, fullpathHash, (int)attributeEnum)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fullpath"></param>
+        /// <param name="fullpathHash"></param>
+        /// <param name="cliptype"></param>
+        /// <param name="attributeEnum">StateExTable.Attr 列挙型にはインターフェースが付けられないので拡張できず不便。int 型にしておくと拡張できる。</param>
+        public StateExRecord(string fullpath, int fullpathHash, CliptypeIndex cliptype, int attributeEnum):base(fullpath, fullpathHash, attributeEnum)
         {
             this.Cliptype = (int)cliptype;
         }
@@ -64,6 +85,7 @@ namespace SceneMain
             Block = 0x01 << 2,
         }
 
+        #region フルパス一覧
         public const string FULLNAME_SWAIT = "Base Layer.SWait";
         public const string FULLNAME_SMOVE = "Base Layer.SMove";
         public const string FULLNAME_SBLOCKL = "Base Layer.SBlockL";
@@ -139,6 +161,7 @@ namespace SceneMain
         public const string FULLNAME_CDAMAGEL = "Base Layer.CDamageL";
         public const string FULLNAME_CDAMAGEM = "Base Layer.CDamageM";
         public const string FULLNAME_CDAMAGEH = "Base Layer.CDamageH";
+        #endregion
 
         static StateExTable()
         {
@@ -147,7 +170,7 @@ namespace SceneMain
 
         public static StateExTable Instance { get; set; }
 
-        private StateExTable()
+        protected StateExTable()
         {
             List<StateExRecord> temp = new List<StateExRecord>()
             {
@@ -227,7 +250,7 @@ namespace SceneMain
                 StateExRecord.Build(  StateExTable.FULLNAME_CDAMAGEM, CliptypeIndex.CDamageM,Attr.None),
                 StateExRecord.Build(  StateExTable.FULLNAME_CDAMAGEH, CliptypeIndex.CDamageH,Attr.None),
             };
-            hash_to_exRecord = new Dictionary<int, StateExRecordable>();
+            //hash_to_exRecord = new Dictionary<int, StateExRecordable>();
             foreach (StateExRecord record in temp) { hash_to_exRecord.Add(record.FullPathHash, record); }
         }
 

@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.Animations;
 using System;
 using System.Text;
+using SceneMain;
 
 namespace StellaQL
 {
@@ -52,7 +53,7 @@ namespace StellaQL
             {
                 Debug.Log("Executeボタンを押した☆ myText2=" + commandline);
                 StringBuilder message;
-                Querier.Execute(ac, commandline, typeof(StellaQLTest.StateExTable.Attr), StellaQLTest.InstanceTable.hash_to_exRecord, out message);
+                Querier.Execute(ac, commandline, typeof(StateExTable_Test.Attr_Test), StateExTable_Test.Instance.hash_to_exRecord, out message);
                 infoMessage = message.ToString();
             }
 

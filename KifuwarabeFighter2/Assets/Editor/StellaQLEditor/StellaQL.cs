@@ -178,9 +178,7 @@ namespace StellaQL
     {
         public static bool Execute(AnimatorController ac, string query, Type enumration, Dictionary<int, StateExRecordable> universe, out StringBuilder message)
         {
-            Debug.Log("削除前:" + query);
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
-            Debug.Log("削除後:" + query);
 
             QueryTokens sq;
             message = new StringBuilder();
