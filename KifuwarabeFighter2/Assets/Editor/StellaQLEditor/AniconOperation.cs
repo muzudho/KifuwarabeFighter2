@@ -11,7 +11,7 @@ namespace StellaQL
     /// <summary>
     /// ステートマシン関連
     /// </summary>
-    public abstract class AniconOpe_Statemachine
+    public abstract class Operation_Statemachine
     {
         #region 検索
         /// <summary>
@@ -47,7 +47,7 @@ namespace StellaQL
         /// </summary>
         private static AnimatorStateMachine GetLeafMachine(AnimatorStateMachine currentMachine, string[] nodes)
         {
-            for (int i = AniconOpe_Common.ROOT_NODE_IS_LAYER; i < nodes.Length + AniconOpe_Common.LEAF_NODE_IS_STATE; i++)
+            for (int i = Operation_Common.ROOT_NODE_IS_LAYER; i < nodes.Length + Operation_Common.LEAF_NODE_IS_STATE; i++)
             {
                 currentMachine = GetChildMachine(currentMachine, nodes[i]);
                 if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）10 i=[" + i + "] node=[" + nodes[i] + "]"); }
@@ -69,7 +69,7 @@ namespace StellaQL
     /// <summary>
     /// ステートマシン・エニーステート関連
     /// </summary>
-    public abstract class AniconOpe_StatemachineAnystate
+    public abstract class Operation_StatemachineAnystate
     {
         /// <summary>
         /// STATEMACHINE ANYSTATE INSERT 用
@@ -95,7 +95,7 @@ namespace StellaQL
     /// <summary>
     /// ステート関連
     /// </summary>
-    public abstract class AniconOpe_State
+    public abstract class Operation_State
     {
         #region 検索
         /// <summary>
@@ -132,7 +132,7 @@ namespace StellaQL
         /// </summary>
         private static AnimatorStateMachine GetLeafMachine(AnimatorStateMachine currentMachine, string[] nodes)
         {
-            for (int i = AniconOpe_Common.ROOT_NODE_IS_LAYER; i < nodes.Length + AniconOpe_Common.LEAF_NODE_IS_STATE; i++)
+            for (int i = Operation_Common.ROOT_NODE_IS_LAYER; i < nodes.Length + Operation_Common.LEAF_NODE_IS_STATE; i++)
             {
                 currentMachine = GetChildMachine(currentMachine, nodes[i]);
                 if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）10 i=[" + i + "] node=[" + nodes[i] + "]"); }
@@ -244,7 +244,7 @@ namespace StellaQL
     /// <summary>
     /// トランジション関連
     /// </summary>
-    public abstract class AniconOpe_Transition
+    public abstract class Operation_Transition
     {
         /// <summary>
         /// ２つのステートを トランジションで結ぶ。
@@ -252,8 +252,8 @@ namespace StellaQL
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
         public static AnimatorStateTransition Lookup(AnimatorController ac, string path_src, string path_dst)
         {
-            AnimatorState state_src = AniconOpe_State.Lookup(ac, path_src);
-            AnimatorState state_dst = AniconOpe_State.Lookup(ac, path_dst);
+            AnimatorState state_src = Operation_State.Lookup(ac, path_src);
+            AnimatorState state_dst = Operation_State.Lookup(ac, path_dst);
 
             foreach (AnimatorStateTransition transition in state_src.transitions)
             {
@@ -377,7 +377,7 @@ namespace StellaQL
         }
     }
 
-    public abstract class AniconOpe_Common
+    public abstract class Operation_Common
     {
         /// <summary>
         /// ノードの最初の１つは　レイヤー番号

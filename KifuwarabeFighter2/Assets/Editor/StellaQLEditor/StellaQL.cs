@@ -89,7 +89,7 @@ namespace StellaQL
     }
 
     /// <summary>
-    /// Execute Query (文字列を与えて、レコード・ハッシュを取ってくる)
+    /// Execute Query (クエリー文字列を与えて、レコード・ハッシュを取ってきて、フェッチャーがオブジェクトを取ってくる)
     /// </summary>
     public abstract class Querier
     {
@@ -98,82 +98,72 @@ namespace StellaQL
             Dictionary<int, UserDefindStateRecordable> universe = stateExTable.StateHash_to_record;
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
-            QueryTokens sq;
+            QueryTokens qt;
             message = new StringBuilder();
 
-            if (SyntaxP.Parse_StatemachineAnystateInsert(query, out sq))
+            if (SyntaxP.Parse_TransitionAnystateInsert(query, out qt))
             {
+                // TODO:
+                HashSet<AnimatorStateMachine> statemachines = Fetcher.Statemachines(ac, RecordsFilter.Qt_From(qt, universe, message), universe);
+                HashSet<AnimatorState> states = Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe);
             }
-            else if (SyntaxP.Parse_StatemachineEntryInsert(query, out sq))
+            else if (SyntaxP.Parse_TransitionEntryInsert(query, out qt))
             {
+                // TODO:
+                HashSet<AnimatorStateMachine> statemachines = Fetcher.Statemachines(ac, RecordsFilter.Qt_From(qt, universe, message), universe);
+                HashSet<AnimatorState> states = Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe);
             }
-            else if (SyntaxP.Parse_StateExitInsert(query, out sq))
+            else if (SyntaxP.Parse_TransitionExitInsert(query, out qt))
             {
+                // TODO:
+                HashSet<AnimatorState> states = Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe);
             }
-            else if (SyntaxP.Parse_StateInsert(query, out sq))
+            else if (SyntaxP.Parse_StateInsert(query, out qt))
             {
-                HashSet<int> recordHashes = RecordSetOpeComplex_Hash.Filtering_Where(sq, universe, message);
-                AniconOpe_State.AddAll(ac, Fetcher.FetchAll_Statemachine(ac, recordHashes, universe), sq.Set, message); return true;
+                Operation_State.AddAll(ac, Fetcher.Statemachines(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), qt.Set, message); return true;
             }
-            else if (SyntaxP.Parse_StateUpdate(query, out sq))
+            else if (SyntaxP.Parse_StateUpdate(query, out qt))
             {
-                HashSet<int> recordHashes = RecordSetOpeComplex_Hash.Filtering_Where(sq, universe, message);
-                foreach (KeyValuePair<string, string> pair in sq.Set) { message.AppendLine(pair.Key + "=" + pair.Value); }
-                AniconOpe_State.UpdateProperty(ac, sq.Set, Fetcher.FetchAll_State(ac, recordHashes, universe), message);
-                int i = 0;
-                foreach (int recordHash in recordHashes) { message.AppendLine(i + ": record[" + recordHash + "]"); i++; }
-                return true;
+                Operation_State.UpdateProperty(ac, qt.Set, Fetcher.States(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), message); return true;
             }
-            else if (SyntaxP.Parse_StateDelete(query, out sq))
+            else if (SyntaxP.Parse_StateDelete(query, out qt))
             {
-                HashSet<int> recordHashes = RecordSetOpeComplex_Hash.Filtering_Where(sq, universe, message);
-                AniconOpe_State.RemoveAll(ac, Fetcher.FetchAll_Statemachine(ac, recordHashes, universe), sq.Set, message); return true;
+                Operation_State.RemoveAll(ac, Fetcher.Statemachines(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), qt.Set, message); return true;
             }
-            else if (SyntaxP.Parse_StateSelect(query, out sq))
+            else if (SyntaxP.Parse_StateSelect(query, out qt))
             {
-                HashSet<int> recordHashes = RecordSetOpeComplex_Hash.Filtering_Where(sq, universe, message);
                 HashSet<StateRecord> recordSet;
-                AniconOpe_State.Select(ac, Fetcher.FetchAll_State(ac, recordHashes, universe), out recordSet, message);
+                Operation_State.Select(ac, Fetcher.States(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), out recordSet, message);
                 StringBuilder contents = new StringBuilder();
                 AniconDataUtility.CreateCsvTable_State(recordSet, contents);
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogStateSelect(ac.name), contents, message); return true;
             }
-            else if (SyntaxP.Parse_TransitionInsert(query, out sq))
+            else if (SyntaxP.Parse_TransitionInsert(query, out qt))
             {
-                HashSet<int> recordHashesFrom = RecordSetOpeComplex_Hash.Filtering_From(sq, universe, message);
-                HashSet<int> recordHashesTo = RecordSetOpeComplex_Hash.Filtering_To(sq, universe, message);
-                AniconOpe_Transition.AddAll(ac,
-                    Fetcher.FetchAll_State(ac, recordHashesFrom, universe),
-                    Fetcher.FetchAll_State(ac, recordHashesTo, universe),
+                Operation_Transition.AddAll(ac,
+                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
                     message); return true;
             }
-            else if (SyntaxP.Parse_TransitionUpdate(query, out sq))
+            else if (SyntaxP.Parse_TransitionUpdate(query, out qt))
             {
-                foreach (KeyValuePair<string, string> pair in sq.Set) { message.AppendLine(pair.Key + "=" + pair.Value); }
-                HashSet<int> recordHashesFrom = RecordSetOpeComplex_Hash.Filtering_From(sq, universe, message);
-                HashSet<int> recordHashesTo = RecordSetOpeComplex_Hash.Filtering_To(sq, universe, message);
-                AniconOpe_Transition.UpdateProperty(ac, sq.Set,
-                    Fetcher.FetchAll_State(ac, recordHashesFrom, universe),
-                    Fetcher.FetchAll_State(ac, recordHashesTo, universe),
+                foreach (KeyValuePair<string, string> pair in qt.Set) { message.AppendLine(pair.Key + "=" + pair.Value); }
+                Operation_Transition.UpdateProperty(ac, qt.Set,
+                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
                     message); return true;
             }
-            else if (SyntaxP.Parse_TransitionDelete(query, out sq))
+            else if (SyntaxP.Parse_TransitionDelete(query, out qt))
             {
-                HashSet<int> recordHashesFrom = RecordSetOpeComplex_Hash.Filtering_From(sq, universe, message);
-                HashSet<int> recordHashesTo = RecordSetOpeComplex_Hash.Filtering_To(sq, universe, message);
-                AniconOpe_Transition.RemoveAll(ac,
-                    Fetcher.FetchAll_State(ac, recordHashesFrom, universe),
-                    Fetcher.FetchAll_State(ac, recordHashesTo, universe),
+                Operation_Transition.RemoveAll(ac,
+                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
                     message); return true;
-            }
-            else if (SyntaxP.Parse_TransitionSelect(query, out sq))
-            {
-                HashSet<int> recordHashesFrom = RecordSetOpeComplex_Hash.Filtering_From(sq, universe, message);
-                HashSet<int> recordHashesTo = RecordSetOpeComplex_Hash.Filtering_To(sq, universe, message);
+            } else if (SyntaxP.Parse_TransitionSelect(query, out qt)) {
                 HashSet<TransitionRecord> recordSet;
-                AniconOpe_Transition.Select(ac,
-                    Fetcher.FetchAll_State(ac, recordHashesFrom, universe),
-                    Fetcher.FetchAll_State(ac, recordHashesTo, universe),
+                Operation_Transition.Select(ac,
+                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
                     out recordSet,
                     message);
                 StringBuilder contents = new StringBuilder();
@@ -196,7 +186,7 @@ namespace StellaQL
             QueryTokens sq;
             if (!SyntaxP.Parse_StateSelect(query, out sq)) { return false; }
 
-            recordHashes = RecordSetOpeComplex_Hash.Filtering_Where(sq, universe, message);
+            recordHashes = RecordsFilter.Qt_Where(sq, universe, message);
             return true;
         }
 
@@ -214,8 +204,8 @@ namespace StellaQL
             QueryTokens sq;
             if (!SyntaxP.Parse_TransitionSelect(query, out sq)) { return false; }
 
-            recordHashesSrc = RecordSetOpeComplex_Hash.Filtering_From(sq, universe, message);// FROM
-            recordHashesDst = RecordSetOpeComplex_Hash.Filtering_To(sq, universe, message);// TO
+            recordHashesSrc = RecordsFilter.Qt_From(sq, universe, message);// FROM
+            recordHashesDst = RecordsFilter.Qt_To(sq, universe, message);// TO
             return true;
         }
 
@@ -281,32 +271,31 @@ namespace StellaQL
     /// </summary>
     public abstract class Fetcher
     {
-        public static HashSet<AnimatorStateMachine> FetchAll_Statemachine(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<AnimatorStateMachine> Statemachines(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, UserDefindStateRecordable> universe)
         {
             HashSet<AnimatorStateMachine> statemachines = new HashSet<AnimatorStateMachine>();
             foreach (int recordHash in recordHashes)
             {
-                statemachines.Add(AniconOpe_Statemachine.Lookup(ac, universe[recordHash].Fullpath));
+                statemachines.Add(Operation_Statemachine.Lookup(ac, universe[recordHash].Fullpath));
             }
             return statemachines;
         }
 
-        public static HashSet<AnimatorState> FetchAll_State(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<AnimatorState> States(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, UserDefindStateRecordable> universe)
         {
             HashSet<AnimatorState> states = new HashSet<AnimatorState>();
             foreach (int recordHash in recordHashes)
             {
-                states.Add(AniconOpe_State.Lookup(ac, universe[recordHash].Fullpath));//.Name
+                states.Add(Operation_State.Lookup(ac, universe[recordHash].Fullpath));//.Name
             }
             return states;
         }
     }
 
-
     /// <summary>
-    /// Record Set Complex (レコード・ハッシュを取ってくる。少し複雑なやつ)
+    /// Record Filter (レコード・ハッシュを取ってくる)
     /// </summary>
-    public abstract class RecordSetOpeComplex_Hash
+    public abstract class RecordsFilter
     {
         /// <summary>
         /// トークン・ロッカーを元に、ロッカー別の検索結果を返す。
@@ -325,36 +314,36 @@ namespace StellaQL
                 int firstItem_temp;
                 if (int.TryParse(index_to_token[0], out firstItem_temp))
                 { // 数字だったら、ロッカー番号だ。
-                    HashSet<int> lockerNumbers = TagSetOpe_Hash.NumberToken_to_int(index_to_token);
+                    HashSet<int> lockerNumbers = TagSetOpe.NumberToken_to_int(index_to_token);
                     switch (operation) // ロッカー同士を演算して、まとめた答えを出す
                     {
-                        case "(": lockerNumber_to_recordHashes.Add(RecordSetOpe_Hash.Filtering_RecordsAnd(lockerNumbers, lockerNumber_to_recordHashes)); break;
-                        case "[": lockerNumber_to_recordHashes.Add(RecordSetOpe_Hash.Filtering_RecordsOr(lockerNumbers, lockerNumber_to_recordHashes)); break;
+                        case "(": lockerNumber_to_recordHashes.Add(RecordsFilter.Records_And(lockerNumbers, lockerNumber_to_recordHashes)); break;
+                        case "[": lockerNumber_to_recordHashes.Add(RecordsFilter.Records_Or(lockerNumbers, lockerNumber_to_recordHashes)); break;
                         case "{":
-                            lockerNumber_to_recordHashes.Add(RecordSetOpe_Hash.Filtering_RecordsNotAndNot(
+                            lockerNumber_to_recordHashes.Add(RecordsFilter.Records_NotAndNot(
                       lockerNumbers, lockerNumber_to_recordHashes, universe)); break;
                         default: throw new UnityException("未対応1のtokenOperation=[" + operation + "]");
                     }
                 }
                 else { // 数字じゃなかったら、属性名のリストだ
-                    HashSet<int> attrEnumSet_src = TagSetOpe_Hash.Name_to_hash(new HashSet<string>(index_to_token));
+                    HashSet<int> attrEnumSet_src = TagSetOpe.Name_to_hash(new HashSet<string>(index_to_token));
                     switch (operation) // 属性結合（演算）を解消する
                     {
                         case "(":
-                            lockerNumber_to_recordHashes.Add(RecordSetOpe_Hash.Filtering_TagsAnd(attrEnumSet_src, universe)); break;
+                            lockerNumber_to_recordHashes.Add(RecordsFilter.Tags_And(attrEnumSet_src, universe)); break;
                         case "[":
-                            lockerNumber_to_recordHashes.Add(RecordSetOpe_Hash.Filtering_TagsOr(attrEnumSet_src, universe)); break;
+                            lockerNumber_to_recordHashes.Add(RecordsFilter.Tags_Or(attrEnumSet_src, universe)); break;
                         case "{":
-                            lockerNumber_to_recordHashes.Add(RecordSetOpe_Hash.Filtering_TagsNotAndNot(attrEnumSet_src, universe)); break;
+                            lockerNumber_to_recordHashes.Add(RecordsFilter.Tags_NotAndNot(attrEnumSet_src, universe)); break;
                         default: throw new UnityException("未対応2のtokenOperation=[" + operation + "]");
                     }
                 }
             }
         }
 
-        public static HashSet<int> Filtering_From(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
+        public static HashSet<int> Qt_From(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
         {
-            if ("" != qt.From_FullnameRegex) { return RecordSetOpe_Hash.Filtering_StateFullNameRegex(qt.From_FullnameRegex, universe, message); }
+            if ("" != qt.From_FullnameRegex) { return RecordsFilter.String_StateFullNameRegex(qt.From_FullnameRegex, universe, message); }
             else {
                 List<string> tokens; SyntaxPOther.String_to_tokens(qt.From_Attr, out tokens);
 
@@ -363,14 +352,14 @@ namespace StellaQL
                 Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
 
                 List<HashSet<int>> recordHashesLockers;
-                RecordSetOpeComplex_Hash.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, universe, out recordHashesLockers);
+                RecordsFilter.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, universe, out recordHashesLockers);
                 return recordHashesLockers[recordHashesLockers.Count - 1];
             }
         }
 
-        public static HashSet<int> Filtering_To(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
+        public static HashSet<int> Qt_To(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
         {
-            if ("" != qt.To_FullnameRegex) { return RecordSetOpe_Hash.Filtering_StateFullNameRegex(qt.To_FullnameRegex, universe, message); }
+            if ("" != qt.To_FullnameRegex) { return RecordsFilter.String_StateFullNameRegex(qt.To_FullnameRegex, universe, message); }
             else {
                 List<string> tokens; SyntaxPOther.String_to_tokens(qt.To_Tag, out tokens);
 
@@ -379,14 +368,14 @@ namespace StellaQL
                 Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
 
                 List<HashSet<int>> recordHashesLockers;
-                RecordSetOpeComplex_Hash.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, universe, out recordHashesLockers);
+                RecordsFilter.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, universe, out recordHashesLockers);
                 return recordHashesLockers[recordHashesLockers.Count - 1];
             }
         }
 
-        public static HashSet<int> Filtering_Where(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
+        public static HashSet<int> Qt_Where(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
         {
-            if ("" != qt.Where_FullnameRegex) { return RecordSetOpe_Hash.Filtering_StateFullNameRegex(qt.Where_FullnameRegex, universe, message); }
+            if ("" != qt.Where_FullnameRegex) { return RecordsFilter.String_StateFullNameRegex(qt.Where_FullnameRegex, universe, message); }
             else {
                 List<string> tokens; SyntaxPOther.String_to_tokens(qt.Where_Tag, out tokens);
 
@@ -395,18 +384,12 @@ namespace StellaQL
                 Querier.Tokens_to_lockers(tokens, out tokenLockers, out tokenLockersOperation);
 
                 List<HashSet<int>> recordHashesLockers;
-                RecordSetOpeComplex_Hash.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, universe, out recordHashesLockers);
+                RecordsFilter.TokenLockers_to_recordHashesLockers(tokenLockers, tokenLockersOperation, universe, out recordHashesLockers);
                 return recordHashesLockers[recordHashesLockers.Count - 1];
             }
         }
-    }
 
-    /// <summary>
-    /// Record Set (レコード・ハッシュを取ってくる)
-    /// </summary>
-    public abstract class RecordSetOpe_Hash
-    {
-        public static HashSet<int> Filtering_StateFullNameRegex(string pattern, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
+        public static HashSet<int> String_StateFullNameRegex(string pattern, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>();
 
@@ -423,7 +406,7 @@ namespace StellaQL
             return hitRecordHashes;
         }
 
-        public static HashSet<int> Filtering_RecordsAnd(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers)
+        public static HashSet<int> Records_And(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers)
         {
             List<int> recordHashes = new List<int>();// レコード・インデックスを入れたり、削除したりする
             int iLocker = 0;
@@ -450,7 +433,7 @@ namespace StellaQL
             return distinctRecordHashes;
         }
 
-        public static HashSet<int> Filtering_RecordsOr(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers)
+        public static HashSet<int> Records_Or(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>();// どんどんレコード・インデックスを追加していく
             foreach (int lockerNumber in lockerNumbers)
@@ -467,7 +450,7 @@ namespace StellaQL
             return hitRecordHashes;
         }
 
-        public static HashSet<int> Filtering_RecordsNotAndNot(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<int> Records_NotAndNot(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers, Dictionary<int, UserDefindStateRecordable> universe)
         {
             HashSet<int> recordHashesSet = new HashSet<int>();// どんどんレコード・インデックスを追加していく
             foreach (int lockerNumber in lockerNumbers)
@@ -493,7 +476,7 @@ namespace StellaQL
             return new HashSet<int>(complementRecordHashes);
         }
 
-        public static HashSet<int> Filtering_TagsAnd(HashSet<int> attrs, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<int> Tags_And(HashSet<int> attrs, Dictionary<int, UserDefindStateRecordable> universe)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>(universe.Keys);
             foreach (int attr in attrs)
@@ -508,7 +491,7 @@ namespace StellaQL
             return hitRecordHashes;
         }
 
-        public static HashSet<int> Filtering_TagsOr(HashSet<int> orAllTags, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<int> Tags_Or(HashSet<int> orAllTags, Dictionary<int, UserDefindStateRecordable> universe)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
             foreach (KeyValuePair<int, UserDefindStateRecordable> pair in universe)
@@ -522,7 +505,7 @@ namespace StellaQL
             return hitRecordHashes;
         }
 
-        public static HashSet<int> Filtering_TagsNotAndNot(HashSet<int> requireAllTags, Dictionary<int, UserDefindStateRecordable> recordUniverse)
+        public static HashSet<int> Tags_NotAndNot(HashSet<int> requireAllTags, Dictionary<int, UserDefindStateRecordable> recordUniverse)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
             foreach (KeyValuePair<int, UserDefindStateRecordable> pair in recordUniverse)
@@ -550,11 +533,11 @@ namespace StellaQL
     }
 
     /// <summary>
-    /// Tag Set Operation (タグ集合)
+    /// Tag Set Operation (タグのハッシュ)
     /// TODO: 列挙型の使用は止め、タグの総当たり検索にしたい。
     /// 列挙型の扱い方：「文字列を列挙体に変換する」（DOBON.NET） http://dobon.net/vb/dotnet/programing/enumparse.html
     /// </summary>
-    public abstract class TagSetOpe_Hash
+    public abstract class TagSetOpe
     {
         /// <summary>
         /// 補集合
@@ -618,9 +601,9 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// STATEMACHINE ANYSTATE INSERT
+        /// TRANSITION ANYSTATE INSERT
         /// </summary>
-        public static bool Parse_StatemachineAnystateInsert(string query, out QueryTokens qTokens)
+        public static bool Parse_TransitionAnystateInsert(string query, out QueryTokens qTokens)
         {
             qTokens = new QueryTokens();
             int caret = 0;
@@ -628,8 +611,8 @@ namespace StellaQL
 
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.STATEMACHINE, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.STATEMACHINE;
+            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return false; }
+            qTokens.Target = QueryTokens.TRANSITION;
 
             if (!LexcalP.FixedWord(QueryTokens.ANYSTATE, query, ref caret)) { return false; }
             qTokens.Target2 = QueryTokens.ANYSTATE;
@@ -661,9 +644,9 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// STATEMACHINE ENTRY INSERT
+        /// TRANSITION ENTRY INSERT
         /// </summary>
-        public static bool Parse_StatemachineEntryInsert(string query, out QueryTokens qTokens)
+        public static bool Parse_TransitionEntryInsert(string query, out QueryTokens qTokens)
         {
             qTokens = new QueryTokens();
             int caret = 0;
@@ -671,8 +654,8 @@ namespace StellaQL
 
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.STATEMACHINE, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.STATEMACHINE;
+            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return false; }
+            qTokens.Target = QueryTokens.TRANSITION;
 
             if (!LexcalP.FixedWord(QueryTokens.ENTRY, query, ref caret)) { return false; }
             qTokens.Target2 = QueryTokens.ENTRY;
@@ -704,9 +687,9 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// STATE EXIT INSERT
+        /// TRANSITION EXIT INSERT
         /// </summary>
-        public static bool Parse_StateExitInsert(string query, out QueryTokens qTokens)
+        public static bool Parse_TransitionExitInsert(string query, out QueryTokens qTokens)
         {
             qTokens = new QueryTokens();
             int caret = 0;
@@ -714,8 +697,8 @@ namespace StellaQL
 
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.STATE;
+            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return false; }
+            qTokens.Target = QueryTokens.TRANSITION;
 
             if (!LexcalP.FixedWord(QueryTokens.EXIT, query, ref caret)) { return false; }
             qTokens.Target2 = QueryTokens.EXIT;
@@ -732,17 +715,6 @@ namespace StellaQL
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
                 qTokens.From_Attr = parenthesis;
             }else { return false; }
-
-            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return false; }
-
-            // 正規表現か、タグ検索のどちらか。
-            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
-                qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
-            }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.To_Tag = parenthesis;
-            }
-            else { return false; }
             return true;
         }
 

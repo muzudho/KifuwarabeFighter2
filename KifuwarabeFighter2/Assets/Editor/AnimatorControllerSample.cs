@@ -33,7 +33,7 @@ public class AnimatorControllerSample : MonoBehaviour {
         // アニメーター・コントローラーを取得。
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
-        AnimatorState state = AniconOpe_State.Lookup(ac, "Base Layer.JMove.JMove0");
+        AnimatorState state = Operation_State.Lookup(ac, "Base Layer.JMove.JMove0");
         //AnimatorState state;
         //state = AinmatorControllerOperation.LookupState(ac, "Base Layer.JMove.TamesiMachine1.Tamesi1");
         //state.tag = "tamesi(^q^)1";
@@ -53,7 +53,7 @@ public class AnimatorControllerSample : MonoBehaviour {
         // アニメーター・コントローラーを取得。
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
-        AnimatorStateTransition transition = AniconOpe_Transition.Lookup(ac, "Base Layer.JMove.Tamesi1 1", "Base Layer.JMove.Tamesi1");
+        AnimatorStateTransition transition = Operation_Transition.Lookup(ac, "Base Layer.JMove.Tamesi1 1", "Base Layer.JMove.Tamesi1");
         transition.name = "tamesi(^q^)6";
     }
 
@@ -64,7 +64,7 @@ public class AnimatorControllerSample : MonoBehaviour {
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
         StringBuilder message = new StringBuilder();
-        AniconOpe_Transition.AddAll(ac, new HashSet<AnimatorState>() { AniconOpe_State.Lookup(ac, "Base Layer.JMove.Tamesi1 0") }, new HashSet<AnimatorState>() { AniconOpe_State.Lookup(ac, "Base Layer.JMove.Tamesi1") }, message);
+        Operation_Transition.AddAll(ac, new HashSet<AnimatorState>() { Operation_State.Lookup(ac, "Base Layer.JMove.Tamesi1 0") }, new HashSet<AnimatorState>() { Operation_State.Lookup(ac, "Base Layer.JMove.Tamesi1") }, message);
     }
 
     [MenuItem("(^_^)Menu/Add 5x5 Transitions 1")]
@@ -74,15 +74,15 @@ public class AnimatorControllerSample : MonoBehaviour {
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
         HashSet<AnimatorState> states = new HashSet<AnimatorState>() {
-            AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi1"),
-            AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi2"),
-            AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi3"),
-            AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi4"),
-            AniconOpe_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi5"),
+            Operation_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi1"),
+            Operation_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi2"),
+            Operation_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi3"),
+            Operation_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi4"),
+            Operation_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi5"),
         };
         Debug.Log("states.Count = " + states.Count);
         StringBuilder message = new StringBuilder();
-        AniconOpe_Transition.AddAll(ac, states, states, message);
+        Operation_Transition.AddAll(ac, states, states, message);
     }
 
     [MenuItem("(^_^)Menu/TestWhere 4")]
