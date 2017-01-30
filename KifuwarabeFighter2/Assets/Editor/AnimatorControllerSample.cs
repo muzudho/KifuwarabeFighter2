@@ -88,12 +88,12 @@ public class AnimatorControllerSample : MonoBehaviour {
     [MenuItem("(^_^)Menu/TestWhere 4")]
     static void TestWhere()
     {
-        List<StateExRecordable> recordset = SceneMain.StateExTable.Instance.Where(new HashSet<int>(){
-            SceneMain.StateExTable.Instance.String_to_tagHash[SceneMain.StateExTable.TAG_BUSYX], SceneMain.StateExTable.Instance.String_to_tagHash[SceneMain.StateExTable.TAG_BLOCK]
+        HashSet<UserDefindStateRecordable> recordset = SceneMain.UserDefinedStateTable.Instance.FetchByEverythingTags(new HashSet<int>(){
+            SceneMain.UserDefinedStateTable.Instance.TagString_to_hash[SceneMain.UserDefinedStateTable.TAG_BUSYX], SceneMain.UserDefinedStateTable.Instance.TagString_to_hash[SceneMain.UserDefinedStateTable.TAG_BLOCK]
         });
 
         Debug.Log("結果：" + recordset.Count + "件");
-        foreach (StateExRecordable record in recordset)
+        foreach (UserDefindStateRecordable record in recordset)
         {
             Debug.Log("結果："+ record.Fullpath);
         }

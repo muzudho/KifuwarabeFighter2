@@ -76,7 +76,7 @@ namespace SceneMain
             //}
 
             // 現在のアニメーター・ステートに紐づいたデータ
-            StateExRecord astateRecord = (StateExRecord)StateExTable.Instance.GetCurrentStateExRecord(animator);
+            UserDefinedStateRecord astateRecord = (UserDefinedStateRecord)UserDefinedStateTable.Instance.GetCurrentUserDefinedStateRecord(animator);
 
             #region 入力受付
             CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
@@ -174,7 +174,7 @@ namespace SceneMain
 
             FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(input.leverX);
 
-            if (astateRecord.Tags.Contains((int)StateExTable.Instance.String_to_tagHash[StateExTable.TAG_BLOCK]))
+            if (astateRecord.Tags.Contains((int)UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_BLOCK]))
             {
                 // ブロック中
                 if(FacingOpponentMoveFwBkSt.Back != facingOpponentMoveFwBkSt)
@@ -316,7 +316,7 @@ namespace SceneMain
             //{
             if (input.leverX != 0)//左か右を入力したら
             {
-                if (!astateRecord.Tags.Contains((int)StateExTable.Instance.String_to_tagHash[StateExTable.TAG_BUSYX]))
+                if (!astateRecord.Tags.Contains((int)UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_BUSYX]))
                 {
                     //入力方向へ移動
                     Rigidbody2D.velocity = new Vector2(Mathf.Sign(input.leverX) * speedX, Rigidbody2D.velocity.y);
@@ -396,7 +396,7 @@ namespace SceneMain
 
             if (0 != input.leverY)// 上か下キーを入力していたら
             {
-                if (!astateRecord.Tags.Contains((int)StateExTable.Instance.String_to_tagHash[StateExTable.TAG_BUSYY]))
+                if (!astateRecord.Tags.Contains((int)UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_BUSYY]))
                 {
                     if (0 < input.leverY)// 上キーを入力したら
                     {
@@ -510,7 +510,7 @@ namespace SceneMain
                 AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
                 float stateSpeed = animeStateInfo.speed;
 
-                CliptypeExRecordable aclipTypeRecord = StateExTable.Instance.GetCurrentCliptypeExRecord(animator, CliptypeExTable.Instance);
+                CliptypeExRecordable aclipTypeRecord = UserDefinedStateTable.Instance.GetCurrentUserDefinedCliptypeRecord(animator, CliptypeExTable.Instance);
 
                 // 正規化時間取得（0～1 の数倍。時間経過で 1以上になる）
                 float normalizedTime = animeStateInfo.normalizedTime;
@@ -541,7 +541,7 @@ namespace SceneMain
                 int serialTilesetfile;
                 int slice;
                 CharacterIndex character = CommonScript.Player_to_useCharacter[playerIndex];
-                StateExTable.GetSlice(
+                Main_UserDefinedStateTableUtility.GetSlice(
                     out serialTilesetfile,
                     out slice,
                     character, // キャラクター番号

@@ -42,7 +42,7 @@ namespace SceneSelect
         void Update()
         {
             // 現在のアニメーター・ステートに紐づいたデータ
-            StateExRecordable astateRecord = StateExTable.Instance.GetCurrentStateExRecord(animator);
+            UserDefindStateRecordable astateRecord = UserDefinedStateTable.Instance.GetCurrentUserDefinedStateRecord(animator);
 
             #region 入力受付と途中参加
             CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
@@ -91,7 +91,7 @@ namespace SceneSelect
             }
             #endregion
 
-            if (StateExTable.Instance.Hash_to_exRecord[Animator.StringToHash(StateExTable.STATE_STAY)].Name == astateRecord.Name)
+            if (UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_STAY)].Name == astateRecord.Name)
             {
                 //カーソル移動中でなければ。
 
@@ -152,10 +152,10 @@ namespace SceneSelect
                     myRigidbody2D.velocity = new Vector2(0, myRigidbody2D.velocity.y);
                 }
             }
-            else if (StateExTable.Instance.Hash_to_exRecord[Animator.StringToHash(StateExTable.STATE_MOVE)].Name == astateRecord.Name)
+            else if (UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_MOVE)].Name == astateRecord.Name)
             {
             }
-            else if (StateExTable.Instance.Hash_to_exRecord[Animator.StringToHash(StateExTable.STATE_READY)].Name == astateRecord.Name)
+            else if (UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_READY)].Name == astateRecord.Name)
             {
                 // キャラクター選択済みのとき
 

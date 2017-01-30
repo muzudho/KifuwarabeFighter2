@@ -32,12 +32,12 @@ namespace SceneSelect
             ReadyingTime++;
 
             // 現在のアニメーター・ステートに紐づいたデータ
-            StateExRecordable astateRecord0 = StateExTable.Instance.GetCurrentStateExRecord(player_to_animator[(int)PlayerIndex.Player1]);
-            StateExRecordable astateRecord1 = StateExTable.Instance.GetCurrentStateExRecord(player_to_animator[(int)PlayerIndex.Player2]);
+            UserDefindStateRecordable astateRecord0 = UserDefinedStateTable.Instance.GetCurrentUserDefinedStateRecord(player_to_animator[(int)PlayerIndex.Player1]);
+            UserDefindStateRecordable astateRecord1 = UserDefinedStateTable.Instance.GetCurrentUserDefinedStateRecord(player_to_animator[(int)PlayerIndex.Player2]);
             if (
-                StateExTable.Instance.Hash_to_exRecord[Animator.StringToHash(StateExTable.STATE_READY)].Name == astateRecord0.Name
+                UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_READY)].Name == astateRecord0.Name
                 &&
-                StateExTable.Instance.Hash_to_exRecord[Animator.StringToHash(StateExTable.STATE_READY)].Name == astateRecord1.Name
+                UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_READY)].Name == astateRecord1.Name
                 )
             {
                 // １プレイヤー、２プレイヤー　ともに Ready ステートなら。

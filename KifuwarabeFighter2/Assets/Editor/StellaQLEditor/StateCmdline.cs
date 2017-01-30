@@ -110,18 +110,18 @@ public class StateCmdline : EditorWindow
         {
             Debug.Log("Executeボタンを押した☆");
             StringBuilder message;
-            if (StateExtendDatabase.AniconFilePath_to_tables.ContainsKey(path_animatorController))
+            if (UserDefinedDatabase.AnimationControllerFilePath_to_table.ContainsKey(path_animatorController))
             {
                 Querier.Execute(ac, commandline,
-                    StateExtendDatabase.AniconFilePath_to_tables[path_animatorController],
+                    UserDefinedDatabase.AnimationControllerFilePath_to_table[path_animatorController],
                     out message);
             }
             else
             {
                 message = new StringBuilder();
                 message.AppendLine("指定されたパスは登録されていないぜ☆（＾～＾） path_animatorController=["+ path_animatorController + "]");
-                message.AppendLine("登録されている拡張テーブル " + StateExtendDatabase.AniconFilePath_to_tables.Count + " 件");
-                foreach (string path in StateExtendDatabase.AniconFilePath_to_tables.Keys)
+                message.AppendLine("登録されている拡張テーブル " + UserDefinedDatabase.AnimationControllerFilePath_to_table.Count + " 件");
+                foreach (string path in UserDefinedDatabase.AnimationControllerFilePath_to_table.Keys)
                 {
                     message.AppendLine("[" + path + "]");
                 }

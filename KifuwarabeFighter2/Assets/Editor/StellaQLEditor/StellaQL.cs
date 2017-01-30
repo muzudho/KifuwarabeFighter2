@@ -122,7 +122,7 @@ namespace StellaQL
 
     public abstract class QueryTokensUtility
     {
-        public static HashSet<int> RecordHashes_From(QueryTokens qt, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_From(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe)
         {
             if ("" != qt.From_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.From_FullnameRegex, universe); }
             else {
@@ -138,7 +138,7 @@ namespace StellaQL
             }
         }
 
-        public static HashSet<int> RecordHashes_To(QueryTokens qt, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_To(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe)
         {
             if ("" != qt.To_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.To_FullnameRegex, universe); }
             else {
@@ -154,7 +154,7 @@ namespace StellaQL
             }
         }
 
-        public static HashSet<int> RecordHashes_Where(QueryTokens qt, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_Where(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe)
         {
             if ("" != qt.Where_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.Where_FullnameRegex, universe); }
             else {
@@ -176,9 +176,9 @@ namespace StellaQL
     /// </summary>
     public abstract class Querier
     {
-        public static bool Execute(AnimatorController ac, string query, StateExTableable stateExTable, out StringBuilder message)
+        public static bool Execute(AnimatorController ac, string query, UserDefinedStateTableable stateExTable, out StringBuilder message)
         {
-            Dictionary<int, StateExRecordable> universe = stateExTable.Hash_to_exRecord;
+            Dictionary<int, UserDefindStateRecordable> universe = stateExTable.StateHash_to_record;
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
             QueryTokens sq;
@@ -279,7 +279,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static bool ExecuteStateSelect(string query, Dictionary<int, StateExRecordable> universe, out HashSet<int> recordHashes)
+        public static bool ExecuteStateSelect(string query, Dictionary<int, UserDefindStateRecordable> universe, out HashSet<int> recordHashes)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
@@ -296,7 +296,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static bool ExecuteTransitionSelect(string query, Dictionary<int, StateExRecordable> universe, out HashSet<int> recordHashesSrc, out HashSet<int> recordHashesDst)
+        public static bool ExecuteTransitionSelect(string query, Dictionary<int, UserDefindStateRecordable> universe, out HashSet<int> recordHashesSrc, out HashSet<int> recordHashesDst)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
@@ -377,7 +377,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="tokens"></param>
         public static void TokenLockers_to_recordHashesLockers(List<List<string>> lockerNumber_to_tokens, List<string> lockerNumber_to_operation,
-            Dictionary<int, StateExRecordable> universe, out List<HashSet<int>> lockerNumber_to_recordHashes)
+            Dictionary<int, UserDefindStateRecordable> universe, out List<HashSet<int>> lockerNumber_to_recordHashes)
         {
             lockerNumber_to_recordHashes = new List<HashSet<int>>();
 
@@ -421,7 +421,7 @@ namespace StellaQL
             }
         }
 
-        public static HashSet<AnimatorStateMachine> FetchAll_Statemachine(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<AnimatorStateMachine> FetchAll_Statemachine(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, UserDefindStateRecordable> universe)
         {
             HashSet<AnimatorStateMachine> statemachines = new HashSet<AnimatorStateMachine>();
             foreach (int recordHash in recordHashes)
@@ -431,7 +431,7 @@ namespace StellaQL
             return statemachines;
         }
 
-        public static HashSet<AnimatorState> FetchAll_State(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<AnimatorState> FetchAll_State(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, UserDefindStateRecordable> universe)
         {
             HashSet<AnimatorState> states = new HashSet<AnimatorState>();
             foreach (int recordHash in recordHashes)
@@ -447,12 +447,12 @@ namespace StellaQL
     /// </summary>
     public abstract class ElementSet
     {
-        public static HashSet<int> RecordHashes_FilteringStateFullNameRegex(string pattern, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_FilteringStateFullNameRegex(string pattern, Dictionary<int, UserDefindStateRecordable> universe)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>();
 
             Regex regex = new Regex(pattern);
-            foreach (KeyValuePair<int, StateExRecordable> pair in universe)
+            foreach (KeyValuePair<int, UserDefindStateRecordable> pair in universe)
             {
                 if (regex.IsMatch(pair.Value.Fullpath))
                 {
@@ -507,7 +507,7 @@ namespace StellaQL
             return hitRecordHashes;
         }
 
-        public static HashSet<int> RecordHashes_FilteringElementsNotAndNot(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_FilteringElementsNotAndNot(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers, Dictionary<int, UserDefindStateRecordable> universe)
         {
             HashSet<int> recordHashesSet = new HashSet<int>();// どんどんレコード・インデックスを追加していく
             foreach (int lockerNumber in lockerNumbers)
@@ -533,7 +533,7 @@ namespace StellaQL
             return new HashSet<int>(complementRecordHashes);
         }
 
-        public static HashSet<int> RecordHashes_FilteringAttributesAnd(HashSet<int> attrs, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_FilteringAttributesAnd(HashSet<int> attrs, Dictionary<int, UserDefindStateRecordable> universe)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>(universe.Keys);
             foreach (int attr in attrs)
@@ -541,35 +541,35 @@ namespace StellaQL
                 HashSet<int> records_empty = new HashSet<int>();
                 foreach (int recordHash in hitRecordHashes)
                 {
-                    if (universe[recordHash].HasFlag_attr(new HashSet<int>() { attr })) { records_empty.Add(recordHash); }// 該当したもの
+                    if (universe[recordHash].HasEverythingTags(new HashSet<int>() { attr })) { records_empty.Add(recordHash); }// 該当したもの
                 }
                 hitRecordHashes = records_empty;
             }
             return hitRecordHashes;
         }
 
-        public static HashSet<int> RecordHashes_FilteringAttributesOr(HashSet<int> orAllTags, Dictionary<int, StateExRecordable> universe)
+        public static HashSet<int> RecordHashes_FilteringAttributesOr(HashSet<int> orAllTags, Dictionary<int, UserDefindStateRecordable> universe)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
-            foreach (KeyValuePair<int, StateExRecordable> pair in universe)
+            foreach (KeyValuePair<int, UserDefindStateRecordable> pair in universe)
             {
                 foreach (int attr in orAllTags)
                 {
-                    if (pair.Value.HasFlag_attr(new HashSet<int>() { attr })) { hitRecordHashes.Add(pair.Key); }
+                    if (pair.Value.HasEverythingTags(new HashSet<int>() { attr })) { hitRecordHashes.Add(pair.Key); }
                 }
             }
 
             return hitRecordHashes;
         }
 
-        public static HashSet<int> RecordHashes_FilteringAttributesNotAndNot(HashSet<int> requireAllTags, Dictionary<int, StateExRecordable> recordUniverse)
+        public static HashSet<int> RecordHashes_FilteringAttributesNotAndNot(HashSet<int> requireAllTags, Dictionary<int, UserDefindStateRecordable> recordUniverse)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
-            foreach (KeyValuePair<int, StateExRecordable> pair in recordUniverse)
+            foreach (KeyValuePair<int, UserDefindStateRecordable> pair in recordUniverse)
             {
                 foreach (int attr in requireAllTags)
                 {
-                    if (pair.Value.HasFlag_attr(new HashSet<int>() { attr })) { hitRecordHashes.Add(pair.Key); }
+                    if (pair.Value.HasEverythingTags(new HashSet<int>() { attr })) { hitRecordHashes.Add(pair.Key); }
                 }
             }
 

@@ -38,12 +38,12 @@ namespace StellaQL
     /// <summary>
     /// いい造語がないんで、Tableable にするか☆（＾～＾）
     /// </summary>
-    public interface CliptypeExTableable
+    public interface UserDefinedCliptypeTableable
     {
         Dictionary<int, CliptypeExRecordable> Cliptype_to_exRecord { get; set; } // [CliptypeIndex]
     }
 
-    public abstract class AbstractCliptypeExTable : CliptypeExTableable
+    public abstract class AbstractCliptypeExTable : UserDefinedCliptypeTableable
     {
         public Dictionary<int, CliptypeExRecordable> Cliptype_to_exRecord { get; set; } // [CliptypeIndex]
     }

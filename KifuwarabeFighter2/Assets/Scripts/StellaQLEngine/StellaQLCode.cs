@@ -8,7 +8,7 @@ namespace StellaQL
     /// </summary>
     public abstract class Code
     {
-        public static Dictionary<string, int> HashsDic(string[] strings)
+        public static Dictionary<string, int> HashesDic(string[] strings)
         {
             Dictionary<string, int> string_to_tagHash = new Dictionary<string, int>();
             foreach (string str in strings)
@@ -23,7 +23,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="strings"></param>
         /// <returns></returns>
-        public static HashSet<int> Hashs(string[] strings)
+        public static HashSet<int> Hashes(string[] strings)
         {
             HashSet<int> hashSet = new HashSet<int>();
             foreach (string str in strings)
