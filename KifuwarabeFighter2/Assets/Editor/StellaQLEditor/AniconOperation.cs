@@ -271,7 +271,7 @@ namespace StellaQL
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
         public static void AddAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, StringBuilder message)
         {
-            message.AppendLine("Mension: const string STATE_xxx OK?");
+            // message.AppendLine("Mension: const string STATE_xxx OK?");
             message.Append("Transition.AddAll: Source "); message.Append(states_src.Count); message.Append(" states. Destination "); message.Append(states_dst.Count); message.AppendLine(" states.");
             foreach (AnimatorState state_src in states_src) {
                 foreach (AnimatorState state_dst in states_dst) {
@@ -287,7 +287,7 @@ namespace StellaQL
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
         public static void RemoveAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, StringBuilder message)
         {
-            message.AppendLine("Mension: const string STATE_xxx OK?");
+            // message.AppendLine("Mension: const string STATE_xxx OK?");
             message.Append("Transition.RemoveAll: Source "); message.Append(states_src.Count); message.Append(" states. Destination "); message.Append(states_dst.Count); message.AppendLine(" states.");
 
             foreach (AnimatorState state_src in states_src)

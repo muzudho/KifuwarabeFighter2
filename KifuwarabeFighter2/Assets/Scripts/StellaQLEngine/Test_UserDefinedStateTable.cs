@@ -43,7 +43,9 @@ namespace SceneStellaQLTest
 
         #region (Step 4.) Unfortunaly, Please, list fullpath of statemachines of states.  (残念ですが、ステートマシン、ステートのフルパスを定数にしてください)
         public const string STATEMACHINE_BASELAYER = "Base Layer";
-        public const string STATE_ANYSTATE = "Base Layer.Any State"; // 緑色の[Any State]とは違って、灰色の[Any State]
+        public const string STATE_ANYSTATE = "Base Layer.Any State"; // 青緑色の[Any State]とは違って、灰色の[Any State]
+        public const string STATE_ENTRY = "Base Layer.Entry"; // 緑色の[Entry]とは違って、灰色の[Entry]
+        public const string STATE_EXIT = "Base Layer.Exit"; // 赤色の[Exit]とは違って、灰色の[Exit]
         public const string STATE_FOO = "Base Layer.Foo";
         public const string STATE_ALPACA = "Base Layer.Alpaca";
         public const string STATE_BEAR = "Base Layer.Bear";
@@ -103,6 +105,8 @@ namespace SceneStellaQLTest
                 new UserDefinedStateRecord(  STATEMACHINE_BASELAYER,         new []{TAG_ZERO}),
                 new UserDefinedStateRecord(  STATE_FOO,         new []{TAG_ZERO}),
                 new UserDefinedStateRecord(  STATE_ANYSTATE,    new []{TAG_ZERO}),
+                new UserDefinedStateRecord(  STATE_ENTRY,       new []{TAG_ZERO}),
+                new UserDefinedStateRecord(  STATE_EXIT,        new []{TAG_ZERO}),
                 new UserDefinedStateRecord(  STATE_ALPACA,      new []{TAG_ALPHA, TAG_CEE}),
                 new UserDefinedStateRecord(  STATE_BEAR,        new []{TAG_ALPHA, TAG_BETA, TAG_EEE}),
                 new UserDefinedStateRecord(  STATE_CAT,         new []{TAG_ALPHA, TAG_CEE }),

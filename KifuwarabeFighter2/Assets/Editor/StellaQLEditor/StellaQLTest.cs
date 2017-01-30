@@ -91,7 +91,7 @@ namespace StellaQL
             List<string> tokenLockersOperation = new List<string>() { "(", "(", "[", "{", "(", };
 
             List<HashSet<int>> recordHashesLockers;
-            Fetcher.TokenLockers_to_recordHashesLockers(
+            RecordSetOpeComplex_Hash.TokenLockers_to_recordHashesLockers(
                 tokenLockers, tokenLockersOperation, UserDefinedStateTable.Instance.StateHash_to_record, out recordHashesLockers);
 
             Assert.AreEqual(5, recordHashesLockers.Count);
@@ -108,8 +108,11 @@ namespace StellaQL
             Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_BEAR)));
             Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_RABBIT)));
             Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ZEBRA)));
-            Assert.AreEqual(16, recordHashesLockers[3].Count);
+            Assert.AreEqual(19, recordHashesLockers[3].Count);
             Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATEMACHINE_BASELAYER)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ANYSTATE)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ENTRY)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_EXIT)));
             Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_FOO)));
             Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
             Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
@@ -146,7 +149,7 @@ namespace StellaQL
             new HashSet<int>() { Animator.StringToHash(UserDefinedStateTable.STATE_BEAR),Animator.StringToHash(UserDefinedStateTable.STATE_ELEPHANT) },
             new HashSet<int>() { Animator.StringToHash(UserDefinedStateTable.STATE_BEAR), Animator.StringToHash(UserDefinedStateTable.STATE_GIRAFFE) },
         };
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringElementsAnd(lockerNumbers, reordIndexLockers);
+            HashSet<int> recordHashes = RecordSetOpe_Hash.Filtering_RecordsAnd(lockerNumbers, reordIndexLockers);
 
             // 結果は　Bear
             Assert.AreEqual(1, recordHashes.Count);
@@ -169,7 +172,7 @@ namespace StellaQL
             new HashSet<int>() { Animator.StringToHash(UserDefinedStateTable.STATE_BEAR),Animator.StringToHash(UserDefinedStateTable.STATE_ELEPHANT) },
             new HashSet<int>() { Animator.StringToHash(UserDefinedStateTable.STATE_BEAR),Animator.StringToHash(UserDefinedStateTable.STATE_GIRAFFE) },
         };
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringElementsOr(lockerNumbers, recordHasheslockers);
+            HashSet<int> recordHashes = RecordSetOpe_Hash.Filtering_RecordsOr(lockerNumbers, recordHasheslockers);
 
             // 結果は　Bear, Elephant, Giraffe
             Assert.AreEqual(3, recordHashes.Count);
@@ -194,11 +197,14 @@ namespace StellaQL
                 new HashSet<int>() { Animator.StringToHash(UserDefinedStateTable.STATE_BEAR),Animator.StringToHash(UserDefinedStateTable.STATE_ELEPHANT) },
                 new HashSet<int>() { Animator.StringToHash(UserDefinedStateTable.STATE_BEAR),Animator.StringToHash(UserDefinedStateTable.STATE_GIRAFFE) },
             };
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringElementsNotAndNot(lockerNumbers, recordHashesLockers, UserDefinedStateTable.Instance.StateHash_to_record);
+            HashSet<int> recordHashes = RecordSetOpe_Hash.Filtering_RecordsNotAndNot(lockerNumbers, recordHashesLockers, UserDefinedStateTable.Instance.StateHash_to_record);
 
-            // 結果は　"Base Layout",Foo,Alpaca,Cat,Dog,Fox,Horse,Iguana,Jellyfish,Kangaroo,Lion,Monkey,Nutria,Ox,Pig,Quetzal,Rabbit,Sheep,Tiger,Unicorn,Vixen,Wolf,Xenopus,Yak,Zebra
-            Assert.AreEqual(25, recordHashes.Count);
+            // 結果は　"Base Layout","Any State","Entry","Exit",Foo,Alpaca,Cat,Dog,Fox,Horse,Iguana,Jellyfish,Kangaroo,Lion,Monkey,Nutria,Ox,Pig,Quetzal,Rabbit,Sheep,Tiger,Unicorn,Vixen,Wolf,Xenopus,Yak,Zebra
+            Assert.AreEqual(28, recordHashes.Count);
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATEMACHINE_BASELAYER)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ANYSTATE)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ENTRY)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_EXIT)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_FOO)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
@@ -234,10 +240,12 @@ namespace StellaQL
             // 条件は、「Base Layer.」の下に、n または N が含まれるもの
             string pattern = @"Base Layer\.\w*[Nn]\w*";
             StringBuilder message = new StringBuilder();
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringStateFullNameRegex(pattern, UserDefinedStateTable.Instance.StateHash_to_record, message);
+            HashSet<int> recordHashes = RecordSetOpe_Hash.Filtering_StateFullNameRegex(pattern, UserDefinedStateTable.Instance.StateHash_to_record, message);
 
-            // 結果は　Elephant、Iguana、Kangaroo、Lion、Monkey、Nutria、Unicorn、Vixen、Xenopus
-            Assert.AreEqual(9, recordHashes.Count);
+            // 結果は　"Any Stat", "Entry", Elephant、Iguana、Kangaroo、Lion、Monkey、Nutria、Unicorn、Vixen、Xenopus
+            Assert.AreEqual(11, recordHashes.Count);
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ANYSTATE)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ENTRY)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ELEPHANT)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_IGUANA)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_KANGAROO)));
@@ -257,7 +265,7 @@ namespace StellaQL
         {
             // 条件は　Alpha | Eee
             HashSet<int> attrs = new HashSet<int>() { UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_ALPHA] , UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_EEE] };
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringAttributesAnd(attrs, UserDefinedStateTable.Instance.StateHash_to_record);
+            HashSet<int> recordHashes = RecordSetOpe_Hash.Filtering_TagsAnd(attrs, UserDefinedStateTable.Instance.StateHash_to_record);
 
             // 結果は　Bear、Elephant、Giraffe、Quetzal、Zebra
             Assert.AreEqual(5, recordHashes.Count);
@@ -280,7 +288,7 @@ namespace StellaQL
                 UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_EEE]) ,
                 (int)UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_BETA],
                 (int)UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_EEE] };
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringAttributesOr(attrs, UserDefinedStateTable.Instance.StateHash_to_record);
+            HashSet<int> recordHashes = RecordSetOpe_Hash.Filtering_TagsOr(attrs, UserDefinedStateTable.Instance.StateHash_to_record);
 
             // 結果は　Bear、Elephant、Giraffe、Horse、Jellyfish、Monkey、Quetzal、Rabbit、Sheep、Tiger、Vixen、Xenopus、Zebra
             foreach (int hash in recordHashes) { Debug.Log("fullpath=[" + UserDefinedStateTable.Instance.StateHash_to_record[hash].Fullpath + "]"); }
@@ -308,11 +316,14 @@ namespace StellaQL
         {
             // 条件は　{ Beta、Eee }
             HashSet<int> attrs = new HashSet<int>() { UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_BETA], UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_EEE] };
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringAttributesNotAndNot(attrs, UserDefinedStateTable.Instance.StateHash_to_record);
+            HashSet<int> recordHashes = RecordSetOpe_Hash.Filtering_TagsNotAndNot(attrs, UserDefinedStateTable.Instance.StateHash_to_record);
 
-            // 結果は　"Base Layout",Foo, Alpaca、Cat、Dog、Fox、Iguana、Kangaroo、Lion、Nutria、Ox、Pig、Unicorn、Wolf、Yak
-            Assert.AreEqual(15, recordHashes.Count);
+            // 結果は　"Base Layout","Any State","Entry","Exit",Foo, Alpaca、Cat、Dog、Fox、Iguana、Kangaroo、Lion、Nutria、Ox、Pig、Unicorn、Wolf、Yak
+            Assert.AreEqual(18, recordHashes.Count);
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATEMACHINE_BASELAYER)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ANYSTATE)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ENTRY)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_EXIT)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_FOO)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
@@ -339,8 +350,7 @@ namespace StellaQL
         [Test]
         public void N60_ToAttrLocker_FromKeywordlistSet()
         {
-            HashSet<int> set = new HashSet<int>() { UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_BETA], UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_DEE] };
-            HashSet<int> attrLocker = AttrSet_Enumration.KeywordlistSet_to_attrLocker(set);
+            HashSet<int> attrLocker = new HashSet<int>() { UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_BETA], UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_DEE] };
 
             Assert.AreEqual(2, attrLocker.Count);
             Assert.IsTrue(attrLocker.Contains(UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_BETA]));
@@ -354,7 +364,7 @@ namespace StellaQL
         public void N60_ToAttrLocker_FromNGKeywordSet()
         {
             HashSet<int> set = new HashSet<int>() { UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_BETA], UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_DEE] };
-            HashSet<int> attrLocker = AttrSet_Enumration.NGKeywordSet_to_attrLocker(set, new HashSet<int>(UserDefinedStateTable.Instance.TagString_to_hash.Values));
+            HashSet<int> attrLocker = TagSetOpe_Hash.Complement(set, new HashSet<int>(UserDefinedStateTable.Instance.TagString_to_hash.Values));
 
             Assert.AreEqual(5, attrLocker.Count);
             Assert.IsTrue(attrLocker.Contains(UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_ZERO]));
@@ -372,7 +382,7 @@ namespace StellaQL
         {
             // int型にして持つ
             HashSet<int> set = new HashSet<int>() { UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_BETA], UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_DEE] };
-            HashSet<int> attrLocker = AttrSet_Enumration.Complement(set, new HashSet<int>(UserDefinedStateTable.Instance.TagString_to_hash.Values));
+            HashSet<int> attrLocker = TagSetOpe_Hash.Complement(set, new HashSet<int>(UserDefinedStateTable.Instance.TagString_to_hash.Values));
 
             Assert.AreEqual(5, attrLocker.Count);
             Assert.IsTrue(attrLocker.Contains(UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_ZERO]));
@@ -429,7 +439,7 @@ namespace StellaQL
         /// 構文解析 SET 句
         /// </summary>
         [Test]
-        public void N70_ParsePhrase_AfterSet()
+        public void N70_SyntaxPhrase_AfterSet()
         {
             string phrase = @"Duration 0 ExitTime 1";
             Dictionary<string, string> properties = new Dictionary<string, string>();
@@ -448,7 +458,7 @@ namespace StellaQL
         /// 構文解析 SET 句
         /// </summary>
         [Test]
-        public void N70_ParsePhrase_AfterSet_Stringliteral()
+        public void N70_SyntaxPhrase_AfterSet_Stringliteral()
         {
             string phrase = @"tag ""hello""";
             Dictionary<string, string> properties = new Dictionary<string, string>();
@@ -465,25 +475,74 @@ namespace StellaQL
         /// 構文解析 STATEMACHINE ANYSTATE INSERT 文
         /// </summary>
         [Test]
-        public void N70_ParseStatement_StatemachineAnystateInsert()
+        public void N70_Syntax_StatemachineAnystateInsert()
         {
-            string query = @"STATE INSERT
-                        SET name0 ""WhiteCat"" name1 ""WhiteDog""
-                        WHERE ""Base Layout""";
+            string query = @"STATEMACHINE ANYSTATE INSERT
+                        FROM ""Base Layer""
+                        TO ""Base Layer\.Foo""";
             QueryTokens sq;
-            bool successful = SyntaxP.ParseStatement_StateInsert(query, out sq);
+            bool successful = SyntaxP.Parse_StatemachineAnystateInsert(query, out sq);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.STATEMACHINE, sq.Target);
+            Assert.AreEqual(QueryTokens.ANYSTATE, sq.Target2);
+            Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
+            Assert.AreEqual(0, sq.Set.Count);
+            Assert.AreEqual("Base Layer", sq.From_FullnameRegex);
+            Assert.AreEqual("", sq.From_Attr);
+            Assert.AreEqual(@"Base Layer\.Foo", sq.To_FullnameRegex);
+            Assert.AreEqual("", sq.To_Tag);
+            Assert.AreEqual("", sq.Where_FullnameRegex);
+            Assert.AreEqual("", sq.Where_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 STATEMACHINE ENTRY INSERT 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_StatemachineEntryInsert()
+        {
+            string query = @"STATEMACHINE ENTRY INSERT
+                        FROM ""Base Layer""
+                        TO ""Base Layer\.Foo""";
+            QueryTokens sq;
+            bool successful = SyntaxP.Parse_StatemachineEntryInsert(query, out sq);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.STATEMACHINE, sq.Target);
+            Assert.AreEqual(QueryTokens.ENTRY, sq.Target2);
+            Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
+            Assert.AreEqual(0, sq.Set.Count);
+            Assert.AreEqual("Base Layer", sq.From_FullnameRegex);
+            Assert.AreEqual("", sq.From_Attr);
+            Assert.AreEqual(@"Base Layer\.Foo", sq.To_FullnameRegex);
+            Assert.AreEqual("", sq.To_Tag);
+            Assert.AreEqual("", sq.Where_FullnameRegex);
+            Assert.AreEqual("", sq.Where_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 STATE EXIT INSERT 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_StateExitInsert()
+        {
+            string query = @"STATE EXIT INSERT
+                        FROM ""Base Layer""
+                        TO ""Base Layer\.Foo""";
+            QueryTokens sq;
+            bool successful = SyntaxP.Parse_StateExitInsert(query, out sq);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, sq.Target);
+            Assert.AreEqual(QueryTokens.EXIT, sq.Target2);
             Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
-            Assert.AreEqual(2, sq.Set.Count);
-            Assert.AreEqual("WhiteCat", sq.Set["name0"]);
-            Assert.AreEqual("WhiteDog", sq.Set["name1"]);
-            Assert.AreEqual("", sq.From_FullnameRegex);
+            Assert.AreEqual(0, sq.Set.Count);
+            Assert.AreEqual("Base Layer", sq.From_FullnameRegex);
             Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual("", sq.To_FullnameRegex);
+            Assert.AreEqual(@"Base Layer\.Foo", sq.To_FullnameRegex);
             Assert.AreEqual("", sq.To_Tag);
-            Assert.AreEqual("Base Layout", sq.Where_FullnameRegex);
+            Assert.AreEqual("", sq.Where_FullnameRegex);
             Assert.AreEqual("", sq.Where_Tag);
         }
 
@@ -491,13 +550,13 @@ namespace StellaQL
         /// 構文解析 STATE INSERT 文
         /// </summary>
         [Test]
-        public void N70_ParseStatement_StateInsert()
+        public void N70_Syntax_StateInsert()
         {
             string query = @"STATE INSERT
                         SET name0 ""WhiteCat"" name1 ""WhiteDog""
                         WHERE ""Base Layout""";
             QueryTokens sq;
-            bool successful = SyntaxP.ParseStatement_StateInsert(query, out sq);
+            bool successful = SyntaxP.Parse_StateInsert(query, out sq);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, sq.Target);
@@ -517,13 +576,13 @@ namespace StellaQL
         /// 構文解析 STATE UPDATE 文
         /// </summary>
         [Test]
-        public void N70_ParseStatement_StateUpdate()
+        public void N70_Syntax_StateUpdate()
         {
             string query = @"STATE UPDATE
                         SET name ""WhiteCat"" age 7
                         WHERE TAG ([(Alpha Cee)(Beta)]{Eee})";
             QueryTokens sq;
-            bool successful = SyntaxP.ParseStatement_StateUpdate(query, out sq);
+            bool successful = SyntaxP.Parse_StateUpdate(query, out sq);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, sq.Target);
@@ -543,13 +602,13 @@ namespace StellaQL
         /// 構文解析 STATE DELETE 文
         /// </summary>
         [Test]
-        public void N70_ParseStatement_StateDelete()
+        public void N70_Syntax_StateDelete()
         {
             string query = @"STATE DELETE
                         SET name0 ""WhiteCat"" name1 ""WhiteDog""
                         WHERE ""Base Layout""";
             QueryTokens sq;
-            bool successful = SyntaxP.ParseStatement_StateDelete(query, out sq);
+            bool successful = SyntaxP.Parse_StateDelete(query, out sq);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, sq.Target);
@@ -569,12 +628,12 @@ namespace StellaQL
         /// 構文解析 STATE SELECT 文
         /// </summary>
         [Test]
-        public void N70_ParseStatement_StateSelect()
+        public void N70_Syntax_StateSelect()
         {
             string query = @"STATE SELECT
                         WHERE TAG ([(Alpha Cee)(Beta)]{Eee})";
             QueryTokens sq;
-            bool successful = SyntaxP.ParseStatement_StateSelect(query, out sq);
+            bool successful = SyntaxP.Parse_StateSelect(query, out sq);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, sq.Target);
@@ -592,14 +651,14 @@ namespace StellaQL
         /// 構文解析 Transition Insert 文
         /// </summary>
         [Test]
-        public void N70_ParseStatement_TransitionInsert()
+        public void N70_Syntax_TransitionInsert()
         {
             string query = @"TRANSITION INSERT
                         SET Duration 0 ExitTime 1
                         FROM ""Base Layer\.Cat""
                         TO ""Base Layer\.Dog""";
             QueryTokens sq;
-            bool successful = SyntaxP.ParseStatement_TransitionInsert(query, out sq);
+            bool successful = SyntaxP.Parse_TransitionInsert(query, out sq);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
@@ -619,7 +678,7 @@ namespace StellaQL
         /// 構文解析 Transition Update 文
         /// </summary>
         [Test]
-        public void N70_ParseStatement_TransitionUpdate()
+        public void N70_Syntax_TransitionUpdate()
         {
             // まず、線を引く。
             {
@@ -628,7 +687,7 @@ namespace StellaQL
                         FROM ""Base Layer\.Cat""
                         TO ""Base Layer\.Dog""";
                 QueryTokens sq;
-                bool successful = SyntaxP.ParseStatement_TransitionInsert(query, out sq);
+                bool successful = SyntaxP.Parse_TransitionInsert(query, out sq);
                 Assert.IsTrue(successful);
             }
 
@@ -639,7 +698,7 @@ namespace StellaQL
                         FROM ""Base Layer\.Cat""
                         TO ""Base Layer\.Dog""";
                 QueryTokens sq;
-                bool successful = SyntaxP.ParseStatement_TransitionUpdate(query, out sq);
+                bool successful = SyntaxP.Parse_TransitionUpdate(query, out sq);
 
                 Assert.IsTrue(successful);
                 Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
@@ -660,13 +719,13 @@ namespace StellaQL
         /// 構文解析 Transition Delete 文
         /// </summary>
         [Test]
-        public void N70_ParseStatement_TransitionDelete()
+        public void N70_Syntax_TransitionDelete()
         {
             string query = @"TRANSITION DELETE
                         FROM ""Base Layer.SMove""
                         TO TAG (BusyX Block)";
             QueryTokens sq;
-            bool successful = SyntaxP.ParseStatement_TransitionDelete(query, out sq);
+            bool successful = SyntaxP.Parse_TransitionDelete(query, out sq);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
@@ -682,13 +741,13 @@ namespace StellaQL
         /// 構文解析 Transition Select 文
         /// </summary>
         [Test]
-        public void N70_ParseStatement_TransitionSelect()
+        public void N70_Syntax_TransitionSelect()
         {
             string query = @"TRANSITION SELECT
                         FROM ""Base Layer.SMove""
                         TO TAG (BusyX Block)";
             QueryTokens sq;
-            bool successful = SyntaxP.ParseStatement_TransitionSelect(query, out sq);
+            bool successful = SyntaxP.Parse_TransitionSelect(query, out sq);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
@@ -706,11 +765,11 @@ namespace StellaQL
         /// TAG部を解析（１）
         /// </summary>
         [Test]
-        public void N80_LexicalParse_TagParentesis_StringToTokens()
+        public void N80_Lexical_TagParentesis_StringToTokens()
         {
             string attrParentesis = "([(Alpaca Bear)(Cat Dog)]{Elephant})";
             List<string> tokens;
-            QueryTokens.String_to_tokens(attrParentesis, out tokens);
+            SyntaxPOther.String_to_tokens(attrParentesis, out tokens);
 
             //{ int i = 0; foreach (string token in tokens) { Debug.Log("Token[" + i + "]: " + token); i++; } }
             Assert.AreEqual(15, tokens.Count);
@@ -735,7 +794,7 @@ namespace StellaQL
         /// Parser 改行テスト
         /// </summary>
         [Test]
-        public void N80_LexicalParse_Newline()
+        public void N80_Lexical_Newline()
         {
             int caret = 0;
             bool hit;
@@ -756,7 +815,7 @@ a", ref caret);
         }
 
         [Test]
-        public void N80_LexicalParse_VarStringliteral()
+        public void N80_Lexical_VarStringliteral()
         {
             int caret = 0;
             const int DOUBLE_QUOT = 2;
@@ -798,7 +857,7 @@ a", ref caret);
         /// Parse関連のサブ関数。
         /// </summary>
         [Test]
-        public void N80_LexicalParse_SubFunctions()
+        public void N80_Lexical_SubFunctions()
         {
             int caret = 0;
             bool hit;
