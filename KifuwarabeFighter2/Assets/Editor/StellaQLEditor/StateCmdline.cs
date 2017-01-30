@@ -115,6 +115,8 @@ public class StateCmdline : EditorWindow
                 Querier.Execute(ac, commandline,
                     UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[path_animatorController],
                     message);
+                //Repaint();
+                //HandleUtility.Repaint();
             }
             else
             {

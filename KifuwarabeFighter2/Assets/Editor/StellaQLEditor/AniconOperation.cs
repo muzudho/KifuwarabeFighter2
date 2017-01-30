@@ -261,6 +261,14 @@ namespace StellaQL
                     statemachine_src.AddAnyStateTransition(state_dst);
                 }
             }
+            message.AppendLine();
+            message.AppendLine("----------");
+            message.AppendLine("(!)Mension");
+            message.AppendLine("----------");
+            message.AppendLine("Please, Close window and Open window");
+            message.AppendLine(" (Re Open) Animation Controller!!");
+            message.AppendLine("If not paint line.");
+            message.AppendLine();
             return true;
         }
 
