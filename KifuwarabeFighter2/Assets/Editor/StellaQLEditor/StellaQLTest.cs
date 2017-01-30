@@ -1,9 +1,8 @@
 ﻿using NUnit.Framework;
-using StellaQL;
-using System;
+using SceneStellaQLTest;
 using System.Collections.Generic;
 using UnityEngine;
-using SceneStellaQLTest;
+using System.Text;
 
 namespace StellaQL
 {
@@ -16,7 +15,8 @@ namespace StellaQL
             string query = @"STATE SELECT
                         WHERE TAG ([(Alpha Cee)(Beta)]{Eee})";
             HashSet<int> recordHashes;
-            bool successful = Querier.ExecuteStateSelect(query, UserDefinedStateTable.Instance.StateHash_to_record, out recordHashes);
+            StringBuilder message = new StringBuilder();
+            bool successful = Querier.ExecuteStateSelect(query, UserDefinedStateTable.Instance.StateHash_to_record, out recordHashes, message);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(3, recordHashes.Count);
@@ -44,7 +44,8 @@ namespace StellaQL
                         ";
             // STATE SELECT文が動けば OK☆
             HashSet<int> recordHashes;
-            bool successful = Querier.ExecuteStateSelect(query, UserDefinedStateTable.Instance.StateHash_to_record, out recordHashes);
+            StringBuilder message = new StringBuilder();
+            bool successful = Querier.ExecuteStateSelect(query, UserDefinedStateTable.Instance.StateHash_to_record, out recordHashes, message);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(3, recordHashes.Count);
@@ -61,7 +62,8 @@ namespace StellaQL
                         TO TAG ([(Alpha Cee)(Beta)]{Eee})";
             HashSet<int> recordHashesSrc;
             HashSet<int> recordHashesDst;
-            bool successful = Querier.ExecuteTransitionSelect(query, UserDefinedStateTable.Instance.StateHash_to_record, out recordHashesSrc, out recordHashesDst);
+            StringBuilder message = new StringBuilder();
+            bool successful = Querier.ExecuteTransitionSelect(query, UserDefinedStateTable.Instance.StateHash_to_record, out recordHashesSrc, out recordHashesDst, message);
 
             Assert.AreEqual(1, recordHashesSrc.Count);
             Assert.IsTrue(recordHashesSrc.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ZEBRA)));
@@ -231,7 +233,8 @@ namespace StellaQL
         {
             // 条件は、「Base Layer.」の下に、n または N が含まれるもの
             string pattern = @"Base Layer\.\w*[Nn]\w*";
-            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringStateFullNameRegex(pattern, UserDefinedStateTable.Instance.StateHash_to_record);
+            StringBuilder message = new StringBuilder();
+            HashSet<int> recordHashes = ElementSet.RecordHashes_FilteringStateFullNameRegex(pattern, UserDefinedStateTable.Instance.StateHash_to_record, message);
 
             // 結果は　Elephant、Iguana、Kangaroo、Lion、Monkey、Nutria、Unicorn、Vixen、Xenopus
             Assert.AreEqual(9, recordHashes.Count);
@@ -699,12 +702,11 @@ namespace StellaQL
         #endregion
 
         #region N80 lexical parser (字句パーサー)
-
         /// <summary>
         /// TAG部を解析（１）
         /// </summary>
         [Test]
-        public void N80_Parse_TagParentesis_StringToTokens()
+        public void N80_LexicalParse_TagParentesis_StringToTokens()
         {
             string attrParentesis = "([(Alpaca Bear)(Cat Dog)]{Elephant})";
             List<string> tokens;
@@ -733,7 +735,7 @@ namespace StellaQL
         /// Parser 改行テスト
         /// </summary>
         [Test]
-        public void N80_Parse_Newline()
+        public void N80_LexicalParse_Newline()
         {
             int caret = 0;
             bool hit;
@@ -753,19 +755,54 @@ a", ref caret);
             Assert.AreEqual("(alpaca bear)", parenthesis);
         }
 
+        [Test]
+        public void N80_LexicalParse_VarStringliteral()
+        {
+            int caret = 0;
+            const int DOUBLE_QUOT = 2;
+            bool hit;
+            string stringWithoutDoubleQuotation;
+
+            caret = 0;
+            hit = LexcalP.VarStringliteral(@"""alpaca"" ", ref caret, out stringWithoutDoubleQuotation);
+            Assert.IsTrue(hit);
+            Assert.AreEqual(8 + 1, caret);
+            Assert.AreEqual("alpaca", stringWithoutDoubleQuotation);
+
+            caret = 0;
+            hit = LexcalP.VarStringliteral(@"""alpaca""", ref caret, out stringWithoutDoubleQuotation);
+            Assert.IsTrue(hit);
+            Assert.AreEqual(8, caret);
+            Assert.AreEqual("alpaca", stringWithoutDoubleQuotation);
+
+            caret = 0;
+            hit = LexcalP.VarStringliteral(@"""alpaca.bear""", ref caret, out stringWithoutDoubleQuotation);
+            Assert.IsTrue(hit);
+            Assert.AreEqual(11+ DOUBLE_QUOT, caret);
+            Assert.AreEqual("alpaca.bear", stringWithoutDoubleQuotation);
+
+            caret = 0;
+            hit = LexcalP.VarStringliteral(@"""alpaca\.bear""", ref caret, out stringWithoutDoubleQuotation);
+            Assert.IsTrue(hit);
+            Assert.AreEqual(12+ DOUBLE_QUOT, caret);
+            Assert.AreEqual(@"alpaca\.bear", stringWithoutDoubleQuotation);
+
+            caret = 0;
+            hit = LexcalP.VarStringliteral(@"""Base Layer\.Any State""", ref caret, out stringWithoutDoubleQuotation);
+            Assert.IsTrue(hit);
+            Assert.AreEqual(21 + DOUBLE_QUOT, caret);
+            Assert.AreEqual(@"Base Layer\.Any State", stringWithoutDoubleQuotation);
+        }
+
         /// <summary>
         /// Parse関連のサブ関数。
         /// </summary>
         [Test]
-        public void N80_Parse_SubFunctions()
+        public void N80_LexicalParse_SubFunctions()
         {
             int caret = 0;
-            //StellaQLScanner.SkipSpace("  a",ref caret);
-            //Assert.AreEqual(2, caret);
-
             bool hit;
             string word;
-            string stringWithoutDoubleQuotation;
             string parenthesis;
 
             caret = 0;
@@ -819,22 +856,10 @@ a", ref caret);
             Assert.AreEqual("", word);
 
             caret = 0;
-            hit = LexcalP.VarStringliteral(@"""alpaca"" ", ref caret, out stringWithoutDoubleQuotation);
-            Assert.IsTrue(hit);
-            Assert.AreEqual(8 + 1, caret);
-            Assert.AreEqual("alpaca", stringWithoutDoubleQuotation);
-
-            caret = 0;
-            hit = LexcalP.VarStringliteral(@"""alpaca""", ref caret, out stringWithoutDoubleQuotation);
-            Assert.IsTrue(hit);
-            Assert.AreEqual(8, caret);
-            Assert.AreEqual("alpaca", stringWithoutDoubleQuotation);
-
-            caret = 0;
-            hit = LexcalP.VarWord(@" alpaca ", ref caret, out stringWithoutDoubleQuotation);
+            hit = LexcalP.VarWord(@" alpaca ", ref caret, out word);
             Assert.IsFalse(hit);
             Assert.AreEqual(0, caret);
-            Assert.AreEqual("", stringWithoutDoubleQuotation);
+            Assert.AreEqual("", word);
 
             caret = 0;
             hit = LexcalP.VarParentesis(@"( alpaca ) ", ref caret, out parenthesis);

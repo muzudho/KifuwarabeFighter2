@@ -2,7 +2,6 @@
 // Animation Controller Tables
 //
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using UnityEditor.Animations;
 using UnityEngine;
@@ -574,44 +573,33 @@ namespace StellaQL
         {
             message.AppendLine("States Scanning...☆（＾～＾）");
             aniconData = new AniconData();
-            //table_layer.Clear();
-            //table_state.Clear();
-            //table_transition.Clear();
-            //table_condition.Clear();
-            //table_position.Clear();
 
             foreach (AnimatorControllerLayer layer in ac.layers)//レイヤー
             {
                 LayerRecord layerRecord = new LayerRecord(aniconData.table_layer.Count, layer);
                 aniconData.table_layer.Add(layerRecord);
-
-                // ステート・マシン
+                
                 List<AnimatorStateMachine> stateMachineList = new List<AnimatorStateMachine>();
                 ScanRecursive(stateMachineList, layer.stateMachine);
-                foreach (AnimatorStateMachine stateMachine in stateMachineList)
-                {
+                foreach (AnimatorStateMachine stateMachine in stateMachineList) { // ステート・マシン
                     StatemachineRecord stateMachineRecord = new StatemachineRecord(aniconData.table_layer.Count, aniconData.table_statemachine.Count, stateMachine, aniconData.table_position);
                     aniconData.table_statemachine.Add(stateMachineRecord);
 
-                    foreach (ChildAnimatorState caState in stateMachine.states)
-                    {
+                    foreach (ChildAnimatorState caState in stateMachine.states) { //ステート（ラッパー）
                         StateRecord stateRecord = StateRecord.CreateInstance(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, caState, aniconData.table_position);
                         aniconData.table_state.Add(stateRecord);
 
-                        foreach (AnimatorStateTransition transition in caState.state.transitions)
-                        {
+                        foreach (AnimatorStateTransition transition in caState.state.transitions) { // トランジション
                             TransitionRecord transitionRecord = new TransitionRecord(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, aniconData.table_transition.Count, transition, "");
                             aniconData.table_transition.Add(transitionRecord);
 
-                            foreach (AnimatorCondition aniCondition in transition.conditions)
-                            {
+                            foreach (AnimatorCondition aniCondition in transition.conditions) { // コンディション
                                 ConditionRecord conditionRecord = new ConditionRecord(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, aniconData.table_transition.Count, aniconData.table_condition.Count, aniCondition);
                                 aniconData.table_condition.Add(conditionRecord);
                             } // コンディション
                         }//トランジション
-                    }//ステート
-                }
-
+                    }//ステート（ラッパー）
+                }//ステートマシン
             }//レイヤー
 
             message.AppendLine( "Scanned☆（＾▽＾）");

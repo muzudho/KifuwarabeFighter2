@@ -122,9 +122,9 @@ namespace StellaQL
 
     public abstract class QueryTokensUtility
     {
-        public static HashSet<int> RecordHashes_From(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<int> RecordHashes_From(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
         {
-            if ("" != qt.From_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.From_FullnameRegex, universe); }
+            if ("" != qt.From_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.From_FullnameRegex, universe, message); }
             else {
                 List<string> tokens; QueryTokens.String_to_tokens(qt.From_Attr, out tokens);
 
@@ -138,9 +138,9 @@ namespace StellaQL
             }
         }
 
-        public static HashSet<int> RecordHashes_To(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<int> RecordHashes_To(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
         {
-            if ("" != qt.To_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.To_FullnameRegex, universe); }
+            if ("" != qt.To_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.To_FullnameRegex, universe, message); }
             else {
                 List<string> tokens; QueryTokens.String_to_tokens(qt.To_Tag, out tokens);
 
@@ -154,9 +154,9 @@ namespace StellaQL
             }
         }
 
-        public static HashSet<int> RecordHashes_Where(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<int> RecordHashes_Where(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
         {
-            if ("" != qt.Where_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.Where_FullnameRegex, universe); }
+            if ("" != qt.Where_FullnameRegex) { return ElementSet.RecordHashes_FilteringStateFullNameRegex(qt.Where_FullnameRegex, universe, message); }
             else {
                 List<string> tokens; QueryTokens.String_to_tokens(qt.Where_Tag, out tokens);
 
@@ -186,19 +186,19 @@ namespace StellaQL
 
             if (SyntaxP.ParseStatement_StatemachineAnystateInsert(query, out sq))
             {
-                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
+                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe, message);
                 AniconOpe_State.AddAll(ac, Fetcher.FetchAll_Statemachine(ac, recordHashes, universe), sq.Set, message);
                 return true;
             }
             else if (SyntaxP.ParseStatement_StateInsert(query, out sq))
             {
-                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
+                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe, message);
                 AniconOpe_State.AddAll(ac, Fetcher.FetchAll_Statemachine(ac, recordHashes, universe), sq.Set, message);
                 return true;
             }
             else if (SyntaxP.ParseStatement_StateUpdate(query, out sq))
             {
-                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
+                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe, message);
                 foreach (KeyValuePair<string, string> pair in sq.Set)
                 {
                     message.AppendLine(pair.Key + "=" + pair.Value);
@@ -213,13 +213,13 @@ namespace StellaQL
             }
             else if (SyntaxP.ParseStatement_StateDelete(query, out sq))
             {
-                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
+                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe, message);
                 AniconOpe_State.RemoveAll(ac, Fetcher.FetchAll_Statemachine(ac, recordHashes, universe), sq.Set, message);
                 return true;
             }
             else if (SyntaxP.ParseStatement_StateSelect(query, out sq))
             {
-                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
+                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe, message);
                 HashSet<StateRecord> recordSet;
                 AniconOpe_State.Select(ac, Fetcher.FetchAll_State(ac, recordHashes, universe), out recordSet, message);
                 StringBuilder contents = new StringBuilder();
@@ -229,8 +229,8 @@ namespace StellaQL
             }
             else if (SyntaxP.ParseStatement_TransitionInsert(query, out sq))
             {
-                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe);
-                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe);
+                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe, message);
+                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe, message);
                 AniconOpe_Transition.AddAll(ac,
                     Fetcher.FetchAll_State(ac, recordHashesFrom, universe),
                     Fetcher.FetchAll_State(ac, recordHashesTo, universe),
@@ -243,8 +243,8 @@ namespace StellaQL
                 {
                     message.AppendLine(pair.Key+"="+pair.Value);
                 }
-                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe);
-                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe);
+                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe, message);
+                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe, message);
                 AniconOpe_Transition.UpdateProperty(ac, sq.Set,
                     Fetcher.FetchAll_State(ac, recordHashesFrom, universe),
                     Fetcher.FetchAll_State(ac, recordHashesTo, universe),
@@ -253,8 +253,8 @@ namespace StellaQL
             }
             else if (SyntaxP.ParseStatement_TransitionDelete(query, out sq))
             {
-                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe);
-                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe);
+                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe, message);
+                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe, message);
                 AniconOpe_Transition.RemoveAll(ac,
                     Fetcher.FetchAll_State(ac, recordHashesFrom, universe),
                     Fetcher.FetchAll_State(ac, recordHashesTo, universe),
@@ -262,8 +262,8 @@ namespace StellaQL
                 return true;
             }
             else if (SyntaxP.ParseStatement_TransitionSelect(query, out sq)) {
-                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe);
-                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe);
+                HashSet<int> recordHashesFrom = QueryTokensUtility.RecordHashes_From(sq, universe, message);
+                HashSet<int> recordHashesTo = QueryTokensUtility.RecordHashes_To(sq, universe, message);
                 HashSet<TransitionRecord> recordSet;
                 AniconOpe_Transition.Select(ac,
                     Fetcher.FetchAll_State(ac, recordHashesFrom, universe),
@@ -285,7 +285,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static bool ExecuteStateSelect(string query, Dictionary<int, UserDefindStateRecordable> universe, out HashSet<int> recordHashes)
+        public static bool ExecuteStateSelect(string query, Dictionary<int, UserDefindStateRecordable> universe, out HashSet<int> recordHashes, StringBuilder message)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
@@ -293,7 +293,7 @@ namespace StellaQL
             QueryTokens sq;
             if (!SyntaxP.ParseStatement_StateSelect(query, out sq)) { return false; }
 
-            recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
+            recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe, message);
             return true;
         }
 
@@ -302,7 +302,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static bool ExecuteTransitionSelect(string query, Dictionary<int, UserDefindStateRecordable> universe, out HashSet<int> recordHashesSrc, out HashSet<int> recordHashesDst)
+        public static bool ExecuteTransitionSelect(string query, Dictionary<int, UserDefindStateRecordable> universe, out HashSet<int> recordHashesSrc, out HashSet<int> recordHashesDst, StringBuilder message)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
@@ -311,8 +311,8 @@ namespace StellaQL
             QueryTokens sq;
             if (!SyntaxP.ParseStatement_TransitionSelect(query, out sq)) { return false; }
 
-            recordHashesSrc = QueryTokensUtility.RecordHashes_From(sq, universe);// FROM
-            recordHashesDst = QueryTokensUtility.RecordHashes_To(sq, universe);// TO
+            recordHashesSrc = QueryTokensUtility.RecordHashes_From(sq, universe, message);// FROM
+            recordHashesDst = QueryTokensUtility.RecordHashes_To(sq, universe, message);// TO
             return true;
         }
 
@@ -453,7 +453,7 @@ namespace StellaQL
     /// </summary>
     public abstract class ElementSet
     {
-        public static HashSet<int> RecordHashes_FilteringStateFullNameRegex(string pattern, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<int> RecordHashes_FilteringStateFullNameRegex(string pattern, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>();
 
@@ -466,6 +466,7 @@ namespace StellaQL
                 }
             }
 
+            if (hitRecordHashes.Count < 1) { message.AppendLine("Mension: const string STATE_xxx OK?"); }
             return hitRecordHashes;
         }
 

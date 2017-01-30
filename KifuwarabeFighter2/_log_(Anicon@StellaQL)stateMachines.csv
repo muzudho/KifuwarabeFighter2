@@ -1,0 +1,2 @@
+LayerNum,MachineStateNum,anyStateTransitions,behaviours,defaultState,entryTransitions,hideFlags,name,
+1,0,UnityEditor.Animations.AnimatorStateTransition[],UnityEngine.StateMachineBehaviour[],Alpaca (UnityEngine.AnimatorState),UnityEditor.Animations.AnimatorTransition[],HideInHierarchy,Base Layer,
