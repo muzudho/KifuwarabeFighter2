@@ -184,7 +184,13 @@ namespace StellaQL
             QueryTokens sq;
             message = new StringBuilder();
 
-            if (SyntaxP.ParseStatement_StateInsert(query, out sq))
+            if (SyntaxP.ParseStatement_StatemachineAnystateInsert(query, out sq))
+            {
+                HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
+                AniconOpe_State.AddAll(ac, Fetcher.FetchAll_Statemachine(ac, recordHashes, universe), sq.Set, message);
+                return true;
+            }
+            else if (SyntaxP.ParseStatement_StateInsert(query, out sq))
             {
                 HashSet<int> recordHashes = QueryTokensUtility.RecordHashes_Where(sq, universe);
                 AniconOpe_State.AddAll(ac, Fetcher.FetchAll_Statemachine(ac, recordHashes, universe), sq.Set, message);
@@ -708,6 +714,40 @@ namespace StellaQL
                 else if (!LexcalP.VarValue(query, ref caret, out propertyValue)) { return false; }
                 ref_properties.Add(propertyName, propertyValue);
             }
+            return true;
+        }
+
+        /// <summary>
+        /// STATEMACHINE ANYSTATE INSERT
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public static bool ParseStatement_StatemachineAnystateInsert(string query, out QueryTokens qTokens)
+        {
+            qTokens = new QueryTokens();
+            int caret = 0;
+            string stringWithoutDoubleQuotation;
+            LexcalP.VarSpaces(query, ref caret);
+
+            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return false; }
+            qTokens.Target = QueryTokens.STATE;
+
+            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return false; }
+            qTokens.Manipulation = QueryTokens.INSERT;
+
+            if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
+            {
+                // 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
+                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qTokens.Set)) { return false; }
+            }
+            else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return false; } }
+
+            // 正規表現。
+            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
+            {
+                qTokens.Where_FullnameRegex = stringWithoutDoubleQuotation;
+            }
+            else { return false; }
             return true;
         }
 

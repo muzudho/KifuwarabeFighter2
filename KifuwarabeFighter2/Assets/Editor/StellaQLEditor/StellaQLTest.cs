@@ -459,6 +459,32 @@ namespace StellaQL
         }
 
         /// <summary>
+        /// 構文解析 STATEMACHINE ANYSTATE INSERT 文
+        /// </summary>
+        [Test]
+        public void N70_ParseStatement_StatemachineAnystateInsert()
+        {
+            string query = @"STATE INSERT
+                        SET name0 ""WhiteCat"" name1 ""WhiteDog""
+                        WHERE ""Base Layout""";
+            QueryTokens sq;
+            bool successful = SyntaxP.ParseStatement_StateInsert(query, out sq);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.STATE, sq.Target);
+            Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
+            Assert.AreEqual(2, sq.Set.Count);
+            Assert.AreEqual("WhiteCat", sq.Set["name0"]);
+            Assert.AreEqual("WhiteDog", sq.Set["name1"]);
+            Assert.AreEqual("", sq.From_FullnameRegex);
+            Assert.AreEqual("", sq.From_Attr);
+            Assert.AreEqual("", sq.To_FullnameRegex);
+            Assert.AreEqual("", sq.To_Tag);
+            Assert.AreEqual("Base Layout", sq.Where_FullnameRegex);
+            Assert.AreEqual("", sq.Where_Tag);
+        }
+
+        /// <summary>
         /// 構文解析 STATE INSERT 文
         /// </summary>
         [Test]

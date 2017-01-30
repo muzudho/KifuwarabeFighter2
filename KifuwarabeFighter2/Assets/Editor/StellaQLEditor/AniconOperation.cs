@@ -290,9 +290,9 @@ namespace StellaQL
         {
             foreach (AnimatorState state_src in states_src)
             {
-                foreach (AnimatorStateTransition transition in state_src.transitions)
+                foreach (AnimatorState state_dst in states_dst)
                 {
-                    foreach (AnimatorState state_dst in states_dst)
+                    foreach (AnimatorStateTransition transition in state_src.transitions)
                     {
                         if (state_dst == transition.destinationState)
                         {
@@ -302,7 +302,7 @@ namespace StellaQL
                             message.Append(" -> ");
                             message.Append(state_dst.name);
                             message.AppendLine();
-                            // break; // 複数、同じところにトランジションを貼れるみたいなんで、全部消そう☆
+                            // break; // src → dst 間に複数のトランジションを貼れるみたいなんで、全部消そう☆
                         }
                     }
                 }
