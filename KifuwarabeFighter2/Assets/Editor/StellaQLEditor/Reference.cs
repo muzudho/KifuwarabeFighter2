@@ -10,6 +10,8 @@ namespace StellaQL
             contents.AppendLine(@"");
             contents.AppendLine(@"(1) Practice");
             contents.AppendLine(@"");
+            contents.AppendLine(@"    Please, Buckup your program.");
+            contents.AppendLine(@"");
             contents.AppendLine(@"    [Window] - [State Machine Command Line (StellaQL)] is here.");
             contents.AppendLine(@"");
             contents.AppendLine(@"    Please, open ""Assets/Scripts/StellaQL/Anicon@StellaQL"".");

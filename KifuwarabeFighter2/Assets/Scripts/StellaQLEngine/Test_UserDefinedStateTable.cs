@@ -1,10 +1,9 @@
 ﻿using StellaQL;
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 /// <summary>
-/// Main シーン
+/// Step 1 to 8 here.
+/// Step 9 Assets/Scripts/StellaQLEngine/UserDefinedDatabase.cs
 /// </summary>
 namespace SceneStellaQLTest
 {
