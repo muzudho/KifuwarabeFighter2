@@ -109,12 +109,12 @@ public class StateCmdline : EditorWindow
         if (GUILayout.Button("Execute"))
         {
             Debug.Log("Executeボタンを押した☆");
-            StringBuilder message;
+            StringBuilder message = new StringBuilder();
             if (UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.ContainsKey(path_animatorController))
             {
                 Querier.Execute(ac, commandline,
                     UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[path_animatorController],
-                    out message);
+                    message);
             }
             else
             {

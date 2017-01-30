@@ -2,13 +2,17 @@
 using SceneStellaQLTest;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
+using UnityEditor.Animations;
 using System.Text;
 
 namespace StellaQL
 {
     public class StellaQLTest
     {
-        #region N30 Query (文字列を与えて、レコード・インデックスを取ってくる)
+        const string path_AnimationController = "Assets/Scripts/StellaQLEngine/Anicon@StellaQL.controller";
+
+        #region N30 Execute Query (文字列を与えて、レコード・インデックスを取ってくる)
         [Test]
         public void N30_Query_StateSelect()
         {
@@ -71,6 +75,45 @@ namespace StellaQL
             Assert.IsTrue(recordHashesDst.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
             Assert.IsTrue(recordHashesDst.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
             Assert.IsTrue(recordHashesDst.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_RABBIT)));
+        }
+
+        [Test]
+        public void N30_Query_TransitionAnysateInsert()
+        {
+            AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(path_AnimationController);// アニメーター・コントローラーを取得。
+            string query = @"TRANSITION ANYSTATE INSERT
+                            FROM ""Base Layer""
+                            TO ""Base Layer\.Foo""";
+            StringBuilder message = new StringBuilder();
+            bool successful = Querier.Execute(ac, query, UserDefinedStateTable.Instance, message);
+
+            Debug.Log(message.ToString());
+            Assert.IsTrue(successful);
+        }
+        [Test]
+        public void N30_Query_TransitionEntryInsert()
+        {
+            AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(path_AnimationController);// アニメーター・コントローラーを取得。
+            string query = @"TRANSITION ENTRY INSERT
+                            FROM ""Base Layer""
+                            TO ""Base Layer\.Foo""";
+            StringBuilder message = new StringBuilder();
+            bool successful = Querier.Execute(ac, query, UserDefinedStateTable.Instance, message);
+
+            Debug.Log(message.ToString());
+            Assert.IsTrue(successful);
+        }
+        [Test]
+        public void N30_Query_TransitionExitInsert()
+        {
+            AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(path_AnimationController);// アニメーター・コントローラーを取得。
+            string query = @"TRANSITION EXIT INSERT
+                            FROM ""Base Layer\.Foo""";
+            StringBuilder message = new StringBuilder();
+            bool successful = Querier.Execute(ac, query, UserDefinedStateTable.Instance, message);
+
+            Debug.Log(message.ToString());
+            Assert.IsTrue(successful);
         }
         #endregion
 
@@ -135,12 +178,12 @@ namespace StellaQL
         }
         #endregion
 
-        #region N50 element set (要素集合)
+        #region N50 RecordsFilter (レコード集合)
         /// <summary>
         /// （　）要素フィルター
         /// </summary>
         [Test]
-        public void N50_RecordHashes_FilteringElementsAnd()
+        public void N50_RecordsFilter_RecordsAnd()
         {
             // 条件は　「 Bear, Elephant 」 AND 「 Bear, Giraffe 」
             HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
@@ -163,7 +206,7 @@ namespace StellaQL
         /// [ ] 要素フィルター
         /// </summary>
         [Test]
-        public void N50_RecordHashes_FilteringElementsOr()
+        public void N50_RecordsFilter_RecordsOr()
         {
             // 条件は　「 Bear, Elephant 」 OR 「 Bear, Giraffe 」
             HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
@@ -188,7 +231,7 @@ namespace StellaQL
         /// { } 要素フィルター
         /// </summary>
         [Test]
-        public void N50_RecordHashes_FilteringElementsNotAndNot()
+        public void N50_RecordsFilter_RecordsNotAndNot()
         {
             // 条件は　NOT「 Bear, Elephant 」 AND NOT「 Bear, Giraffe 」
             HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
@@ -235,7 +278,7 @@ namespace StellaQL
         /// ステート名正規表現フィルター
         /// </summary>
         [Test]
-        public void N50_RecordHashes_FilteringStateFullNameRegex()
+        public void N50_RecordsFilter_StateFullNameRegex()
         {
             // 条件は、「Base Layer.」の下に、n または N が含まれるもの
             string pattern = @"Base Layer\.\w*[Nn]\w*";
@@ -261,7 +304,7 @@ namespace StellaQL
         /// （　）属性フィルター
         /// </summary>
         [Test]
-        public void N50_RecordHashes_FilteringAttributesAnd()
+        public void N50_RecordsFilter_TagsAnd()
         {
             // 条件は　Alpha | Eee
             HashSet<int> attrs = new HashSet<int>() { UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_ALPHA] , UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_EEE] };
@@ -280,7 +323,7 @@ namespace StellaQL
         /// [　] 属性フィルター
         /// </summary>
         [Test]
-        public void N50_RecordHashes_FilteringAttributesOr()
+        public void N50_RecordsFilter_TagsOr()
         {
             // 条件は　（Alpha | Eee）、Beta、Eee
             HashSet<int> attrs = new HashSet<int>() {
@@ -291,7 +334,7 @@ namespace StellaQL
             HashSet<int> recordHashes = RecordsFilter.Tags_Or(attrs, UserDefinedStateTable.Instance.StateHash_to_record);
 
             // 結果は　Bear、Elephant、Giraffe、Horse、Jellyfish、Monkey、Quetzal、Rabbit、Sheep、Tiger、Vixen、Xenopus、Zebra
-            foreach (int hash in recordHashes) { Debug.Log("fullpath=[" + UserDefinedStateTable.Instance.StateHash_to_record[hash].Fullpath + "]"); }
+            //foreach (int hash in recordHashes) { Debug.Log("fullpath=[" + UserDefinedStateTable.Instance.StateHash_to_record[hash].Fullpath + "]"); }
             Assert.AreEqual(13, recordHashes.Count);
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_BEAR)));
             Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ELEPHANT)));
@@ -312,7 +355,7 @@ namespace StellaQL
         /// ｛　｝ 属性フィルター
         /// </summary>
         [Test]
-        public void N50_RecordHashes_FilteringAttributesNotAndNot()
+        public void N50_RecordsFilter_TagsNotAndNot()
         {
             // 条件は　{ Beta、Eee }
             HashSet<int> attrs = new HashSet<int>() { UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_BETA], UserDefinedStateTable.Instance.TagString_to_hash[UserDefinedStateTable.TAG_EEE] };
@@ -341,7 +384,7 @@ namespace StellaQL
         }
         #endregion
 
-        #region N60 attribute set (属性集合)
+        #region N60 Tag set ope (タグ集合)
         /// <summary>
         /// (　) で属性集合
         /// [　] で属性集合

@@ -247,6 +247,57 @@ namespace StellaQL
     public abstract class Operation_Transition
     {
         /// <summary>
+        /// ステートマシンの[Any State]からステートへ、トランジションで結ぶ。
+        /// </summary>
+        public static bool AddAnyState(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines_src, HashSet<AnimatorState> states_dst, StringBuilder message)
+        {
+            message.Append("Transition.AddAnyState: Source "); message.Append(statemachines_src.Count); message.Append(" states. Destination "); message.Append(states_dst.Count); message.AppendLine(" states.");
+            foreach (AnimatorStateMachine statemachine_src in statemachines_src)
+            {
+                foreach (AnimatorState state_dst in states_dst)
+                {
+                    message.Append("Insert: "); message.Append(null== statemachine_src ? "ヌル" : statemachine_src.name); message.Append(" -> "); message.AppendLine(null== state_dst ? "ヌル" : state_dst.name);
+                    if (null == statemachine_src) { return false; }
+                    statemachine_src.AddAnyStateTransition(state_dst);
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// ステートマシンの[Entry]からステートへ、トランジションで結ぶ。
+        /// </summary>
+        public static bool AddEntryState(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines_src, HashSet<AnimatorState> states_dst, StringBuilder message)
+        {
+            message.Append("Transition.AddEntryState: Source "); message.Append(statemachines_src.Count); message.Append(" states. Destination "); message.Append(states_dst.Count); message.AppendLine(" states.");
+            foreach (AnimatorStateMachine statemachine_src in statemachines_src)
+            {
+                foreach (AnimatorState state_dst in states_dst)
+                {
+                    message.Append("Insert: "); message.Append(null == statemachine_src ? "ヌル" : statemachine_src.name); message.Append(" -> "); message.AppendLine(null == state_dst ? "ヌル" : state_dst.name);
+                    if (null == statemachine_src) { return false; }
+                    statemachine_src.AddEntryTransition(state_dst);
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// ステートを[Exit]へ、トランジションで結ぶ。
+        /// </summary>
+        public static bool AddExitState(AnimatorController ac, HashSet<AnimatorState> states, StringBuilder message)
+        {
+            message.Append("Transition.AddExitState: "); message.Append(states.Count); message.AppendLine(" states.");
+            foreach (AnimatorState state_src in states)
+            {
+                message.Append("Insert: "); message.Append(null == state_src ? "ヌル" : state_src.name); message.Append(" -> Exit");;
+                if (null == state_src) { return false; }
+                state_src.AddExitTransition();
+            }
+            return true;
+        }
+
+        /// <summary>
         /// ２つのステートを トランジションで結ぶ。
         /// </summary>
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
@@ -271,7 +322,6 @@ namespace StellaQL
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
         public static void AddAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, StringBuilder message)
         {
-            // message.AppendLine("Mension: const string STATE_xxx OK?");
             message.Append("Transition.AddAll: Source "); message.Append(states_src.Count); message.Append(" states. Destination "); message.Append(states_dst.Count); message.AppendLine(" states.");
             foreach (AnimatorState state_src in states_src) {
                 foreach (AnimatorState state_dst in states_dst) {

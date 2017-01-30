@@ -93,30 +93,32 @@ namespace StellaQL
     /// </summary>
     public abstract class Querier
     {
-        public static bool Execute(AnimatorController ac, string query, UserDefinedStateTableable stateExTable, out StringBuilder message)
+        public static bool Execute(AnimatorController ac, string query, UserDefinedStateTableable stateExTable, StringBuilder message)
         {
             Dictionary<int, UserDefindStateRecordable> universe = stateExTable.StateHash_to_record;
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
             QueryTokens qt;
-            message = new StringBuilder();
 
             if (SyntaxP.Parse_TransitionAnystateInsert(query, out qt))
             {
-                // TODO:
-                HashSet<AnimatorStateMachine> statemachines = Fetcher.Statemachines(ac, RecordsFilter.Qt_From(qt, universe, message), universe);
-                HashSet<AnimatorState> states = Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe);
+                return Operation_Transition.AddAnyState(ac,
+                    Fetcher.Statemachines(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
+                    message);
             }
             else if (SyntaxP.Parse_TransitionEntryInsert(query, out qt))
             {
-                // TODO:
-                HashSet<AnimatorStateMachine> statemachines = Fetcher.Statemachines(ac, RecordsFilter.Qt_From(qt, universe, message), universe);
-                HashSet<AnimatorState> states = Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe);
+                return Operation_Transition.AddEntryState(ac,
+                    Fetcher.Statemachines(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
+                    message);
             }
             else if (SyntaxP.Parse_TransitionExitInsert(query, out qt))
             {
-                // TODO:
-                HashSet<AnimatorState> states = Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe);
+                return Operation_Transition.AddExitState(ac,
+                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
+                    message);
             }
             else if (SyntaxP.Parse_StateInsert(query, out qt))
             {
