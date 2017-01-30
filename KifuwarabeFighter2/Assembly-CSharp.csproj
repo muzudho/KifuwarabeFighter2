@@ -67,6 +67,7 @@
      <Compile Include="Assets\Scripts\SceneSelect\Select_SceneCommon.cs" />
      <Compile Include="Assets\Scripts\SceneSelect\Select_UserDefinedStateTable.cs" />
      <Compile Include="Assets\Scripts\SceneTitle\Title_CameraScript.cs" />
+     <Compile Include="Assets\Scripts\StellaQLEngine\AbstractUserDefinedDatabase.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\CliptypeExtend.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\StellaQLCode.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\Test_UserDefinedStateTable.cs" />

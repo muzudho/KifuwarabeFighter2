@@ -6,66 +6,64 @@ namespace SceneSelect
 {
 
     /// <summary>
-    /// ステートマシン、ステートの拡張データ構造
+    /// (Step 1.) Please, create record definition of statemachine or state. (ステートマシン、ステートのユーザー定義データ構造)
+    /// Extend AbstractUserDefinedStateRecord class. (AbstractUserDefinedStateRecordクラスを継承してください)
     /// </summary>
     public class UserDefinedStateRecord : AbstractUserDefinedStateRecord
     {
         /// <summary>
-        /// データ入力用
+        /// (Step 2.) Initialize record. (レコードの初期設定)
+        /// Use super class constructor. Required fullpath of statemachine or state.
+        /// empty string array is OK for userDefinedTags. new string[]{}; Other parameters is option.
+        /// (スーパークラスのコンストラクタを使います。必要なのはステートマシン名またはステート名のフルパスです。
+        /// ユーザー定義タグは空セットで構いません。 new string[]{};　その他の引数は任意)
         /// </summary>
         /// <param name="fullpath">ステートマシン名、ステート名のフルパス</param>
-        /// <returns></returns>
-        public static UserDefinedStateRecord Build(string fullpath)
-        {
-            return new UserDefinedStateRecord(fullpath, Animator.StringToHash(fullpath));
-        }
-
-        /// <summary>
-        /// データ
-        /// </summary>
-        /// <param name="fullpath">ステートマシン名、ステート名のフルパス</param>
-        /// <param name="fullpathHash">ステートマシン名、ステート名のフルパスのハッシュ</param>
-        public UserDefinedStateRecord(string fullpath, int fullpathHash) :base(fullpath, fullpathHash, new HashSet<int>() { })
+        public UserDefinedStateRecord(string fullpath) :base(fullpath, new string[] { })
         {
         }
     }
 
     /// <summary>
-    /// ステートマシン、ステートの拡張データ構造の集まり
+    /// (Step 3.) Please, create table definition of statemachines or states. (ステートマシン、ステートのテーブル定義を作成してください)
+    /// Extend AbstractUserDefinedStateTable class. (AbstractUserDefinedStateTable クラスを継承してください)
     /// </summary>
     public class UserDefinedStateTable : AbstractUserDefinedStateTable
     {
+        /// <summary>
+        /// (Step 8.) Please, make singleton. (シングルトンにしてください)
+        /// Use by StellaQLEngine/UserDefinedDatabase.cs file. (StellaQLEngine/UserDefinedDatabase.cs ファイルで使います)
+        /// </summary>
         static UserDefinedStateTable() { Instance = new UserDefinedStateTable(); }
-        public static UserDefinedStateTable Instance { get; set; }
+        public static UserDefinedStateTable Instance { get; private set; }
 
-        #region ステートマシン、ステート　フルパス一覧
+        #region (Step 4.) Unfortunaly, Please, list fullpath of statemachines of states.  (残念ですが、ステートマシン、ステートのフルパスを定数にしてください)
         public const string STATE_STAY = "Base Layer.Stay";
         public const string STATE_MOVE = "Base Layer.Move";
         public const string STATE_READY = "Base Layer.Ready";
         public const string STATE_TIMEOVER = "Base Layer.Timeover";
         #endregion
 
-        #region StellaQL用のユーザー定義タグ一覧
+        #region (Step 5.) Unfortunaly, Please, list user defined tags for StellaQL.  (残念ですが、StellaQL用のユーザー定義タグを定数にしてください)
         public const string TAG_ZERO = "Zero";
         #endregion
 
-        protected UserDefinedStateTable()
+        UserDefinedStateTable()
         {
-            #region タグの有効化
+            #region (Step 6.) Activate user defined tags. (ユーザー定義タグの有効化)
             TagString_to_hash = Code.HashesDic(new []{
                 TAG_ZERO
             });
             #endregion
 
-            #region ステートマシン拡張データ、ステート拡張データの有効化
-            List<UserDefindStateRecordable> temp = new List<UserDefindStateRecordable>()
+            #region (Step 7.) Register and activate user defined record of statemachines or states.(ステートマシン、ステートのユーザー定義レコードを設定してください)
+            Code.Register(StateHash_to_record, new List<UserDefindStateRecordable>()
             {
-                UserDefinedStateRecord.Build( STATE_STAY),
-                UserDefinedStateRecord.Build( STATE_MOVE),
-                UserDefinedStateRecord.Build( STATE_READY),
-                UserDefinedStateRecord.Build( STATE_TIMEOVER),
-            };
-            foreach (UserDefindStateRecordable record in temp) { StateHash_to_record.Add(record.FullPathHash, record); }
+                new UserDefinedStateRecord( STATE_STAY),
+                new UserDefinedStateRecord( STATE_MOVE),
+                new UserDefinedStateRecord( STATE_READY),
+                new UserDefinedStateRecord( STATE_TIMEOVER),
+            });
             #endregion
         }
     }

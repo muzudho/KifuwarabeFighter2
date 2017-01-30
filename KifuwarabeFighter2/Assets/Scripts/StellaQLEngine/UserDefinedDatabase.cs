@@ -5,7 +5,7 @@ namespace StellaQL
     /// <summary>
     /// ユーザー定義データベース
     /// </summary>
-    public abstract class UserDefinedDatabase
+    public abstract class UserDefinedDatabase : AbstractUserDefinedDatabase
     {
         static UserDefinedDatabase()
         {

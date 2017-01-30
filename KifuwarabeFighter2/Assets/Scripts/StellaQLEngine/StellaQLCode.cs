@@ -32,5 +32,10 @@ namespace StellaQL
             }
             return hashSet;
         }
+
+        public static void Register(Dictionary<int, UserDefindStateRecordable> stateHash_to_record, List<UserDefindStateRecordable> temp)
+        {
+            foreach (UserDefindStateRecordable record in temp) { stateHash_to_record.Add(record.FullPathHash, record); }
+        }
     }
 }

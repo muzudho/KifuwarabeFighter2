@@ -53,14 +53,13 @@ namespace StellaQL
         /// 
         /// </summary>
         /// <param name="fullpath">ステートマシン名、ステート名のフルパス</param>
-        /// <param name="fullpathHash">ステートマシン名、ステート名のフルパスのハッシュ</param>
-        /// <param name="tags_hash">ユーザー定義タグのハッシュ</param>
-        public AbstractUserDefinedStateRecord(string fullpath, int fullpathHash, HashSet<int> tags_hash)
+        /// <param name="tags">ユーザー定義タグ</param>
+        public AbstractUserDefinedStateRecord(string fullpath, string[] tags)
         {
             Fullpath = fullpath;
             Name = Fullpath.Substring(Fullpath.LastIndexOf('.') + 1); // ドットを含まない
-            FullPathHash = fullpathHash;
-            this.Tags = tags_hash;
+            FullPathHash = Animator.StringToHash(fullpath);
+            this.Tags = Code.Hashes(tags);
         }
 
         public string GetBreadCrumb() {
