@@ -64,7 +64,10 @@ public class AnimatorControllerSample : MonoBehaviour {
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/AniCon@Char3.controller");
 
         StringBuilder message = new StringBuilder();
-        Operation_Transition.AddAll(ac, new HashSet<AnimatorState>() { Operation_State.Lookup(ac, "Base Layer.JMove.Tamesi1 0") }, new HashSet<AnimatorState>() { Operation_State.Lookup(ac, "Base Layer.JMove.Tamesi1") }, message);
+        Operation_Transition.Insert(ac,
+            new HashSet<AnimatorState>() { Operation_State.Lookup(ac, "Base Layer.JMove.Tamesi1 0") },
+            new HashSet<AnimatorState>() { Operation_State.Lookup(ac, "Base Layer.JMove.Tamesi1") },
+            new Dictionary<string, string>() { }, message);
     }
 
     [MenuItem("(^_^)Menu/Add 5x5 Transitions 1")]
@@ -82,21 +85,7 @@ public class AnimatorControllerSample : MonoBehaviour {
         };
         Debug.Log("states.Count = " + states.Count);
         StringBuilder message = new StringBuilder();
-        Operation_Transition.AddAll(ac, states, states, message);
-    }
-
-    [MenuItem("(^_^)Menu/TestWhere 4")]
-    static void TestWhere()
-    {
-        HashSet<UserDefindStateRecordable> recordset = SceneMain.UserDefinedStateTable.Instance.FetchByEverythingTags(new HashSet<int>(){
-            SceneMain.UserDefinedStateTable.Instance.TagString_to_hash[SceneMain.UserDefinedStateTable.TAG_BUSYX], SceneMain.UserDefinedStateTable.Instance.TagString_to_hash[SceneMain.UserDefinedStateTable.TAG_BLOCK]
-        });
-
-        Debug.Log("結果：" + recordset.Count + "件");
-        foreach (UserDefindStateRecordable record in recordset)
-        {
-            Debug.Log("結果："+ record.Fullpath);
-        }
+        Operation_Transition.Insert(ac, states, states, new Dictionary<string, string>() { }, message);
     }
 
     [Flags]
@@ -109,9 +98,9 @@ public class AnimatorControllerSample : MonoBehaviour {
     }
 
     /// <summary>
-    /// 参考：https://teratail.com/questions/46225
+    /// 参考：HasFlag について。 https://teratail.com/questions/46225
     /// </summary>
-    [MenuItem("(^_^)Menu/HasFlag 8")]
+    [MenuItem("(^_^)Menu/HasFlag Test")]
     static void HasFlag()
     {
         Debug.Log("結果： Flag.A.HasFlag(Flag.A| Flag.B| Flag.C) = " + Flag.A.HasFlag(Flag.A| Flag.B| Flag.C));

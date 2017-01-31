@@ -328,13 +328,14 @@ namespace StellaQL
         /// ２つのステートを トランジションで結ぶ。ステートは複数指定でき、src→dst方向の総当たりで全部結ぶ。
         /// </summary>
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
-        public static void AddAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, StringBuilder message)
+        public static void Insert(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, Dictionary<string, string> properties, StringBuilder message)
         {
-            message.Append("Transition.AddAll: Source "); message.Append(states_src.Count); message.Append(" states. Destination "); message.Append(states_dst.Count); message.AppendLine(" states.");
+            message.Append("Transition.Insert: Source "); message.Append(states_src.Count); message.Append(" states. Destination "); message.Append(states_dst.Count); message.AppendLine(" states.");
             foreach (AnimatorState state_src in states_src) {
                 foreach (AnimatorState state_dst in states_dst) {
-                    message.Append("Insert: "); message.Append(state_src.name); message.Append(" -> "); message.Append(state_dst.name);
-                    state_src.AddTransition(state_dst);
+                    message.Append("Insert: "); message.Append(state_src.name); message.Append(" -> "); message.AppendLine(state_dst.name);
+                    AnimatorStateTransition transition = state_src.AddTransition(state_dst);
+                    UpdateProperty(ac, transition, properties);
                 }
             }
         }
@@ -345,7 +346,6 @@ namespace StellaQL
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
         public static void RemoveAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, StringBuilder message)
         {
-            // message.AppendLine("Mension: const string STATE_xxx OK?");
             message.Append("Transition.RemoveAll: Source "); message.Append(states_src.Count); message.Append(" states. Destination "); message.Append(states_dst.Count); message.AppendLine(" states.");
 
             foreach (AnimatorState state_src in states_src)
@@ -369,7 +369,7 @@ namespace StellaQL
             }
         }
 
-        public static void UpdateProperty(AnimatorController ac, Dictionary<string, string> properties, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, StringBuilder message)
+        public static void Update(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, Dictionary<string, string> properties, StringBuilder message)
         {
             foreach (AnimatorState state_src in states_src) // 指定されたステート全て対象
             {
@@ -383,34 +383,63 @@ namespace StellaQL
                             message.Append(state_src.name);
                             message.Append(" -> ");
                             message.Append(state_dst.name);
-                            foreach (KeyValuePair<string, string> pair in properties)
-                            {
-                                switch (pair.Key)
-                                {
-                                    case "canTransitionToSelf": transition.canTransitionToSelf = bool.Parse(pair.Value); break;
-                                    // transition.conditions (not primal)
-                                    // transition.destinationState (not primal)
-                                    // transition.destinationStateMachine (not primal)
-                                    case "duration": transition.duration = float.Parse(pair.Value); break;
-                                    case "exitTime": transition.exitTime = float.Parse(pair.Value); break;
-                                    case "hasExitTime": transition.hasExitTime = bool.Parse(pair.Value); break;
-                                    case "hasFixedDuration": transition.hasFixedDuration = bool.Parse(pair.Value); break;
-                                    // transition.hideFlags (not primal)
-                                    // transition.interruptionSource (not primal)
-                                    case "isExit": transition.isExit = bool.Parse(pair.Value); break;
-                                    case "mute": transition.mute = bool.Parse(pair.Value); break;
-                                    case "name": transition.name = pair.Value; break;
-                                    case "offset": transition.offset = float.Parse(pair.Value); break;
-                                    case "orderedInterruption": transition.orderedInterruption = bool.Parse(pair.Value); break;
-                                    case "solo": transition.solo = bool.Parse(pair.Value); break;
-                                    default: throw new UnityException("未対応のトランジション・プロパティー [" + pair.Key + "]=[" + pair.Value + "]");
-                                }
-                            }
+                            UpdateProperty(ac, transition, properties);
+                            //foreach (KeyValuePair<string, string> pair in properties)
+                            //{
+                            //    switch (pair.Key)
+                            //    {
+                            //        case "canTransitionToSelf": transition.canTransitionToSelf = bool.Parse(pair.Value); break;
+                            //        // transition.conditions (not primal)
+                            //        // transition.destinationState (not primal)
+                            //        // transition.destinationStateMachine (not primal)
+                            //        case "duration": transition.duration = float.Parse(pair.Value); break;
+                            //        case "exitTime": transition.exitTime = float.Parse(pair.Value); break;
+                            //        case "hasExitTime": transition.hasExitTime = bool.Parse(pair.Value); break;
+                            //        case "hasFixedDuration": transition.hasFixedDuration = bool.Parse(pair.Value); break;
+                            //        // transition.hideFlags (not primal)
+                            //        // transition.interruptionSource (not primal)
+                            //        case "isExit": transition.isExit = bool.Parse(pair.Value); break;
+                            //        case "mute": transition.mute = bool.Parse(pair.Value); break;
+                            //        case "name": transition.name = pair.Value; break;
+                            //        case "offset": transition.offset = float.Parse(pair.Value); break;
+                            //        case "orderedInterruption": transition.orderedInterruption = bool.Parse(pair.Value); break;
+                            //        case "solo": transition.solo = bool.Parse(pair.Value); break;
+                            //        default: throw new UnityException("未対応のトランジション・プロパティー [" + pair.Key + "]=[" + pair.Value + "]");
+                            //    }
+                            //}
                         }
                     }
                 }
             }
         }
+        public static void UpdateProperty(AnimatorController ac, AnimatorStateTransition transition, Dictionary<string, string> properties)
+        {
+            foreach (KeyValuePair<string, string> pair in properties)
+            {
+                switch (pair.Key)
+                {
+                    case "canTransitionToSelf": transition.canTransitionToSelf = bool.Parse(pair.Value); break;
+                    // transition.conditions (not primal)
+                    // transition.destinationState (not primal)
+                    // transition.destinationStateMachine (not primal)
+                    case "duration": transition.duration = float.Parse(pair.Value); break;
+                    case "exitTime": transition.exitTime = float.Parse(pair.Value); break;
+                    case "hasExitTime": transition.hasExitTime = bool.Parse(pair.Value); break;
+                    case "hasFixedDuration": transition.hasFixedDuration = bool.Parse(pair.Value); break;
+                    // transition.hideFlags (not primal)
+                    // transition.interruptionSource (not primal)
+                    case "isExit": transition.isExit = bool.Parse(pair.Value); break;
+                    case "mute": transition.mute = bool.Parse(pair.Value); break;
+                    case "name": transition.name = pair.Value; break;
+                    case "offset": transition.offset = float.Parse(pair.Value); break;
+                    case "orderedInterruption": transition.orderedInterruption = bool.Parse(pair.Value); break;
+                    case "solo": transition.solo = bool.Parse(pair.Value); break;
+                    default: throw new UnityException("未対応のトランジション・プロパティー [" + pair.Key + "]=[" + pair.Value + "]");
+                }
+            }
+        }
+
+
 
         public static void Select(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, out HashSet<TransitionRecord> recordSet, StringBuilder message)
         {

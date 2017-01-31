@@ -1012,5 +1012,27 @@ a", ref caret);
             Assert.AreEqual("(alpaca bear)", parenthesis);
         }
         #endregion
+
+        #region misc その他
+        /// <summary>
+        /// FIXME: この関数は使うんだろうか☆（＾～＾）？
+        /// </summary>
+        [Test]
+        public void N90_Misc_FetchByEverythingTags()
+        {
+            HashSet<UserDefindStateRecordable> recordset = SceneMain.UserDefinedStateTable.Instance.FetchByEverythingTags(
+                Code.Hashes(new[] {UserDefinedStateTable.TAG_ZERO}));
+
+            Assert.AreEqual(8, recordset.Count);
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATEMACHINE_BASELAYER)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_FOO)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_ANYSTATE)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_ENTRY)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_EXIT)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_FOX)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_PIG)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_WOLF)]));
+        }
+        #endregion
     }
 }

@@ -156,18 +156,18 @@ namespace StellaQL
             }
             else if (SyntaxP.Parse_TransitionInsert(query, ref qt))
             {
-                Operation_Transition.AddAll(ac,
+                Operation_Transition.Insert(ac,
                     Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
                     Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
-                    message); return true;
+                    qt.Set, message); return true;
             }
             else if (SyntaxP.Parse_TransitionUpdate(query, ref qt))
             {
                 foreach (KeyValuePair<string, string> pair in qt.Set) { message.AppendLine(pair.Key + "=" + pair.Value); }
-                Operation_Transition.UpdateProperty(ac, qt.Set,
+                Operation_Transition.Update(ac,
                     Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
                     Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
-                    message); return true;
+                     qt.Set, message); return true;
             }
             else if (SyntaxP.Parse_TransitionDelete(query, ref qt))
             {
@@ -419,7 +419,10 @@ namespace StellaQL
                 }
             }
 
-            if (hitRecordHashes.Count < 1) { message.AppendLine("Mension: const string STATE_xxx OK?"); }
+            if (hitRecordHashes.Count < 1) {
+                message.AppendLine("Mension: Animation Controller Path OK?");
+                message.AppendLine("Mension: const string STATE_xxx OK?");
+            }
             return hitRecordHashes;
         }
 

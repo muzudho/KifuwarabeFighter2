@@ -7,6 +7,7 @@ using System;
 using System.Text;
 using SceneStellaQLTest;
 using StellaQL;
+using System.Reflection;
 
 /// <summary>
 /// タブ名にクラスのフルパスが出てくるので、StellaQL ネームスペースに入れない。
@@ -98,6 +99,7 @@ public class StateCmdline : EditorWindow
         }
         // アニメーター・コントローラーを取得。
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>(path_animatorController);//"Assets/Resources/AnimatorControllers/AniCon@Char3.controller"
+
 
 
 
