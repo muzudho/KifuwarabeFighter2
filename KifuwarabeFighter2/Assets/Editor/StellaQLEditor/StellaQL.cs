@@ -16,7 +16,10 @@ namespace StellaQL
     /// </summary>
     public class QueryTokens
     {
-        public QueryTokens()
+        public QueryTokens() : this("")
+        {
+        }
+        public QueryTokens(string matchedSyntaxName)
         {
             Target = "";
             Target2 = "";
@@ -28,6 +31,8 @@ namespace StellaQL
             To_Tag = "";
             Where_FullnameRegex = "";
             Where_Tag = "";
+
+            MatchedSyntaxName = matchedSyntaxName;
         }
 
         public const string STATEMACHINE = "STATEMACHINE";
@@ -86,6 +91,15 @@ namespace StellaQL
         /// 括弧を使った式 が入る。
         /// </summary>
         public string Where_Tag { get; set; }
+
+        /// <summary>
+        /// 構文該当なしのとき、どの構文に一番多くの文字数が　該当したかを調べるための名前。
+        /// </summary>
+        public string MatchedSyntaxName { get; set; }
+        /// <summary>
+        /// 構文該当なしのとき、どの構文の何文字目まで　該当したかを調べるための数字。
+        /// </summary>
+        public int MatchedSyntaxCaret { get; set; }
     }
 
     /// <summary>
@@ -98,41 +112,41 @@ namespace StellaQL
             Dictionary<int, UserDefindStateRecordable> universe = stateExTable.StateHash_to_record;
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
-            QueryTokens qt;
+            QueryTokens qt = new QueryTokens("構文該当なし");
 
-            if (SyntaxP.Parse_TransitionAnystateInsert(query, out qt))
+            if (SyntaxP.Parse_TransitionAnystateInsert(query, ref qt))
             {
                 return Operation_Transition.AddAnyState(ac,
                     Fetcher.Statemachines(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
                     Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
                     message);
             }
-            else if (SyntaxP.Parse_TransitionEntryInsert(query, out qt))
+            else if (SyntaxP.Parse_TransitionEntryInsert(query, ref qt))
             {
                 return Operation_Transition.AddEntryState(ac,
                     Fetcher.Statemachines(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
                     Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
                     message);
             }
-            else if (SyntaxP.Parse_TransitionExitInsert(query, out qt))
+            else if (SyntaxP.Parse_TransitionExitInsert(query, ref qt))
             {
                 return Operation_Transition.AddExitState(ac,
                     Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
                     message);
             }
-            else if (SyntaxP.Parse_StateInsert(query, out qt))
+            else if (SyntaxP.Parse_StateInsert(query, ref qt))
             {
                 Operation_State.AddAll(ac, Fetcher.Statemachines(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), qt.Set, message); return true;
             }
-            else if (SyntaxP.Parse_StateUpdate(query, out qt))
+            else if (SyntaxP.Parse_StateUpdate(query, ref qt))
             {
                 Operation_State.UpdateProperty(ac, qt.Set, Fetcher.States(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), message); return true;
             }
-            else if (SyntaxP.Parse_StateDelete(query, out qt))
+            else if (SyntaxP.Parse_StateDelete(query, ref qt))
             {
                 Operation_State.RemoveAll(ac, Fetcher.Statemachines(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), qt.Set, message); return true;
             }
-            else if (SyntaxP.Parse_StateSelect(query, out qt))
+            else if (SyntaxP.Parse_StateSelect(query, ref qt))
             {
                 HashSet<StateRecord> recordSet;
                 Operation_State.Select(ac, Fetcher.States(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), out recordSet, message);
@@ -140,14 +154,14 @@ namespace StellaQL
                 AniconDataUtility.CreateCsvTable_State(recordSet, contents);
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogStateSelect(ac.name), contents, message); return true;
             }
-            else if (SyntaxP.Parse_TransitionInsert(query, out qt))
+            else if (SyntaxP.Parse_TransitionInsert(query, ref qt))
             {
                 Operation_Transition.AddAll(ac,
                     Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
                     Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
                     message); return true;
             }
-            else if (SyntaxP.Parse_TransitionUpdate(query, out qt))
+            else if (SyntaxP.Parse_TransitionUpdate(query, ref qt))
             {
                 foreach (KeyValuePair<string, string> pair in qt.Set) { message.AppendLine(pair.Key + "=" + pair.Value); }
                 Operation_Transition.UpdateProperty(ac, qt.Set,
@@ -155,13 +169,13 @@ namespace StellaQL
                     Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
                     message); return true;
             }
-            else if (SyntaxP.Parse_TransitionDelete(query, out qt))
+            else if (SyntaxP.Parse_TransitionDelete(query, ref qt))
             {
                 Operation_Transition.RemoveAll(ac,
                     Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
                     Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
                     message); return true;
-            } else if (SyntaxP.Parse_TransitionSelect(query, out qt)) {
+            } else if (SyntaxP.Parse_TransitionSelect(query, ref qt)) {
                 HashSet<TransitionRecord> recordSet;
                 Operation_Transition.Select(ac,
                     Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
@@ -172,7 +186,8 @@ namespace StellaQL
                 AniconDataUtility.CreateCsvTable_Transition(recordSet, contents);
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransitionSelect(ac.name), contents, message); return true;
             }
-            message.AppendLine( "構文該当無し"); return false;
+            message.Append("構文エラー: "); message.Append( qt.MatchedSyntaxName); message.Append(" ");
+            message.Append(qt.MatchedSyntaxCaret); message.AppendLine(" 文字目まで一致"); return false;
         }
 
         /// <summary>
@@ -185,10 +200,10 @@ namespace StellaQL
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
             recordHashes = null;
-            QueryTokens sq;
-            if (!SyntaxP.Parse_StateSelect(query, out sq)) { return false; }
+            QueryTokens qt = new QueryTokens();
+            if (!SyntaxP.Parse_StateSelect(query, ref qt)) { return false; }
 
-            recordHashes = RecordsFilter.Qt_Where(sq, universe, message);
+            recordHashes = RecordsFilter.Qt_Where(qt, universe, message);
             return true;
         }
 
@@ -203,11 +218,11 @@ namespace StellaQL
 
             recordHashesSrc = null;
             recordHashesDst = null;
-            QueryTokens sq;
-            if (!SyntaxP.Parse_TransitionSelect(query, out sq)) { return false; }
+            QueryTokens qt = new QueryTokens();
+            if (!SyntaxP.Parse_TransitionSelect(query, ref qt)) { return false; }
 
-            recordHashesSrc = RecordsFilter.Qt_From(sq, universe, message);// FROM
-            recordHashesDst = RecordsFilter.Qt_To(sq, universe, message);// TO
+            recordHashesSrc = RecordsFilter.Qt_From(qt, universe, message);// FROM
+            recordHashesDst = RecordsFilter.Qt_To(qt, universe, message);// TO
             return true;
         }
 
@@ -581,11 +596,15 @@ namespace StellaQL
     /// </summary>
     public abstract class SyntaxP
     {
+        public static bool Error(QueryTokens current, int caret, ref QueryTokens max)
+        {
+            if (max.MatchedSyntaxCaret < caret) { current.MatchedSyntaxCaret = caret; max = current; } return false;
+        }
+
         /// <summary>
         /// SET句だけ。
         /// Example（代表例）: UPDATE文のSET句。
         /// </summary>
-        /// <returns></returns>
         public static bool ParsePhrase_AfterSet(string query, ref int caret, string delimiterWord, Dictionary<string,string> ref_properties)
         {
             string propertyName;
@@ -605,333 +624,313 @@ namespace StellaQL
         /// <summary>
         /// TRANSITION ANYSTATE INSERT
         /// </summary>
-        public static bool Parse_TransitionAnystateInsert(string query, out QueryTokens qTokens)
+        public static bool Parse_TransitionAnystateInsert(string query, ref QueryTokens maxQt)
         {
-            qTokens = new QueryTokens();
+            QueryTokens qt = new QueryTokens("TRANSITION ANYSTATE INSERT");
             int caret = 0;
             string stringWithoutDoubleQuotation, parenthesis;
 
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.TRANSITION;
+            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.TRANSITION;
 
-            if (!LexcalP.FixedWord(QueryTokens.ANYSTATE, query, ref caret)) { return false; }
-            qTokens.Target2 = QueryTokens.ANYSTATE;
+            if (!LexcalP.FixedWord(QueryTokens.ANYSTATE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target2 = QueryTokens.ANYSTATE;
 
-            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return false; }
-            qTokens.Manipulation = QueryTokens.INSERT;
+            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.INSERT;
 
-            if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return false; }
+            if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+
+            // 正規表現か、タグ検索のどちらか。（マシンステート検索でもタグを使うことがあるだろうか）
+            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
+                qt.From_FullnameRegex = stringWithoutDoubleQuotation;
+            }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.From_Attr = parenthesis;
+            }else { return SyntaxP.Error(qt, caret, ref maxQt); }
+
+            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
 
             // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
-                qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.To_FullnameRegex = stringWithoutDoubleQuotation;
             }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.From_Attr = parenthesis;
-            }else { return false; }
-
-            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return false; }
-
-            // 正規表現か、タグ検索のどちらか。
-            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
-                qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
-            }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.To_Tag = parenthesis;
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.To_Tag = parenthesis;
             }
-            else { return false; }
-            return true;
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
+            maxQt = qt; return true;
         }
 
         /// <summary>
         /// TRANSITION ENTRY INSERT
         /// </summary>
-        public static bool Parse_TransitionEntryInsert(string query, out QueryTokens qTokens)
+        public static bool Parse_TransitionEntryInsert(string query, ref QueryTokens maxQt)
         {
-            qTokens = new QueryTokens();
+            QueryTokens qt = new QueryTokens("TRANSITION ENTRY INSERT");
             int caret = 0;
             string stringWithoutDoubleQuotation, parenthesis;
 
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.TRANSITION;
+            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.TRANSITION;
 
-            if (!LexcalP.FixedWord(QueryTokens.ENTRY, query, ref caret)) { return false; }
-            qTokens.Target2 = QueryTokens.ENTRY;
+            if (!LexcalP.FixedWord(QueryTokens.ENTRY, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target2 = QueryTokens.ENTRY;
 
-            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return false; }
-            qTokens.Manipulation = QueryTokens.INSERT;
+            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.INSERT;
 
-            if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return false; }
-
-            // 正規表現か、タグ検索のどちらか。
-            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
-                qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
-            }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.From_Attr = parenthesis;
-            }else { return false; }
-
-            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return false; }
+            if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
 
             // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
-                qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.From_FullnameRegex = stringWithoutDoubleQuotation;
             }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.To_Tag = parenthesis;
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.From_Attr = parenthesis;
+            }else { return SyntaxP.Error(qt, caret, ref maxQt); }
+
+            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+
+            // 正規表現か、タグ検索のどちらか。
+            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
+                qt.To_FullnameRegex = stringWithoutDoubleQuotation;
+            }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.To_Tag = parenthesis;
             }
-            else { return false; }
-            return true;
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
+            maxQt = qt; return true;
         }
 
         /// <summary>
         /// TRANSITION EXIT INSERT
         /// </summary>
-        public static bool Parse_TransitionExitInsert(string query, out QueryTokens qTokens)
+        public static bool Parse_TransitionExitInsert(string query, ref QueryTokens maxQt)
         {
-            qTokens = new QueryTokens();
+            QueryTokens qt = new QueryTokens("TRANSITION EXIT INSERT");
             int caret = 0;
             string stringWithoutDoubleQuotation, parenthesis;
 
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.TRANSITION;
+            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.TRANSITION;
 
-            if (!LexcalP.FixedWord(QueryTokens.EXIT, query, ref caret)) { return false; }
-            qTokens.Target2 = QueryTokens.EXIT;
+            if (!LexcalP.FixedWord(QueryTokens.EXIT, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target2 = QueryTokens.EXIT;
 
-            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return false; }
-            qTokens.Manipulation = QueryTokens.INSERT;
+            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.INSERT;
 
-            if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return false; }
+            if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
 
             // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
-                qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.From_FullnameRegex = stringWithoutDoubleQuotation;
             }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.From_Attr = parenthesis;
-            }else { return false; }
-            return true;
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.From_Attr = parenthesis;
+            }else { return SyntaxP.Error(qt, caret, ref maxQt); }
+            maxQt = qt; return true;
         }
 
         /// <summary>
         /// STATE INSERT
         /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        public static bool Parse_StateInsert(string query, out QueryTokens qTokens)
+        public static bool Parse_StateInsert(string query, ref QueryTokens maxQt)
         {
-            qTokens = new QueryTokens();
+            QueryTokens qt = new QueryTokens("STATE INSERT");
             int caret = 0;
             string stringWithoutDoubleQuotation;
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.STATE;
+            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.STATE;
 
-            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return false; }
-            qTokens.Manipulation = QueryTokens.INSERT;
+            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.INSERT;
 
             if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
             {
                 // 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
-                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qTokens.Set)) { return false; }
+                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qt.Set)) { return SyntaxP.Error(qt, caret, ref maxQt); }
             }
-            else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return false; } }
+            else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); } }
 
             // 正規表現。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                qTokens.Where_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.Where_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else { return false; }
-            return true;
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
+            maxQt = qt; return true;
         }
 
         /// <summary>
         /// STATE UPDATE
         /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        public static bool Parse_StateUpdate(string query, out QueryTokens qTokens)
+        public static bool Parse_StateUpdate(string query, ref QueryTokens maxQt)
         {
-            qTokens = new QueryTokens();
+            QueryTokens qt = new QueryTokens("STATE UPDATE");
             int caret = 0;
             string stringWithoutDoubleQuotation;
             string parenthesis;
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.STATE;
+            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.STATE;
 
-            if (!LexcalP.FixedWord(QueryTokens.UPDATE, query, ref caret)) { return false; }
-            qTokens.Manipulation = QueryTokens.UPDATE;
+            if (!LexcalP.FixedWord(QueryTokens.UPDATE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.UPDATE;
 
             if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret)) {
                 // 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
-                if(!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qTokens.Set)) { return false; }
-            } else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return false; } }
+                if(!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qt.Set)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            } else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); } }
 
             // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)) {
-                qTokens.Where_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.Where_FullnameRegex = stringWithoutDoubleQuotation;
             } else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)) {
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.Where_Tag = parenthesis;
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.Where_Tag = parenthesis;
             }
-            else { return false; }
-            return true;
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
+            maxQt = qt; return true;
         }
 
         /// <summary>
         /// STATE DELETE
         /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        public static bool Parse_StateDelete(string query, out QueryTokens qTokens)
+        public static bool Parse_StateDelete(string query, ref QueryTokens maxQt)
         {
-            qTokens = new QueryTokens();
+            QueryTokens qt = new QueryTokens("STATE DELETE");
             int caret = 0;
             string stringWithoutDoubleQuotation;
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.STATE;
+            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.STATE;
 
-            if (!LexcalP.FixedWord(QueryTokens.DELETE, query, ref caret)) { return false; }
-            qTokens.Manipulation = QueryTokens.DELETE;
+            if (!LexcalP.FixedWord(QueryTokens.DELETE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.DELETE;
 
             if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
             {
                 // 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
-                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qTokens.Set)) { return false; }
+                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qt.Set)) { return SyntaxP.Error(qt, caret, ref maxQt); }
             }
-            else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return false; } }
+            else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); } }
 
             // 正規表現。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                qTokens.Where_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.Where_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else { return false; }
-            return true;
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
+            maxQt = qt; return true;
         }
 
         /// <summary>
         /// STATE SELECT
         /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        public static bool Parse_StateSelect(string query, out QueryTokens qTokens)
+        public static bool Parse_StateSelect(string query, ref QueryTokens maxQt)
         {
-            qTokens = new QueryTokens();
+            QueryTokens qt = new QueryTokens("STATE SELECT");
             int caret = 0;
             string stringWithoutDoubleQuotation;
             string parenthesis;
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.STATE;
+            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.STATE;
 
-            if (!LexcalP.FixedWord(QueryTokens.SELECT, query, ref caret)) { return false; }
-            qTokens.Manipulation = QueryTokens.SELECT;
+            if (!LexcalP.FixedWord(QueryTokens.SELECT, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.SELECT;
 
-            if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return false; }
+            if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
 
             // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                qTokens.Where_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.Where_FullnameRegex = stringWithoutDoubleQuotation;
             }
             else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.Where_Tag = parenthesis;
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.Where_Tag = parenthesis;
             }
-            else { return false; }
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
 
-            return true;
+            maxQt = qt; return true;
         }
 
         /// <summary>
         /// TRANSITION INSERT
         /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        public static bool Parse_TransitionInsert(string query, out QueryTokens qTokens)
+        public static bool Parse_TransitionInsert(string query, ref QueryTokens maxQt)
         {
-            qTokens = new QueryTokens();
+            QueryTokens qt = new QueryTokens("TRANSITION INSERT");
             int caret = 0;
-            //string propertyName;
-            //string propertyValue;
             string stringWithoutDoubleQuotation;
             string parenthesis;
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.TRANSITION;
+            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.TRANSITION;
 
-            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return false; }
-            qTokens.Manipulation = QueryTokens.INSERT;
+            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.INSERT;
 
             if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
             {
                 // 「項目名、スペース、値、スペース」の繰り返し。項目名が FROM だった場合終わり。
-                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.FROM, qTokens.Set)) { return false; }
-                //while (caret < query.Length && !LexcalP.FixedWord(QueryTokens.FROM, query, ref caret))
-                //{
-                //    if (!LexcalP.VarWord(query, ref caret, out propertyName)) { return false; }
-                //    if (!LexcalP.VarValue(query, ref caret, out propertyValue)) { return false; }
-                //    qTokens.Set.Add(propertyName, propertyValue);
-                //}
+                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.FROM, qt.Set)) { return SyntaxP.Error(qt, caret, ref maxQt); }
             }
             else {
-                if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return false; }
+                if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
             }
 
             // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.From_FullnameRegex = stringWithoutDoubleQuotation;
             }
             else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.From_Attr = parenthesis;
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.From_Attr = parenthesis;
             }
-            else { return false; }
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
 
-            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return false; }
+            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
 
             // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.To_FullnameRegex = stringWithoutDoubleQuotation;
             }
             else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.To_Tag = parenthesis;
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.To_Tag = parenthesis;
             }
-            else { return false; }
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
 
-            return true;
+            maxQt = qt; return true;
         }
 
         /// <summary>
         /// TRANSITION UPDATE
         /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        public static bool Parse_TransitionUpdate(string query, out QueryTokens qTokens)
+        public static bool Parse_TransitionUpdate(string query, ref QueryTokens maxQt)
         {
-            qTokens = new QueryTokens();
+            QueryTokens qt = new QueryTokens("TRANSITION UPDATE");
             int caret = 0;
             //string propertyName;
             //string propertyValue;
@@ -939,16 +938,16 @@ namespace StellaQL
             string parenthesis;
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.TRANSITION;
+            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.TRANSITION;
 
-            if (!LexcalP.FixedWord(QueryTokens.UPDATE, query, ref caret)) { return false; }
-            qTokens.Manipulation = QueryTokens.UPDATE;
+            if (!LexcalP.FixedWord(QueryTokens.UPDATE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.UPDATE;
 
             if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
             {
                 // 「項目名、スペース、値、スペース」の繰り返し。項目名が FROM だった場合終わり。
-                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.FROM, qTokens.Set)) { return false; }
+                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.FROM, qt.Set)) { return SyntaxP.Error(qt, caret, ref maxQt); }
                 //while (caret < query.Length && !LexcalP.FixedWord(QueryTokens.FROM, query, ref caret))
                 //{
                 //    if (!LexcalP.VarWord(query, ref caret, out propertyName)) { return false; }
@@ -957,138 +956,134 @@ namespace StellaQL
                 //}
             }
             else {
-                if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return false; }
+                if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
             }
 
             // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.From_FullnameRegex = stringWithoutDoubleQuotation;
             }
             else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.From_Attr = parenthesis;
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.From_Attr = parenthesis;
             }
             else {
-                return false;
+                return SyntaxP.Error(qt, caret, ref maxQt);
             }
 
-            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return false; }
+            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
 
             // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.To_FullnameRegex = stringWithoutDoubleQuotation;
             }
             else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.To_Tag = parenthesis;
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.To_Tag = parenthesis;
             }
-            else { return false; }
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
 
-            return true;
+            maxQt = qt; return true;
         }
 
         /// <summary>
         /// TRANSITION DELETE
         /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        public static bool Parse_TransitionDelete(string query, out QueryTokens qTokens)
+        public static bool Parse_TransitionDelete(string query, ref QueryTokens maxQt)
         {
-            qTokens = new QueryTokens();
+            QueryTokens qt = new QueryTokens("TRANSITION DELETE");
             int caret = 0;
             string stringWithoutDoubleQuotation;
             string parenthesis;
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.TRANSITION;
+            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.TRANSITION;
 
-            if (!LexcalP.FixedWord(QueryTokens.DELETE, query, ref caret)) { return false; }
-            qTokens.Manipulation = QueryTokens.DELETE;
+            if (!LexcalP.FixedWord(QueryTokens.DELETE, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.DELETE;
 
-            if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return false; }
-
-            // 正規表現か、タグ検索のどちらか。
-            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
-            {
-                qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
-            }
-            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
-            {
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.From_Attr = parenthesis;
-            }
-            else { return false; }
-
-            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return false; }
+            if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
 
             // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.From_FullnameRegex = stringWithoutDoubleQuotation;
             }
             else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.To_Tag = parenthesis;
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.From_Attr = parenthesis;
             }
-            else { return false; }
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
 
-            return true;
+            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+
+            // 正規表現か、タグ検索のどちらか。
+            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
+            {
+                qt.To_FullnameRegex = stringWithoutDoubleQuotation;
+            }
+            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
+            {
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.To_Tag = parenthesis;
+            }
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
+
+            maxQt = qt; return true;
         }
 
         /// <summary>
         /// TRANSITION SELECT
         /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        public static bool Parse_TransitionSelect(string query, out QueryTokens qTokens)
+        public static bool Parse_TransitionSelect(string query, ref QueryTokens maxQt)
         {
-            qTokens = new QueryTokens();
+            QueryTokens qt = new QueryTokens("TRANSITION SELECT");
             int caret = 0;
             string stringWithoutDoubleQuotation;
             string parenthesis;
             LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return false; }
-            qTokens.Target = QueryTokens.TRANSITION;
+            if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.TRANSITION;
 
-            if (!LexcalP.FixedWord(QueryTokens.SELECT, query, ref caret)) { return false; }
-            qTokens.Manipulation = QueryTokens.SELECT;
+            if (!LexcalP.FixedWord(QueryTokens.SELECT, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.SELECT;
 
-            if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return false; }
-
-            // 正規表現か、タグ検索のどちらか。
-            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
-            {
-                qTokens.From_FullnameRegex = stringWithoutDoubleQuotation;
-            }
-            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
-            {
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.From_Attr = parenthesis;
-            }
-            else { return false; }
-
-            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return false; }
+            if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
 
             // 正規表現か、タグ検索のどちらか。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
-                qTokens.To_FullnameRegex = stringWithoutDoubleQuotation;
+                qt.From_FullnameRegex = stringWithoutDoubleQuotation;
             }
             else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
-                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return false; }
-                qTokens.To_Tag = parenthesis;
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.From_Attr = parenthesis;
             }
-            else { return false; }
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
 
-            return true;
+            if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+
+            // 正規表現か、タグ検索のどちらか。
+            if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
+            {
+                qt.To_FullnameRegex = stringWithoutDoubleQuotation;
+            }
+            else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
+            {
+                if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.Error(qt, caret, ref maxQt); }
+                qt.To_Tag = parenthesis;
+            }
+            else { return SyntaxP.Error(qt, caret, ref maxQt); }
+
+            maxQt = qt; return true;
         }
     }
 

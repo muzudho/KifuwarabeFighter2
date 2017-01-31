@@ -477,7 +477,296 @@ namespace StellaQL
         }
         #endregion
 
-        #region N70 syntax parser (構文パーサー)
+        #region N70 syntax parser statement (構文パーサー　文)
+        /// <summary>
+        /// 構文解析 TRANSITION ANYSTATE INSERT 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_TransitionAnystateInsert()
+        {
+            string query = @"TRANSITION ANYSTATE INSERT
+                        FROM ""Base Layer""
+                        TO ""Base Layer\.Foo""";
+            QueryTokens qt = new QueryTokens();
+            bool successful = SyntaxP.Parse_TransitionAnystateInsert(query, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
+            Assert.AreEqual(QueryTokens.ANYSTATE, qt.Target2);
+            Assert.AreEqual(QueryTokens.INSERT, qt.Manipulation);
+            Assert.AreEqual(0, qt.Set.Count);
+            Assert.AreEqual("Base Layer", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual(@"Base Layer\.Foo", qt.To_FullnameRegex);
+            Assert.AreEqual("", qt.To_Tag);
+            Assert.AreEqual("", qt.Where_FullnameRegex);
+            Assert.AreEqual("", qt.Where_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 TRANSITION ENTRY INSERT 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_TransitionEntryInsert()
+        {
+            string query = @"TRANSITION ENTRY INSERT
+                        FROM ""Base Layer""
+                        TO ""Base Layer\.Foo""";
+            QueryTokens qt = new QueryTokens();
+            bool successful = SyntaxP.Parse_TransitionEntryInsert(query, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
+            Assert.AreEqual(QueryTokens.ENTRY, qt.Target2);
+            Assert.AreEqual(QueryTokens.INSERT, qt.Manipulation);
+            Assert.AreEqual(0, qt.Set.Count);
+            Assert.AreEqual("Base Layer", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual(@"Base Layer\.Foo", qt.To_FullnameRegex);
+            Assert.AreEqual("", qt.To_Tag);
+            Assert.AreEqual("", qt.Where_FullnameRegex);
+            Assert.AreEqual("", qt.Where_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 TRANSITION EXIT INSERT 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_TransitionExitInsert()
+        {
+            string query = @"TRANSITION EXIT INSERT
+                        FROM ""Base Layer\.Foo""";
+            QueryTokens qt = new QueryTokens();
+            bool successful = SyntaxP.Parse_TransitionExitInsert(query, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
+            Assert.AreEqual(QueryTokens.EXIT, qt.Target2);
+            Assert.AreEqual(QueryTokens.INSERT, qt.Manipulation);
+            Assert.AreEqual(0, qt.Set.Count);
+            Assert.AreEqual(@"Base Layer\.Foo", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.To_FullnameRegex);
+            Assert.AreEqual("", qt.To_Tag);
+            Assert.AreEqual("", qt.Where_FullnameRegex);
+            Assert.AreEqual("", qt.Where_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 STATE INSERT 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_StateInsert()
+        {
+            string query = @"STATE INSERT
+                        SET name0 ""WhiteCat"" name1 ""WhiteDog""
+                        WHERE ""Base Layout""";
+            QueryTokens qt = new QueryTokens();
+            bool successful = SyntaxP.Parse_StateInsert(query, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.STATE, qt.Target);
+            Assert.AreEqual(QueryTokens.INSERT, qt.Manipulation);
+            Assert.AreEqual(2, qt.Set.Count);
+            Assert.AreEqual("WhiteCat", qt.Set["name0"]);
+            Assert.AreEqual("WhiteDog", qt.Set["name1"]);
+            Assert.AreEqual("", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.To_FullnameRegex);
+            Assert.AreEqual("", qt.To_Tag);
+            Assert.AreEqual("Base Layout", qt.Where_FullnameRegex);
+            Assert.AreEqual("", qt.Where_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 STATE UPDATE 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_StateUpdate()
+        {
+            string query = @"STATE UPDATE
+                        SET name ""WhiteCat"" age 7
+                        WHERE TAG ([(Alpha Cee)(Beta)]{Eee})";
+            QueryTokens qt = new QueryTokens();
+            bool successful = SyntaxP.Parse_StateUpdate(query, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.STATE, qt.Target);
+            Assert.AreEqual(QueryTokens.UPDATE, qt.Manipulation);
+            Assert.AreEqual(2, qt.Set.Count);
+            Assert.AreEqual("WhiteCat", qt.Set["name"]);
+            Assert.AreEqual("7", qt.Set["age"]);
+            Assert.AreEqual("", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.To_FullnameRegex);
+            Assert.AreEqual("", qt.To_Tag);
+            Assert.AreEqual("", qt.Where_FullnameRegex);
+            Assert.AreEqual("([(Alpha Cee)(Beta)]{Eee})", qt.Where_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 STATE DELETE 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_StateDelete()
+        {
+            string query = @"STATE DELETE
+                        SET name0 ""WhiteCat"" name1 ""WhiteDog""
+                        WHERE ""Base Layout""";
+            QueryTokens qt = new QueryTokens();
+            bool successful = SyntaxP.Parse_StateDelete(query, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.STATE, qt.Target);
+            Assert.AreEqual(QueryTokens.DELETE, qt.Manipulation);
+            Assert.AreEqual(2, qt.Set.Count);
+            Assert.AreEqual("WhiteCat", qt.Set["name0"]);
+            Assert.AreEqual("WhiteDog", qt.Set["name1"]);
+            Assert.AreEqual("", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.To_FullnameRegex);
+            Assert.AreEqual("", qt.To_Tag);
+            Assert.AreEqual("Base Layout", qt.Where_FullnameRegex);
+            Assert.AreEqual("", qt.Where_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 STATE SELECT 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_StateSelect()
+        {
+            string query = @"STATE SELECT
+                        WHERE TAG ([(Alpha Cee)(Beta)]{Eee})";
+            QueryTokens qt = new QueryTokens();
+            bool successful = SyntaxP.Parse_StateSelect(query, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.STATE, qt.Target);
+            Assert.AreEqual(QueryTokens.SELECT, qt.Manipulation);
+            Assert.AreEqual(0, qt.Set.Count);
+            Assert.AreEqual("", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.To_FullnameRegex);
+            Assert.AreEqual("", qt.To_Tag);
+            Assert.AreEqual("", qt.Where_FullnameRegex);
+            Assert.AreEqual("([(Alpha Cee)(Beta)]{Eee})", qt.Where_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 Transition Insert 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_TransitionInsert()
+        {
+            string query = @"TRANSITION INSERT
+                        SET Duration 0 ExitTime 1
+                        FROM ""Base Layer\.Cat""
+                        TO ""Base Layer\.Dog""";
+            QueryTokens qt = new QueryTokens();
+            bool successful = SyntaxP.Parse_TransitionInsert(query, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
+            Assert.AreEqual(QueryTokens.INSERT, qt.Manipulation);
+            Assert.AreEqual(2, qt.Set.Count);
+            Assert.IsTrue(qt.Set.ContainsKey("Duration"));
+            Assert.AreEqual("0", qt.Set["Duration"]);
+            Assert.IsTrue(qt.Set.ContainsKey("ExitTime"));
+            Assert.AreEqual("1", qt.Set["ExitTime"]);
+            Assert.AreEqual(@"Base Layer\.Cat", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual(@"Base Layer\.Dog", qt.To_FullnameRegex);
+            Assert.AreEqual("", qt.To_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 Transition Update 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_TransitionUpdate()
+        {
+            // まず、線を引く。
+            {
+                string query = @"TRANSITION INSERT
+                        SET Duration 0 ExitTime 1
+                        FROM ""Base Layer\.Cat""
+                        TO ""Base Layer\.Dog""";
+                QueryTokens qt = new QueryTokens();
+                bool successful = SyntaxP.Parse_TransitionInsert(query, ref qt);
+                Assert.IsTrue(successful);
+            }
+
+            // こっから本番
+            {
+                string query = @"TRANSITION UPDATE
+                        SET Duration 0.25 ExitTime 0.75
+                        FROM ""Base Layer\.Cat""
+                        TO ""Base Layer\.Dog""";
+                QueryTokens qt = new QueryTokens();
+                bool successful = SyntaxP.Parse_TransitionUpdate(query, ref qt);
+
+                Assert.IsTrue(successful);
+                Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
+                Assert.AreEqual(QueryTokens.UPDATE, qt.Manipulation);
+                Assert.AreEqual(2, qt.Set.Count);
+                Assert.IsTrue(qt.Set.ContainsKey("Duration"));
+                Assert.AreEqual("0.25", qt.Set["Duration"]);
+                Assert.IsTrue(qt.Set.ContainsKey("ExitTime"));
+                Assert.AreEqual("0.75", qt.Set["ExitTime"]);
+                Assert.AreEqual(@"Base Layer\.Cat", qt.From_FullnameRegex);
+                Assert.AreEqual("", qt.From_Attr);
+                Assert.AreEqual(@"Base Layer\.Dog", qt.To_FullnameRegex);
+                Assert.AreEqual("", qt.To_Tag);
+            }
+        }
+
+        /// <summary>
+        /// 構文解析 Transition Delete 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_TransitionDelete()
+        {
+            string query = @"TRANSITION DELETE
+                        FROM ""Base Layer.SMove""
+                        TO TAG (BusyX Block)";
+            QueryTokens qt = new QueryTokens();
+            bool successful = SyntaxP.Parse_TransitionDelete(query, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
+            Assert.AreEqual(QueryTokens.DELETE, qt.Manipulation);
+            Assert.AreEqual(0, qt.Set.Count);
+            Assert.AreEqual("Base Layer.SMove", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.To_FullnameRegex);
+            Assert.AreEqual("(BusyX Block)", qt.To_Tag);
+        }
+
+        /// <summary>
+        /// 構文解析 Transition Select 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_TransitionSelect()
+        {
+            string query = @"TRANSITION SELECT
+                        FROM ""Base Layer.SMove""
+                        TO TAG (BusyX Block)";
+            QueryTokens qt = new QueryTokens();
+            bool successful = SyntaxP.Parse_TransitionSelect(query, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
+            Assert.AreEqual(QueryTokens.SELECT, qt.Manipulation);
+            Assert.AreEqual(0, qt.Set.Count);
+            Assert.AreEqual("Base Layer.SMove", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.To_FullnameRegex);
+            Assert.AreEqual("(BusyX Block)", qt.To_Tag);
+        }
+        #endregion
+
+        #region N75 syntax parser pharse (構文パーサー　句)
         /// <summary>
         /// 構文解析 SET 句
         /// </summary>
@@ -513,298 +802,11 @@ namespace StellaQL
             Assert.IsTrue(properties.ContainsKey("tag"));
             Assert.AreEqual("hello", properties["tag"]);
         }
-
-        /// <summary>
-        /// 構文解析 TRANSITION ANYSTATE INSERT 文
-        /// </summary>
-        [Test]
-        public void N70_Syntax_TransitionAnystateInsert()
-        {
-            string query = @"TRANSITION ANYSTATE INSERT
-                        FROM ""Base Layer""
-                        TO ""Base Layer\.Foo""";
-            QueryTokens sq;
-            bool successful = SyntaxP.Parse_TransitionAnystateInsert(query, out sq);
-
-            Assert.IsTrue(successful);
-            Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
-            Assert.AreEqual(QueryTokens.ANYSTATE, sq.Target2);
-            Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
-            Assert.AreEqual(0, sq.Set.Count);
-            Assert.AreEqual("Base Layer", sq.From_FullnameRegex);
-            Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual(@"Base Layer\.Foo", sq.To_FullnameRegex);
-            Assert.AreEqual("", sq.To_Tag);
-            Assert.AreEqual("", sq.Where_FullnameRegex);
-            Assert.AreEqual("", sq.Where_Tag);
-        }
-
-        /// <summary>
-        /// 構文解析 TRANSITION ENTRY INSERT 文
-        /// </summary>
-        [Test]
-        public void N70_Syntax_TransitionEntryInsert()
-        {
-            string query = @"TRANSITION ENTRY INSERT
-                        FROM ""Base Layer""
-                        TO ""Base Layer\.Foo""";
-            QueryTokens sq;
-            bool successful = SyntaxP.Parse_TransitionEntryInsert(query, out sq);
-
-            Assert.IsTrue(successful);
-            Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
-            Assert.AreEqual(QueryTokens.ENTRY, sq.Target2);
-            Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
-            Assert.AreEqual(0, sq.Set.Count);
-            Assert.AreEqual("Base Layer", sq.From_FullnameRegex);
-            Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual(@"Base Layer\.Foo", sq.To_FullnameRegex);
-            Assert.AreEqual("", sq.To_Tag);
-            Assert.AreEqual("", sq.Where_FullnameRegex);
-            Assert.AreEqual("", sq.Where_Tag);
-        }
-
-        /// <summary>
-        /// 構文解析 TRANSITION EXIT INSERT 文
-        /// </summary>
-        [Test]
-        public void N70_Syntax_TransitionExitInsert()
-        {
-            string query = @"TRANSITION EXIT INSERT
-                        FROM ""Base Layer\.Foo""";
-            QueryTokens sq;
-            bool successful = SyntaxP.Parse_TransitionExitInsert(query, out sq);
-
-            Assert.IsTrue(successful);
-            Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
-            Assert.AreEqual(QueryTokens.EXIT, sq.Target2);
-            Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
-            Assert.AreEqual(0, sq.Set.Count);
-            Assert.AreEqual(@"Base Layer\.Foo", sq.From_FullnameRegex);
-            Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual("", sq.To_FullnameRegex);
-            Assert.AreEqual("", sq.To_Tag);
-            Assert.AreEqual("", sq.Where_FullnameRegex);
-            Assert.AreEqual("", sq.Where_Tag);
-        }
-
-        /// <summary>
-        /// 構文解析 STATE INSERT 文
-        /// </summary>
-        [Test]
-        public void N70_Syntax_StateInsert()
-        {
-            string query = @"STATE INSERT
-                        SET name0 ""WhiteCat"" name1 ""WhiteDog""
-                        WHERE ""Base Layout""";
-            QueryTokens sq;
-            bool successful = SyntaxP.Parse_StateInsert(query, out sq);
-
-            Assert.IsTrue(successful);
-            Assert.AreEqual(QueryTokens.STATE, sq.Target);
-            Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
-            Assert.AreEqual(2, sq.Set.Count);
-            Assert.AreEqual("WhiteCat", sq.Set["name0"]);
-            Assert.AreEqual("WhiteDog", sq.Set["name1"]);
-            Assert.AreEqual("", sq.From_FullnameRegex);
-            Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual("", sq.To_FullnameRegex);
-            Assert.AreEqual("", sq.To_Tag);
-            Assert.AreEqual("Base Layout", sq.Where_FullnameRegex);
-            Assert.AreEqual("", sq.Where_Tag);
-        }
-
-        /// <summary>
-        /// 構文解析 STATE UPDATE 文
-        /// </summary>
-        [Test]
-        public void N70_Syntax_StateUpdate()
-        {
-            string query = @"STATE UPDATE
-                        SET name ""WhiteCat"" age 7
-                        WHERE TAG ([(Alpha Cee)(Beta)]{Eee})";
-            QueryTokens sq;
-            bool successful = SyntaxP.Parse_StateUpdate(query, out sq);
-
-            Assert.IsTrue(successful);
-            Assert.AreEqual(QueryTokens.STATE, sq.Target);
-            Assert.AreEqual(QueryTokens.UPDATE, sq.Manipulation);
-            Assert.AreEqual(2, sq.Set.Count);
-            Assert.AreEqual("WhiteCat", sq.Set["name"]);
-            Assert.AreEqual("7", sq.Set["age"]);
-            Assert.AreEqual("", sq.From_FullnameRegex);
-            Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual("", sq.To_FullnameRegex);
-            Assert.AreEqual("", sq.To_Tag);
-            Assert.AreEqual("", sq.Where_FullnameRegex);
-            Assert.AreEqual("([(Alpha Cee)(Beta)]{Eee})", sq.Where_Tag);
-        }
-
-        /// <summary>
-        /// 構文解析 STATE DELETE 文
-        /// </summary>
-        [Test]
-        public void N70_Syntax_StateDelete()
-        {
-            string query = @"STATE DELETE
-                        SET name0 ""WhiteCat"" name1 ""WhiteDog""
-                        WHERE ""Base Layout""";
-            QueryTokens sq;
-            bool successful = SyntaxP.Parse_StateDelete(query, out sq);
-
-            Assert.IsTrue(successful);
-            Assert.AreEqual(QueryTokens.STATE, sq.Target);
-            Assert.AreEqual(QueryTokens.DELETE, sq.Manipulation);
-            Assert.AreEqual(2, sq.Set.Count);
-            Assert.AreEqual("WhiteCat", sq.Set["name0"]);
-            Assert.AreEqual("WhiteDog", sq.Set["name1"]);
-            Assert.AreEqual("", sq.From_FullnameRegex);
-            Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual("", sq.To_FullnameRegex);
-            Assert.AreEqual("", sq.To_Tag);
-            Assert.AreEqual("Base Layout", sq.Where_FullnameRegex);
-            Assert.AreEqual("", sq.Where_Tag);
-        }
-
-        /// <summary>
-        /// 構文解析 STATE SELECT 文
-        /// </summary>
-        [Test]
-        public void N70_Syntax_StateSelect()
-        {
-            string query = @"STATE SELECT
-                        WHERE TAG ([(Alpha Cee)(Beta)]{Eee})";
-            QueryTokens sq;
-            bool successful = SyntaxP.Parse_StateSelect(query, out sq);
-
-            Assert.IsTrue(successful);
-            Assert.AreEqual(QueryTokens.STATE, sq.Target);
-            Assert.AreEqual(QueryTokens.SELECT, sq.Manipulation);
-            Assert.AreEqual(0, sq.Set.Count);
-            Assert.AreEqual("", sq.From_FullnameRegex);
-            Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual("", sq.To_FullnameRegex);
-            Assert.AreEqual("", sq.To_Tag);
-            Assert.AreEqual("", sq.Where_FullnameRegex);
-            Assert.AreEqual("([(Alpha Cee)(Beta)]{Eee})", sq.Where_Tag);
-        }
-
-        /// <summary>
-        /// 構文解析 Transition Insert 文
-        /// </summary>
-        [Test]
-        public void N70_Syntax_TransitionInsert()
-        {
-            string query = @"TRANSITION INSERT
-                        SET Duration 0 ExitTime 1
-                        FROM ""Base Layer\.Cat""
-                        TO ""Base Layer\.Dog""";
-            QueryTokens sq;
-            bool successful = SyntaxP.Parse_TransitionInsert(query, out sq);
-
-            Assert.IsTrue(successful);
-            Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
-            Assert.AreEqual(QueryTokens.INSERT, sq.Manipulation);
-            Assert.AreEqual(2, sq.Set.Count);
-            Assert.IsTrue(sq.Set.ContainsKey("Duration"));
-            Assert.AreEqual("0", sq.Set["Duration"]);
-            Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
-            Assert.AreEqual("1", sq.Set["ExitTime"]);
-            Assert.AreEqual(@"Base Layer\.Cat", sq.From_FullnameRegex);
-            Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual(@"Base Layer\.Dog", sq.To_FullnameRegex);
-            Assert.AreEqual("", sq.To_Tag);
-        }
-
-        /// <summary>
-        /// 構文解析 Transition Update 文
-        /// </summary>
-        [Test]
-        public void N70_Syntax_TransitionUpdate()
-        {
-            // まず、線を引く。
-            {
-                string query = @"TRANSITION INSERT
-                        SET Duration 0 ExitTime 1
-                        FROM ""Base Layer\.Cat""
-                        TO ""Base Layer\.Dog""";
-                QueryTokens sq;
-                bool successful = SyntaxP.Parse_TransitionInsert(query, out sq);
-                Assert.IsTrue(successful);
-            }
-
-            // こっから本番
-            {
-                string query = @"TRANSITION UPDATE
-                        SET Duration 0.25 ExitTime 0.75
-                        FROM ""Base Layer\.Cat""
-                        TO ""Base Layer\.Dog""";
-                QueryTokens sq;
-                bool successful = SyntaxP.Parse_TransitionUpdate(query, out sq);
-
-                Assert.IsTrue(successful);
-                Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
-                Assert.AreEqual(QueryTokens.UPDATE, sq.Manipulation);
-                Assert.AreEqual(2, sq.Set.Count);
-                Assert.IsTrue(sq.Set.ContainsKey("Duration"));
-                Assert.AreEqual("0.25", sq.Set["Duration"]);
-                Assert.IsTrue(sq.Set.ContainsKey("ExitTime"));
-                Assert.AreEqual("0.75", sq.Set["ExitTime"]);
-                Assert.AreEqual(@"Base Layer\.Cat", sq.From_FullnameRegex);
-                Assert.AreEqual("", sq.From_Attr);
-                Assert.AreEqual(@"Base Layer\.Dog", sq.To_FullnameRegex);
-                Assert.AreEqual("", sq.To_Tag);
-            }
-        }
-
-        /// <summary>
-        /// 構文解析 Transition Delete 文
-        /// </summary>
-        [Test]
-        public void N70_Syntax_TransitionDelete()
-        {
-            string query = @"TRANSITION DELETE
-                        FROM ""Base Layer.SMove""
-                        TO TAG (BusyX Block)";
-            QueryTokens sq;
-            bool successful = SyntaxP.Parse_TransitionDelete(query, out sq);
-
-            Assert.IsTrue(successful);
-            Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
-            Assert.AreEqual(QueryTokens.DELETE, sq.Manipulation);
-            Assert.AreEqual(0, sq.Set.Count);
-            Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
-            Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual("", sq.To_FullnameRegex);
-            Assert.AreEqual("(BusyX Block)", sq.To_Tag);
-        }
-
-        /// <summary>
-        /// 構文解析 Transition Select 文
-        /// </summary>
-        [Test]
-        public void N70_Syntax_TransitionSelect()
-        {
-            string query = @"TRANSITION SELECT
-                        FROM ""Base Layer.SMove""
-                        TO TAG (BusyX Block)";
-            QueryTokens sq;
-            bool successful = SyntaxP.Parse_TransitionSelect(query, out sq);
-
-            Assert.IsTrue(successful);
-            Assert.AreEqual(QueryTokens.TRANSITION, sq.Target);
-            Assert.AreEqual(QueryTokens.SELECT, sq.Manipulation);
-            Assert.AreEqual(0, sq.Set.Count);
-            Assert.AreEqual("Base Layer.SMove", sq.From_FullnameRegex);
-            Assert.AreEqual("", sq.From_Attr);
-            Assert.AreEqual("", sq.To_FullnameRegex);
-            Assert.AreEqual("(BusyX Block)", sq.To_Tag);
-        }
         #endregion
 
         #region N80 lexical parser (字句パーサー)
         /// <summary>
-        /// TAG部を解析（１）
+        /// TAG部を解析
         /// </summary>
         [Test]
         public void N80_Lexical_TagParentesis_StringToTokens()
@@ -830,6 +832,23 @@ namespace StellaQL
             Assert.AreEqual("Elephant", tokens[12]);
             Assert.AreEqual("}", tokens[13]);
             Assert.AreEqual(")", tokens[14]);
+        }
+
+        /// <summary>
+        /// TAG部を解析
+        /// </summary>
+        [Test]
+        public void N80_Lexical_VarParentesis()
+        {
+            string query = " ( ( Dash ) [ Punch Kick ] ) ";
+            int caret = 0;
+            string parenthesis;
+
+            bool successful = LexcalP.VarParentesis(query, ref caret, out parenthesis);
+
+            Debug.Log("parenthesis="+ parenthesis);
+            Assert.IsTrue(successful, parenthesis);
+            Assert.AreEqual("( ( Dash ) [ Punch Kick ] )", parenthesis);
         }
 
         /// <summary>
