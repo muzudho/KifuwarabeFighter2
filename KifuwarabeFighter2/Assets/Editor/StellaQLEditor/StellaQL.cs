@@ -187,7 +187,7 @@ namespace StellaQL
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransitionSelect(ac.name), contents, message); return true;
             }
             message.Append("構文エラー: "); message.Append( qt.MatchedSyntaxName); message.Append(" ");
-            message.Append(qt.MatchedSyntaxCaret); message.AppendLine(" 文字目まで一致"); return false;
+            message.Append(qt.MatchedSyntaxCaret); message.AppendLine(" 文字目まで一致（改行は２文字とカウント）"); return false;
         }
 
         /// <summary>
@@ -1199,22 +1199,24 @@ namespace StellaQL
 
             while (caret < query.Length) {
                 switch (query[caret]) {
-                    case '(': closeParen.Push(')'); caret++; break;
-                    case '[': closeParen.Push(']'); caret++; break;
-                    case '{': closeParen.Push('}'); caret++; break;
+                    case '(': closeParen.Push(')'); caret++; VarSpaces(query, ref caret); break;
+                    case '[': closeParen.Push(']'); caret++; VarSpaces(query, ref caret); break;
+                    case '{': closeParen.Push('}'); caret++; VarSpaces(query, ref caret); break;
                     case ')':
                     case ']':
                     case '}': if (query[caret] != closeParen.Peek()) { goto gt_Failure; }
-                        closeParen.Pop(); caret++; if (0 == closeParen.Count) { goto gt_Finish; } break;
+                        closeParen.Pop(); caret++; VarSpaces(query, ref caret);
+                        if (0 == closeParen.Count) { goto gt_Finish; } break;
                     default: if (!VarWord(query, ref caret, out word)) { goto gt_Failure; } break;
                 }
             }
             gt_Finish:
-            if (caret == query.Length) { parentesis = query.Substring(oldCaret); }
-            else { parentesis = query.Substring(oldCaret, caret - oldCaret); }
+            if (caret == query.Length) { parentesis = query.Substring(oldCaret).TrimEnd(); }
+            else { parentesis = query.Substring(oldCaret, caret - oldCaret).TrimEnd(); }
             VarSpaces(query, ref caret); return true;
             gt_Failure:
-            parentesis = ""; return false;
+            parentesis = query.Substring(oldCaret, caret - oldCaret); // エラーだが、解析したところまでは返したい。
+            return false;
         }
 
         /// <summary>

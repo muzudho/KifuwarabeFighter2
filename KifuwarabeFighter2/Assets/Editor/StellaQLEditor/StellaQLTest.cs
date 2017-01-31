@@ -840,7 +840,7 @@ namespace StellaQL
         [Test]
         public void N80_Lexical_VarParentesis()
         {
-            string query = " ( ( Dash ) [ Punch Kick ] ) ";
+            string query = "( ( Dash ) [ Punch Kick ] ) ";
             int caret = 0;
             string parenthesis;
 
