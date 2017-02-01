@@ -1,11 +1,3 @@
-Name,Type,Input,[EOL],
-layerNum,int,False,
-machineStateNum,int,False,
-stateNum,int,False,
-transitionNum,int,False,
-conditionNum,int,False,
-mode,other,False,
-parameter,string,True,
-threshold,float,True,
-
+Name,Type,KeyField,Input,[EOL],
+layerNum,int,Identify,False,machineStateNum,int,Identify,False,stateNum,int,Identify,False,transitionNum,int,Identify,False,conditionNum,int,Identify,False,mode,other,None,False,parameter,string,None,True,threshold,float,None,True,
 [EOF],

@@ -138,20 +138,19 @@ public class StateCmdline : EditorWindow
         {
             Debug.Log("Start☆（＾～＾）！ filename(without extension) = " + ac.name);
 
-            AniconDataUtility.WriteCsv_Parameters(ac, false, message);
-            AniconDataUtility.WriteCsv_Parameters(ac, true, message);
             AniconData aniconData;
             AniconDataUtility.ScanAnimatorController(ac, out aniconData, message);
             bool outputDefinition = false;
             for (int i=0; i<2; i++)
             {
                 if (i == 1) { outputDefinition = true; }
-                AniconDataUtility.WriteCsv_Layer(aniconData, ac.name, outputDefinition, message);
-                AniconDataUtility.WriteCsv_Statemachine(aniconData, ac.name, outputDefinition, message);
-                AniconDataUtility.WriteCsv_State(aniconData, ac.name, outputDefinition, message);
-                AniconDataUtility.WriteCsv_Transition(aniconData, ac.name, outputDefinition, message);
-                AniconDataUtility.WriteCsv_Condition(aniconData, ac.name, outputDefinition, message);
-                AniconDataUtility.WriteCsv_Position(aniconData, ac.name, outputDefinition, message);
+                AniconDataUtility.WriteCsv_Parameters(aniconData, ac.name, outputDefinition, message);
+                AniconDataUtility.WriteCsv_Layers(aniconData, ac.name, outputDefinition, message);
+                AniconDataUtility.WriteCsv_Statemachines(aniconData, ac.name, outputDefinition, message);
+                AniconDataUtility.WriteCsv_States(aniconData, ac.name, outputDefinition, message);
+                AniconDataUtility.WriteCsv_Transitions(aniconData, ac.name, outputDefinition, message);
+                AniconDataUtility.WriteCsv_Conditions(aniconData, ac.name, outputDefinition, message);
+                AniconDataUtility.WriteCsv_Positions(aniconData, ac.name, outputDefinition, message);
             }
 
             infoMessage = message.ToString();

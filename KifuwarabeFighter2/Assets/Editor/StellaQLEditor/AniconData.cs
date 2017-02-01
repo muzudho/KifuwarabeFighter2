@@ -13,6 +13,13 @@ namespace StellaQL
     /// </summary>
     public class RecordDefinition
     {
+        public enum KeyType
+        {
+            Identify,
+            Presentable,
+            None,
+        }
+
         public enum FieldType
         {
             Int,
@@ -22,10 +29,11 @@ namespace StellaQL
             Other,//対応外
         }
 
-        public RecordDefinition(string name, FieldType type, bool input)
+        public RecordDefinition(string name, FieldType type, KeyType keyField, bool input)
         {
             this.Name = name;
             this.Type = type;
+            this.KeyField = keyField;
             this.Input = input;
         }
 
@@ -37,7 +45,12 @@ namespace StellaQL
         /// <summary>
         /// 型
         /// </summary>
-        public RecordDefinition.FieldType Type { get; private set; }
+        public FieldType Type { get; private set; }
+
+        /// <summary>
+        /// キーとして利用できるフィールドか
+        /// </summary>
+        public KeyType KeyField { get; private set; }
 
         /// <summary>
         /// スプレッド・シートから入力可能か
@@ -64,8 +77,9 @@ namespace StellaQL
                     contents.Append(Type.ToString().Substring(0, 1).ToLower()); // 型名の先頭を小文字にする
                     contents.Append(Type.ToString().Substring(1));
                     contents.Append(",");
+                    contents.Append(KeyField); contents.Append(",");
                     contents.Append(Input); contents.Append(",");
-                    contents.AppendLine();
+                    //contents.AppendLine();
                 }
             }
             else // 1フィールド分を出力するなら
@@ -96,7 +110,70 @@ namespace StellaQL
                 }
             }
         }
+
+        public static void AppendDefinitionHeader(StringBuilder contents)
+        {
+            contents.AppendLine("Name,Type,KeyField,Input,[EOL],"); // 列定義ヘッダー出力
+        }
     }
+
+    /// <summary>
+    /// パラメーター
+    /// </summary>
+    public class ParameterRecord
+    {
+        static ParameterRecord()
+        {
+            List<RecordDefinition> temp = new List<RecordDefinition>()
+            {
+                new RecordDefinition("num", RecordDefinition.FieldType.Int, RecordDefinition.KeyType.Identify, false),
+                new RecordDefinition("name", RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("numberBool", RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("numberFloat", RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("numberInt", RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("nameHash", RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,true),
+            };
+            Definitions = new Dictionary<string, RecordDefinition>();
+            foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
+            Empty = new ParameterRecord(-1, "", false, 0.0f, -1, 0);
+        }
+        public static Dictionary<string, RecordDefinition> Definitions { get; private set; }
+        public static ParameterRecord Empty { get; private set; }
+
+        public ParameterRecord(int num, string name, bool numberBool, float numberFloat, int numberInt, int nameHash)
+        {
+            this.Fields = new Dictionary<string, object>()
+            {
+                { "num",num },
+                { "name", name},
+                { "numberBool", numberBool },
+                { "numberFloat", numberFloat},
+                { "numberInt", numberInt},
+                { "nameHash", nameHash},
+            };
+        }
+        public Dictionary<string, object> Fields { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c">contents (コンテンツ)</param>
+        /// <param name="n">output column name (列名出力)</param>
+        /// <param name="d">output definition (列定義出力)</param>
+        public void AppendCsvLine(StringBuilder c, bool n, bool d)
+        {
+            Definitions["num"].AppendCsv(Fields, c, n, d);
+            Definitions["name"].AppendCsv(Fields, c, n, d);
+            Definitions["numberBool"].AppendCsv(Fields, c, n, d);
+            Definitions["numberFloat"].AppendCsv(Fields, c, n, d);
+            Definitions["numberInt"].AppendCsv(Fields, c, n, d);
+            Definitions["nameHash"].AppendCsv(Fields, c, n, d);
+            if (n) { c.Append("[EOL],"); }
+            c.AppendLine();
+        }
+
+    }
+
 
     /// <summary>
     /// レイヤー
@@ -107,14 +184,14 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("name",RecordDefinition.FieldType.String,false),
-                new RecordDefinition("avatarMask",RecordDefinition.FieldType.Other,false),
-                new RecordDefinition("blendingMode",RecordDefinition.FieldType.Other,false),
-                new RecordDefinition("defaultWeight",RecordDefinition.FieldType.Float,true),
-                new RecordDefinition("iKPass",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("syncedLayerAffectsTiming",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("syncedLayerIndex",RecordDefinition.FieldType.Int,true),
+                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int, RecordDefinition.KeyType.Identify, false),
+                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("avatarMask",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("blendingMode",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("defaultWeight",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("iKPass",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("syncedLayerAffectsTiming",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("syncedLayerIndex",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,true),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -169,15 +246,15 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("parentPath",RecordDefinition.FieldType.String,false),
-                new RecordDefinition("anyStateTransitions",RecordDefinition.FieldType.Other,false),
-                new RecordDefinition("behaviours",RecordDefinition.FieldType.Other,false),
-                new RecordDefinition("defaultState",RecordDefinition.FieldType.Other,false),
-                new RecordDefinition("entryTransitions",RecordDefinition.FieldType.Other,false),
-                new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,false),
-                new RecordDefinition("name",RecordDefinition.FieldType.String,false),
+                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("parentPath",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("anyStateTransitions",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("behaviours",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("defaultState",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("entryTransitions",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -194,12 +271,12 @@ namespace StellaQL
                 { "layerNum",layerNum },//レイヤー行番号
                 { "machineStateNum", machineStateNum},
                 { "parentPath",parentPath },
+                { "name", stateMachine.name},
                 { "anyStateTransitions", stateMachine.anyStateTransitions == null ? "" : stateMachine.anyStateTransitions.ToString()},
                 { "behaviours", stateMachine.behaviours == null ? "" : stateMachine.behaviours.ToString()},
                 { "defaultState", stateMachine.defaultState == null ? "" : stateMachine.defaultState.ToString()},
                 { "entryTransitions", stateMachine.entryTransitions == null ? "" : stateMachine.entryTransitions.ToString()},
                 { "hideFlags", stateMachine.hideFlags.ToString()},
-                { "name", stateMachine.name},
             };
 
             if (stateMachine.anyStatePosition != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "anyStatePosition", stateMachine.anyStatePosition)); }
@@ -240,25 +317,25 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("stateNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("parentPath",RecordDefinition.FieldType.String,false),
-                new RecordDefinition("cycleOffset",RecordDefinition.FieldType.Float,true),
-                new RecordDefinition("cycleOffsetParameter",RecordDefinition.FieldType.String,true),
-                new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,false),
-                new RecordDefinition("iKOnFeet",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("mirror",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("mirrorParameter",RecordDefinition.FieldType.String,true),
-                new RecordDefinition("mirrorParameterActive",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("motion_name",RecordDefinition.FieldType.String,false),
-                new RecordDefinition("name",RecordDefinition.FieldType.String,false),
-                new RecordDefinition("nameHash",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("speed",RecordDefinition.FieldType.Float,true),
-                new RecordDefinition("speedParameter",RecordDefinition.FieldType.String,true),
-                new RecordDefinition("speedParameterActive",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("tag",RecordDefinition.FieldType.String,true),
-                new RecordDefinition("writeDefaultValues",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("stateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("parentPath",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("cycleOffset",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("cycleOffsetParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("iKOnFeet",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("mirror",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("mirrorParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("mirrorParameterActive",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("motion_name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("nameHash",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("speed",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("speedParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("speedParameterActive",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("tag",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("writeDefaultValues",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -281,6 +358,7 @@ namespace StellaQL
                 { "machineStateNum", machineStateNum},
                 { "stateNum",stateNum },
                 { "parentPath", parentPath},
+                { "name", state.name},
                 { "cycleOffset", state.cycleOffset},
                 { "cycleOffsetParameter", state.cycleOffsetParameter},
                 { "hideFlags", state.hideFlags.ToString()},
@@ -289,7 +367,6 @@ namespace StellaQL
                 { "mirrorParameter",state.mirrorParameter },
                 { "mirrorParameterActive",state.mirrorParameterActive },
                 { "motion_name", state.motion == null ? "" : state.motion.name},// とりあえず名前だけ☆
-                { "name", state.name},
                 { "nameHash", state.nameHash},// このハッシュは有効なのだろうか？
                 { "speed", state.speed},
                 { "speedParameter", state.speedParameter},
@@ -312,6 +389,7 @@ namespace StellaQL
             Definitions["machineStateNum"].AppendCsv(Fields, c, n, d);
             Definitions["stateNum"].AppendCsv(Fields, c, n, d);
             Definitions["parentPath"].AppendCsv(Fields, c, n, d); // パス（名前抜き）
+            Definitions["name"].AppendCsv(Fields, c, n, d);
             Definitions["cycleOffset"].AppendCsv(Fields, c, n, d);
             Definitions["cycleOffsetParameter"].AppendCsv(Fields, c, n, d);
             Definitions["hideFlags"].AppendCsv(Fields, c, n, d);
@@ -320,7 +398,6 @@ namespace StellaQL
             Definitions["mirrorParameter"].AppendCsv(Fields, c, n, d);
             Definitions["mirrorParameterActive"].AppendCsv(Fields, c, n, d);
             Definitions["motion_name"].AppendCsv(Fields, c, n, d);
-            Definitions["name"].AppendCsv(Fields, c, n, d);
             Definitions["nameHash"].AppendCsv(Fields, c, n, d);
             Definitions["speed"].AppendCsv(Fields, c, n, d);
             Definitions["speedParameter"].AppendCsv(Fields, c, n, d);
@@ -342,27 +419,27 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("stateNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("transitionNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("canTransitionToSelf",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("destinationState_name",RecordDefinition.FieldType.String,false),
-                new RecordDefinition("destinationState_nameHash",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("destinationStateMachine_name",RecordDefinition.FieldType.String,false),
-                new RecordDefinition("duration",RecordDefinition.FieldType.Float,true),
-                new RecordDefinition("exitTime",RecordDefinition.FieldType.Float,true),
-                new RecordDefinition("hasExitTime",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("hasFixedDuration",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,false),
-                new RecordDefinition("interruptionSource",RecordDefinition.FieldType.Other,false),
-                new RecordDefinition("isExit",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("mute",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("name",RecordDefinition.FieldType.String,false),
-                new RecordDefinition("offset",RecordDefinition.FieldType.Float,true),
-                new RecordDefinition("orderedInterruption",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("solo",RecordDefinition.FieldType.Bool,true),
-                new RecordDefinition("stellaQLComment",RecordDefinition.FieldType.String,false),
+                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("stateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("transitionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("canTransitionToSelf",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("destinationState_name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("destinationState_nameHash",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("destinationStateMachine_name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("duration",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("exitTime",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("hasExitTime",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("hasFixedDuration",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("interruptionSource",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("isExit",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("mute",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("offset",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("orderedInterruption",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("solo",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("stellaQLComment",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -380,6 +457,7 @@ namespace StellaQL
                 { "machineStateNum", machineStateNum},
                 { "stateNum", stateNum},
                 { "transitionNum", transitionNum},
+                { "name", transition.name},
                 { "stellaQLComment", stellaQLComment},
                 { "canTransitionToSelf", transition.canTransitionToSelf},
                 { "destinationState_name", transition.destinationState == null ? "" : transition.destinationState.name},// 名前のみ取得
@@ -393,7 +471,6 @@ namespace StellaQL
                 { "interruptionSource", transition.interruptionSource.ToString()},
                 { "isExit", transition.isExit},
                 { "mute", transition.mute},
-                { "name", transition.name},
                 { "offset", transition.offset},
                 { "orderedInterruption", transition.orderedInterruption},
                 { "solo", transition.solo},
@@ -443,14 +520,14 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("stateNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("transitionNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("conditionNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("mode",RecordDefinition.FieldType.Other,false),
-                new RecordDefinition("parameter",RecordDefinition.FieldType.String,true),
-                new RecordDefinition("threshold",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("stateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("transitionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("conditionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("mode",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("parameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("threshold",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -506,21 +583,21 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("stateNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("transitionNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("conditionNum",RecordDefinition.FieldType.Int,false),
-                new RecordDefinition("proertyName",RecordDefinition.FieldType.String,false),
-                new RecordDefinition("magnitude",RecordDefinition.FieldType.Float,false),
-                new RecordDefinition("normalized",RecordDefinition.FieldType.Other,false),
-                new RecordDefinition("normalizedX",RecordDefinition.FieldType.Float,true),
-                new RecordDefinition("normalizedY",RecordDefinition.FieldType.Float,true),
-                new RecordDefinition("normalizedZ",RecordDefinition.FieldType.Float,true),
-                new RecordDefinition("sqrMagnitude",RecordDefinition.FieldType.Float,true),
-                new RecordDefinition("x",RecordDefinition.FieldType.Float,true),
-                new RecordDefinition("y",RecordDefinition.FieldType.Float,true),
-                new RecordDefinition("z",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("stateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("transitionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("conditionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("proertyName",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("magnitude",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("normalized",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("normalizedX",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("normalizedY",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("normalizedZ",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("sqrMagnitude",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("x",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("y",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("z",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -585,6 +662,7 @@ namespace StellaQL
     {
         public AniconData()
         {
+            table_parameter = new HashSet<ParameterRecord>();
             table_layer = new List<LayerRecord>();
             table_statemachine = new List<StatemachineRecord>();
             table_state = new HashSet<StateRecord>();
@@ -593,6 +671,7 @@ namespace StellaQL
             table_position = new List<PositionRecord>();
         }
 
+        public HashSet<ParameterRecord> table_parameter { get; set; }
         public List<LayerRecord> table_layer { get; set; }
         public List<StatemachineRecord> table_statemachine { get; set; }
         public HashSet<StateRecord> table_state { get; set; }
@@ -605,45 +684,30 @@ namespace StellaQL
     public abstract class AniconDataUtility
     {
 
-        public static void WriteCsv_Parameters(AnimatorController ac, bool outputDefinition, StringBuilder message)
+        public static void WriteCsv_Parameters(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
-            message.AppendLine("Parameters Scanning...☆（＾～＾）");
-
             StringBuilder contents = new StringBuilder();
-            // 見出し列
-            contents.AppendLine("Num,Name,Bool,Float,Int,NameHash,[EOL],");
-
-            AnimatorControllerParameter[] acpArray = ac.parameters;
-            int num = 0;
-            foreach (AnimatorControllerParameter acp in acpArray)
+            if (outputDefinition)
             {
-                contents.Append(num);
-                contents.Append(",");
-                contents.Append(acp.name);
-                contents.Append(",");
-                contents.Append(acp.defaultBool);
-                contents.Append(",");
-                contents.Append(acp.defaultFloat);
-                contents.Append(",");
-                contents.Append(acp.defaultInt);
-                contents.Append(",");
-                contents.Append(acp.nameHash);
-                contents.Append(",");
-
-                contents.AppendLine();
-                num++;
+                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
+                ParameterRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+            }
+            else
+            {
+                ParameterRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                foreach (ParameterRecord record in aniconData.table_parameter) { record.AppendCsvLine(contents, false, outputDefinition); }
             }
 
             contents.AppendLine("[EOF],");
-            StellaQLWriter.Write(StellaQLWriter.Filepath_LogParameters(ac.name, outputDefinition), contents, message);
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogParameters(aniconName, outputDefinition), contents, message);
         }
 
-        public static void WriteCsv_Layer(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
+        public static void WriteCsv_Layers(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
 
             if (outputDefinition) {
-                contents.AppendLine("Name,Type,Input,[EOL],"); // 列定義ヘッダー出力
+                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
                 LayerRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
             }
             else
@@ -656,13 +720,13 @@ namespace StellaQL
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogLayer(aniconName, outputDefinition), contents, message);
         }
 
-        public static void WriteCsv_Statemachine(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
+        public static void WriteCsv_Statemachines(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
 
             if (outputDefinition)
             {
-                contents.AppendLine("Name,Type,Input,[EOL],"); // 列定義ヘッダー出力
+                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
                 StatemachineRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
             }
             else {
@@ -678,7 +742,7 @@ namespace StellaQL
         {
             if (outputDefinition)
             {
-                contents.AppendLine("Name,Type,Input,[EOL],"); // 列定義ヘッダー出力
+                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
                 StateRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
             }
             else {
@@ -686,7 +750,7 @@ namespace StellaQL
                 foreach (StateRecord stateRecord in table) { stateRecord.AppendCsvLine(contents, false, outputDefinition); }
             }
         }
-        public static void WriteCsv_State( AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
+        public static void WriteCsv_States( AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
             CreateCsvTable_State( aniconData.table_state, outputDefinition, contents);
@@ -699,7 +763,7 @@ namespace StellaQL
         {
             if (outputDefinition)
             {
-                contents.AppendLine("Name,Type,Input,[EOL],"); // 列定義ヘッダー出力
+                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
                 TransitionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
             }
             else {
@@ -707,7 +771,7 @@ namespace StellaQL
                 foreach (TransitionRecord record in table) { record.AppendCsvLine(contents, false, outputDefinition); }
             }
         }
-        public static void WriteCsv_Transition(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
+        public static void WriteCsv_Transitions(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
             CreateCsvTable_Transition(aniconData.table_transition, outputDefinition, contents);
@@ -716,13 +780,13 @@ namespace StellaQL
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransition(aniconName, outputDefinition), contents, message);
         }
 
-        public static void WriteCsv_Condition(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
+        public static void WriteCsv_Conditions(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
 
             if (outputDefinition)
             {
-                contents.AppendLine("Name,Type,Input,[EOL],"); // 列定義ヘッダー出力
+                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
                 ConditionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
             }
             else {
@@ -734,13 +798,13 @@ namespace StellaQL
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogConditions(aniconName, outputDefinition), contents, message);
         }
 
-        public static void WriteCsv_Position(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
+        public static void WriteCsv_Positions(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
 
             if (outputDefinition)
             {
-                contents.AppendLine("Name,Type,Input,[EOL],"); // 列定義ヘッダー出力
+                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
                 PositionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
             }
             else {
@@ -765,8 +829,20 @@ namespace StellaQL
 
         public static void ScanAnimatorController(AnimatorController ac, out AniconData aniconData, StringBuilder message)
         {
-            message.AppendLine("States Scanning...☆（＾～＾）");
+            message.AppendLine("Animator controller Scanning...☆（＾～＾）");
             aniconData = new AniconData();
+
+            // パラメーター
+            {
+                AnimatorControllerParameter[] acpArray = ac.parameters;
+                int num = 0;
+                foreach (AnimatorControllerParameter acp in acpArray)
+                {
+                    ParameterRecord record = new ParameterRecord(num, acp.name, acp.defaultBool, acp.defaultFloat, acp.defaultInt, acp.nameHash);
+                    aniconData.table_parameter.Add(record);
+                    num++;
+                }
+            }
 
             foreach (AnimatorControllerLayer layer in ac.layers)//レイヤー
             {

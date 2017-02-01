@@ -1,4 +1,4 @@
-Num,Name,Bool,Float,Int,NameHash,[EOL],
+num,name,numberBool,numberFloat,numberInt,nameHash,[EOL],
 0,atkLP,False,0,0,-183964905,
 1,atkMP,False,0,0,-334243242,
 2,atkHP,False,0,0,-1855705581,
