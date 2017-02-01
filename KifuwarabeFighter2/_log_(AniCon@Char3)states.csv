@@ -1,4 +1,4 @@
-LayerNum,MachineStateNum,StateNum,ParentPath,cycleOffset,cycleOffsetParameter,hideFlags,iKOnFeet,mirror,mirrorParameter,mirrorParameterActive,motion_name,name,nameHash,speed,speedParameter,speedParameterActive,tag,writeDefaultValues,
+layerNum,machineStateNum,stateNum,parentPath,cycleOffset,cycleOffsetParameter,hideFlags,iKOnFeet,mirror,mirrorParameter,mirrorParameterActive,motion_name,name,nameHash,speed,speedParameter,speedParameterActive,tag,writeDefaultValues,
 1,1,0,Base Layer.,0,,HideInHierarchy,False,False,,False,Char3@SWait,SWait,1158263233,15,,False,,True,
 1,1,1,Base Layer.,0,,HideInHierarchy,False,False,,False,Char3@SAtkLP,SAtkLP,-919344908,6,velY,False,,True,
 1,1,2,Base Layer.,0,,HideInHierarchy,False,False,,False,Char3@SAtkMP,SAtkMP,-802629195,2.8571,,False,,True,

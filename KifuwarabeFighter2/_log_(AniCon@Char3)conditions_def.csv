@@ -1,0 +1,10 @@
+Name,Type,Input,
+layerNum,int,False,
+machineStateNum,int,False,
+stateNum,int,False,
+transitionNum,int,False,
+conditionNum,int,False,
+mode,other,False,
+parameter,string,True,
+threshold,float,True,
+
