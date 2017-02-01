@@ -1,4 +1,4 @@
-LayerNum,MachineStateNum,StateNum,ParentPath,cycleOffset,cycleOffsetParameter,hideFlags,iKOnFeet,mirror,mirrorParameter,mirrorParameterActive,motion_name,name,nameHash,speed,speedParameter,speedParameterActive,tag,writeDefaultValues,
+layerNum,machineStateNum,stateNum,parentPath,cycleOffset,cycleOffsetParameter,hideFlags,iKOnFeet,mirror,mirrorParameter,mirrorParameterActive,motion_name,name,nameHash,speed,speedParameter,speedParameterActive,tag,writeDefaultValues,
 1,1,0,Base Layer.,0,,HideInHierarchy,False,False,,False,,Alpaca,2135656967,1,,False,,True,
 1,1,1,Base Layer.,0,,"HideInHierarchy, HideInInspector",False,False,,False,,Bear,-1666708329,1,,False,,True,
 1,1,2,Base Layer.,0,,"HideInHierarchy, HideInInspector",False,False,,False,,Cat,-1508702904,1.23,4.5,False,,True,

@@ -9,78 +9,154 @@ using UnityEngine;
 namespace StellaQL
 {
     /// <summary>
+    /// 列定義レコード
+    /// </summary>
+    public class RecordDefinition
+    {
+        public enum FieldType
+        {
+            Int,
+            Float,
+            Bool,
+            String,
+            Other,//対応外
+        }
+
+        public RecordDefinition(string name, FieldType type, bool input)
+        {
+            this.Name = name;
+            this.Type = type;
+            this.Input = input;
+        }
+
+        /// <summary>
+        /// 列名
+        /// </summary>
+        public string Name { get; private set; }
+
+        /// <summary>
+        /// 型
+        /// </summary>
+        public RecordDefinition.FieldType Type { get; private set; }
+
+        /// <summary>
+        /// スプレッド・シートから入力可能か
+        /// </summary>
+        public bool Input { get; private set; }
+
+        /// <summary>
+        /// 列の記入漏れを防ぐためのものだぜ☆（＾～＾）
+        /// </summary>
+        /// <param name="fields"></param>
+        /// <param name="c">contents (コンテンツ)</param>
+        /// <param name="n">output column name (列名出力)</param>
+        /// <param name="d">output definition (列定義出力)</param>
+        public void AppendCsv(Dictionary<string, object> fields, StringBuilder contents, bool outputColumnName, bool outputDefinition)
+        {
+            if (outputDefinition) // 列定義一列分を出力するなら
+            {
+                if (outputColumnName) // 列名を出力するなら
+                {
+                }
+                else
+                {
+                    contents.Append(Name); contents.Append(",");
+                    contents.Append(Type.ToString().Substring(0, 1).ToLower()); // 型名の先頭を小文字にする
+                    contents.Append(Type.ToString().Substring(1));
+                    contents.Append(",");
+                    contents.Append(Input); contents.Append(",");
+                    contents.AppendLine();
+                }
+            }
+            else // 1フィールド分を出力するなら
+            {
+                if (outputColumnName) // 列名を出力するなら
+                {
+                    switch (this.Type)
+                    {
+                        case FieldType.Int://thru
+                        case FieldType.Float:
+                        case FieldType.Bool: contents.Append(this.Name); contents.Append(","); break;
+                        case FieldType.String://thru
+                        case FieldType.Other:
+                        default: contents.Append(this.Name); contents.Append(","); break;
+                    }
+                }
+                else
+                {
+                    switch (this.Type)
+                    {
+                        case FieldType.Int://thru
+                        case FieldType.Float:
+                        case FieldType.Bool: contents.Append(fields[Name]); contents.Append(","); break;
+                        case FieldType.String://thru
+                        case FieldType.Other:
+                        default: contents.Append(CsvParser.EscapeCell((string)fields[Name])); contents.Append(","); break;
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// レイヤー
     /// </summary>
     public class LayerRecord
     {
-        #region プロパティー
-        /// <summary>
-        /// レイヤー行番号
-        /// </summary>
-        public int layerNum;
-
-        /// <summary>
-        /// レイヤー名
-        /// </summary>
-        public string name;
-
-        /// <summary>
-        /// 略
-        /// </summary>
-        public string avatarMask;
-
-        /// <summary>
-        /// 略
-        /// </summary>
-        public string blendingMode;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public float defaultWeight;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool iKPass;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool syncedLayerAffectsTiming;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int syncedLayerIndex;
-        #endregion
+        static LayerRecord()
+        {
+            List<RecordDefinition> temp = new List<RecordDefinition>()
+            {
+                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("name",RecordDefinition.FieldType.String,false),
+                new RecordDefinition("avatarMask",RecordDefinition.FieldType.Other,false),
+                new RecordDefinition("blendingMode",RecordDefinition.FieldType.Other,false),
+                new RecordDefinition("defaultWeight",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("iKPass",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("syncedLayerAffectsTiming",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("syncedLayerIndex",RecordDefinition.FieldType.Int,true),
+            };
+            Definitions = new Dictionary<string, RecordDefinition>();
+            foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
+            Empty = new LayerRecord(-1, new AnimatorControllerLayer());
+        }
+        public static Dictionary<string, RecordDefinition> Definitions { get; private set; }
+        public static LayerRecord Empty { get; private set; }
 
         public LayerRecord(int num, AnimatorControllerLayer layer)
         {
-            layerNum = num;
-            name = layer.name;
-            avatarMask = layer.avatarMask == null ? "" : layer.avatarMask.ToString();
-            blendingMode = layer.blendingMode.ToString();
-            defaultWeight = layer.defaultWeight;
-            iKPass = layer.iKPass;
-            syncedLayerAffectsTiming = layer.syncedLayerAffectsTiming;
-            syncedLayerIndex = layer.syncedLayerIndex;
+            this.Fields = new Dictionary<string, object>()
+            {
+                { "layerNum",num },//レイヤー行番号
+                { "name", layer.name},//レイヤー名
+                { "avatarMask",layer.avatarMask == null ? "" : layer.avatarMask.ToString() },
+                { "blendingMode", layer.blendingMode.ToString()},
+                { "defaultWeight", layer.defaultWeight},
+                { "iKPass", layer.iKPass},
+                { "syncedLayerAffectsTiming", layer.syncedLayerAffectsTiming},
+                { "syncedLayerIndex", layer.syncedLayerIndex},
+            };
         }
+        public Dictionary<string,object> Fields { get; set; }
 
-        public void CreateCsvLine(StringBuilder contents)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c">contents (コンテンツ)</param>
+        /// <param name="n">output column name (列名出力)</param>
+        /// <param name="d">output definition (列定義出力)</param>
+        public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            contents.Append(layerNum); contents.Append(","); // レイヤー行番号
-            contents.Append(CsvParser.EscapeCell( name)); contents.Append(","); // レイヤー名
-            contents.Append(CsvParser.EscapeCell(avatarMask)); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(blendingMode)); contents.Append(",");
-            contents.Append(defaultWeight); contents.Append(",");
-            contents.Append(iKPass); contents.Append(",");
-            contents.Append(syncedLayerAffectsTiming); contents.Append(",");
-            contents.Append(syncedLayerIndex); contents.Append(",");
-            contents.AppendLine();
+            Definitions["layerNum"].AppendCsv(Fields, c, n, d); // レイヤー行番号
+            Definitions["name"].AppendCsv(Fields, c, n, d); // レイヤー名
+            Definitions["avatarMask"].AppendCsv(Fields, c, n, d);
+            Definitions["blendingMode"].AppendCsv(Fields, c, n, d);
+            Definitions["defaultWeight"].AppendCsv(Fields, c, n, d);
+            Definitions["iKPass"].AppendCsv(Fields, c, n, d);
+            Definitions["syncedLayerAffectsTiming"].AppendCsv(Fields, c, n, d);
+            Definitions["syncedLayerIndex"].AppendCsv(Fields, c, n, d);
+            c.AppendLine();
         }
-
-        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine( "LayerNum,LayerName,avatarMask,blendingMode,defaultWeight,iKPass,syncedLayerAffectsTiming,syncedLayerIndex,"); }
     }
 
     /// <summary>
@@ -88,72 +164,69 @@ namespace StellaQL
     /// </summary>
     public class StatemachineRecord
     {
-        public int layerNum;
-        public int machineStateNum;
-        public string parentPath;
+        static StatemachineRecord()
+        {
+            List<RecordDefinition> temp = new List<RecordDefinition>()
+            {
+                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("parentPath",RecordDefinition.FieldType.String,false),
+                new RecordDefinition("anyStateTransitions",RecordDefinition.FieldType.Other,false),
+                new RecordDefinition("behaviours",RecordDefinition.FieldType.Other,false),
+                new RecordDefinition("defaultState",RecordDefinition.FieldType.Other,false),
+                new RecordDefinition("entryTransitions",RecordDefinition.FieldType.Other,false),
+                new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,false),
+                new RecordDefinition("name",RecordDefinition.FieldType.String,false),
+            };
+            Definitions = new Dictionary<string, RecordDefinition>();
+            foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
 
-        public string anyStateTransitions;
-        public string behaviours;
-        public string defaultState;
-        public string entryTransitions;
-        public string hideFlags;
-        public string name;
+            Empty = new StatemachineRecord(-1,-1,"",new AnimatorStateMachine(),new List<PositionRecord>());
+        }
+        public static Dictionary<string, RecordDefinition> Definitions { get; private set; }
+        public static StatemachineRecord Empty { get; private set; }
 
         public StatemachineRecord(int layerNum, int machineStateNum, string parentPath, AnimatorStateMachine stateMachine, List<PositionRecord> positionsTable)
         {
-            this.layerNum = layerNum;
-            this.machineStateNum = machineStateNum;
-            this.parentPath = parentPath;
-
-            if (stateMachine.anyStatePosition != null)
+            this.Fields = new Dictionary<string, object>()
             {
-                positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "anyStatePosition", stateMachine.anyStatePosition));
-            }
+                { "layerNum",layerNum },//レイヤー行番号
+                { "machineStateNum", machineStateNum},
+                { "parentPath",parentPath },
+                { "anyStateTransitions", stateMachine.anyStateTransitions == null ? "" : stateMachine.anyStateTransitions.ToString()},
+                { "behaviours", stateMachine.behaviours == null ? "" : stateMachine.behaviours.ToString()},
+                { "defaultState", stateMachine.defaultState == null ? "" : stateMachine.defaultState.ToString()},
+                { "entryTransitions", stateMachine.entryTransitions == null ? "" : stateMachine.entryTransitions.ToString()},
+                { "hideFlags", stateMachine.hideFlags.ToString()},
+                { "name", stateMachine.name},
+            };
 
-            anyStateTransitions = stateMachine.anyStateTransitions == null ? "" : stateMachine.anyStateTransitions.ToString();
-            behaviours = stateMachine.behaviours == null ? "" : stateMachine.behaviours.ToString();
-            defaultState = stateMachine.defaultState == null ? "" : stateMachine.defaultState.ToString();
-
-            if (stateMachine.entryPosition != null)
-            {
-                positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "entryPosition", stateMachine.entryPosition));
-                //entryPosition = stateMachine.entryPosition == null ? "" : stateMachine.entryPosition.ToString();
-            }
-
-            entryTransitions = stateMachine.entryTransitions == null ? "" : stateMachine.entryTransitions.ToString();
-
-            if (stateMachine.exitPosition != null)
-            {
-                positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "exitPosition", stateMachine.exitPosition));
-                //exitPosition = stateMachine.exitPosition == null ? "" : stateMachine.exitPosition.ToString();
-            }
-
-            hideFlags = stateMachine.hideFlags.ToString();
-            name = stateMachine.name;
-
-            if (stateMachine.parentStateMachinePosition != null)
-            {
-                positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "parentStateMachinePosition", stateMachine.parentStateMachinePosition));
-                //parentStateMachinePosition = stateMachine.parentStateMachinePosition == null ? "" : stateMachine.parentStateMachinePosition.ToString();
-            }
+            if (stateMachine.anyStatePosition != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "anyStatePosition", stateMachine.anyStatePosition)); }
+            if (stateMachine.entryPosition != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "entryPosition", stateMachine.entryPosition)); }
+            if (stateMachine.exitPosition != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "exitPosition", stateMachine.exitPosition)); }
+            if (stateMachine.parentStateMachinePosition != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "parentStateMachinePosition", stateMachine.parentStateMachinePosition)); }
         }
+        public Dictionary<string, object> Fields { get; set; }
 
-        public void CreateCsvLine(StringBuilder contents)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c">contents (コンテンツ)</param>
+        /// <param name="n">output column name (列名出力)</param>
+        /// <param name="d">output definition (列定義出力)</param>
+        public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            contents.Append(layerNum); contents.Append(",");
-            contents.Append(machineStateNum); contents.Append(",");
-            contents.Append(parentPath); contents.Append(",");
-
-            contents.Append(CsvParser.EscapeCell(anyStateTransitions)); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(behaviours)); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(defaultState)); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(entryTransitions)); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(hideFlags)); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(name)); contents.Append(",");
-            contents.AppendLine();
+            Definitions["layerNum"].AppendCsv(Fields, c, n, d); // レイヤー行番号
+            Definitions["machineStateNum"].AppendCsv(Fields, c, n, d);
+            Definitions["parentPath"].AppendCsv(Fields, c, n, d);
+            Definitions["anyStateTransitions"].AppendCsv(Fields, c, n, d);
+            Definitions["behaviours"].AppendCsv(Fields, c, n, d);
+            Definitions["defaultState"].AppendCsv(Fields, c, n, d);
+            Definitions["entryTransitions"].AppendCsv(Fields, c, n, d);
+            Definitions["hideFlags"].AppendCsv(Fields, c, n, d);
+            Definitions["name"].AppendCsv(Fields, c, n, d);
+            c.AppendLine();
         }
-
-        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine( "LayerNum,MachineStateNum,ParentPath,anyStateTransitions,behaviours,defaultState,entryTransitions,hideFlags,name,"); }
     }
 
     /// <summary>
@@ -161,29 +234,37 @@ namespace StellaQL
     /// </summary>
     public class StateRecord
     {
-        #region プロパティー
-        public int layerNum;
-        public int machineStateNum;
-        public int stateNum;
-        public string parentPath;
+        static StateRecord()
+        {
+            List<RecordDefinition> temp = new List<RecordDefinition>()
+            {
+                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("stateNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("parentPath",RecordDefinition.FieldType.String,false),
+                new RecordDefinition("cycleOffset",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("cycleOffsetParameter",RecordDefinition.FieldType.String,true),
+                new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,false),
+                new RecordDefinition("iKOnFeet",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("mirror",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("mirrorParameter",RecordDefinition.FieldType.String,true),
+                new RecordDefinition("mirrorParameterActive",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("motion_name",RecordDefinition.FieldType.String,false),
+                new RecordDefinition("name",RecordDefinition.FieldType.String,false),
+                new RecordDefinition("nameHash",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("speed",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("speedParameter",RecordDefinition.FieldType.String,true),
+                new RecordDefinition("speedParameterActive",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("tag",RecordDefinition.FieldType.String,true),
+                new RecordDefinition("writeDefaultValues",RecordDefinition.FieldType.Bool,true),
+            };
+            Definitions = new Dictionary<string, RecordDefinition>();
+            foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
 
-        //
-        public float cycleOffset;
-        public string cycleOffsetParameter;
-        public string hideFlags;
-        public bool iKOnFeet;
-        public bool mirror;
-        public string mirrorParameter;
-        public bool mirrorParameterActive;
-        public string motion_name;
-        public string name;
-        public int nameHash;
-        public float speed;
-        public string speedParameter;
-        public bool speedParameterActive;
-        public string tag;
-        public bool writeDefaultValues;
-        #endregion
+            Empty = new StateRecord(-1,-1,-1,"",new AnimatorState());
+        }
+        public static Dictionary<string, RecordDefinition> Definitions { get; private set; }
+        public static StateRecord Empty { get; private set; }
 
         public static StateRecord CreateInstance(int layerNum, int machineStateNum, int stateNum, string parentPath, ChildAnimatorState caState, List<PositionRecord> positionsTable)
         {
@@ -192,55 +273,60 @@ namespace StellaQL
         }
         public StateRecord(int layerNum, int machineStateNum, int stateNum, string parentPath, AnimatorState state)
         {
-            this.layerNum = layerNum;
-            this.machineStateNum = machineStateNum;
-            this.stateNum = stateNum;
-            this.parentPath = parentPath;
-
-            cycleOffset = state.cycleOffset;
-            cycleOffsetParameter = state.cycleOffsetParameter;
-            hideFlags = state.hideFlags.ToString();
-            iKOnFeet = state.iKOnFeet;
-            mirror = state.mirror;
-            mirrorParameter = state.mirrorParameter;
-            mirrorParameterActive = state.mirrorParameterActive;
-            motion_name = state.motion == null ? "" : state.motion.name; // とりあえず名前だけ☆
-            name = state.name;
-            nameHash = state.nameHash; // このハッシュは有効なのだろうか？
-            speed = state.speed;
-            speedParameter = state.speedParameter;
-            speedParameterActive = state.speedParameterActive;
-            tag = state.tag;
-            writeDefaultValues = state.writeDefaultValues;
+            this.Fields = new Dictionary<string, object>()
+            {
+                { "layerNum",layerNum },//レイヤー行番号
+                { "machineStateNum", machineStateNum},
+                { "stateNum",stateNum },
+                { "parentPath", parentPath},
+                { "cycleOffset", state.cycleOffset},
+                { "cycleOffsetParameter", state.cycleOffsetParameter},
+                { "hideFlags", state.hideFlags.ToString()},
+                { "iKOnFeet", state.iKOnFeet},
+                { "mirror", state.mirror},
+                { "mirrorParameter",state.mirrorParameter },
+                { "mirrorParameterActive",state.mirrorParameterActive },
+                { "motion_name", state.motion == null ? "" : state.motion.name},// とりあえず名前だけ☆
+                { "name", state.name},
+                { "nameHash", state.nameHash},// このハッシュは有効なのだろうか？
+                { "speed", state.speed},
+                { "speedParameter", state.speedParameter},
+                { "speedParameterActive", state.speedParameterActive},
+                { "tag", state.tag},
+                { "writeDefaultValues", state.writeDefaultValues},
+            };
         }
+        public Dictionary<string, object> Fields { get; set; }
 
-        public void CreateCsvLine(StringBuilder contents)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c">contents (コンテンツ)</param>
+        /// <param name="n">output column name (列名出力)</param>
+        /// <param name="d">output definition (列定義出力)</param>
+        public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            contents.Append(layerNum); contents.Append(",");
-            contents.Append(machineStateNum); contents.Append(",");
-            contents.Append(stateNum); contents.Append(",");
-            contents.Append(parentPath); contents.Append(","); // パス（名前抜き）
-
-            //
-            contents.Append(cycleOffset); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(cycleOffsetParameter)); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(hideFlags)); contents.Append(",");
-            contents.Append(iKOnFeet); contents.Append(",");
-            contents.Append(mirror); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(mirrorParameter)); contents.Append(",");
-            contents.Append(mirrorParameterActive); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(motion_name)); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(name)); contents.Append(",");
-            contents.Append(nameHash); contents.Append(",");
-            contents.Append(speed); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(speedParameter)); contents.Append(",");
-            contents.Append(speedParameterActive); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(tag)); contents.Append(",");
-            contents.Append(writeDefaultValues); contents.Append(",");
-            contents.AppendLine();
+            Definitions["layerNum"].AppendCsv(Fields, c, n, d); // レイヤー行番号
+            Definitions["machineStateNum"].AppendCsv(Fields, c, n, d);
+            Definitions["stateNum"].AppendCsv(Fields, c, n, d);
+            Definitions["parentPath"].AppendCsv(Fields, c, n, d); // パス（名前抜き）
+            Definitions["cycleOffset"].AppendCsv(Fields, c, n, d);
+            Definitions["cycleOffsetParameter"].AppendCsv(Fields, c, n, d);
+            Definitions["hideFlags"].AppendCsv(Fields, c, n, d);
+            Definitions["iKOnFeet"].AppendCsv(Fields, c, n, d);
+            Definitions["mirror"].AppendCsv(Fields, c, n, d);
+            Definitions["mirrorParameter"].AppendCsv(Fields, c, n, d);
+            Definitions["mirrorParameterActive"].AppendCsv(Fields, c, n, d);
+            Definitions["motion_name"].AppendCsv(Fields, c, n, d);
+            Definitions["name"].AppendCsv(Fields, c, n, d);
+            Definitions["nameHash"].AppendCsv(Fields, c, n, d);
+            Definitions["speed"].AppendCsv(Fields, c, n, d);
+            Definitions["speedParameter"].AppendCsv(Fields, c, n, d);
+            Definitions["speedParameterActive"].AppendCsv(Fields, c, n, d);
+            Definitions["tag"].AppendCsv(Fields, c, n, d);
+            Definitions["writeDefaultValues"].AppendCsv(Fields, c, n, d);
+            c.AppendLine();
         }
-
-        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine("LayerNum,MachineStateNum,StateNum,ParentPath,cycleOffset,cycleOffsetParameter,hideFlags,iKOnFeet,mirror,mirrorParameter,mirrorParameterActive,motion_name,name,nameHash,speed,speedParameter,speedParameterActive,tag,writeDefaultValues,"); }
     }
 
     /// <summary>
@@ -249,89 +335,99 @@ namespace StellaQL
     /// </summary>
     public class TransitionRecord
     {
-        #region プロパティー
-        public int layerNum;
-        public int machineStateNum;
-        public int stateNum;
-        public int transitionNum;
-        public bool canTransitionToSelf;
-        public string destinationState_name;
-        public int destinationState_nameHash;
-        public string destinationStateMachine_name;
-        public float duration;
-        public float exitTime;
-        public bool hasExitTime;
-        public bool hasFixedDuration;
-        public string hideFlags;
-        public string interruptionSource;
-        public bool isExit;
-        public bool mute;
-        public string name;
-        public float offset;
-        public bool orderedInterruption;
-        public bool solo;
-        public string stellaQLComment;
-        #endregion
+        static TransitionRecord()
+        {
+            List<RecordDefinition> temp = new List<RecordDefinition>()
+            {
+                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("stateNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("transitionNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("canTransitionToSelf",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("destinationState_name",RecordDefinition.FieldType.String,false),
+                new RecordDefinition("destinationState_nameHash",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("destinationStateMachine_name",RecordDefinition.FieldType.String,false),
+                new RecordDefinition("duration",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("exitTime",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("hasExitTime",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("hasFixedDuration",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,false),
+                new RecordDefinition("interruptionSource",RecordDefinition.FieldType.Other,false),
+                new RecordDefinition("isExit",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("mute",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("name",RecordDefinition.FieldType.String,false),
+                new RecordDefinition("offset",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("orderedInterruption",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("solo",RecordDefinition.FieldType.Bool,true),
+                new RecordDefinition("stellaQLComment",RecordDefinition.FieldType.String,false),
+            };
+            Definitions = new Dictionary<string, RecordDefinition>();
+            foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
+
+            Empty = new TransitionRecord(-1,-1,-1,-1,new AnimatorStateTransition(),"");
+        }
+        public static Dictionary<string, RecordDefinition> Definitions { get; private set; }
+        public static TransitionRecord Empty { get; private set; }
 
         public TransitionRecord(int layerNum, int machineStateNum, int stateNum, int transitionNum, AnimatorStateTransition transition, string stellaQLComment)
         {
-            this.layerNum = layerNum;
-            this.machineStateNum = machineStateNum;
-            this.stateNum = stateNum;
-            this.transitionNum = transitionNum;
-            this.stellaQLComment = stellaQLComment;
-
-            canTransitionToSelf = transition.canTransitionToSelf;
-            //conditions = transition.conditions.ToString();
-
-            // 名前のみ取得
-            destinationState_name = transition.destinationState == null ? "" : transition.destinationState.name;
-            destinationState_nameHash = transition.destinationState == null ? 0 : transition.destinationState.nameHash;
-
-            // 名前のみ取得
-            destinationStateMachine_name = transition.destinationStateMachine == null ? "" : transition.destinationStateMachine.name;
-
-            duration = transition.duration;
-            exitTime = transition.exitTime;
-            hasExitTime = transition.hasExitTime;
-            hasFixedDuration = transition.hasFixedDuration;
-            hideFlags = transition.hideFlags.ToString();
-            interruptionSource = transition.interruptionSource.ToString();
-            isExit = transition.isExit;
-            mute = transition.mute;
-            name = transition.name;
-            offset = transition.offset;
-            orderedInterruption = transition.orderedInterruption;
-            solo = transition.solo;
+            this.Fields = new Dictionary<string, object>()
+            {
+                { "layerNum", layerNum},
+                { "machineStateNum", machineStateNum},
+                { "stateNum", stateNum},
+                { "transitionNum", transitionNum},
+                { "stellaQLComment", stellaQLComment},
+                { "canTransitionToSelf", transition.canTransitionToSelf},
+                { "destinationState_name", transition.destinationState == null ? "" : transition.destinationState.name},// 名前のみ取得
+                { "destinationState_nameHash", transition.destinationState == null ? 0 : transition.destinationState.nameHash},
+                { "destinationStateMachine_name", transition.destinationStateMachine == null ? "" : transition.destinationStateMachine.name},// 名前のみ取得
+                { "duration", transition.duration},
+                { "exitTime", transition.exitTime},
+                { "hasExitTime", transition.hasExitTime},
+                { "hasFixedDuration", transition.hasFixedDuration},
+                { "hideFlags", transition.hideFlags.ToString()},
+                { "interruptionSource", transition.interruptionSource.ToString()},
+                { "isExit", transition.isExit},
+                { "mute", transition.mute},
+                { "name", transition.name},
+                { "offset", transition.offset},
+                { "orderedInterruption", transition.orderedInterruption},
+                { "solo", transition.solo},
+            };
         }
+        public Dictionary<string, object> Fields { get; set; }
 
-        public void CreateCsvLine(StringBuilder contents)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c">contents (コンテンツ)</param>
+        /// <param name="n">output column name (列名出力)</param>
+        /// <param name="d">output definition (列定義出力)</param>
+        public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            contents.Append(layerNum); contents.Append(",");
-            contents.Append(machineStateNum); contents.Append(",");
-            contents.Append(stateNum); contents.Append(",");
-            contents.Append(transitionNum); contents.Append(",");
-
-            contents.Append(canTransitionToSelf); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(destinationState_name)); contents.Append(",");
-            contents.Append(destinationState_nameHash); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(destinationStateMachine_name)); contents.Append(",");
-            contents.Append(duration); contents.Append(",");
-            contents.Append(exitTime); contents.Append(",");
-            contents.Append(hasExitTime); contents.Append(",");
-            contents.Append(hasFixedDuration); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(hideFlags)); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(interruptionSource)); contents.Append(",");
-            contents.Append(isExit); contents.Append(",");
-            contents.Append(mute); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(name)); contents.Append(",");
-            contents.Append(offset); contents.Append(",");
-            contents.Append(orderedInterruption); contents.Append(",");
-            contents.Append(solo); contents.Append(",");
-            contents.AppendLine();
+            Definitions["layerNum"].AppendCsv(Fields, c, n, d);
+            Definitions["machineStateNum"].AppendCsv(Fields, c, n, d);
+            Definitions["stateNum"].AppendCsv(Fields, c, n, d);
+            Definitions["transitionNum"].AppendCsv(Fields, c, n, d);
+            Definitions["canTransitionToSelf"].AppendCsv(Fields, c, n, d);
+            Definitions["destinationState_name"].AppendCsv(Fields, c, n, d);
+            Definitions["destinationState_nameHash"].AppendCsv(Fields, c, n, d);
+            Definitions["destinationStateMachine_name"].AppendCsv(Fields, c, n, d);
+            Definitions["duration"].AppendCsv(Fields, c, n, d);
+            Definitions["exitTime"].AppendCsv(Fields, c, n, d);
+            Definitions["hasExitTime"].AppendCsv(Fields, c, n, d);
+            Definitions["hasFixedDuration"].AppendCsv(Fields, c, n, d);
+            Definitions["hideFlags"].AppendCsv(Fields, c, n, d);
+            Definitions["interruptionSource"].AppendCsv(Fields, c, n, d);
+            Definitions["isExit"].AppendCsv(Fields, c, n, d);
+            Definitions["mute"].AppendCsv(Fields, c, n, d);
+            Definitions["name"].AppendCsv(Fields, c, n, d);
+            Definitions["offset"].AppendCsv(Fields, c, n, d);
+            Definitions["orderedInterruption"].AppendCsv(Fields, c, n, d);
+            Definitions["solo"].AppendCsv(Fields, c, n, d);
+            c.AppendLine();
         }
-
-        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine("LayerNum,MachineStateNum,StateNum,TransitionNum,canTransitionToSelf,destinationState_name,destinationState_nameHash,destinationStateMachine,duration,exitTime,hasExitTime,hasFixedDuration,hideFlags,interruptionSource,isExit,mute,name,offset,orderedInterruption,solo,"); }
     }
 
     /// <summary>
@@ -339,42 +435,61 @@ namespace StellaQL
     /// </summary>
     public class ConditionRecord
     {
-        public int layerNum;
-        public int machineStateNum;
-        public int stateNum;
-        public int transitionNum;
-        public int conditionNum;
-        public string mode;
-        public string parameter;
-        public float threshold;
+        static ConditionRecord()
+        {
+            List<RecordDefinition> temp = new List<RecordDefinition>()
+            {
+                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("stateNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("transitionNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("conditionNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("mode",RecordDefinition.FieldType.Other,false),
+                new RecordDefinition("parameter",RecordDefinition.FieldType.String,true),
+                new RecordDefinition("threshold",RecordDefinition.FieldType.Float,true),
+            };
+            Definitions = new Dictionary<string, RecordDefinition>();
+            foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
+
+            Empty = new ConditionRecord(-1, -1, -1, -1, -1, new AnimatorCondition());
+        }
+        public static Dictionary<string, RecordDefinition> Definitions { get; private set; }
+        public static ConditionRecord Empty { get; set; }
 
         public ConditionRecord(int layerNum, int machineStateNum, int stateNum, int transitionNum, int conditionNum, AnimatorCondition condition)
         {
-            this.layerNum = layerNum;
-            this.machineStateNum = machineStateNum;
-            this.stateNum = stateNum;
-            this.transitionNum = transitionNum;
-            this.conditionNum = conditionNum;
-            mode = condition.mode.ToString();
-            parameter = condition.parameter;
-            threshold = condition.threshold;
+            this.Fields = new Dictionary<string, object>()
+            {
+                { "layerNum", layerNum},
+                { "machineStateNum", machineStateNum},
+                { "stateNum", stateNum},
+                { "transitionNum", transitionNum},
+                { "conditionNum", conditionNum},
+                { "mode", condition.mode.ToString()},
+                { "parameter", condition.parameter},
+                { "threshold", condition.threshold},
+            };
         }
+        public Dictionary<string, object> Fields { get; set; }
 
-        public void CreateCsvLine(StringBuilder contents)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c">contents (コンテンツ)</param>
+        /// <param name="n">output column name (列名出力)</param>
+        /// <param name="d">output definition (列定義出力)</param>
+        public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            contents.Append(layerNum); contents.Append(",");
-            contents.Append(machineStateNum); contents.Append(",");
-            contents.Append(stateNum); contents.Append(",");
-            contents.Append(transitionNum); contents.Append(",");
-            contents.Append(conditionNum); contents.Append(",");
-
-            contents.Append(CsvParser.EscapeCell(mode)); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(parameter)); contents.Append(",");
-            contents.Append(threshold); contents.Append(",");
-            contents.AppendLine();
+            Definitions["layerNum"].AppendCsv(Fields, c, n, d);
+            Definitions["machineStateNum"].AppendCsv(Fields, c, n, d);
+            Definitions["stateNum"].AppendCsv(Fields, c, n, d);
+            Definitions["transitionNum"].AppendCsv(Fields, c, n, d);
+            Definitions["conditionNum"].AppendCsv(Fields, c, n, d);
+            Definitions["mode"].AppendCsv(Fields, c, n, d);
+            Definitions["parameter"].AppendCsv(Fields, c, n, d);
+            Definitions["threshold"].AppendCsv(Fields, c, n, d);
+            c.AppendLine();
         }
-
-        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine( "LayerNum,MachineStateNum,StateNum,TransitionNum,ConditionNum,mode,parameter,threshold,"); }
     }
 
     /// <summary>
@@ -382,77 +497,82 @@ namespace StellaQL
     /// </summary>
     public class PositionRecord
     {
-        #region プロパティー
-        public int layerNum;
-        public int machineStateNum;
-        public int stateNum;
-        public int transitionNum;
-        public int conditionNum;
-        public string proertyName;
-
-        //
-        public float magnitude;
-        public string normalized;
-        public float normalizedX;
-        public float normalizedY;
-        public float normalizedZ;
-        public float sqrMagnitude;
-        public float x;
-        public float y;
-        public float z;
-        #endregion
-
-        public PositionRecord(
-            int layerNum,
-            int machineStateNum,
-            int stateNum,
-            int transitionNum,
-            int conditionNum,
-            string proertyName,
-            Vector3 position)
+        static PositionRecord()
         {
-            this.layerNum = layerNum;
-            this.machineStateNum = machineStateNum;
-            this.stateNum = stateNum;
-            this.transitionNum = transitionNum;
-            this.conditionNum = conditionNum;
-            this.proertyName = proertyName;
+            List<RecordDefinition> temp = new List<RecordDefinition>()
+            {
+                new RecordDefinition("layerNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("machineStateNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("stateNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("transitionNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("conditionNum",RecordDefinition.FieldType.Int,false),
+                new RecordDefinition("proertyName",RecordDefinition.FieldType.String,false),
+                new RecordDefinition("magnitude",RecordDefinition.FieldType.Float,false),
+                new RecordDefinition("normalized",RecordDefinition.FieldType.Other,false),
+                new RecordDefinition("normalizedX",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("normalizedY",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("normalizedZ",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("sqrMagnitude",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("x",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("y",RecordDefinition.FieldType.Float,true),
+                new RecordDefinition("z",RecordDefinition.FieldType.Float,true),
+            };
+            Definitions = new Dictionary<string, RecordDefinition>();
+            foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
 
-            magnitude = position.magnitude;
-            //normalized = position.normalized == null ? "" : "(解析未対応)";
-            normalized = position.normalized == null ? "" : position.normalized.ToString();
-            //normalized = position.normalized == null ? "" : Util_CsvParser.CellList_to_csvLine( Util_CsvParser.CsvLine_to_cellList(position.normalized.ToString()));
-            normalizedX = position.x;
-            normalizedY = position.y;
-            normalizedZ = position.z;
-            sqrMagnitude = position.sqrMagnitude;
-            x = position.x;
-            y = position.y;
-            z = position.z;
+            Empty = new PositionRecord(-1,-1,-1,-1,-1,"",new Vector3());
         }
+        public static Dictionary<string, RecordDefinition> Definitions { get; private set; }
+        public static PositionRecord Empty { get; private set; }
 
-        public void CreateCsvLine(StringBuilder contents)
+        public PositionRecord(int layerNum, int machineStateNum, int stateNum, int transitionNum, int conditionNum, string proertyName, Vector3 position)
         {
-            contents.Append(layerNum); contents.Append(",");
-            contents.Append(machineStateNum); contents.Append(",");
-            contents.Append(stateNum); contents.Append(",");
-            contents.Append(transitionNum); contents.Append(",");
-            contents.Append(conditionNum); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(proertyName)); contents.Append(",");
-
-            contents.Append(magnitude); contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(normalized)); contents.Append(",");
-            contents.Append(normalizedX); contents.Append(",");
-            contents.Append(normalizedY); contents.Append(",");
-            contents.Append(normalizedZ); contents.Append(",");
-            contents.Append(sqrMagnitude); contents.Append(",");
-            contents.Append(x); contents.Append(",");
-            contents.Append(y); contents.Append(",");
-            contents.Append(z); contents.Append(",");
-            contents.AppendLine();
+            this.Fields = new Dictionary<string, object>()
+            {
+                { "layerNum", layerNum},
+                { "machineStateNum", machineStateNum},
+                { "stateNum", stateNum},
+                { "transitionNum", transitionNum},
+                { "conditionNum", conditionNum},
+                { "proertyName", proertyName},
+                { "magnitude", position.magnitude},
+                { "normalized", position.normalized == null ? "" : position.normalized.ToString()},
+                { "normalizedX", position.x},
+                { "normalizedY", position.y},
+                { "normalizedZ", position.z},
+                { "sqrMagnitude", position.sqrMagnitude},
+                { "x", position.x},
+                { "y", position.y},
+                { "z", position.z},
+            };
         }
+        public Dictionary<string, object> Fields { get; set; }
 
-        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine( "LayerNum,MachineStateNum,StateNum,TransitionNum,ConditionNum,PropertyName,magnitude,normalized,normalizedX,normalizedY,normalizedZ,sqrMagnitude,x,y,z,"); }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c">contents (コンテンツ)</param>
+        /// <param name="n">output column name (列名出力)</param>
+        /// <param name="d">output definition (列定義出力)</param>
+        public void AppendCsvLine(StringBuilder c, bool n, bool d)
+        {
+            Definitions["layerNum"].AppendCsv(Fields, c, n, d);
+            Definitions["machineStateNum"].AppendCsv(Fields, c, n, d);
+            Definitions["stateNum"].AppendCsv(Fields, c, n, d);
+            Definitions["transitionNum"].AppendCsv(Fields, c, n, d);
+            Definitions["conditionNum"].AppendCsv(Fields, c, n, d);
+            Definitions["proertyName"].AppendCsv(Fields, c, n, d);
+            Definitions["magnitude"].AppendCsv(Fields, c, n, d);
+            Definitions["normalized"].AppendCsv(Fields, c, n, d);
+            Definitions["normalizedX"].AppendCsv(Fields, c, n, d);
+            Definitions["normalizedY"].AppendCsv(Fields, c, n, d);
+            Definitions["normalizedZ"].AppendCsv(Fields, c, n, d);
+            Definitions["sqrMagnitude"].AppendCsv(Fields, c, n, d);
+            Definitions["x"].AppendCsv(Fields, c, n, d);
+            Definitions["y"].AppendCsv(Fields, c, n, d);
+            Definitions["z"].AppendCsv(Fields, c, n, d);
+            c.AppendLine();
+        }
     }
 
     public class AniconData
@@ -479,7 +599,7 @@ namespace StellaQL
     public abstract class AniconDataUtility
     {
 
-        public static void WriteCsv_Parameters(AnimatorController ac, StringBuilder message)
+        public static void WriteCsv_Parameters(AnimatorController ac, bool outputDefinition, StringBuilder message)
         {
             message.AppendLine("Parameters Scanning...☆（＾～＾）");
 
@@ -508,63 +628,113 @@ namespace StellaQL
                 num++;
             }
 
-            StellaQLWriter.Write(StellaQLWriter.Filepath_LogParameters(ac.name), contents, message);
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogParameters(ac.name, outputDefinition), contents, message);
         }
 
-        public static void WriteCsv_Layer(AniconData aniconData, string aniconName, StringBuilder message)
+        public static void WriteCsv_Layer(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            LayerRecord.ColumnNameCsvLine(contents);
-            foreach (LayerRecord record in aniconData.table_layer) {record.CreateCsvLine(contents);}
-            StellaQLWriter.Write(StellaQLWriter.Filepath_LogLayer(aniconName), contents, message);
+
+            if (outputDefinition) {
+                contents.AppendLine("Name,Type,Input,"); // 列定義ヘッダー出力
+                LayerRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+            }
+            else
+            {
+                LayerRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                foreach (LayerRecord record in aniconData.table_layer) { record.AppendCsvLine(contents, false, outputDefinition); }
+            }
+
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogLayer(aniconName, outputDefinition), contents, message);
         }
 
-        public static void WriteCsv_Statemachine(AniconData aniconData, string aniconName, StringBuilder message)
+        public static void WriteCsv_Statemachine(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            StatemachineRecord.ColumnNameCsvLine(contents);
-            foreach (StatemachineRecord record in aniconData.table_statemachine) {record.CreateCsvLine(contents);}
-            StellaQLWriter.Write(StellaQLWriter.Filepath_LogStatemachine(aniconName), contents, message);
+
+            if (outputDefinition)
+            {
+                contents.AppendLine("Name,Type,Input,"); // 列定義ヘッダー出力
+                StatemachineRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+            }
+            else {
+                StatemachineRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                foreach (StatemachineRecord record in aniconData.table_statemachine) { record.AppendCsvLine(contents, false, outputDefinition); }
+            }
+
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogStatemachine(aniconName, outputDefinition), contents, message);
         }
 
-        public static void CreateCsvTable_State( HashSet<StateRecord> table, StringBuilder contents)
+        public static void CreateCsvTable_State( HashSet<StateRecord> table, bool outputDefinition, StringBuilder contents)
         {
-            StateRecord.ColumnNameCsvLine(contents);
-            foreach (StateRecord stateRecord in table) { stateRecord.CreateCsvLine( contents); }
+            if (outputDefinition)
+            {
+                contents.AppendLine("Name,Type,Input,"); // 列定義ヘッダー出力
+                StateRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+            }
+            else {
+                StateRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                foreach (StateRecord stateRecord in table) { stateRecord.AppendCsvLine(contents, false, outputDefinition); }
+            }
         }
-        public static void WriteCsv_State( AniconData aniconData, string aniconName, StringBuilder message)
+        public static void WriteCsv_State( AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            CreateCsvTable_State( aniconData.table_state, contents);
-            StellaQLWriter.Write(StellaQLWriter.Filepath_LogStates(aniconName), contents, message);
+            CreateCsvTable_State( aniconData.table_state, outputDefinition, contents);
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogStates(aniconName, outputDefinition), contents, message);
         }
 
-        public static void CreateCsvTable_Transition(HashSet<TransitionRecord> table, StringBuilder contents)
+        public static void CreateCsvTable_Transition(HashSet<TransitionRecord> table, bool outputDefinition, StringBuilder contents)
         {
-            TransitionRecord.ColumnNameCsvLine(contents);
-            foreach (TransitionRecord record in table) { record.CreateCsvLine(contents); }
+            if (outputDefinition)
+            {
+                contents.AppendLine("Name,Type,Input,"); // 列定義ヘッダー出力
+                TransitionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+            }
+            else {
+                TransitionRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                foreach (TransitionRecord record in table) { record.AppendCsvLine(contents, false, outputDefinition); }
+            }
         }
-        public static void WriteCsv_Transition(AniconData aniconData, string aniconName, StringBuilder message)
+        public static void WriteCsv_Transition(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            CreateCsvTable_Transition(aniconData.table_transition, contents);
-            StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransition(aniconName), contents, message);
+            CreateCsvTable_Transition(aniconData.table_transition, outputDefinition, contents);
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransition(aniconName, outputDefinition), contents, message);
         }
 
-        public static void WriteCsv_Condition(AniconData aniconData, string aniconName, StringBuilder message)
+        public static void WriteCsv_Condition(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            ConditionRecord.ColumnNameCsvLine(contents);
-            foreach (ConditionRecord conditionRecord in aniconData.table_condition) { conditionRecord.CreateCsvLine(contents); }
-            StellaQLWriter.Write(StellaQLWriter.Filepath_LogConditions(aniconName), contents, message);
+
+            if (outputDefinition)
+            {
+                contents.AppendLine("Name,Type,Input,"); // 列定義ヘッダー出力
+                ConditionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+            }
+            else {
+                ConditionRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                foreach (ConditionRecord record in aniconData.table_condition) { record.AppendCsvLine(contents, false, outputDefinition); }
+            }
+
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogConditions(aniconName, outputDefinition), contents, message);
         }
 
-        public static void WriteCsv_Position(AniconData aniconData, string aniconName, StringBuilder message)
+        public static void WriteCsv_Position(AniconData aniconData, string aniconName, bool outputDefinition, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            PositionRecord.ColumnNameCsvLine(contents);
-            foreach (PositionRecord record in aniconData.table_position) { record.CreateCsvLine(contents); }
-            StellaQLWriter.Write(StellaQLWriter.Filepath_LogPositions(aniconName), contents, message);
+
+            if (outputDefinition)
+            {
+                contents.AppendLine("Name,Type,Input,"); // 列定義ヘッダー出力
+                PositionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+            }
+            else {
+                PositionRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                foreach (PositionRecord record in aniconData.table_position) { record.AppendCsvLine(contents, false, outputDefinition); }
+            }
+
+            StellaQLWriter.Write(StellaQLWriter.Filepath_LogPositions(aniconName, outputDefinition), contents, message);
         }
 
         private static void ScanRecursive(string path, AnimatorStateMachine stateMachine, Dictionary<string,AnimatorStateMachine> statemachineList_flat)

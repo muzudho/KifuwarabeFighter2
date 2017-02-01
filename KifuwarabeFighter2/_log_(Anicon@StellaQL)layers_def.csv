@@ -1,0 +1,10 @@
+Name,Type,Input,
+layerNum,int,False,
+name,string,False,
+avatarMask,other,False,
+blendingMode,other,False,
+defaultWeight,float,True,
+iKPass,bool,True,
+syncedLayerAffectsTiming,bool,True,
+syncedLayerIndex,int,True,
+

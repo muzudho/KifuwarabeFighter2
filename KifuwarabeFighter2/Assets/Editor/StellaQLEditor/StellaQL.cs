@@ -151,7 +151,7 @@ namespace StellaQL
                 HashSet<StateRecord> recordSet;
                 Operation_State.Select(ac, Fetcher.States(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), out recordSet, message);
                 StringBuilder contents = new StringBuilder();
-                AniconDataUtility.CreateCsvTable_State( recordSet, contents);
+                AniconDataUtility.CreateCsvTable_State( recordSet, false, contents);
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogStateSelect(ac.name), contents, message); return true;
             }
             else if (SyntaxP.Parse_TransitionInsert(query, ref qt))
@@ -183,7 +183,7 @@ namespace StellaQL
                     out recordSet,
                     message);
                 StringBuilder contents = new StringBuilder();
-                AniconDataUtility.CreateCsvTable_Transition(recordSet, contents);
+                AniconDataUtility.CreateCsvTable_Transition(recordSet, false, contents);
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransitionSelect(ac.name), contents, message); return true;
             }
             message.Append("構文エラー: "); message.Append( qt.MatchedSyntaxName); message.Append(" ");

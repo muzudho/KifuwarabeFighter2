@@ -1,0 +1,11 @@
+Name,Type,Input,
+layerNum,int,False,
+machineStateNum,int,False,
+parentPath,string,False,
+anyStateTransitions,other,False,
+behaviours,other,False,
+defaultState,other,False,
+entryTransitions,other,False,
+hideFlags,other,False,
+name,string,False,
+
