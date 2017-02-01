@@ -90,6 +90,8 @@ namespace StellaQL
     {
         public int layerNum;
         public int machineStateNum;
+        public string parentPath;
+
         public string anyStateTransitions;
         public string behaviours;
         public string defaultState;
@@ -97,10 +99,11 @@ namespace StellaQL
         public string hideFlags;
         public string name;
 
-        public StatemachineRecord(int layerNum, int machineStateNum, AnimatorStateMachine stateMachine, List<PositionRecord> positionsTable)
+        public StatemachineRecord(int layerNum, int machineStateNum, string parentPath, AnimatorStateMachine stateMachine, List<PositionRecord> positionsTable)
         {
             this.layerNum = layerNum;
             this.machineStateNum = machineStateNum;
+            this.parentPath = parentPath;
 
             if (stateMachine.anyStatePosition != null)
             {
@@ -139,6 +142,8 @@ namespace StellaQL
         {
             contents.Append(layerNum); contents.Append(",");
             contents.Append(machineStateNum); contents.Append(",");
+            contents.Append(parentPath); contents.Append(",");
+
             contents.Append(CsvParser.EscapeCell(anyStateTransitions)); contents.Append(",");
             contents.Append(CsvParser.EscapeCell(behaviours)); contents.Append(",");
             contents.Append(CsvParser.EscapeCell(defaultState)); contents.Append(",");
@@ -148,7 +153,7 @@ namespace StellaQL
             contents.AppendLine();
         }
 
-        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine( "LayerNum,MachineStateNum,anyStateTransitions,behaviours,defaultState,entryTransitions,hideFlags,name,"); }
+        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine( "LayerNum,MachineStateNum,ParentPath,anyStateTransitions,behaviours,defaultState,entryTransitions,hideFlags,name,"); }
     }
 
     /// <summary>
@@ -160,6 +165,7 @@ namespace StellaQL
         public int layerNum;
         public int machineStateNum;
         public int stateNum;
+        public string parentPath;
 
         //
         public float cycleOffset;
@@ -179,16 +185,17 @@ namespace StellaQL
         public bool writeDefaultValues;
         #endregion
 
-        public static StateRecord CreateInstance(int layerNum, int machineStateNum, int stateNum, ChildAnimatorState caState, List<PositionRecord> positionsTable)
+        public static StateRecord CreateInstance(int layerNum, int machineStateNum, int stateNum, string parentPath, ChildAnimatorState caState, List<PositionRecord> positionsTable)
         {
             positionsTable.Add(new PositionRecord(layerNum, machineStateNum, stateNum, -1, -1, "position", caState.position));
-            return new StateRecord(layerNum, machineStateNum, stateNum, caState.state);
+            return new StateRecord(layerNum, machineStateNum, stateNum, parentPath, caState.state);
         }
-        public StateRecord(int layerNum, int machineStateNum, int stateNum, AnimatorState state)
+        public StateRecord(int layerNum, int machineStateNum, int stateNum, string parentPath, AnimatorState state)
         {
             this.layerNum = layerNum;
             this.machineStateNum = machineStateNum;
             this.stateNum = stateNum;
+            this.parentPath = parentPath;
 
             cycleOffset = state.cycleOffset;
             cycleOffsetParameter = state.cycleOffsetParameter;
@@ -199,7 +206,7 @@ namespace StellaQL
             mirrorParameterActive = state.mirrorParameterActive;
             motion_name = state.motion == null ? "" : state.motion.name; // とりあえず名前だけ☆
             name = state.name;
-            nameHash = state.nameHash;
+            nameHash = state.nameHash; // このハッシュは有効なのだろうか？
             speed = state.speed;
             speedParameter = state.speedParameter;
             speedParameterActive = state.speedParameterActive;
@@ -212,6 +219,7 @@ namespace StellaQL
             contents.Append(layerNum); contents.Append(",");
             contents.Append(machineStateNum); contents.Append(",");
             contents.Append(stateNum); contents.Append(",");
+            contents.Append(parentPath); contents.Append(","); // パス（名前抜き）
 
             //
             contents.Append(cycleOffset); contents.Append(",");
@@ -232,7 +240,7 @@ namespace StellaQL
             contents.AppendLine();
         }
 
-        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine("LayerNum,MachineStateNum,StateNum,cycleOffset,cycleOffsetParameter,hideFlags,iKOnFeet,mirror,mirrorParameter,mirrorParameterActive,motion_name,name,nameHash,speed,speedParameter,speedParameterActive,tag,writeDefaultValues,"); }
+        public static void ColumnNameCsvLine(StringBuilder contents) { contents.AppendLine("LayerNum,MachineStateNum,StateNum,ParentPath,cycleOffset,cycleOffsetParameter,hideFlags,iKOnFeet,mirror,mirrorParameter,mirrorParameterActive,motion_name,name,nameHash,speed,speedParameter,speedParameterActive,tag,writeDefaultValues,"); }
     }
 
     /// <summary>
@@ -477,7 +485,7 @@ namespace StellaQL
 
             StringBuilder contents = new StringBuilder();
             // 見出し列
-            contents.AppendLine("Num,Name,Bool,Float,Int,NameHash");
+            contents.AppendLine("Num,Name,Bool,Float,Int,NameHash,");
 
             AnimatorControllerParameter[] acpArray = ac.parameters;
             int num = 0;
@@ -519,15 +527,15 @@ namespace StellaQL
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogStatemachine(aniconName), contents, message);
         }
 
-        public static void CreateCsvTable_State(HashSet<StateRecord> table, StringBuilder contents)
+        public static void CreateCsvTable_State( HashSet<StateRecord> table, StringBuilder contents)
         {
             StateRecord.ColumnNameCsvLine(contents);
-            foreach (StateRecord stateRecord in table) { stateRecord.CreateCsvLine(contents); }
+            foreach (StateRecord stateRecord in table) { stateRecord.CreateCsvLine( contents); }
         }
-        public static void WriteCsv_State(AniconData aniconData, string aniconName, StringBuilder message)
+        public static void WriteCsv_State( AniconData aniconData, string aniconName, StringBuilder message)
         {
             StringBuilder contents = new StringBuilder();
-            CreateCsvTable_State(aniconData.table_state, contents);
+            CreateCsvTable_State( aniconData.table_state, contents);
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogStates(aniconName), contents, message);
         }
 
@@ -559,13 +567,14 @@ namespace StellaQL
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogPositions(aniconName), contents, message);
         }
 
-        private static void ScanRecursive(List<AnimatorStateMachine> aStateMachineList, AnimatorStateMachine stateMachine)
+        private static void ScanRecursive(string path, AnimatorStateMachine stateMachine, Dictionary<string,AnimatorStateMachine> statemachineList_flat)
         {
-            aStateMachineList.Add(stateMachine);
+            path += stateMachine.name + ".";
+            statemachineList_flat.Add(path, stateMachine);
 
             foreach (ChildAnimatorStateMachine caStateMachine in stateMachine.stateMachines)
             {
-                ScanRecursive(aStateMachineList, caStateMachine.stateMachine);
+                ScanRecursive(path, caStateMachine.stateMachine, statemachineList_flat);
             }
         }
 
@@ -579,14 +588,15 @@ namespace StellaQL
                 LayerRecord layerRecord = new LayerRecord(aniconData.table_layer.Count, layer);
                 aniconData.table_layer.Add(layerRecord);
                 
-                List<AnimatorStateMachine> stateMachineList = new List<AnimatorStateMachine>();
-                ScanRecursive(stateMachineList, layer.stateMachine);
-                foreach (AnimatorStateMachine stateMachine in stateMachineList) { // ステート・マシン
-                    StatemachineRecord stateMachineRecord = new StatemachineRecord(aniconData.table_layer.Count, aniconData.table_statemachine.Count, stateMachine, aniconData.table_position);
+                Dictionary<string,AnimatorStateMachine> statemachineList_flat = new Dictionary<string,AnimatorStateMachine>(); // フルパス, ステートマシン
+                ScanRecursive("", layer.stateMachine, statemachineList_flat);// 再帰をスキャンして、フラットにする。
+                foreach (KeyValuePair<string,AnimatorStateMachine> statemachine_pair in statemachineList_flat) { // ステート・マシン
+                    StatemachineRecord stateMachineRecord = new StatemachineRecord(
+                        aniconData.table_layer.Count, aniconData.table_statemachine.Count, statemachine_pair.Key, statemachine_pair.Value, aniconData.table_position);
                     aniconData.table_statemachine.Add(stateMachineRecord);
 
-                    foreach (ChildAnimatorState caState in stateMachine.states) { //ステート（ラッパー）
-                        StateRecord stateRecord = StateRecord.CreateInstance(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, caState, aniconData.table_position);
+                    foreach (ChildAnimatorState caState in statemachine_pair.Value.states) { //ステート（ラッパー）
+                        StateRecord stateRecord = StateRecord.CreateInstance(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, statemachine_pair.Key, caState, aniconData.table_position);
                         aniconData.table_state.Add(stateRecord);
 
                         foreach (AnimatorStateTransition transition in caState.state.transitions) { // トランジション

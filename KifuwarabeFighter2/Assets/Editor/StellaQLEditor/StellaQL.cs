@@ -107,9 +107,9 @@ namespace StellaQL
     /// </summary>
     public abstract class Querier
     {
-        public static bool Execute(AnimatorController ac, string query, UserDefinedStateTableable stateExTable, StringBuilder message)
+        public static bool Execute(AnimatorController ac, string query, UserDefinedStateTableable userDefinedStateTable, StringBuilder message)
         {
-            Dictionary<int, UserDefindStateRecordable> universe = stateExTable.StateHash_to_record;
+            Dictionary<int, UserDefindStateRecordable> universe = userDefinedStateTable.StateHash_to_record;
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
             QueryTokens qt = new QueryTokens("構文該当なし");
@@ -151,7 +151,7 @@ namespace StellaQL
                 HashSet<StateRecord> recordSet;
                 Operation_State.Select(ac, Fetcher.States(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), out recordSet, message);
                 StringBuilder contents = new StringBuilder();
-                AniconDataUtility.CreateCsvTable_State(recordSet, contents);
+                AniconDataUtility.CreateCsvTable_State( recordSet, contents);
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogStateSelect(ac.name), contents, message); return true;
             }
             else if (SyntaxP.Parse_TransitionInsert(query, ref qt))

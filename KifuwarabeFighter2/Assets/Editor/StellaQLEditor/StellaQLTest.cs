@@ -1018,10 +1018,10 @@ a", ref caret);
         [Test]
         public void N90_Misc_Csv()
         {
-            string csv = @"alpaca,""bear"",""ca""""t"",""dog"" ,elephant , fox, giraffe , ""horse"", ""Iguana"" ,";
+            string csv = @"alpaca,""bear"",""ca""""t"",""dog"" ,elephant , fox, giraffe , ""horse"", ""Iguana"" ,""Jelly, fish"",";
             List<string> cells = CsvParser.CsvLine_to_cellList(csv);
 
-            Assert.AreEqual(9, cells.Count);
+            Assert.AreEqual(10, cells.Count);
             Assert.AreEqual("alpaca", cells[0]);
             Assert.AreEqual("bear", cells[1]);
             Assert.AreEqual(@"ca""t", cells[2]);
@@ -1031,6 +1031,7 @@ a", ref caret);
             Assert.AreEqual(" giraffe ", cells[6]);
             Assert.AreEqual("horse", cells[7]); // ダブルクォートされているものは、前後のスペースは削除される。
             Assert.AreEqual("Iguana", cells[8]);
+            Assert.AreEqual("Jelly, fish", cells[9]);
         }
 
         /// <summary>

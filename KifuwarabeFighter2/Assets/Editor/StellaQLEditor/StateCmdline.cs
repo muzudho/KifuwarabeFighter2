@@ -97,48 +97,46 @@ public class StateCmdline : EditorWindow
                 //    break;
             }
         }
+
+        StringBuilder message = new StringBuilder();
+
         // アニメーター・コントローラーを取得。
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>(path_animatorController);//"Assets/Resources/AnimatorControllers/AniCon@Char3.controller"
-
-
-
-
-        GUILayout.Label("Command line (StellaQL)");
-        scroll = EditorGUILayout.BeginScrollView(scroll);
-        commandline = EditorGUILayout.TextArea(commandline, GUILayout.Height(position.height - 30));
-        EditorGUILayout.EndScrollView();
-
-        if (GUILayout.Button("Execute"))
+        if (!UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.ContainsKey(path_animatorController))
         {
-            Debug.Log("Executeボタンを押した☆");
-            StringBuilder message = new StringBuilder();
-            if (UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.ContainsKey(path_animatorController))
+            GUILayout.Label("Animator controller No Data", EditorStyles.boldLabel);
+            GUILayout.Label("(UserDefinedDatabase.cs)", EditorStyles.boldLabel);
+            message = new StringBuilder();
+            message.AppendLine("指定されたパスは登録されていないぜ☆（＾～＾） path_animatorController=[" + path_animatorController + "]");
+            message.AppendLine("登録されている拡張テーブル " + UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.Count + " 件");
+            foreach (string path in UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.Keys)
             {
-                Querier.Execute(ac, commandline,
-                    UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[path_animatorController],
-                    message);
-                //Repaint();
+                message.AppendLine("[" + path + "]");
+            }
+        }
+        else
+        {
+            UserDefinedStateTableable userDefinedStateTable = UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[path_animatorController];
+
+            GUILayout.Label("Command line (StellaQL)");
+            scroll = EditorGUILayout.BeginScrollView(scroll);
+            commandline = EditorGUILayout.TextArea(commandline, GUILayout.Height(position.height - 30));
+            EditorGUILayout.EndScrollView();
+
+            if (GUILayout.Button("Execute"))
+            {
+                Debug.Log("Executeボタンを押した☆");
+                Querier.Execute(ac, commandline, userDefinedStateTable, message);
+                Repaint();
                 //HandleUtility.Repaint();
+                infoMessage = message.ToString();
             }
-            else
-            {
-                message = new StringBuilder();
-                message.AppendLine("指定されたパスは登録されていないぜ☆（＾～＾） path_animatorController=["+ path_animatorController + "]");
-                message.AppendLine("登録されている拡張テーブル " + UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.Count + " 件");
-                foreach (string path in UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.Keys)
-                {
-                    message.AppendLine("[" + path + "]");
-                }
-            }
-            infoMessage = message.ToString();
         }
 
         GUILayout.Space(4.0f);
         if (GUILayout.Button("Export CSV"))
         {
             Debug.Log("Start☆（＾～＾）！ filename(without extension) = " + ac.name);
-
-            StringBuilder message = new StringBuilder();
 
             AniconDataUtility.WriteCsv_Parameters(ac, message);
             AniconData aniconData;
@@ -156,7 +154,6 @@ public class StateCmdline : EditorWindow
 
         if (GUILayout.Button("Command Reference"))
         {
-            StringBuilder message = new StringBuilder();
             Reference.ToContents(message);
             infoMessage = message.ToString();
             Repaint();

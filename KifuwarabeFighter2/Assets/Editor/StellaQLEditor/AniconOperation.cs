@@ -235,7 +235,7 @@ namespace StellaQL
             recordSet = new HashSet<StateRecord>();
             foreach (AnimatorState state in states) // 指定されたステート全て対象
             {
-                recordSet.Add(new StateRecord(0,0,0,state));
+                recordSet.Add(new StateRecord(0,0,0,"#NoData",state));
             }
             message.Append("result: "); message.Append(recordSet.Count); message.AppendLine(" records.");
         }
