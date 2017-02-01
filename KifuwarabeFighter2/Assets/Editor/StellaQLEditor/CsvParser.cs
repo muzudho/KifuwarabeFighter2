@@ -20,160 +20,40 @@ namespace StellaQL
         /// <returns></returns>
         public static List<string> CsvLine_to_cellList(string source, char delimiter)
         {
-            int length = source.Length;
-            List<string> list_Destination = new List<string>();
-            char ch;
-
-            // 空か。
-            if (source.Length < 1)
-            {
-                goto gt_EndMethod;
-            }
-
-
-            //ystem.Console.WriteLine("（１）source[" + source + "]");
+            List<string> cells = new List<string>();
+            if (source.Length < 1) { return cells; } // 空文字列なら終わり
 
             //１セル分の文字列
             StringBuilder cell = new StringBuilder();
-            int index = 0;
-            while (index < length)
+            int caret = 0;
+            while (caret < source.Length) // このループで１行分に対応
             {
-                cell.Length = 0;
-                ch = source[index];
-
-                //ystem.Console.WriteLine("（２）index[" + index + "] ch[" + ch + "]");
-
-                if (',' == ch)
+                switch (source[caret])
                 {
-                    // 空を追加して次へ。
-                    index++;
+                    case ',': caret++; cells.Add(cell.ToString()); cell.Length = 0; break; // トークンを出力して次へ。
+                    case '"':
+                        // ここからリテラル文字列処理へ
+                        caret++;
 
-                    //ystem.Console.WriteLine("（３）index[" + index + "] ");
-                }
-                else if ('"' == ch)
-                {
-                    // 1文字目が「"」なら、2文字目へ。
-                    index++;
-
-                    //ystem.Console.WriteLine("（４）index[" + index + "] ");
-
-                    // エスケープしながら、単独「"」が出てくるまでそのまま出力。
-                    while (index < length)
-                    {
-                        ch = source[index];
-
-                        //ystem.Console.WriteLine("（５）index[" + index + "] ");
-
-                        if ('"' == ch)
+                        // エスケープしながら、単独「"」が出てくるまでそのまま出力。
+                        while (caret < source.Length)
                         {
-                            // 「"」だった。
-
-
-                            // ここで文字列終わりなのだが、
-                            // しかし次の文字が「"」の場合、まだこの「"」で終わってはいけない。
-                            // 
-
-                            //ystem.Console.WriteLine("（６）index[" + index + "] ");
-
-
-                            if (index + 1 == length)
+                            if ('"'==source[caret])
                             {
-                                // 2文字目が無ければ、
-                                //「"」を無視して終了。
-                                index++;
+                                // これが単独の「"」なら終わり、２連続の「"」ならまだ終わらない。
 
-                                //ystem.Console.WriteLine("（７）index[" + index + "] ");
-
-                                break;
+                                if (caret + 1 == source.Length) { caret++; break; }// 「"」が最後の文字だったのなら、無視してループ抜け。
+                                else if ('"' == source[caret + 1]) { caret += 2; cell.Append('"'); } // 2文字目も「"」なら、２つの「""」すっとばして代わりに「"」を入れてループ続行。
+                                else { caret = source.IndexOf(',',caret)+1; break; } // 2連続でない「"」なら、次の「,」の次までの空白等をスキップ。//【改変/】2012年10月30日変更。旧： index++;//【改変/】2017年02月01日変更。次のカンマの次まで飛ばした。旧： index+=2;
                             }
-                            else if ('"' == source[index + 1])
-                            {
-                                // 2文字目も「"」なら、
-                                // 1,2文字目の「""」を「"」に変換して続行。
-                                index += 2;
-                                cell.Append('"');
-
-                                //ystem.Console.WriteLine("（８）index[" + index + "] ");
-                            }
-                            else
-                            {
-                                // 2文字目が「"」でなければ、
-                                //「"」を無視して終了。
-                                index += 2;//【改変/】2012年10月30日変更。旧： index++;
-
-                                //ystem.Console.WriteLine("（９）index[" + index + "] 　2文字目が「\"」でなければ、「\"」を無視して終了。");
-
-                                break;
-                            }
+                            else { cell.Append(source[caret]); caret++; }// 通常文字なのでループ続行。
                         }
-                        else
-                        {
-                            // 通常文字なので続行。
-                            cell.Append(ch);
-                            index++;
-
-                            //ystem.Console.WriteLine("（１１）index[" + index + "] ch[" + ch + "]");
-                        }
-
-                        //ystem.Console.WriteLine("（１２）index[" + index + "] ");
-                    }
-
-                    //ystem.Console.WriteLine("（１３）index[" + index + "] ");
+                        cells.Add(cell.ToString().Trim()); cell.Length = 0; break; // 前後の空白はカット
+                    default: cell.Append(source[caret]); caret++; break;// ダブルクォートされていない文字列か、ダブルクォートの前のスペースだ。
                 }
-                else
-                {
-                    //ystem.Console.WriteLine("（１４a）index[" + index + "] s_Cell[" + s_Cell.ToString() + "] ch[" + ch + "]");
-
-                    cell.Append(ch);
-                    index++;
-
-                    //ystem.Console.WriteLine("（１４b）index[" + index + "] s_Cell[" + s_Cell.ToString() + "]");
-
-                    // 1文字目が「"」でないなら、「,」が出てくるか、次がなくなるまでそのまま出力。
-                    // フォーマットチェックは行わない。
-                    while (index < length)
-                    {
-                        ch = source[index];
-
-                        //ystem.Console.WriteLine("（１５）index[" + index + "] ch[" + ch + "]");
-
-
-                        if (delimiter != ch)
-                        {
-                            // 文字を追加して次へ。
-                            cell.Append(ch);
-                            index++;
-
-                            //ystem.Console.WriteLine("（１６）index[" + index + "] ");
-
-                        }
-                        else
-                        {
-                            // 「,」を見つけたのでこれを無視し、
-                            // このセル読取は脱出。
-                            index++;
-
-                            //ystem.Console.WriteLine("（１７）index[" + index + "] 「,」を見つけたのでこれを無視し、このセル読取は脱出。");
-
-                            break;
-                        }
-
-                        //ystem.Console.WriteLine("（１８）index[" + index + "] ");
-
-                    }
-                    // 次が無くなったか、「,」の次の文字を指している。
-                }
-
-                //ystem.Console.WriteLine("（２０）index[" + index + "] s_Cell.ToString()[" + s_Cell.ToString() + "]");
-
-                list_Destination.Add(cell.ToString());
             }
 
-            //ystem.Console.WriteLine("（２１）index[" + index + "] ");
-
-
-            gt_EndMethod:
-            return list_Destination;
+            return cells;
         }
 
         public static string CellList_to_csvLine(List<string> fieldList)

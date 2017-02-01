@@ -1014,22 +1014,42 @@ a", ref caret);
         #endregion
 
         #region misc その他
+
+        [Test]
+        public void N90_Misc_Csv()
+        {
+            string csv = @"alpaca,""bear"",""ca""""t"",""dog"" ,elephant , fox, giraffe , ""horse"", ""Iguana"" ,";
+            List<string> cells = CsvParser.CsvLine_to_cellList(csv);
+
+            Assert.AreEqual(9, cells.Count);
+            Assert.AreEqual("alpaca", cells[0]);
+            Assert.AreEqual("bear", cells[1]);
+            Assert.AreEqual(@"ca""t", cells[2]);
+            Assert.AreEqual("dog", cells[3]);
+            Assert.AreEqual("elephant ", cells[4]); // 空白もそのまま残る
+            Assert.AreEqual(" fox", cells[5]);
+            Assert.AreEqual(" giraffe ", cells[6]);
+            Assert.AreEqual("horse", cells[7]); // ダブルクォートされているものは、前後のスペースは削除される。
+            Assert.AreEqual("Iguana", cells[8]);
+        }
+
         /// <summary>
         /// FIXME: この関数は使うんだろうか☆（＾～＾）？
         /// </summary>
         [Test]
         public void N90_Misc_FetchByEverythingTags()
         {
-            HashSet<UserDefindStateRecordable> recordset = SceneMain.UserDefinedStateTable.Instance.FetchByEverythingTags(
+            HashSet<UserDefindStateRecordable> recordset = UserDefinedStateTable.Instance.FetchByEverythingTags(
                 Code.Hashes(new[] {UserDefinedStateTable.TAG_ZERO}));
 
-            Assert.AreEqual(8, recordset.Count);
+            Assert.AreEqual(9, recordset.Count);
             Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATEMACHINE_BASELAYER)]));
             Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_FOO)]));
             Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_ANYSTATE)]));
             Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_ENTRY)]));
             Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_EXIT)]));
             Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_FOX)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_LION)]));
             Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_PIG)]));
             Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_WOLF)]));
         }

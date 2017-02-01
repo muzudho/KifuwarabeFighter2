@@ -25,4 +25,7 @@ LayerNum,MachineStateNum,StateNum,cycleOffset,cycleOffsetParameter,hideFlags,iKO
 1,1,23,0,,"HideInHierarchy, HideInInspector",False,False,,False,,Xenopus,1604128091,1,,False,,True,
 1,1,24,0,,"HideInHierarchy, HideInInspector",False,False,,False,,Yak,984231451,1,,False,,True,
 1,1,25,0,,"HideInHierarchy, HideInInspector",False,False,,False,,Zebra,-728337742,1,,False,,True,
-1,1,26,0,,HideInHierarchy,False,False,,False,,Foo,-1270996031,1,,False,,True,
+1,1,26,0,,HideInHierarchy,False,False,,False,,Any State,816655183,1,,False,,True,
+1,1,27,0,,HideInHierarchy,False,False,,False,,Entry,-354373004,1,,False,,True,
+1,1,28,0,,HideInHierarchy,False,False,,False,,Exit,876292912,1,,False,,True,
+1,1,29,0,,HideInHierarchy,False,False,,False,,Foo,-1270996031,1,,False,,True,

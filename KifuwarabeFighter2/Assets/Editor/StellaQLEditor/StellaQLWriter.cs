@@ -54,7 +54,7 @@ namespace StellaQL
         public static void Write(string filepath, StringBuilder contents, StringBuilder message)
         {
             File.WriteAllText(filepath, contents.ToString());
-            message.Append("Writed☆（＾▽＾） " + Path.GetFullPath(filepath));
+            message.AppendLine("Writed☆（＾▽＾） " + Path.GetFullPath(filepath));
             //Debug.Log(message2.ToString());
         }
     }
