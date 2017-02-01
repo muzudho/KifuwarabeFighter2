@@ -1,4 +1,4 @@
-Name,Type,Input,
+Name,Type,Input,[EOL],
 layerNum,int,False,
 machineStateNum,int,False,
 parentPath,string,False,
@@ -9,3 +9,4 @@ entryTransitions,other,False,
 hideFlags,other,False,
 name,string,False,
 
+[EOF],

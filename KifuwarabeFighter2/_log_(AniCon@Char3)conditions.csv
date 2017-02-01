@@ -1,4 +1,4 @@
-layerNum,machineStateNum,stateNum,transitionNum,conditionNum,mode,parameter,threshold,
+layerNum,machineStateNum,stateNum,transitionNum,conditionNum,mode,parameter,threshold,[EOL],
 1,1,1,1,0,If,giveup,0,
 1,1,1,2,1,If,jump,0,
 1,1,1,3,2,If,atkLP,0,
@@ -99,3 +99,4 @@ layerNum,machineStateNum,stateNum,transitionNum,conditionNum,mode,parameter,thre
 1,2,62,146,97,If,isGrounded,0,
 1,2,62,147,98,If,moveX,0,
 1,2,62,147,99,If,moveXBack,0,
+[EOF],

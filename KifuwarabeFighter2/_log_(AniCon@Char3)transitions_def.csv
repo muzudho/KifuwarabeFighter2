@@ -1,4 +1,4 @@
-Name,Type,Input,
+Name,Type,Input,[EOL],
 layerNum,int,False,
 machineStateNum,int,False,
 stateNum,int,False,
@@ -20,3 +20,4 @@ offset,float,True,
 orderedInterruption,bool,True,
 solo,bool,True,
 
+[EOF],

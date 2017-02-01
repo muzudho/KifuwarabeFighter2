@@ -155,6 +155,7 @@ namespace StellaQL
             Definitions["iKPass"].AppendCsv(Fields, c, n, d);
             Definitions["syncedLayerAffectsTiming"].AppendCsv(Fields, c, n, d);
             Definitions["syncedLayerIndex"].AppendCsv(Fields, c, n, d);
+            if (n) { c.Append("[EOL],"); }
             c.AppendLine();
         }
     }
@@ -225,6 +226,7 @@ namespace StellaQL
             Definitions["entryTransitions"].AppendCsv(Fields, c, n, d);
             Definitions["hideFlags"].AppendCsv(Fields, c, n, d);
             Definitions["name"].AppendCsv(Fields, c, n, d);
+            if (n) { c.Append("[EOL],"); }
             c.AppendLine();
         }
     }
@@ -325,6 +327,7 @@ namespace StellaQL
             Definitions["speedParameterActive"].AppendCsv(Fields, c, n, d);
             Definitions["tag"].AppendCsv(Fields, c, n, d);
             Definitions["writeDefaultValues"].AppendCsv(Fields, c, n, d);
+            if (n) { c.Append("[EOL],"); }
             c.AppendLine();
         }
     }
@@ -426,6 +429,7 @@ namespace StellaQL
             Definitions["offset"].AppendCsv(Fields, c, n, d);
             Definitions["orderedInterruption"].AppendCsv(Fields, c, n, d);
             Definitions["solo"].AppendCsv(Fields, c, n, d);
+            if (n) { c.Append("[EOL],"); }
             c.AppendLine();
         }
     }
@@ -488,6 +492,7 @@ namespace StellaQL
             Definitions["mode"].AppendCsv(Fields, c, n, d);
             Definitions["parameter"].AppendCsv(Fields, c, n, d);
             Definitions["threshold"].AppendCsv(Fields, c, n, d);
+            if (n) { c.Append("[EOL],"); }
             c.AppendLine();
         }
     }
@@ -571,6 +576,7 @@ namespace StellaQL
             Definitions["x"].AppendCsv(Fields, c, n, d);
             Definitions["y"].AppendCsv(Fields, c, n, d);
             Definitions["z"].AppendCsv(Fields, c, n, d);
+            if (n) { c.Append("[EOL],"); }
             c.AppendLine();
         }
     }
@@ -605,7 +611,7 @@ namespace StellaQL
 
             StringBuilder contents = new StringBuilder();
             // 見出し列
-            contents.AppendLine("Num,Name,Bool,Float,Int,NameHash,");
+            contents.AppendLine("Num,Name,Bool,Float,Int,NameHash,[EOL],");
 
             AnimatorControllerParameter[] acpArray = ac.parameters;
             int num = 0;
@@ -628,6 +634,7 @@ namespace StellaQL
                 num++;
             }
 
+            contents.AppendLine("[EOF],");
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogParameters(ac.name, outputDefinition), contents, message);
         }
 
@@ -636,7 +643,7 @@ namespace StellaQL
             StringBuilder contents = new StringBuilder();
 
             if (outputDefinition) {
-                contents.AppendLine("Name,Type,Input,"); // 列定義ヘッダー出力
+                contents.AppendLine("Name,Type,Input,[EOL],"); // 列定義ヘッダー出力
                 LayerRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
             }
             else
@@ -645,6 +652,7 @@ namespace StellaQL
                 foreach (LayerRecord record in aniconData.table_layer) { record.AppendCsvLine(contents, false, outputDefinition); }
             }
 
+            contents.AppendLine("[EOF],");
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogLayer(aniconName, outputDefinition), contents, message);
         }
 
@@ -654,7 +662,7 @@ namespace StellaQL
 
             if (outputDefinition)
             {
-                contents.AppendLine("Name,Type,Input,"); // 列定義ヘッダー出力
+                contents.AppendLine("Name,Type,Input,[EOL],"); // 列定義ヘッダー出力
                 StatemachineRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
             }
             else {
@@ -662,6 +670,7 @@ namespace StellaQL
                 foreach (StatemachineRecord record in aniconData.table_statemachine) { record.AppendCsvLine(contents, false, outputDefinition); }
             }
 
+            contents.AppendLine("[EOF],");
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogStatemachine(aniconName, outputDefinition), contents, message);
         }
 
@@ -669,7 +678,7 @@ namespace StellaQL
         {
             if (outputDefinition)
             {
-                contents.AppendLine("Name,Type,Input,"); // 列定義ヘッダー出力
+                contents.AppendLine("Name,Type,Input,[EOL],"); // 列定義ヘッダー出力
                 StateRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
             }
             else {
@@ -681,6 +690,8 @@ namespace StellaQL
         {
             StringBuilder contents = new StringBuilder();
             CreateCsvTable_State( aniconData.table_state, outputDefinition, contents);
+
+            contents.AppendLine("[EOF],");
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogStates(aniconName, outputDefinition), contents, message);
         }
 
@@ -688,7 +699,7 @@ namespace StellaQL
         {
             if (outputDefinition)
             {
-                contents.AppendLine("Name,Type,Input,"); // 列定義ヘッダー出力
+                contents.AppendLine("Name,Type,Input,[EOL],"); // 列定義ヘッダー出力
                 TransitionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
             }
             else {
@@ -700,6 +711,8 @@ namespace StellaQL
         {
             StringBuilder contents = new StringBuilder();
             CreateCsvTable_Transition(aniconData.table_transition, outputDefinition, contents);
+
+            contents.AppendLine("[EOF],");
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransition(aniconName, outputDefinition), contents, message);
         }
 
@@ -709,7 +722,7 @@ namespace StellaQL
 
             if (outputDefinition)
             {
-                contents.AppendLine("Name,Type,Input,"); // 列定義ヘッダー出力
+                contents.AppendLine("Name,Type,Input,[EOL],"); // 列定義ヘッダー出力
                 ConditionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
             }
             else {
@@ -717,6 +730,7 @@ namespace StellaQL
                 foreach (ConditionRecord record in aniconData.table_condition) { record.AppendCsvLine(contents, false, outputDefinition); }
             }
 
+            contents.AppendLine("[EOF],");
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogConditions(aniconName, outputDefinition), contents, message);
         }
 
@@ -726,7 +740,7 @@ namespace StellaQL
 
             if (outputDefinition)
             {
-                contents.AppendLine("Name,Type,Input,"); // 列定義ヘッダー出力
+                contents.AppendLine("Name,Type,Input,[EOL],"); // 列定義ヘッダー出力
                 PositionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
             }
             else {
@@ -734,6 +748,7 @@ namespace StellaQL
                 foreach (PositionRecord record in aniconData.table_position) { record.AppendCsvLine(contents, false, outputDefinition); }
             }
 
+            contents.AppendLine("[EOF],");
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogPositions(aniconName, outputDefinition), contents, message);
         }
 

@@ -1,4 +1,4 @@
-Name,Type,Input,
+Name,Type,Input,[EOL],
 layerNum,int,False,
 machineStateNum,int,False,
 stateNum,int,False,
@@ -8,3 +8,4 @@ mode,other,False,
 parameter,string,True,
 threshold,float,True,
 
+[EOF],

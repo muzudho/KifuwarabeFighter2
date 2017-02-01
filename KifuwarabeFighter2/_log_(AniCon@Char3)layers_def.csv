@@ -1,4 +1,4 @@
-Name,Type,Input,
+Name,Type,Input,[EOL],
 layerNum,int,False,
 name,string,False,
 avatarMask,other,False,
@@ -8,3 +8,4 @@ iKPass,bool,True,
 syncedLayerAffectsTiming,bool,True,
 syncedLayerIndex,int,True,
 
+[EOF],

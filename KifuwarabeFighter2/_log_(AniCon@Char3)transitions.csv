@@ -1,4 +1,4 @@
-layerNum,machineStateNum,stateNum,transitionNum,canTransitionToSelf,destinationState_name,destinationState_nameHash,destinationStateMachine_name,duration,exitTime,hasExitTime,hasFixedDuration,hideFlags,interruptionSource,isExit,mute,name,offset,orderedInterruption,solo,
+layerNum,machineStateNum,stateNum,transitionNum,canTransitionToSelf,destinationState_name,destinationState_nameHash,destinationStateMachine_name,duration,exitTime,hasExitTime,hasFixedDuration,hideFlags,interruptionSource,isExit,mute,name,offset,orderedInterruption,solo,[EOL],
 1,1,1,0,True,OGiveup,-1420427518,,0,1,False,True,HideInHierarchy,None,False,False,,0,True,False,
 1,1,1,1,True,JMove0,-1308079960,,0,1,False,True,HideInHierarchy,None,False,False,,0,True,False,
 1,1,1,2,True,SAtkLP,-919344908,,0,0,False,True,HideInHierarchy,None,False,False,,0,True,False,
@@ -147,3 +147,4 @@ layerNum,machineStateNum,stateNum,transitionNum,canTransitionToSelf,destinationS
 1,2,62,145,True,JMove4,-1251636047,,0,0.75,False,True,HideInHierarchy,None,False,False,,0,True,False,
 1,2,62,146,True,JBlockL,-1275926119,,0.25,0.75,True,True,HideInHierarchy,None,False,False,,0,True,False,
 1,2,63,147,True,SWait,1158263233,,0,1,True,True,HideInHierarchy,None,False,False,,0,True,False,
+[EOF],

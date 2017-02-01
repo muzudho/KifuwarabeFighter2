@@ -1,4 +1,4 @@
-Name,Type,Input,
+Name,Type,Input,[EOL],
 layerNum,int,False,
 machineStateNum,int,False,
 stateNum,int,False,
@@ -19,3 +19,4 @@ speedParameterActive,bool,True,
 tag,string,True,
 writeDefaultValues,bool,True,
 
+[EOF],
