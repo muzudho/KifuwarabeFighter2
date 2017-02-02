@@ -1,1 +1,2 @@
-Num,Name,Bool,Float,Int,NameHash,
+num,name,numberBool,numberFloat,numberInt,nameHash,[EOL],
+[EOF],

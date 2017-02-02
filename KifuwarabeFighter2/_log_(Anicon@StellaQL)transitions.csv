@@ -1,1 +1,2 @@
-layerNum,machineStateNum,stateNum,transitionNum,canTransitionToSelf,destinationState_name,destinationState_nameHash,destinationStateMachine_name,duration,exitTime,hasExitTime,hasFixedDuration,hideFlags,interruptionSource,isExit,mute,name,offset,orderedInterruption,solo,
+#layerNum,#machineStateNum,#stateNum,#transitionNum,canTransitionToSelf,#destinationState_name,#destinationState_nameHash,#destinationStateMachine_name,duration,exitTime,hasExitTime,hasFixedDuration,hideFlags,interruptionSource,isExit,mute,name,offset,orderedInterruption,solo,[EOL],
+[EOF],
