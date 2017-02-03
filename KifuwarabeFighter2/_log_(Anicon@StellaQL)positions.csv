@@ -1,4 +1,4 @@
-#layerNum,#machineStateNum,#stateNum,#transitionNum,#conditionNum,#proertyName,magnitude,#normalized,#normalizedX,#normalizedY,#normalizedZ,sqrMagnitude,x,y,z,[EOL],
+#layerNum#,#machineStateNum#,#stateNum#,#transitionNum#,#conditionNum#,#proertyName#,magnitude,#normalized#,#normalizedX#,#normalizedY#,#normalizedZ#,sqrMagnitude,x,y,z,[EOL],
 1,0,-1,-1,-1,anyStatePosition,570.4735,"(1.0, -0.3, 0.0)",0.9676172,-0.2524219,0,325440,552,-144,0,
 1,0,-1,-1,-1,entryPosition,151.7893,"(0.3, -0.9, 0.0)",0.3162278,-0.9486833,0,23040,48,-144,0,
 1,0,-1,-1,-1,exitPosition,332.7702,"(0.9, -0.4, 0.0)",0.9015231,-0.4327311,0,110736,300,-144,0,

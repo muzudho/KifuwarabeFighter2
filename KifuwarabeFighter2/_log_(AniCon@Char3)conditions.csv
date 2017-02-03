@@ -1,4 +1,4 @@
-#layerNum,#machineStateNum,#stateNum,#transitionNum,#conditionNum,mode,parameter,threshold,[EOL],
+#layerNum#,#machineStateNum#,#stateNum#,#transitionNum#,#conditionNum#,mode,parameter,threshold,[EOL],
 1,1,1,1,0,If,giveup,0,
 1,1,1,2,1,If,jump,0,
 1,1,1,3,2,If,atkLP,0,

@@ -10,9 +10,10 @@ namespace StellaQL
     /// </summary>
     public class UpateReqeustRecord
     {
-        public UpateReqeustRecord(string category, string fullpath, string fullpathTransition, string fullpathCondition, string fullpathPropertyname, string name, string oldValue, string newValue, string delete)
+        public UpateReqeustRecord(string category, string foreignkeycategory, string fullpath, string fullpathTransition, string fullpathCondition, string fullpathPropertyname, string name, string oldValue, string newValue, string delete)
         {
             this.Category = category;
+            this.Foreignkeycategory = foreignkeycategory;
             this.Fullpath = fullpath;
             this.FullpathTransition = fullpathTransition;
             this.FullpathCondition = fullpathCondition;
@@ -24,6 +25,7 @@ namespace StellaQL
         }
 
         public string Category { get; private set; }
+        public string Foreignkeycategory { get; private set; }
         public string Fullpath { get; private set; }
         public string FullpathTransition { get; private set; }
         public string FullpathCondition { get; private set; }

@@ -263,7 +263,8 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum",RecordDefinition.FieldType.Int, RecordDefinition.KeyType.Identify, false),
+                // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
+                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int, RecordDefinition.KeyType.Identify, false),
                 new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
                 new RecordDefinition("avatarMask",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("blendingMode",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
@@ -283,7 +284,7 @@ namespace StellaQL
         {
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum",num },//レイヤー行番号
+                { "#layerNum#",num },//レイヤー行番号
                 { "name", layer.name},//レイヤー名
                 { "avatarMask",layer.avatarMask == null ? "" : layer.avatarMask.ToString() },
                 { "blendingMode", layer.blendingMode.ToString()},
@@ -303,7 +304,7 @@ namespace StellaQL
         /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum"].AppendCsv(Fields, c, n, d); // レイヤー行番号
+            Definitions["#layerNum#"].AppendCsv(Fields, c, n, d); // レイヤー行番号
             Definitions["name"].AppendCsv(Fields, c, n, d); // レイヤー名
             Definitions["avatarMask"].AppendCsv(Fields, c, n, d);
             Definitions["blendingMode"].AppendCsv(Fields, c, n, d);
@@ -325,10 +326,11 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#machineStateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#fullnameEndsWithDot",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false), // 表示用フィールド（フルネーム）はこれで十分。後ろにドットが付いているが……。
-                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),// 「#fullnameEndsWithDot」フィールドで十分なので、これは表示用フィールドにしない方が一貫性がある。
+                // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
+                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#fullnameEndsWithDot#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false), // 表示用フィールド（フルネーム）はこれで十分。後ろにドットが付いているが……。
+                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),// 「#fullnameEndsWithDot#」フィールドで十分なので、これは表示用フィールドにしない方が一貫性がある。
                 new RecordDefinition("anyStateTransitions",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("behaviours",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("defaultState",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
@@ -350,9 +352,9 @@ namespace StellaQL
 
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum",layerNum },//レイヤー行番号
-                { "#machineStateNum", machineStateNum},
-                { "#fullnameEndsWithDot",fullnameEndsWithDot },// FIXME: これはフルパスになるのでは？
+                { "#layerNum#",layerNum },//レイヤー行番号
+                { "#machineStateNum#", machineStateNum},
+                { "#fullnameEndsWithDot#",fullnameEndsWithDot },// FIXME: これはフルパスになるのでは？
                 { "name", stateMachine.name},// これは葉の名前
                 { "anyStateTransitions", stateMachine.anyStateTransitions == null ? "" : stateMachine.anyStateTransitions.ToString()},
                 { "behaviours", stateMachine.behaviours == null ? "" : stateMachine.behaviours.ToString()},
@@ -376,9 +378,9 @@ namespace StellaQL
         /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum"].AppendCsv(Fields, c, n, d); // レイヤー行番号
-            Definitions["#machineStateNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#fullnameEndsWithDot"].AppendCsv(Fields, c, n, d);
+            Definitions["#layerNum#"].AppendCsv(Fields, c, n, d); // レイヤー行番号
+            Definitions["#machineStateNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#fullnameEndsWithDot#"].AppendCsv(Fields, c, n, d);
             Definitions["name"].AppendCsv(Fields, c, n, d);
             Definitions["anyStateTransitions"].AppendCsv(Fields, c, n, d);
             Definitions["behaviours"].AppendCsv(Fields, c, n, d);
@@ -399,10 +401,10 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#machineStateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#stateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#parentPath",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#parentPath#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
                 new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
                 new RecordDefinition("cycleOffset",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None               ,(object i)=>{ return ((AnimatorState)i).cycleOffset; }         ,(object i,float v)=>{ ((AnimatorState)i).cycleOffset = v; }),
                 new RecordDefinition("cycleOffsetParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None     ,(object i)=>{ return ((AnimatorState)i).cycleOffsetParameter; },(object i,string v)=>{ ((AnimatorState)i).cycleOffsetParameter = v; }),
@@ -436,10 +438,10 @@ namespace StellaQL
         {
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum",layerNum },//レイヤー行番号
-                { "#machineStateNum", machineStateNum},
-                { "#stateNum",stateNum },
-                { "#parentPath", parentPath},
+                { "#layerNum#",layerNum },//レイヤー行番号
+                { "#machineStateNum#", machineStateNum},
+                { "#stateNum#",stateNum },
+                { "#parentPath#", parentPath},
                 { "name", state.name},
                 { "cycleOffset", state.cycleOffset},
                 { "cycleOffsetParameter", state.cycleOffsetParameter},
@@ -467,10 +469,10 @@ namespace StellaQL
         /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum"].AppendCsv(Fields, c, n, d); // レイヤー行番号
-            Definitions["#machineStateNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#stateNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#parentPath"].AppendCsv(Fields, c, n, d); // パス（名前抜き）
+            Definitions["#layerNum#"].AppendCsv(Fields, c, n, d); // レイヤー行番号
+            Definitions["#machineStateNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#stateNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#parentPath#"].AppendCsv(Fields, c, n, d); // パス（名前抜き）
             Definitions["name"].AppendCsv(Fields, c, n, d);
             Definitions["cycleOffset"].AppendCsv(Fields, c, n, d);
             Definitions["cycleOffsetParameter"].AppendCsv(Fields, c, n, d);
@@ -501,15 +503,16 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#machineStateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#stateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#transitionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
                 new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("#stellaQLComment#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("canTransitionToSelf",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                    ,(object i)=>{ return ((AnimatorStateTransition)i).canTransitionToSelf; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).canTransitionToSelf = v; }),
-                new RecordDefinition("#destinationState_name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("#destinationState_nameHash",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("#destinationStateMachine_name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("#destinationState_name#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("#destinationState_nameHash#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("#destinationStateMachine_name#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("duration",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                              ,(object i)=>{ return ((AnimatorStateTransition)i).duration; }              ,(object i,float v)=>{ ((AnimatorStateTransition)i).duration = v; }),
                 new RecordDefinition("exitTime",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                              ,(object i)=>{ return ((AnimatorStateTransition)i).exitTime; }              ,(object i,float v)=>{ ((AnimatorStateTransition)i).exitTime = v; }),
                 new RecordDefinition("hasExitTime",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                            ,(object i)=>{ return ((AnimatorStateTransition)i).hasExitTime; }           ,(object i,bool v)=>{ ((AnimatorStateTransition)i).hasExitTime = v; }),
@@ -521,7 +524,6 @@ namespace StellaQL
                 new RecordDefinition("offset",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                                ,(object i)=>{ return ((AnimatorStateTransition)i).offset; }                ,(object i,float v)=>{ ((AnimatorStateTransition)i).offset = v; }),
                 new RecordDefinition("orderedInterruption",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                    ,(object i)=>{ return ((AnimatorStateTransition)i).orderedInterruption; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).orderedInterruption = v; }),
                 new RecordDefinition("solo",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                                   ,(object i)=>{ return ((AnimatorStateTransition)i).solo; }                  ,(object i,bool v)=>{ ((AnimatorStateTransition)i).solo = v; }),
-                new RecordDefinition("#stellaQLComment",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -535,16 +537,16 @@ namespace StellaQL
         {
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum", layerNum},
-                { "#machineStateNum", machineStateNum},
-                { "#stateNum", stateNum},
-                { "#transitionNum", transitionNum},
+                { "#layerNum#", layerNum},
+                { "#machineStateNum#", machineStateNum},
+                { "#stateNum#", stateNum},
+                { "#transitionNum#", transitionNum},
                 { "name", transition.name},
-                { "#stellaQLComment", stellaQLComment}, // どこからどこへ繋いでるのか、動作確認するために見る開発時用の欄を追加。
+                { "#stellaQLComment#", stellaQLComment}, // どこからどこへ繋いでるのか、動作確認するために見る開発時用の欄を追加。
                 { "canTransitionToSelf", transition.canTransitionToSelf},
-                { "#destinationState_name", transition.destinationState == null ? "" : transition.destinationState.name},// 名前のみ取得
-                { "#destinationState_nameHash", transition.destinationState == null ? 0 : transition.destinationState.nameHash},
-                { "#destinationStateMachine_name", transition.destinationStateMachine == null ? "" : transition.destinationStateMachine.name},// 名前のみ取得
+                { "#destinationState_name#", transition.destinationState == null ? "" : transition.destinationState.name},// 名前のみ取得
+                { "#destinationState_nameHash#", transition.destinationState == null ? 0 : transition.destinationState.nameHash},
+                { "#destinationStateMachine_name#", transition.destinationStateMachine == null ? "" : transition.destinationStateMachine.name},// 名前のみ取得
                 { "duration", transition.duration},
                 { "exitTime", transition.exitTime},
                 { "hasExitTime", transition.hasExitTime},
@@ -568,14 +570,16 @@ namespace StellaQL
         /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#machineStateNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#stateNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#transitionNum"].AppendCsv(Fields, c, n, d);
+            Definitions["#layerNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#machineStateNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#stateNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#transitionNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["name"].AppendCsv(Fields, c, n, d);
+            Definitions["#stellaQLComment#"].AppendCsv(Fields, c, n, d);
             Definitions["canTransitionToSelf"].AppendCsv(Fields, c, n, d);
-            Definitions["#destinationState_name"].AppendCsv(Fields, c, n, d);
-            Definitions["#destinationState_nameHash"].AppendCsv(Fields, c, n, d);
-            Definitions["#destinationStateMachine_name"].AppendCsv(Fields, c, n, d);
+            Definitions["#destinationState_name#"].AppendCsv(Fields, c, n, d);
+            Definitions["#destinationState_nameHash#"].AppendCsv(Fields, c, n, d);
+            Definitions["#destinationStateMachine_name#"].AppendCsv(Fields, c, n, d);
             Definitions["duration"].AppendCsv(Fields, c, n, d);
             Definitions["exitTime"].AppendCsv(Fields, c, n, d);
             Definitions["hasExitTime"].AppendCsv(Fields, c, n, d);
@@ -584,7 +588,6 @@ namespace StellaQL
             Definitions["interruptionSource"].AppendCsv(Fields, c, n, d);
             Definitions["isExit"].AppendCsv(Fields, c, n, d);
             Definitions["mute"].AppendCsv(Fields, c, n, d);
-            Definitions["name"].AppendCsv(Fields, c, n, d);
             Definitions["offset"].AppendCsv(Fields, c, n, d);
             Definitions["orderedInterruption"].AppendCsv(Fields, c, n, d);
             Definitions["solo"].AppendCsv(Fields, c, n, d);
@@ -615,11 +618,11 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#machineStateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#stateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#transitionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#conditionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#conditionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
                 new RecordDefinition("mode",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("parameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None                ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.parameter; } ,(object i,string v)=>{ ((AnimatorConditionWrapper)i).m_source.parameter = v; }),
                 new RecordDefinition("threshold",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                 ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.threshold; } ,(object i,float v)=>{ ((AnimatorConditionWrapper)i).m_source.threshold = v; }),
@@ -636,11 +639,11 @@ namespace StellaQL
         {
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum", layerNum},
-                { "#machineStateNum", machineStateNum},
-                { "#stateNum", stateNum},
-                { "#transitionNum", transitionNum},
-                { "#conditionNum", conditionNum},
+                { "#layerNum#", layerNum},
+                { "#machineStateNum#", machineStateNum},
+                { "#stateNum#", stateNum},
+                { "#transitionNum#", transitionNum},
+                { "#conditionNum#", conditionNum},
                 { "mode", condition.mode.ToString()},
                 { "parameter", condition.parameter},
                 { "threshold", condition.threshold},
@@ -656,11 +659,11 @@ namespace StellaQL
         /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#machineStateNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#stateNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#transitionNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#conditionNum"].AppendCsv(Fields, c, n, d);
+            Definitions["#layerNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#machineStateNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#stateNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#transitionNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#conditionNum#"].AppendCsv(Fields, c, n, d);
             Definitions["mode"].AppendCsv(Fields, c, n, d);
             Definitions["parameter"].AppendCsv(Fields, c, n, d);
             Definitions["threshold"].AppendCsv(Fields, c, n, d);
@@ -691,17 +694,17 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#machineStateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#stateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#transitionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#conditionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#proertyName",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#conditionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#proertyName#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identify,false),
                 new RecordDefinition("magnitude",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None, false),// リード・オンリー型
-                new RecordDefinition("#normalized",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("#normalizedX",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("#normalizedY",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("#normalizedZ",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("#normalized#",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("#normalizedX#",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("#normalizedY#",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("#normalizedZ#",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("sqrMagnitude",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false), // リード・オンリー型
                 new RecordDefinition("x",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).m_source.x; }             ,(object i,float v)=>{ ((PositionWrapper)i).m_source.x = v; }),
                 new RecordDefinition("y",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).m_source.y; }             ,(object i,float v)=>{ ((PositionWrapper)i).m_source.y = v; }),
@@ -719,17 +722,17 @@ namespace StellaQL
         {
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum", layerNum},
-                { "#machineStateNum", machineStateNum},
-                { "#stateNum", stateNum},
-                { "#transitionNum", transitionNum},
-                { "#conditionNum", conditionNum},
-                { "#proertyName", proertyName},
+                { "#layerNum#", layerNum},
+                { "#machineStateNum#", machineStateNum},
+                { "#stateNum#", stateNum},
+                { "#transitionNum#", transitionNum},
+                { "#conditionNum#", conditionNum},
+                { "#proertyName#", proertyName},
                 { "magnitude", position.magnitude},
-                { "#normalized", position.normalized == null ? "" : position.normalized.ToString()},
-                { "#normalizedX", position.normalized == null ? "" : position.normalized.x.ToString()},
-                { "#normalizedY", position.normalized == null ? "" : position.normalized.y.ToString()},
-                { "#normalizedZ", position.normalized == null ? "" : position.normalized.z.ToString()},
+                { "#normalized#", position.normalized == null ? "" : position.normalized.ToString()},
+                { "#normalizedX#", position.normalized == null ? "" : position.normalized.x.ToString()},
+                { "#normalizedY#", position.normalized == null ? "" : position.normalized.y.ToString()},
+                { "#normalizedZ#", position.normalized == null ? "" : position.normalized.z.ToString()},
                 { "sqrMagnitude", position.sqrMagnitude},
                 { "x", position.x},
                 { "y", position.y},
@@ -746,17 +749,17 @@ namespace StellaQL
         /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#machineStateNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#stateNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#transitionNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#conditionNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#proertyName"].AppendCsv(Fields, c, n, d);
+            Definitions["#layerNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#machineStateNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#stateNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#transitionNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#conditionNum#"].AppendCsv(Fields, c, n, d);
+            Definitions["#proertyName#"].AppendCsv(Fields, c, n, d);
             Definitions["magnitude"].AppendCsv(Fields, c, n, d);
-            Definitions["#normalized"].AppendCsv(Fields, c, n, d);
-            Definitions["#normalizedX"].AppendCsv(Fields, c, n, d);
-            Definitions["#normalizedY"].AppendCsv(Fields, c, n, d);
-            Definitions["#normalizedZ"].AppendCsv(Fields, c, n, d);
+            Definitions["#normalized#"].AppendCsv(Fields, c, n, d);
+            Definitions["#normalizedX#"].AppendCsv(Fields, c, n, d);
+            Definitions["#normalizedY#"].AppendCsv(Fields, c, n, d);
+            Definitions["#normalizedZ#"].AppendCsv(Fields, c, n, d);
             Definitions["sqrMagnitude"].AppendCsv(Fields, c, n, d);
             Definitions["x"].AppendCsv(Fields, c, n, d);
             Definitions["y"].AppendCsv(Fields, c, n, d);

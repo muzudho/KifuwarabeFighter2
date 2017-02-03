@@ -1,3 +1,3 @@
-#layerNum,name,avatarMask,blendingMode,defaultWeight,iKPass,syncedLayerAffectsTiming,syncedLayerIndex,[EOL],
+#layerNum#,name,avatarMask,blendingMode,defaultWeight,iKPass,syncedLayerAffectsTiming,syncedLayerIndex,[EOL],
 0,Base Layer,,Override,0,False,False,-1,
 [EOF],

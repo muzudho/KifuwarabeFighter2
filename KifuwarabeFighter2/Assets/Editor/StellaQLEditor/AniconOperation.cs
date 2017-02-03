@@ -222,7 +222,7 @@ namespace StellaQL
             // [0～length-2] ステートマシン名
             // [length-1] ステート名
 
-            if (nodes.Length < 2) { throw new UnityException("ノード数が２つ未満だったぜ☆（＾～＾） ステートマシン名か、ステート名は無いのかだぜ☆？"); }
+            if (nodes.Length < 2) { throw new UnityException("ノード数が２つ未満だったぜ☆（＾～＾） ステートマシン名か、ステート名は無いのかだぜ☆？ path=["+ path + "]"); }
 
             // 最初の名前[0]は、レイヤーを検索する。
             AnimatorStateMachine currentMachine = null;

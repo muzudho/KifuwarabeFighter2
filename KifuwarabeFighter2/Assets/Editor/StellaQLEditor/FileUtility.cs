@@ -24,7 +24,7 @@ namespace StellaQL
                 if (row == 0) { row++; continue; } // [0]行目はヘッダー行なので飛ばす
                 List<string> cells = CsvParser.CsvLine_to_cellList(line);
                 if ("[EOF]" == cells[0]) { break; } // [EOF]を見つけたら終わり。
-                updateRequestRecords.Add(new UpateReqeustRecord(cells[0], cells[1], cells[2], cells[3], cells[4], cells[5], cells[6], cells[7], cells[8]));
+                updateRequestRecords.Add(new UpateReqeustRecord(cells[0], cells[1], cells[2], cells[3], cells[4], cells[5], cells[6], cells[7], cells[8], cells[9]));
                 row++;
             }
 
