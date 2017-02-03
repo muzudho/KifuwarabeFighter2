@@ -688,12 +688,122 @@ namespace StellaQL
         /// </summary>
         public class PositionWrapper
         {
-            public PositionWrapper(Vector3 source)
+            public PositionWrapper(AnimatorStateMachine statemachine, string propertyName)
             {
-                this.m_source = source;
+                this.m_statemachine = statemachine;
+                this.PropertyName = propertyName;
+            }
+            public PositionWrapper(ChildAnimatorState caState, string propertyName)
+            {
+                this.m_caState = caState;
+                this.PropertyName = propertyName;
             }
 
-            public Vector3 m_source;
+            public AnimatorStateMachine m_statemachine;
+            public ChildAnimatorState m_caState;
+            public string PropertyName { get; private set; }
+
+            public float X
+            {
+                get
+                {
+                    if (null != this.m_statemachine)
+                    {
+                        switch (this.PropertyName)
+                        {
+                            case "anyStatePosition": return this.m_statemachine.anyStatePosition.x;
+                            case "entryPosition": return this.m_statemachine.entryPosition.x;
+                            case "exitPosition": return this.m_statemachine.exitPosition.x;
+                            case "parentStateMachinePosition": return this.m_statemachine.parentStateMachinePosition.x;
+                            default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
+                        }
+                    }
+                    else { return this.m_caState.position.x; }
+                }
+                set
+                {
+                    if (null != this.m_statemachine)
+                    {
+                        switch (this.PropertyName)
+                        {
+                            case "anyStatePosition": this.m_statemachine.anyStatePosition = new Vector3(value, this.m_statemachine.anyStatePosition.y, this.m_statemachine.anyStatePosition.z); break;
+                            case "entryPosition": this.m_statemachine.entryPosition = new Vector3(value, this.m_statemachine.entryPosition.y, this.m_statemachine.entryPosition.z); break;
+                            case "exitPosition": this.m_statemachine.exitPosition = new Vector3(value, this.m_statemachine.exitPosition.y, this.m_statemachine.exitPosition.z); break;
+                            case "parentStateMachinePosition": this.m_statemachine.parentStateMachinePosition = new Vector3(value, this.m_statemachine.parentStateMachinePosition.y, this.m_statemachine.parentStateMachinePosition.z); break;
+                            default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
+                        }
+                    }
+                    else { this.m_caState.position = new Vector3(value, this.m_caState.position.y, this.m_caState.position.z); }
+                }
+            }
+
+            public float Y
+            {
+                get
+                {
+                    if (null != this.m_statemachine)
+                    {
+                        switch (this.PropertyName)
+                        {
+                            case "anyStatePosition": return this.m_statemachine.anyStatePosition.y;
+                            case "entryPosition": return this.m_statemachine.entryPosition.y;
+                            case "exitPosition": return this.m_statemachine.exitPosition.y;
+                            case "parentStateMachinePosition": return this.m_statemachine.parentStateMachinePosition.y;
+                            default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
+                        }
+                    }
+                    else { return this.m_caState.position.y; }
+                }
+                set
+                {
+                    if (null != this.m_statemachine)
+                    {
+                        switch (this.PropertyName)
+                        {
+                            case "anyStatePosition": this.m_statemachine.anyStatePosition = new Vector3( this.m_statemachine.anyStatePosition.x, value, this.m_statemachine.anyStatePosition.z); break;
+                            case "entryPosition": this.m_statemachine.entryPosition = new Vector3( this.m_statemachine.entryPosition.x, value, this.m_statemachine.entryPosition.z); break;
+                            case "exitPosition": this.m_statemachine.exitPosition = new Vector3( this.m_statemachine.exitPosition.x, value, this.m_statemachine.exitPosition.z); break;
+                            case "parentStateMachinePosition": this.m_statemachine.parentStateMachinePosition = new Vector3( this.m_statemachine.parentStateMachinePosition.x, value, this.m_statemachine.parentStateMachinePosition.z); break;
+                            default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
+                        }
+                    }
+                    else { this.m_caState.position = new Vector3( this.m_caState.position.x, value, this.m_caState.position.z); }
+                }
+            }
+
+            public float Z
+            {
+                get
+                {
+                    if (null != this.m_statemachine)
+                    {
+                        switch (this.PropertyName)
+                        {
+                            case "anyStatePosition": return this.m_statemachine.anyStatePosition.z;
+                            case "entryPosition": return this.m_statemachine.entryPosition.z;
+                            case "exitPosition": return this.m_statemachine.exitPosition.z;
+                            case "parentStateMachinePosition": return this.m_statemachine.parentStateMachinePosition.z;
+                            default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
+                        }
+                    }
+                    else { return this.m_caState.position.z; }
+                }
+                set
+                {
+                    if (null != this.m_statemachine)
+                    {
+                        switch (this.PropertyName)
+                        {
+                            case "anyStatePosition": this.m_statemachine.anyStatePosition = new Vector3(this.m_statemachine.anyStatePosition.x, this.m_statemachine.anyStatePosition.y, value); break;
+                            case "entryPosition": this.m_statemachine.entryPosition = new Vector3(this.m_statemachine.entryPosition.x, this.m_statemachine.entryPosition.y, value); break;
+                            case "exitPosition": this.m_statemachine.exitPosition = new Vector3(this.m_statemachine.exitPosition.x, this.m_statemachine.exitPosition.y, value); break;
+                            case "parentStateMachinePosition": this.m_statemachine.parentStateMachinePosition = new Vector3(this.m_statemachine.parentStateMachinePosition.x, this.m_statemachine.parentStateMachinePosition.y, value); break;
+                            default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
+                        }
+                    }
+                    else { this.m_caState.position = new Vector3(this.m_caState.position.x, this.m_caState.position.y, value); }
+                }
+            }
         }
 
         static PositionRecord()
@@ -712,9 +822,9 @@ namespace StellaQL
                 new RecordDefinition("#normalizedY#",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("#normalizedZ#",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("sqrMagnitude",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false), // リード・オンリー型
-                new RecordDefinition("x",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).m_source.x; }             ,(object i,float v)=>{ ((PositionWrapper)i).m_source.x = v; }),
-                new RecordDefinition("y",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).m_source.y; }             ,(object i,float v)=>{ ((PositionWrapper)i).m_source.y = v; }),
-                new RecordDefinition("z",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).m_source.z; }             ,(object i,float v)=>{ ((PositionWrapper)i).m_source.z = v; }),
+                new RecordDefinition("x",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).X; }             ,(object i,float v)=>{ ((PositionWrapper)i).X = v; }),
+                new RecordDefinition("y",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).Y; }             ,(object i,float v)=>{ ((PositionWrapper)i).Y = v; }),
+                new RecordDefinition("z",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).Z; }             ,(object i,float v)=>{ ((PositionWrapper)i).Z = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }

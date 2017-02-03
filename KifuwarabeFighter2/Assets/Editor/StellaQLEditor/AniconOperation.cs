@@ -355,6 +355,71 @@ namespace StellaQL
         }
     }
 
+    public abstract class Operation_ChildState
+    {
+        #region 検索
+        /// <summary>
+        /// パスを指定すると ステートを返す。
+        /// </summary>
+        /// <param name="path">"Base Layer.JMove.JMove0" といった文字列。</param>
+        public static ChildAnimatorState Lookup(AnimatorController ac, string path)
+        {
+            string[] nodes = path.Split('.');
+            // [0～length-2] ステートマシン名
+            // [length-1] ステート名
+
+            if (nodes.Length < 2) { throw new UnityException("ノード数が２つ未満だったぜ☆（＾～＾） ステートマシン名か、ステート名は無いのかだぜ☆？ path=[" + path + "]"); }
+
+            // 最初の名前[0]は、レイヤーを検索する。
+            AnimatorStateMachine currentMachine = null;
+            foreach (AnimatorControllerLayer layer in ac.layers)
+            {
+                if (nodes[0] == layer.name) { currentMachine = layer.stateMachine; break; }
+            }
+            if (null == currentMachine) { throw new UnityException("見つからないぜ☆（＾～＾）nodes=[" + string.Join("][", nodes) + "]"); }
+
+            if (2 < nodes.Length) // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
+            {
+                currentMachine = GetLeafMachine(currentMachine, nodes);
+                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", nodes) + "]"); }
+            }
+
+            return GetChildState(currentMachine, nodes[nodes.Length - 1]); // レイヤーと葉だけの場合
+        }
+
+        /// <summary>
+        /// 分かりづらいが、ノードの[1]～[length-1]を辿って、最後のステートマシンを返す。
+        /// </summary>
+        private static AnimatorStateMachine GetLeafMachine(AnimatorStateMachine currentMachine, string[] nodes)
+        {
+            for (int i = Operation_Common.ROOT_NODE_IS_LAYER; i < nodes.Length + Operation_Common.LEAF_NODE_IS_STATE; i++)
+            {
+                currentMachine = GetChildMachine(currentMachine, nodes[i]);
+                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）10 i=[" + i + "] node=[" + nodes[i] + "]"); }
+            }
+            return currentMachine;
+        }
+
+        private static AnimatorStateMachine GetChildMachine(AnimatorStateMachine machine, string childName)
+        {
+            foreach (ChildAnimatorStateMachine wrapper in machine.stateMachines)
+            {
+                if (wrapper.stateMachine.name == childName) { return wrapper.stateMachine; }
+            }
+            return null;
+        }
+
+        private static ChildAnimatorState GetChildState(AnimatorStateMachine machine, string stateName)
+        {
+            foreach (ChildAnimatorState wrapper in machine.states)
+            {
+                if (wrapper.state.name == stateName) { return wrapper; }
+            }
+            throw new UnityException("チャイルド・A・ステートが見つからないぜ☆（＾～＾） stateName=["+ stateName + "]");
+        }
+        #endregion
+    }
+
     /// <summary>
     /// トランジション関連
     /// </summary>
@@ -637,33 +702,33 @@ namespace StellaQL
     {
         public static void Update(AnimatorController ac, UpateReqeustRecord record, StringBuilder message)
         {
-            // FIXME: ステートか、ステートマシンかはどうやって見分けるんだぜ☆（＾～＾）？
-            AnimatorState state = Operation_State.Lookup(ac, record.Fullpath);
-            if (null == state) { throw new UnityException("[" + record.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
-
-            int transitionNum = int.Parse(record.FullpathTransition); // トランジション番号
-            int conditionNum = int.Parse(record.FullpathCondition); // コンディション番号
-            string propertyName = record.FullpathPropertyname; // プロパティー名
-
-            if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions))
+            if ("stateMachines" == record.Foreignkeycategory)
             {
-                int tNum = 0;
-                foreach (AnimatorStateTransition transition in state.transitions)
+                // ステートマシンのポジション
+                AnimatorStateMachine statemachine = Operation_Statemachine.Lookup(ac, record.Fullpath);
+                if (null == statemachine) { throw new UnityException("[" + record.Fullpath + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+                if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions))
                 {
-                    if (transitionNum == tNum)
-                    {
-                        int cNum = 0;
-                        foreach (AnimatorCondition condition in transition.conditions)
-                        {
-                            ConditionRecord.Definitions[record.Name].Update(new ConditionRecord.AnimatorConditionWrapper(condition), record, message);
-                            goto gt_EndLoop; // 2重ループを脱出
-                        }
-                        cNum++;
-                    }
-                    tNum++;
+                    PositionRecord.Definitions[record.Name].Update(new PositionRecord.PositionWrapper(statemachine, record.FullpathPropertyname), record, message);
                 }
-                gt_EndLoop:
-                ;
+            }
+            else // ステートのポジション
+            {
+                ChildAnimatorState caState = Operation_ChildState.Lookup(ac, record.Fullpath); // 構造体☆
+
+                if ("states" == record.Foreignkeycategory)
+                {
+                    if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions))
+                    {
+                        PositionRecord.Definitions[record.Name].Update(new PositionRecord.PositionWrapper(caState, record.FullpathPropertyname), record, message);
+                    }
+                }
+                else
+                {
+                    // ステートマシン、ステート以外のポジション
+                    throw new UnityException("ステートマシン、ステート以外のポジションは未対応だぜ☆（＾～＾） fullpath=[" + record.Fullpath + "] ac=[" + ac.name + "]");
+                }
             }
         }
     }
