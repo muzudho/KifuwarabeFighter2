@@ -81,43 +81,17 @@ namespace StellaQL
         /// <returns></returns>
         public static string EscapeCell(string source)
         {
-            int length = source.Length;
-
-            // エスケープが必要なら真。
-            bool isEscape = false;
-            char ch;
+            bool isEscape = false;// エスケープが必要なら真。
 
             StringBuilder s = new StringBuilder();
 
-            for (int index = 0; index < length;)
-            {
-                ch = source[index];
-                if (',' == ch)
-                {
-                    // エスケープが必要
-                    isEscape = true;
-                    s.Append(ch);
-                    index++;
-                }
-                else if ('"' == ch)
-                {
-                    // エスケープが必要
-                    isEscape = true;
-                    s.Append("\"\"");
-                    index++;
-                }
-                else
-                {
-                    s.Append(ch);
-                    index++;
-                }
+            for (int caret = 0; caret < source.Length;) {
+                if (',' == source[caret]) { isEscape = true; s.Append(source[caret]); caret++; }// カンマが含まれていたので、エスケープが必要になった
+                else if ('"' == source[caret]) { isEscape = true; s.Append("\"\""); caret++; }// ダブルクォーテーションが含まれていたので、エスケープが必要になった
+                else { s.Append(source[caret]); caret++; }
             }
 
-            if (isEscape)
-            {
-                s.Insert(0, '"');
-                s.Append('"');
-            }
+            if (isEscape) { s.Insert(0, '"'); s.Append('"'); } // ダブルクォーテーションで挟む
 
             return s.ToString();
         }
