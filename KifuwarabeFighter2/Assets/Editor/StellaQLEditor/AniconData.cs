@@ -15,8 +15,14 @@ namespace StellaQL
     {
         public enum KeyType
         {
-            Identify,
-            Presentable,
+            /// <summary>
+            /// StellaQLで使う、一時的なナンバリング
+            /// </summary>
+            TemporaryNumbering,
+            /// <summary>
+            /// Unityで識別子に使えそうなもの
+            /// </summary>
+            Identifiable,
             None,
         }
 
@@ -206,8 +212,8 @@ namespace StellaQL
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
                 // FIXME: パラメーターの編集は他とパターンが異なる☆
-                new RecordDefinition("num", RecordDefinition.FieldType.Int, RecordDefinition.KeyType.Identify, false),
-                new RecordDefinition("name", RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("num", RecordDefinition.FieldType.Int, RecordDefinition.KeyType.TemporaryNumbering, false),
+                new RecordDefinition("name", RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identifiable,false),
                 new RecordDefinition("numberBool", RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("numberFloat", RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("numberInt", RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
@@ -264,8 +270,8 @@ namespace StellaQL
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
                 // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
-                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int, RecordDefinition.KeyType.Identify, false),
-                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int, RecordDefinition.KeyType.TemporaryNumbering, false),
+                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identifiable,false),
                 new RecordDefinition("avatarMask",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("blendingMode",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("defaultWeight",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None             ,(object i)=>{ return ((AnimatorControllerLayer)i).defaultWeight; }             ,(object i,float v)=>{ ((AnimatorControllerLayer)i).defaultWeight = v; }),
@@ -327,9 +333,9 @@ namespace StellaQL
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
                 // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
-                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#fullnameEndsWithDot#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false), // 表示用フィールド（フルネーム）はこれで十分。後ろにドットが付いているが……。
+                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#fullnameEndsWithDot#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identifiable,false), // 表示用フィールド（フルネーム）はこれで十分。後ろにドットが付いているが……。
                 new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),// 「#fullnameEndsWithDot#」フィールドで十分なので、これは表示用フィールドにしない方が一貫性がある。
                 new RecordDefinition("anyStateTransitions",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("behaviours",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
@@ -401,11 +407,11 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#parentPath#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
-                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#parentPath#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identifiable,false),
+                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identifiable,false),
                 new RecordDefinition("cycleOffset",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None               ,(object i)=>{ return ((AnimatorState)i).cycleOffset; }         ,(object i,float v)=>{ ((AnimatorState)i).cycleOffset = v; }),
                 new RecordDefinition("cycleOffsetParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None     ,(object i)=>{ return ((AnimatorState)i).cycleOffsetParameter; },(object i,string v)=>{ ((AnimatorState)i).cycleOffsetParameter = v; }),
                 new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
@@ -503,11 +509,11 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identifiable,false),
                 new RecordDefinition("#stellaQLComment#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("canTransitionToSelf",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                    ,(object i)=>{ return ((AnimatorStateTransition)i).canTransitionToSelf; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).canTransitionToSelf = v; }),
                 new RecordDefinition("#destinationState_name#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
@@ -618,11 +624,11 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#conditionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#conditionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
                 new RecordDefinition("mode",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("parameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None                ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.parameter; } ,(object i,string v)=>{ ((AnimatorConditionWrapper)i).m_source.parameter = v; }),
                 new RecordDefinition("threshold",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                 ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.threshold; } ,(object i,float v)=>{ ((AnimatorConditionWrapper)i).m_source.threshold = v; }),
@@ -694,12 +700,12 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#conditionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#proertyName#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identify,false),
+                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#conditionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#proertyName#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.TemporaryNumbering,false),
                 new RecordDefinition("magnitude",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None, false),// リード・オンリー型
                 new RecordDefinition("#normalized#",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("#normalizedX#",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),

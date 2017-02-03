@@ -1,6 +1,6 @@
 Name,Type,KeyField,Input,[EOL],
-#layerNum#,int,Identify,False,
-name,string,Presentable,False,
+#layerNum#,int,TemporaryNumbering,False,
+name,string,Identifiable,False,
 avatarMask,other,None,False,
 blendingMode,other,None,False,
 defaultWeight,float,None,True,
