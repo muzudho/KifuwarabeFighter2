@@ -1,5 +1,5 @@
 Name,Type,KeyField,Input,[EOL],
-layerNum,int,Identify,False,
+#layerNum,int,Identify,False,
 name,string,Presentable,False,
 avatarMask,other,None,False,
 blendingMode,other,None,False,

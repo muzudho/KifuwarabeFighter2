@@ -35,6 +35,30 @@ namespace StellaQL
             this.Type = type;
             this.KeyField = keyField;
             this.Input = input;
+            this.m_getterBool = null;
+            this.m_setterBool = null;
+            this.m_getterFloat = null;
+            this.m_setterFloat = null;
+            this.m_getterInt = null;
+            this.m_setterInt = null;
+            this.m_getterString = null;
+            this.m_setterString = null;
+        }
+        public RecordDefinition(string name, FieldType type, KeyType keyField, GettterBool getter, SetterBool setter)       : this(name, type, keyField, true)
+        {
+            this.m_getterBool = getter;     this.m_setterBool = setter;
+        }
+        public RecordDefinition(string name, FieldType type, KeyType keyField, GettterFloat getter, SetterFloat setter)     : this(name,type,keyField, true)
+        {
+            this.m_getterFloat = getter;    this.m_setterFloat = setter;
+        }
+        public RecordDefinition(string name, FieldType type, KeyType keyField, GettterInt getter, SetterInt setter)         : this(name, type, keyField, true)
+        {
+            this.m_getterInt = getter;      this.m_setterInt = setter;
+        }
+        public RecordDefinition(string name, FieldType type, KeyType keyField, GettterString getter, SetterString setter)   : this(name, type, keyField, true)
+        {
+            this.m_getterString = getter;   this.m_setterString = setter;
         }
 
         /// <summary>
@@ -115,6 +139,61 @@ namespace StellaQL
         {
             contents.AppendLine("Name,Type,KeyField,Input,[EOL],"); // 列定義ヘッダー出力
         }
+
+        public delegate bool   GettterBool  (object instance);                  GettterBool m_getterBool;
+        public delegate void   SetterBool   (object instance, bool value);      SetterBool m_setterBool;
+        public delegate float  GettterFloat (object instance);                  GettterFloat m_getterFloat;
+        public delegate void   SetterFloat  (object instance, float value);     SetterFloat m_setterFloat;
+        public delegate int    GettterInt   (object instance);                  GettterInt m_getterInt;
+        public delegate void   SetterInt    (object instance, int value);       SetterInt m_setterInt;
+        public delegate string GettterString(object instance);                  GettterString m_getterString;
+        public delegate void   SetterString (object instance, string value);    SetterString m_setterString;
+
+        public void Update(object instance, UpateReqeustRecord record, StringBuilder message)
+        {
+            if (null == instance) { throw new UnityException("instanceがヌルだったぜ☆（／＿＼）"); }
+
+            string propertyName = Name;
+            switch (Type)
+            {
+                case FieldType.Bool:
+                    {
+                        if (null == m_getterBool) { throw new UnityException("m_getterBoolがヌルだったぜ☆（／＿＼）"); }
+                        bool actual = m_getterBool(instance);
+                        if (actual == record.OldBool) { m_setterBool(instance, record.NewBool); }
+                        else { throw new UnityException("Old値が異なる actual=[" + actual + "] old=[" + record.OldBool + "]"); }
+                    }
+                    break;
+                case FieldType.Float:
+                    {
+                        if (null == m_getterFloat) { throw new UnityException("m_getterFloatがヌルだったぜ☆（／＿＼）"); }
+                        float actual = m_getterFloat(instance);
+                        if (actual == record.OldFloat) { m_setterFloat(instance, record.NewFloat); }
+                        else { throw new UnityException("Old値が異なる actual=[" + actual + "] old=[" + record.OldFloat + "]"); }
+                    }
+                    break;
+                case FieldType.Int:
+                    {
+                        if (null == m_getterInt) { throw new UnityException("m_getterIntがヌルだったぜ☆（／＿＼）"); }
+                        int actual = m_getterInt(instance);
+                        if (actual == record.OldInt) { m_setterInt(instance, record.NewInt); }
+                        else { throw new UnityException("Old値が異なる actual=[" + actual + "] old=[" + record.OldInt + "]"); }
+                    }
+                    break;
+                case FieldType.Other:
+                    // 未対応は、この型にしてあるんだぜ☆（＾▽＾）
+                    break;
+                case FieldType.String:
+                    {
+                        if (null == m_getterString) { throw new UnityException("m_getterStringがヌルだったぜ☆（／＿＼）"); }
+                        string actual = m_getterString(instance);
+                        if (actual == record.Old) { m_setterString(instance, record.New); }
+                        else { throw new UnityException("Old値が異なる actual=[" + actual + "] old=[" + record.Old + "]"); }
+                    }
+                    break;
+                default: throw new UnityException("未定義の型だぜ☆（＾～＾） FieldType=["+Type.ToString()+"]");
+            }
+        }
     }
 
     /// <summary>
@@ -126,11 +205,12 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
+                // FIXME: パラメーターの編集は他とパターンが異なる☆
                 new RecordDefinition("num", RecordDefinition.FieldType.Int, RecordDefinition.KeyType.Identify, false),
                 new RecordDefinition("name", RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
                 new RecordDefinition("numberBool", RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("numberFloat", RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("numberInt", RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("numberInt", RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("nameHash", RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
@@ -187,10 +267,10 @@ namespace StellaQL
                 new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
                 new RecordDefinition("avatarMask",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("blendingMode",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("defaultWeight",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("iKPass",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("syncedLayerAffectsTiming",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("syncedLayerIndex",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("defaultWeight",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None             ,(object i)=>{ return ((AnimatorControllerLayer)i).defaultWeight; }             ,(object i,float v)=>{ ((AnimatorControllerLayer)i).defaultWeight = v; }),
+                new RecordDefinition("iKPass",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                     ,(object i)=>{ return ((AnimatorControllerLayer)i).iKPass; }                    ,(object i,bool v)=>{ ((AnimatorControllerLayer)i).iKPass = v; }),
+                new RecordDefinition("syncedLayerAffectsTiming",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None   ,(object i)=>{ return ((AnimatorControllerLayer)i).syncedLayerAffectsTiming; }  ,(object i,bool v)=>{ ((AnimatorControllerLayer)i).syncedLayerAffectsTiming = v; }),
+                new RecordDefinition("syncedLayerIndex",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None            ,(object i)=>{ return ((AnimatorControllerLayer)i).syncedLayerIndex; }          ,(object i,int v)=>{ ((AnimatorControllerLayer)i).syncedLayerIndex = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -247,8 +327,8 @@ namespace StellaQL
             {
                 new RecordDefinition("#layerNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
                 new RecordDefinition("#machineStateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("#parentPath",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
-                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
+                new RecordDefinition("#fullnameEndsWithDot",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false), // 表示用フィールド（フルネーム）はこれで十分。後ろにドットが付いているが……。
+                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),// 「#fullnameEndsWithDot」フィールドで十分なので、これは表示用フィールドにしない方が一貫性がある。
                 new RecordDefinition("anyStateTransitions",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("behaviours",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("defaultState",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
@@ -263,14 +343,17 @@ namespace StellaQL
         public static Dictionary<string, RecordDefinition> Definitions { get; private set; }
         public static StatemachineRecord Empty { get; private set; }
 
-        public StatemachineRecord(int layerNum, int machineStateNum, string parentPath, AnimatorStateMachine stateMachine, List<PositionRecord> positionsTable)
+        public StatemachineRecord(int layerNum, int machineStateNum, string fullnameEndsWithDot, AnimatorStateMachine stateMachine, List<PositionRecord> positionsTable)
         {
+            // fullnameEndsWithDot には「Base Layer.」のような文字が入っているが、レイヤーの持つステートマシンの名前も「Base Layer」なので、つなげると「Base Layer.Base Layer」になってしまう。
+            // state から見れば親パスだが。
+
             this.Fields = new Dictionary<string, object>()
             {
                 { "#layerNum",layerNum },//レイヤー行番号
                 { "#machineStateNum", machineStateNum},
-                { "#parentPath",parentPath },
-                { "name", stateMachine.name},
+                { "#fullnameEndsWithDot",fullnameEndsWithDot },// FIXME: これはフルパスになるのでは？
+                { "name", stateMachine.name},// これは葉の名前
                 { "anyStateTransitions", stateMachine.anyStateTransitions == null ? "" : stateMachine.anyStateTransitions.ToString()},
                 { "behaviours", stateMachine.behaviours == null ? "" : stateMachine.behaviours.ToString()},
                 { "defaultState", stateMachine.defaultState == null ? "" : stateMachine.defaultState.ToString()},
@@ -295,7 +378,7 @@ namespace StellaQL
         {
             Definitions["#layerNum"].AppendCsv(Fields, c, n, d); // レイヤー行番号
             Definitions["#machineStateNum"].AppendCsv(Fields, c, n, d);
-            Definitions["#parentPath"].AppendCsv(Fields, c, n, d);
+            Definitions["#fullnameEndsWithDot"].AppendCsv(Fields, c, n, d);
             Definitions["name"].AppendCsv(Fields, c, n, d);
             Definitions["anyStateTransitions"].AppendCsv(Fields, c, n, d);
             Definitions["behaviours"].AppendCsv(Fields, c, n, d);
@@ -321,20 +404,20 @@ namespace StellaQL
                 new RecordDefinition("#stateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
                 new RecordDefinition("#parentPath",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
                 new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
-                new RecordDefinition("cycleOffset",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("cycleOffsetParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("cycleOffset",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None               ,(object i)=>{ return ((AnimatorState)i).cycleOffset; }         ,(object i,float v)=>{ ((AnimatorState)i).cycleOffset = v; }),
+                new RecordDefinition("cycleOffsetParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None     ,(object i)=>{ return ((AnimatorState)i).cycleOffsetParameter; },(object i,string v)=>{ ((AnimatorState)i).cycleOffsetParameter = v; }),
                 new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("iKOnFeet",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("mirror",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("mirrorParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("mirrorParameterActive",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("iKOnFeet",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                   ,(object i)=>{ return ((AnimatorState)i).iKOnFeet; }            ,(object i,bool v)=>{ ((AnimatorState)i).iKOnFeet = v; }),
+                new RecordDefinition("mirror",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                     ,(object i)=>{ return ((AnimatorState)i).mirror; }              ,(object i,bool v)=>{ ((AnimatorState)i).mirror = v; }),
+                new RecordDefinition("mirrorParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None          ,(object i)=>{ return ((AnimatorState)i).mirrorParameter; }     ,(object i,string v)=>{ ((AnimatorState)i).mirrorParameter = v; }),
+                new RecordDefinition("mirrorParameterActive",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None      ,(object i)=>{ return ((AnimatorState)i).mirrorParameterActive;},(object i,bool v)=>{ ((AnimatorState)i).mirrorParameterActive = v; }),
                 new RecordDefinition("motion_name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("nameHash",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("speed",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("speedParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("speedParameterActive",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("tag",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("writeDefaultValues",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("speed",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                     ,(object i)=>{ return ((AnimatorState)i).speed; }               ,(object i,float v)=>{ ((AnimatorState)i).speed = v; }),
+                new RecordDefinition("speedParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None           ,(object i)=>{ return ((AnimatorState)i).speedParameter; }      ,(object i,string v)=>{ ((AnimatorState)i).speedParameter = v; }),
+                new RecordDefinition("speedParameterActive",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None       ,(object i)=>{ return ((AnimatorState)i).speedParameterActive; },(object i,bool v)=>{ ((AnimatorState)i).speedParameterActive = v; }),
+                new RecordDefinition("tag",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None                      ,(object i)=>{ return ((AnimatorState)i).tag; }                 ,(object i,string v)=>{ ((AnimatorState)i).tag = v; }),
+                new RecordDefinition("writeDefaultValues",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None         ,(object i)=>{ return ((AnimatorState)i).writeDefaultValues; }  ,(object i,bool v)=>{ ((AnimatorState)i).writeDefaultValues = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -423,22 +506,22 @@ namespace StellaQL
                 new RecordDefinition("#stateNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
                 new RecordDefinition("#transitionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
                 new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Presentable,false),
-                new RecordDefinition("canTransitionToSelf",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("canTransitionToSelf",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                    ,(object i)=>{ return ((AnimatorStateTransition)i).canTransitionToSelf; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).canTransitionToSelf = v; }),
                 new RecordDefinition("#destinationState_name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("#destinationState_nameHash",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("#destinationStateMachine_name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("duration",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("exitTime",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("hasExitTime",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("hasFixedDuration",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("duration",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                              ,(object i)=>{ return ((AnimatorStateTransition)i).duration; }              ,(object i,float v)=>{ ((AnimatorStateTransition)i).duration = v; }),
+                new RecordDefinition("exitTime",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                              ,(object i)=>{ return ((AnimatorStateTransition)i).exitTime; }              ,(object i,float v)=>{ ((AnimatorStateTransition)i).exitTime = v; }),
+                new RecordDefinition("hasExitTime",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                            ,(object i)=>{ return ((AnimatorStateTransition)i).hasExitTime; }           ,(object i,bool v)=>{ ((AnimatorStateTransition)i).hasExitTime = v; }),
+                new RecordDefinition("hasFixedDuration",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                       ,(object i)=>{ return ((AnimatorStateTransition)i).hasFixedDuration; }      ,(object i,bool v)=>{ ((AnimatorStateTransition)i).hasFixedDuration = v; }),
                 new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
                 new RecordDefinition("interruptionSource",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("isExit",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("mute",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("offset",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("orderedInterruption",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("solo",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("stellaQLComment",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("isExit",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                                 ,(object i)=>{ return ((AnimatorStateTransition)i).isExit; }                ,(object i,bool v)=>{ ((AnimatorStateTransition)i).isExit = v; }),
+                new RecordDefinition("mute",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                                   ,(object i)=>{ return ((AnimatorStateTransition)i).mute; }                  ,(object i,bool v)=>{ ((AnimatorStateTransition)i).mute = v; }),
+                new RecordDefinition("offset",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                                ,(object i)=>{ return ((AnimatorStateTransition)i).offset; }                ,(object i,float v)=>{ ((AnimatorStateTransition)i).offset = v; }),
+                new RecordDefinition("orderedInterruption",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                    ,(object i)=>{ return ((AnimatorStateTransition)i).orderedInterruption; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).orderedInterruption = v; }),
+                new RecordDefinition("solo",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                                   ,(object i)=>{ return ((AnimatorStateTransition)i).solo; }                  ,(object i,bool v)=>{ ((AnimatorStateTransition)i).solo = v; }),
+                new RecordDefinition("#stellaQLComment",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -457,7 +540,7 @@ namespace StellaQL
                 { "#stateNum", stateNum},
                 { "#transitionNum", transitionNum},
                 { "name", transition.name},
-                { "stellaQLComment", stellaQLComment},
+                { "#stellaQLComment", stellaQLComment}, // どこからどこへ繋いでるのか、動作確認するために見る開発時用の欄を追加。
                 { "canTransitionToSelf", transition.canTransitionToSelf},
                 { "#destinationState_name", transition.destinationState == null ? "" : transition.destinationState.name},// 名前のみ取得
                 { "#destinationState_nameHash", transition.destinationState == null ? 0 : transition.destinationState.nameHash},
@@ -515,6 +598,19 @@ namespace StellaQL
     /// </summary>
     public class ConditionRecord
     {
+        /// <summary>
+        /// struct を object に渡したいときに使うラッパーだぜ☆（＾～＾）
+        /// </summary>
+        public class AnimatorConditionWrapper
+        {
+            public AnimatorConditionWrapper(AnimatorCondition source)
+            {
+                this.m_source = source;
+            }
+
+            public AnimatorCondition m_source;
+        }
+
         static ConditionRecord()
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
@@ -525,8 +621,8 @@ namespace StellaQL
                 new RecordDefinition("#transitionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
                 new RecordDefinition("#conditionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
                 new RecordDefinition("mode",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("parameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("threshold",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("parameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None                ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.parameter; } ,(object i,string v)=>{ ((AnimatorConditionWrapper)i).m_source.parameter = v; }),
+                new RecordDefinition("threshold",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                 ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.threshold; } ,(object i,float v)=>{ ((AnimatorConditionWrapper)i).m_source.threshold = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -578,6 +674,19 @@ namespace StellaQL
     /// </summary>
     public class PositionRecord
     {
+        /// <summary>
+        /// struct を object に渡したいときに使うラッパーだぜ☆（＾～＾）
+        /// </summary>
+        public class PositionWrapper
+        {
+            public PositionWrapper(Vector3 source)
+            {
+                this.m_source = source;
+            }
+
+            public Vector3 m_source;
+        }
+
         static PositionRecord()
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
@@ -588,15 +697,15 @@ namespace StellaQL
                 new RecordDefinition("#transitionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
                 new RecordDefinition("#conditionNum",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.Identify,false),
                 new RecordDefinition("#proertyName",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identify,false),
-                new RecordDefinition("magnitude",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("magnitude",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None, false),// リード・オンリー型
                 new RecordDefinition("#normalized",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("#normalizedX",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("#normalizedY",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("#normalizedZ",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("sqrMagnitude",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("x",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("y",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
-                new RecordDefinition("z",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,true),
+                new RecordDefinition("#normalizedX",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("#normalizedY",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("#normalizedZ",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("sqrMagnitude",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false), // リード・オンリー型
+                new RecordDefinition("x",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).m_source.x; }             ,(object i,float v)=>{ ((PositionWrapper)i).m_source.x = v; }),
+                new RecordDefinition("y",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).m_source.y; }             ,(object i,float v)=>{ ((PositionWrapper)i).m_source.y = v; }),
+                new RecordDefinition("z",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).m_source.z; }             ,(object i,float v)=>{ ((PositionWrapper)i).m_source.z = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }

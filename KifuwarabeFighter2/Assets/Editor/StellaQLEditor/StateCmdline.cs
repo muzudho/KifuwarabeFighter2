@@ -1,13 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
-using UnityEditor.Animations;
+﻿using StellaQL;
 using System;
 using System.Text;
-using SceneStellaQLTest;
-using StellaQL;
-using System.Reflection;
+using UnityEditor;
+using UnityEditor.Animations;
+using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// タブ名にクラスのフルパスが出てくるので、StellaQL ネームスペースに入れない。
@@ -18,6 +15,7 @@ using System.Reflection;
 /// </summary>
 public class StateCmdline : EditorWindow
 {
+    #region プロパティー
     /// <summary>
     /// "\n" だけの改行は対応していないので、Environment.NewLine を使うこと。
     /// </summary>
@@ -27,6 +25,7 @@ public class StateCmdline : EditorWindow
     string infoMessage = "Konnichiwa.";
     string path_animatorController = "Assets/Scripts/StellaQLEngine/Anicon@StellaQL.controller"; //"Assets/Resources/AnimatorControllers/AniCon@Char3.controller";
     Vector2 scroll;
+    #endregion
 
     /// <summary>
     /// メニューからクリックしたとき。
@@ -42,7 +41,7 @@ public class StateCmdline : EditorWindow
     void OnGUI()
     {
         GUILayout.Label("Animator controller", EditorStyles.boldLabel);
-
+        #region ドラッグ＆ドロップ エリア
         var evt = Event.current;
         var dropArea = GUILayoutUtility.GetRect(0.0f, 20.0f, GUILayout.ExpandWidth(true));
         GUI.Box(dropArea, "Animation Controller Drag & Drop");
@@ -97,11 +96,13 @@ public class StateCmdline : EditorWindow
                 //    break;
             }
         }
+        #endregion
 
-        StringBuilder message = new StringBuilder();
-
+        StringBuilder message = new StringBuilder(); // 出力メッセージ
         // アニメーター・コントローラーを取得。
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>(path_animatorController);//"Assets/Resources/AnimatorControllers/AniCon@Char3.controller"
+
+        #region アニメーターコントローラー読込み可否判定とコマンド実行ボタン
         if (!UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.ContainsKey(path_animatorController))
         {
             GUILayout.Label("Animator controller No Data", EditorStyles.boldLabel);
@@ -132,11 +133,12 @@ public class StateCmdline : EditorWindow
                 infoMessage = message.ToString();
             }
         }
-
+        #endregion
+        #region CSV出力ボタン
         GUILayout.Space(4.0f);
         if (GUILayout.Button("Export CSV"))
         {
-            Debug.Log("Start☆（＾～＾）！ filename(without extension) = " + ac.name);
+            Debug.Log("Export Start☆（＾～＾）！ filename(without extension) = " + ac.name);
 
             AniconData aniconData;
             AniconDataUtility.ScanAnimatorController(ac, out aniconData, message);
@@ -156,18 +158,35 @@ public class StateCmdline : EditorWindow
             infoMessage = message.ToString();
             Repaint();
         }
+        #endregion
 
+        if (GUILayout.Button("Import CSV(under construction)"))
+        {
+            Debug.Log("Import Start☆（＾～＾）！ filename(without extension) = " + ac.name);
+            //message.AppendLine("Import Start☆（＾～＾）！ filename(without extension) = " + ac.name);
+
+            HashSet<UpateReqeustRecord> recordSet;
+            StellaQLReader.ReadUpdateRequestCsv(out recordSet, message); // CSVファイル読取
+            Operation_Something.Update(ac, recordSet, message); // 更新を実行
+
+            infoMessage = message.ToString();
+            Repaint();
+        }
+
+        #region コマンド リファレンス ボタン
         if (GUILayout.Button("Command Reference"))
         {
             Reference.ToContents(message);
             infoMessage = message.ToString();
             Repaint();
         }
-
+        #endregion
+        #region メッセージ出力欄
         GUILayout.Label("Info");
         scroll = EditorGUILayout.BeginScrollView(scroll);
         infoMessage = EditorGUILayout.TextArea(infoMessage, GUILayout.Height(position.height - 30));
         EditorGUILayout.EndScrollView();
+        #endregion
     }
 
 }
