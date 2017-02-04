@@ -44,56 +44,56 @@ namespace StellaQL
     public abstract class StellaQLWriter
     {
         #region 可変のファイル名
-        public static string Filepath_StateConstCs(AnimatorController ac)
+        public static string Filepath_GenerateFullpathConstCs(AnimatorController ac)
         {
             string fullpath = System.IO.Path.GetFullPath(AssetDatabase.GetAssetPath(ac.GetInstanceID()));
 
             return Path.Combine(
                 Directory.GetParent(fullpath).FullName,
-                Path.GetFileNameWithoutExtension(fullpath) + "_stateConst.cs"
+                Path.GetFileNameWithoutExtension(fullpath) + "_acon.cs"
                 );
         }
-        public static string Filepath_LogStateSelect(string aniconName)
+        public static string Filepath_LogStateSelect(string aconName)
         {
-            return "./_log_(" + aniconName + ")STATE_SELECT.csv";
+            return "./_log_(" + aconName + ")STATE_SELECT.csv";
         }
-        public static string Filepath_LogTransitionSelect(string aniconName)
+        public static string Filepath_LogTransitionSelect(string aconName)
         {
-            return "./_log_(" + aniconName + ")TRANSITION_SELECT.csv";
+            return "./_log_(" + aconName + ")TRANSITION_SELECT.csv";
         }
-        public static string Filepath_LogParameters(string aniconName, bool outputDefinition)
+        public static string Filepath_LogParameters(string aconName, bool outputDefinition)
         {
-            if (outputDefinition) { return "./_log_(" + aniconName + ")parameters_def.csv"; }
-            else { return "./_log_(" + aniconName + ")parameters.csv"; }
+            if (outputDefinition) { return "./_log_(" + aconName + ")parameters_def.csv"; }
+            else { return "./_log_(" + aconName + ")parameters.csv"; }
         }
-        public static string Filepath_LogLayer(string aniconName, bool outputDefinition) {
-            if (outputDefinition) { return "./_log_(" + aniconName + ")layers_def.csv"; }
-            else { return "./_log_(" + aniconName + ")layers.csv"; }
+        public static string Filepath_LogLayer(string aconName, bool outputDefinition) {
+            if (outputDefinition) { return "./_log_(" + aconName + ")layers_def.csv"; }
+            else { return "./_log_(" + aconName + ")layers.csv"; }
         }
-        public static string Filepath_LogStatemachine(string aniconName, bool outputDefinition)
+        public static string Filepath_LogStatemachine(string aconName, bool outputDefinition)
         {
-            if (outputDefinition) { return "./_log_(" + aniconName + ")stateMachines_def.csv"; }
-            else { return "./_log_(" + aniconName + ")stateMachines.csv"; }
+            if (outputDefinition) { return "./_log_(" + aconName + ")stateMachines_def.csv"; }
+            else { return "./_log_(" + aconName + ")stateMachines.csv"; }
         }
-        public static string Filepath_LogStates(string aniconName, bool outputDefinition)
+        public static string Filepath_LogStates(string aconName, bool outputDefinition)
         {
-            if (outputDefinition) { return "./_log_(" + aniconName + ")states_def.csv"; }
-            else { return "./_log_(" + aniconName + ")states.csv"; }
+            if (outputDefinition) { return "./_log_(" + aconName + ")states_def.csv"; }
+            else { return "./_log_(" + aconName + ")states.csv"; }
         }
-        public static string Filepath_LogTransition(string aniconName, bool outputDefinition)
+        public static string Filepath_LogTransition(string aconName, bool outputDefinition)
         {
-            if (outputDefinition) { return "./_log_(" + aniconName + ")transitions_def.csv"; }
-            else { return "./_log_(" + aniconName + ")transitions.csv"; }
+            if (outputDefinition) { return "./_log_(" + aconName + ")transitions_def.csv"; }
+            else { return "./_log_(" + aconName + ")transitions.csv"; }
         }
-        public static string Filepath_LogConditions(string aniconName, bool outputDefinition)
+        public static string Filepath_LogConditions(string aconName, bool outputDefinition)
         {
-            if (outputDefinition) { return "./_log_(" + aniconName + ")conditions_def.csv"; }
-            else { return "./_log_(" + aniconName + ")conditions.csv"; }
+            if (outputDefinition) { return "./_log_(" + aconName + ")conditions_def.csv"; }
+            else { return "./_log_(" + aconName + ")conditions.csv"; }
         }
-        public static string Filepath_LogPositions(string aniconName, bool outputDefinition)
+        public static string Filepath_LogPositions(string aconName, bool outputDefinition)
         {
-            if (outputDefinition) { return "./_log_(" + aniconName + ")positions_def.csv"; }
-            else { return "./_log_(" + aniconName + ")positions.csv"; }
+            if (outputDefinition) { return "./_log_(" + aconName + ")positions_def.csv"; }
+            else { return "./_log_(" + aconName + ")positions.csv"; }
         }
         #endregion
 

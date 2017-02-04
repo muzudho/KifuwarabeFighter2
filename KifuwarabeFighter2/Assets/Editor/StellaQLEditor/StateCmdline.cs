@@ -23,7 +23,7 @@ public class StateCmdline : EditorWindow
         "STATE SELECT" + Environment.NewLine +
         "WHERE \".*Dog\"" + Environment.NewLine;
     string infoMessage = "Konnichiwa.";
-    string path_animatorController = "Assets/Scripts/StellaQLEngine/Anicon@StellaQL.controller"; //"Assets/Resources/AnimatorControllers/AniCon@Char3.controller";
+    string path_animatorController = "Assets/Scripts/StellaQLEngine/acon_zoo/Acon@Zoo.controller";
     Vector2 scroll;
     #endregion
 
@@ -76,10 +76,10 @@ public class StateCmdline : EditorWindow
                         {
                             foreach (var draggedObject in DragAndDrop.objectReferences)
                             {
-                                AnimatorController anicon = draggedObject as AnimatorController;
-                                if (null!= anicon)
+                                AnimatorController ac_temp = draggedObject as AnimatorController;
+                                if (null!= ac_temp)
                                 {
-                                    path_animatorController = AssetDatabase.GetAssetPath(anicon.GetInstanceID());
+                                    path_animatorController = AssetDatabase.GetAssetPath(ac_temp.GetInstanceID());
                                 }
                             }
                             HandleUtility.Repaint();
@@ -100,7 +100,7 @@ public class StateCmdline : EditorWindow
 
         StringBuilder message = new StringBuilder(); // 出力メッセージ
         // アニメーター・コントローラーを取得。
-        AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>(path_animatorController);//"Assets/Resources/AnimatorControllers/AniCon@Char3.controller"
+        AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(path_animatorController);
 
         bool isActivate;
         #region アニメーターコントローラー読込み可否判定
@@ -138,7 +138,7 @@ public class StateCmdline : EditorWindow
             #endregion
             #region テキストエリアとコマンド実行ボタン
             {
-                UserDefinedStateTableable userDefinedStateTable = UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[path_animatorController];
+                AControllable userDefinedStateTable = UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[path_animatorController];
 
                 GUILayout.Label("Command line (StellaQL)");
                 scroll = EditorGUILayout.BeginScrollView(scroll);
@@ -169,20 +169,20 @@ public class StateCmdline : EditorWindow
             {
                 Debug.Log("Export Start☆（＾～＾）！ filename(without extension) = " + ac.name);
 
-                AniconScanner aniconScanner = new AniconScanner();
-                aniconScanner.ScanAnimatorController(ac, message);
-                AniconData aniconData = aniconScanner.AniconData;
+                AconScanner aconScanner = new AconScanner();
+                aconScanner.ScanAnimatorController(ac, message);
+                AconData aconData = aconScanner.AconData;
                 bool outputDefinition = false;
                 for (int i = 0; i < 2; i++)
                 {
                     if (i == 1) { outputDefinition = true; }
-                    AniconDataUtility.WriteCsv_Parameters(aniconData, ac.name, outputDefinition, message);
-                    AniconDataUtility.WriteCsv_Layers(aniconData, ac.name, outputDefinition, message);
-                    AniconDataUtility.WriteCsv_Statemachines(aniconData, ac.name, outputDefinition, message);
-                    AniconDataUtility.WriteCsv_States(aniconData, ac.name, outputDefinition, message);
-                    AniconDataUtility.WriteCsv_Transitions(aniconData, ac.name, outputDefinition, message);
-                    AniconDataUtility.WriteCsv_Conditions(aniconData, ac.name, outputDefinition, message);
-                    AniconDataUtility.WriteCsv_Positions(aniconData, ac.name, outputDefinition, message);
+                    AconDataUtility.WriteCsv_Parameters(aconData, ac.name, outputDefinition, message);
+                    AconDataUtility.WriteCsv_Layers(aconData, ac.name, outputDefinition, message);
+                    AconDataUtility.WriteCsv_Statemachines(aconData, ac.name, outputDefinition, message);
+                    AconDataUtility.WriteCsv_States(aconData, ac.name, outputDefinition, message);
+                    AconDataUtility.WriteCsv_Transitions(aconData, ac.name, outputDefinition, message);
+                    AconDataUtility.WriteCsv_Conditions(aconData, ac.name, outputDefinition, message);
+                    AconDataUtility.WriteCsv_Positions(aconData, ac.name, outputDefinition, message);
                 }
 
                 infoMessage = message.ToString();

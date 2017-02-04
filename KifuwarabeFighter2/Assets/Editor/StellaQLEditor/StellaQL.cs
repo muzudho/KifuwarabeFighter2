@@ -109,9 +109,9 @@ namespace StellaQL
     /// </summary>
     public abstract class Querier
     {
-        public static bool Execute(AnimatorController ac, string query, UserDefinedStateTableable userDefinedStateTable, StringBuilder message)
+        public static bool Execute(AnimatorController ac, string query, AControllable userDefinedStateTable, StringBuilder message)
         {
-            Dictionary<int, UserDefindStateRecordable> universe = userDefinedStateTable.StateHash_to_record;
+            Dictionary<int, AcStateRecordable> universe = userDefinedStateTable.StateHash_to_record;
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
             QueryTokens qt = new QueryTokens("構文該当なし");
@@ -153,7 +153,7 @@ namespace StellaQL
                 HashSet<StateRecord> recordSet;
                 Operation_State.Select(ac, Fetcher.States(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), out recordSet, message);
                 StringBuilder contents = new StringBuilder();
-                AniconDataUtility.CreateCsvTable_State( recordSet, false, contents);
+                AconDataUtility.CreateCsvTable_State( recordSet, false, contents);
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogStateSelect(ac.name), contents, message); return true;
             }
             else if (SyntaxP.Parse_TransitionInsert(query, ref qt))
@@ -185,7 +185,7 @@ namespace StellaQL
                     out recordSet,
                     message);
                 StringBuilder contents = new StringBuilder();
-                AniconDataUtility.CreateCsvTable_Transition(recordSet, false, contents);
+                AconDataUtility.CreateCsvTable_Transition(recordSet, false, contents);
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransitionSelect(ac.name), contents, message); return true;
             }
             message.Append("構文エラー: "); message.Append( qt.MatchedSyntaxName); message.Append(" ");
@@ -197,7 +197,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static bool ExecuteStateSelect(string query, Dictionary<int, UserDefindStateRecordable> universe, out HashSet<int> recordHashes, StringBuilder message)
+        public static bool ExecuteStateSelect(string query, Dictionary<int, AcStateRecordable> universe, out HashSet<int> recordHashes, StringBuilder message)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
@@ -214,7 +214,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public static bool ExecuteTransitionSelect(string query, Dictionary<int, UserDefindStateRecordable> universe, out HashSet<int> recordHashesSrc, out HashSet<int> recordHashesDst, StringBuilder message)
+        public static bool ExecuteTransitionSelect(string query, Dictionary<int, AcStateRecordable> universe, out HashSet<int> recordHashesSrc, out HashSet<int> recordHashesDst, StringBuilder message)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
 
@@ -290,7 +290,7 @@ namespace StellaQL
     /// </summary>
     public abstract class Fetcher
     {
-        public static HashSet<AnimatorStateMachine> Statemachines(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<AnimatorStateMachine> Statemachines(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, AcStateRecordable> universe)
         {
             HashSet<AnimatorStateMachine> statemachines = new HashSet<AnimatorStateMachine>();
             foreach (int recordHash in recordHashes)
@@ -300,7 +300,7 @@ namespace StellaQL
             return statemachines;
         }
 
-        public static HashSet<AnimatorState> States(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<AnimatorState> States(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, AcStateRecordable> universe)
         {
             HashSet<AnimatorState> states = new HashSet<AnimatorState>();
             foreach (int recordHash in recordHashes)
@@ -321,7 +321,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="tokens"></param>
         public static void TokenLockers_to_recordHashesLockers(List<List<string>> lockerNumber_to_tokens, List<string> lockerNumber_to_operation,
-            Dictionary<int, UserDefindStateRecordable> universe, out List<HashSet<int>> lockerNumber_to_recordHashes)
+            Dictionary<int, AcStateRecordable> universe, out List<HashSet<int>> lockerNumber_to_recordHashes)
         {
             lockerNumber_to_recordHashes = new List<HashSet<int>>();
 
@@ -360,7 +360,7 @@ namespace StellaQL
             }
         }
 
-        public static HashSet<int> Qt_From(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
+        public static HashSet<int> Qt_From(QueryTokens qt, Dictionary<int, AcStateRecordable> universe, StringBuilder message)
         {
             if ("" != qt.From_FullnameRegex) { return RecordsFilter.String_StateFullNameRegex(qt.From_FullnameRegex, universe, message); }
             else {
@@ -376,7 +376,7 @@ namespace StellaQL
             }
         }
 
-        public static HashSet<int> Qt_To(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
+        public static HashSet<int> Qt_To(QueryTokens qt, Dictionary<int, AcStateRecordable> universe, StringBuilder message)
         {
             if ("" != qt.To_FullnameRegex) { return RecordsFilter.String_StateFullNameRegex(qt.To_FullnameRegex, universe, message); }
             else {
@@ -392,7 +392,7 @@ namespace StellaQL
             }
         }
 
-        public static HashSet<int> Qt_Where(QueryTokens qt, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
+        public static HashSet<int> Qt_Where(QueryTokens qt, Dictionary<int, AcStateRecordable> universe, StringBuilder message)
         {
             if ("" != qt.Where_FullnameRegex) { return RecordsFilter.String_StateFullNameRegex(qt.Where_FullnameRegex, universe, message); }
             else {
@@ -408,12 +408,12 @@ namespace StellaQL
             }
         }
 
-        public static HashSet<int> String_StateFullNameRegex(string pattern, Dictionary<int, UserDefindStateRecordable> universe, StringBuilder message)
+        public static HashSet<int> String_StateFullNameRegex(string pattern, Dictionary<int, AcStateRecordable> universe, StringBuilder message)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>();
 
             Regex regex = new Regex(pattern);
-            foreach (KeyValuePair<int, UserDefindStateRecordable> pair in universe)
+            foreach (KeyValuePair<int, AcStateRecordable> pair in universe)
             {
                 if (regex.IsMatch(pair.Value.Fullpath))
                 {
@@ -472,7 +472,7 @@ namespace StellaQL
             return hitRecordHashes;
         }
 
-        public static HashSet<int> Records_NotAndNot(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<int> Records_NotAndNot(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers, Dictionary<int, AcStateRecordable> universe)
         {
             HashSet<int> recordHashesSet = new HashSet<int>();// どんどんレコード・インデックスを追加していく
             foreach (int lockerNumber in lockerNumbers)
@@ -498,7 +498,7 @@ namespace StellaQL
             return new HashSet<int>(complementRecordHashes);
         }
 
-        public static HashSet<int> Tags_And(HashSet<int> attrs, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<int> Tags_And(HashSet<int> attrs, Dictionary<int, AcStateRecordable> universe)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>(universe.Keys);
             foreach (int attr in attrs)
@@ -513,10 +513,10 @@ namespace StellaQL
             return hitRecordHashes;
         }
 
-        public static HashSet<int> Tags_Or(HashSet<int> orAllTags, Dictionary<int, UserDefindStateRecordable> universe)
+        public static HashSet<int> Tags_Or(HashSet<int> orAllTags, Dictionary<int, AcStateRecordable> universe)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
-            foreach (KeyValuePair<int, UserDefindStateRecordable> pair in universe)
+            foreach (KeyValuePair<int, AcStateRecordable> pair in universe)
             {
                 foreach (int attr in orAllTags)
                 {
@@ -527,10 +527,10 @@ namespace StellaQL
             return hitRecordHashes;
         }
 
-        public static HashSet<int> Tags_NotAndNot(HashSet<int> requireAllTags, Dictionary<int, UserDefindStateRecordable> recordUniverse)
+        public static HashSet<int> Tags_NotAndNot(HashSet<int> requireAllTags, Dictionary<int, AcStateRecordable> recordUniverse)
         {
             HashSet<int> hitRecordHashes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
-            foreach (KeyValuePair<int, UserDefindStateRecordable> pair in recordUniverse)
+            foreach (KeyValuePair<int, AcStateRecordable> pair in recordUniverse)
             {
                 foreach (int attr in requireAllTags)
                 {

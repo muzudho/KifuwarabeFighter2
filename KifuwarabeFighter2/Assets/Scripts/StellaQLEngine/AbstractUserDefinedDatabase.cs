@@ -7,6 +7,6 @@ namespace StellaQL
 {
     public abstract class AbstractUserDefinedDatabase
     {
-        public Dictionary<string, UserDefinedStateTableable> AnimationControllerFilePath_to_table { get; protected set; }
+        public Dictionary<string, AControllable> AnimationControllerFilePath_to_table { get; protected set; }
     }
 }

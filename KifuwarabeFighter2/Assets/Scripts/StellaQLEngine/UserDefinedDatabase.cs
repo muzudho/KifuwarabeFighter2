@@ -17,11 +17,11 @@ namespace StellaQL
         UserDefinedDatabase()
         {
             #region (Step 9.) Link A to B. A is animation controller file path. B is UserDefinedStateTable instance. (アニメーション・コントローラーと、ユーザー定義テーブルの紐付けを、ユーザー定義データベースに追加して有効化)
-            AnimationControllerFilePath_to_table = new Dictionary<string, UserDefinedStateTableable>()
+            AnimationControllerFilePath_to_table = new Dictionary<string, AControllable>()
             {
-                {"Assets/Scripts/StellaQLEngine/Anicon@StellaQL.controller", SceneStellaQLTest.UserDefinedStateTable.Instance },
-                {"Assets/Resources/AnimatorControllers/AniCon@Select.controller", SceneSelect.UserDefinedStateTable.Instance},
-                {"Assets/Resources/AnimatorControllers/AniCon@Char3.controller", SceneMain.UserDefinedStateTable.Instance },
+                {"Assets/Scripts/StellaQLEngine/acon_zoo/Acon@Zoo.controller", SceneStellaQLTest.AControll.Instance },
+                {"Assets/Resources/AnimatorControllers/Acon@Select.controller", SceneSelect.AControll.Instance},
+                {"Assets/Resources/AnimatorControllers/Acon@Char3.controller", SceneMain.AControll.Instance },
             };
             #endregion
         }

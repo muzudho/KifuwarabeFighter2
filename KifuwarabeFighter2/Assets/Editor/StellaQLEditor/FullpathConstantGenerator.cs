@@ -9,9 +9,9 @@ namespace StellaQL
     {
         public static void WriteCshapScript(AnimatorController ac, StringBuilder message)
         {
-            AniconStateNameScanner aniconScanner = new AniconStateNameScanner();
-            aniconScanner.ScanAnimatorController(ac, message);
-            //message.Append(aniconScanner.Dump());
+            AconStateNameScanner aconScanner = new AconStateNameScanner();
+            aconScanner.ScanAnimatorController(ac, message);
+            //message.Append(aconScanner.Dump());
             //message.AppendLine("ac.name = " + ac.name + " To26=["+ StateConst.String_split_toUppercaseAlphabetOnly_join(ac.name,"@","_") +"]");
             //message.AppendLine("ac.path = " + AssetDatabase.GetAssetPath(ac.GetInstanceID()));
             //message.AppendLine("filefullpath = " + System.IO.Path.GetFullPath( AssetDatabase.GetAssetPath(ac.GetInstanceID())));
@@ -19,12 +19,12 @@ namespace StellaQL
 
             StringBuilder contents = new StringBuilder();
 
-            string namespaceStr = FullpathConstantGenerator.String_split_toUppercaseAlphabetFigureOnly_join(ac.name, "@", "_");
-            contents.AppendLine("namespace StellaQL.FullpathConst");
+            contents.AppendLine("namespace StellaQL.Acons");
             contents.AppendLine("{");
-            contents.Append("    public abstract class "); contents.AppendLine(namespaceStr);
+            contents.Append("    public abstract class "); contents.Append(FullpathConstantGenerator.String_to36_pascalCase(ac.name, "@"));
+            contents.AppendLine(" : AbstractAControll");
             contents.AppendLine("    {");
-            List<string> fullpaths = new List<string>(aniconScanner.FullpathSet);
+            List<string> fullpaths = new List<string>(aconScanner.FullpathSet);
             fullpaths.Sort();
             foreach (string fullpath in fullpaths)
             {
@@ -37,11 +37,46 @@ namespace StellaQL
             contents.AppendLine("    }");
             contents.AppendLine("}");
 
-            StellaQLWriter.Write(StellaQLWriter.Filepath_StateConstCs(ac), contents, message);
+            StellaQLWriter.Write(StellaQLWriter.Filepath_GenerateFullpathConstCs(ac), contents, message);
         }
 
         /// <summary>
-        /// 大文字アルファベット２６文字と、数字１０文字だけに詰めます。大文字に変換できない文字は無視します。
+        /// アルファベット２６文字と、数字１０文字だけに詰めます。英字・数字に変換できない文字は無視します。
+        /// パスカルケースにします。（white.alpaca -> WhiteAlpaca）
+        /// 通称 To36
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static string String_to36_pascalCase(string source1, string splitSeparator)
+        {
+            StringBuilder fullnameSb = new StringBuilder();
+            string[] tokens = source1.Split(new string[] { splitSeparator }, StringSplitOptions.None);
+            for (int iToken = 0; iToken < tokens.Length; iToken++)
+            {
+                StringBuilder tokenSb = new StringBuilder();
+                string token = tokens[iToken];
+                for (int caret = 0; caret < token.Length; caret++)
+                {
+                    if (tokenSb.Length == 0)//先頭の文字
+                    {
+                        if (Char.IsUpper(token[caret]) || Char.IsDigit(token[caret])) { tokenSb.Append(token[caret]); } // 大文字と数字はそのまま追加
+                        else if (Char.IsLower(token[caret])) { tokenSb.Append(Char.ToUpper(token[caret])); } // 小文字は大文字にして追加
+                                                                                                        // その他の文字は無視
+                    }
+                    else//先頭以降の文字
+                    {
+                        if (Char.IsLower(token[caret]) || Char.IsDigit(token[caret])) { tokenSb.Append(token[caret]); } // 小文字と数字はそのまま追加
+                        else if (Char.IsUpper(token[caret])) { tokenSb.Append(Char.ToLower(token[caret])); } // 大文字は小文字にして追加
+                                                                                                        // その他の文字は無視
+                    }
+                }
+                fullnameSb.Append(tokenSb.ToString());
+            }
+            return fullnameSb.ToString();
+        }
+
+        /// <summary>
+        /// 大文字アルファベット２６文字と、数字１０文字だけに詰めます。英字・数字に変換できない文字は無視します。
         /// 通称 To36
         /// </summary>
         /// <param name="source"></param>
@@ -61,11 +96,11 @@ namespace StellaQL
                 }
                 tokens[iToken] = sb.ToString();
             }
-            return string.Join("_", tokens);
+            return string.Join(joinSeparator, tokens);
         }
 
         /// <summary>
-        /// 大文字アルファベット２６文字と、数字１０文字だけに詰めます。大文字に変換できない文字は無視します。
+        /// 大文字アルファベット２６文字と、数字１０文字だけに詰めます。英字・数字に変換できない文字は無視します。
         /// 通称 To36
         /// </summary>
         /// <param name="source"></param>
