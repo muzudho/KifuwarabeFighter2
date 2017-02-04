@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace StellaQL.Acons
 {
     public abstract class AconChar3 : AbstractAControll
@@ -67,5 +69,76 @@ namespace StellaQL.Acons
         public const string BASELAYER_SDAMAGEM = "Base Layer.SDamageM";
         public const string BASELAYER_SMOVE = "Base Layer.SMove";
         public const string BASELAYER_SWAIT = "Base Layer.SWait";
+        public AconChar3()
+        {
+            Code.Register(StateHash_to_record, new List<AcStateRecordable>()
+            {
+                new DefaultAcState( BASELAYER_),
+                new DefaultAcState( BASELAYER_CATKHK),
+                new DefaultAcState( BASELAYER_CATKHP),
+                new DefaultAcState( BASELAYER_CATKLK),
+                new DefaultAcState( BASELAYER_CATKLP),
+                new DefaultAcState( BASELAYER_CATKMK),
+                new DefaultAcState( BASELAYER_CATKMP),
+                new DefaultAcState( BASELAYER_CBLOCKH),
+                new DefaultAcState( BASELAYER_CBLOCKL),
+                new DefaultAcState( BASELAYER_CBLOCKM),
+                new DefaultAcState( BASELAYER_CDAMAGEH),
+                new DefaultAcState( BASELAYER_CDAMAGEL),
+                new DefaultAcState( BASELAYER_CDAMAGEM),
+                new DefaultAcState( BASELAYER_CMOVE),
+                new DefaultAcState( BASELAYER_CWAIT),
+                new DefaultAcState( BASELAYER_DATKHK),
+                new DefaultAcState( BASELAYER_DATKHP),
+                new DefaultAcState( BASELAYER_DATKLK),
+                new DefaultAcState( BASELAYER_DATKLP),
+                new DefaultAcState( BASELAYER_DATKMK),
+                new DefaultAcState( BASELAYER_DATKMP),
+                new DefaultAcState( BASELAYER_DBLOCKH),
+                new DefaultAcState( BASELAYER_DBLOCKL),
+                new DefaultAcState( BASELAYER_DBLOCKM),
+                new DefaultAcState( BASELAYER_DDAMAGEH),
+                new DefaultAcState( BASELAYER_DDAMAGEL),
+                new DefaultAcState( BASELAYER_DDAMAGEM),
+                new DefaultAcState( BASELAYER_DMOVE),
+                new DefaultAcState( BASELAYER_JATKHK),
+                new DefaultAcState( BASELAYER_JATKHP),
+                new DefaultAcState( BASELAYER_JATKLK),
+                new DefaultAcState( BASELAYER_JATKLP),
+                new DefaultAcState( BASELAYER_JATKMK),
+                new DefaultAcState( BASELAYER_JATKMP),
+                new DefaultAcState( BASELAYER_JBLOCKH),
+                new DefaultAcState( BASELAYER_JBLOCKL),
+                new DefaultAcState( BASELAYER_JBLOCKM),
+                new DefaultAcState( BASELAYER_JDAMAGEH),
+                new DefaultAcState( BASELAYER_JDAMAGEL),
+                new DefaultAcState( BASELAYER_JDAMAGEM),
+                new DefaultAcState( BASELAYER_JMOVE_),
+                new DefaultAcState( BASELAYER_JMOVE_JMOVE0),
+                new DefaultAcState( BASELAYER_JMOVE_JMOVE1),
+                new DefaultAcState( BASELAYER_JMOVE_JMOVE2),
+                new DefaultAcState( BASELAYER_JMOVE_JMOVE3),
+                new DefaultAcState( BASELAYER_JMOVE_JMOVE4),
+                new DefaultAcState( BASELAYER_OBACKSTEP),
+                new DefaultAcState( BASELAYER_ODOWN),
+                new DefaultAcState( BASELAYER_ODOWNSDAMAGEH),
+                new DefaultAcState( BASELAYER_OGIVEUP),
+                new DefaultAcState( BASELAYER_OSTANDUP),
+                new DefaultAcState( BASELAYER_SATKHK),
+                new DefaultAcState( BASELAYER_SATKHP),
+                new DefaultAcState( BASELAYER_SATKLK),
+                new DefaultAcState( BASELAYER_SATKLP),
+                new DefaultAcState( BASELAYER_SATKMK),
+                new DefaultAcState( BASELAYER_SATKMP),
+                new DefaultAcState( BASELAYER_SBLOCKH),
+                new DefaultAcState( BASELAYER_SBLOCKL),
+                new DefaultAcState( BASELAYER_SBLOCKM),
+                new DefaultAcState( BASELAYER_SDAMAGEH),
+                new DefaultAcState( BASELAYER_SDAMAGEL),
+                new DefaultAcState( BASELAYER_SDAMAGEM),
+                new DefaultAcState( BASELAYER_SMOVE),
+                new DefaultAcState( BASELAYER_SWAIT),
+            });
+        }
     }
 }

@@ -35,9 +35,9 @@ namespace StellaQL
         /// <returns></returns>
         bool HasEverythingTags(HashSet<int> requiredAllTags_hash);
         /// <summary>
-        /// ユーザー定義タグのハッシュ
+        /// ユーザー定義タグのハッシュ。後から変更できる。
         /// </summary>
-        HashSet<int> Tags { get; }
+        HashSet<int> Tags { get; set; }
         /// <summary>
         /// （オプション）アニメーションの種類。使わなくても可。
         /// </summary>
@@ -144,6 +144,25 @@ namespace StellaQL
         /// </summary>
         public Dictionary<int, AcStateRecordable> StateHash_to_record { get; set; }
         public Dictionary<string, int> TagString_to_hash { get; set; }
+
+        /// <summary>
+        /// 独自フィールドなどを追加している場合、レコードを丸ごと差し替えてください。
+        /// </summary>
+        /// <param name="fullpath"></param>
+        /// <param name="record"></param>
+        public void Set(AcStateRecordable record)
+        {
+            StateHash_to_record[Animator.StringToHash(record.Fullpath)] = record;
+        }
+        /// <summary>
+        /// ユーザー定義タグを変更する場合。
+        /// </summary>
+        /// <param name="fullpath"></param>
+        /// <param name="tags"></param>
+        public void SetTag(string fullpath, string[] tags)
+        {
+            StateHash_to_record[Animator.StringToHash(fullpath)].Tags = Code.Hashes(tags);
+        }
 
         /// <summary>
         /// 現在のアニメーター・ステートに対応したユーザー定義レコードを取得。

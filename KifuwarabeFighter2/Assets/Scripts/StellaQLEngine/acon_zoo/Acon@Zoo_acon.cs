@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace StellaQL.Acons
 {
     public abstract class AconZoo : AbstractAControll
@@ -33,5 +35,42 @@ namespace StellaQL.Acons
         public const string BASELAYER_XENOPUS = "Base Layer.Xenopus";
         public const string BASELAYER_YAK = "Base Layer.Yak";
         public const string BASELAYER_ZEBRA = "Base Layer.Zebra";
+        public AconZoo()
+        {
+            Code.Register(StateHash_to_record, new List<AcStateRecordable>()
+            {
+                new DefaultAcState( BASELAYER_),
+                new DefaultAcState( BASELAYER_ALPACA),
+                new DefaultAcState( BASELAYER_ANYSTATE),
+                new DefaultAcState( BASELAYER_BEAR),
+                new DefaultAcState( BASELAYER_CAT),
+                new DefaultAcState( BASELAYER_DOG),
+                new DefaultAcState( BASELAYER_ELEPHANT),
+                new DefaultAcState( BASELAYER_ENTRY),
+                new DefaultAcState( BASELAYER_EXIT),
+                new DefaultAcState( BASELAYER_FOO),
+                new DefaultAcState( BASELAYER_FOX),
+                new DefaultAcState( BASELAYER_GIRAFFE),
+                new DefaultAcState( BASELAYER_HORSE),
+                new DefaultAcState( BASELAYER_IGUANA),
+                new DefaultAcState( BASELAYER_JELLYFISH),
+                new DefaultAcState( BASELAYER_KANGAROO),
+                new DefaultAcState( BASELAYER_LION),
+                new DefaultAcState( BASELAYER_MONKEY),
+                new DefaultAcState( BASELAYER_NUTRIA),
+                new DefaultAcState( BASELAYER_OX),
+                new DefaultAcState( BASELAYER_PIG),
+                new DefaultAcState( BASELAYER_QUETZAL),
+                new DefaultAcState( BASELAYER_RABBIT),
+                new DefaultAcState( BASELAYER_SHEEP),
+                new DefaultAcState( BASELAYER_TIGER),
+                new DefaultAcState( BASELAYER_UNICORN),
+                new DefaultAcState( BASELAYER_VIXEN),
+                new DefaultAcState( BASELAYER_WOLF),
+                new DefaultAcState( BASELAYER_XENOPUS),
+                new DefaultAcState( BASELAYER_YAK),
+                new DefaultAcState( BASELAYER_ZEBRA),
+            });
+        }
     }
 }

@@ -6,12 +6,12 @@ using UnityEngine;
 namespace SceneSelect
 {
     /// <summary>
-    /// (Step 3.) Please, create table definition of statemachines or states. (ステートマシン、ステートのテーブル定義を作成してください)
-    /// Extend AbstractUserDefinedStateTable class. (AbstractUserDefinedStateTable クラスを継承してください)
+    /// (Step 3.) Click [Generate fullpath constant C#] button. and "using StellaQL.FullpathConst;". ([Generate fullpath constant C#]ボタンをクリックしてください)
     /// 
-    /// (Step 4.) Click [Generate fullpath constant C#] button. and "using StellaQL.FullpathConst;". ([Generate fullpath constant C#]ボタンをクリックしてください)
+    /// (Step 4.) Please, create table definition of statemachines or states. (ステートマシン、ステートのテーブル定義を作成してください)
+    /// Extend generated class. ([Generate fullpath constant C#]ボタンで作ったクラスを継承してください)
     /// </summary>
-    public class AControll : AbstractAControll
+    public class AControll : AconSelect
     {
         /// <summary>
         /// (Step 8.) Please, make singleton. (シングルトンにしてください)
@@ -32,14 +32,7 @@ namespace SceneSelect
             });
             #endregion
 
-            #region (Step 7.) Register and activate user defined record of statemachines or states.(ステートマシン、ステートのユーザー定義レコードを設定してください)
-            Code.Register(StateHash_to_record, new List<AcStateRecordable>()
-            {
-                new DefaultAcState( AconSelect.BASELAYER_STAY),
-                new DefaultAcState( AconSelect.BASELAYER_MOVE),
-                new DefaultAcState( AconSelect.BASELAYER_READY),
-                new DefaultAcState( AconSelect.BASELAYER_TIMEOVER),
-            });
+            #region (Step 7.) You can set user defined tags. (ユーザー定義タグを設定することができます)
             #endregion
         }
     }

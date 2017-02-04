@@ -11,17 +11,15 @@ namespace StellaQL
         {
             AconStateNameScanner aconScanner = new AconStateNameScanner();
             aconScanner.ScanAnimatorController(ac, message);
-            //message.Append(aconScanner.Dump());
-            //message.AppendLine("ac.name = " + ac.name + " To26=["+ StateConst.String_split_toUppercaseAlphabetOnly_join(ac.name,"@","_") +"]");
-            //message.AppendLine("ac.path = " + AssetDatabase.GetAssetPath(ac.GetInstanceID()));
-            //message.AppendLine("filefullpath = " + System.IO.Path.GetFullPath( AssetDatabase.GetAssetPath(ac.GetInstanceID())));
-            //message.AppendLine("new-path = " + StellaQLWriter.Filepath_StateConstCs(ac));
 
             StringBuilder contents = new StringBuilder();
 
+            contents.AppendLine("using System.Collections.Generic;");
+            contents.AppendLine();
             contents.AppendLine("namespace StellaQL.Acons");
             contents.AppendLine("{");
-            contents.Append("    public abstract class "); contents.Append(FullpathConstantGenerator.String_to36_pascalCase(ac.name, "@"));
+            string className = FullpathConstantGenerator.String_to36_pascalCase(ac.name, "@");
+            contents.Append("    public abstract class "); contents.Append(className);
             contents.AppendLine(" : AbstractAControll");
             contents.AppendLine("    {");
             List<string> fullpaths = new List<string>(aconScanner.FullpathSet);
@@ -34,6 +32,21 @@ namespace StellaQL
                 contents.Append(fullpath);
                 contents.AppendLine(@""";");
             }
+
+            contents.Append("        public "); contents.Append(className); contents.AppendLine("()");
+            contents.AppendLine("        {");
+            contents.AppendLine("            Code.Register(StateHash_to_record, new List<AcStateRecordable>()");
+            contents.AppendLine("            {");
+
+            foreach (string fullpath in fullpaths)
+            {
+                contents.Append("                new DefaultAcState( ");
+                contents.Append(FullpathConstantGenerator.String_split_toUppercaseAlphabetFigureOnly_join(fullpath, ".", "_"));
+                contents.AppendLine("),");
+            }
+
+            contents.AppendLine("            });");
+            contents.AppendLine("        }");
             contents.AppendLine("    }");
             contents.AppendLine("}");
 
