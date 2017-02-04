@@ -140,8 +140,9 @@ public class StateCmdline : EditorWindow
         {
             Debug.Log("Export Start☆（＾～＾）！ filename(without extension) = " + ac.name);
 
-            AniconData aniconData;
-            new AniconScanner().ScanAnimatorController(ac, out aniconData, message);
+            AniconScanner aniconScanner = new AniconScanner();
+            aniconScanner.ScanAnimatorController(ac, message);
+            AniconData aniconData = aniconScanner.AniconData;
             bool outputDefinition = false;
             for (int i=0; i<2; i++)
             {
@@ -178,6 +179,9 @@ public class StateCmdline : EditorWindow
         {
             message.AppendLine("Create State Const Start☆（＾～＾）！ filename(without extension) = " + ac.name);
 
+            AniconStateNameScanner aniconScanner = new AniconStateNameScanner();
+            aniconScanner.ScanAnimatorController(ac, message);
+            message.Append(aniconScanner.Dump());
 
             infoMessage = message.ToString();
             Debug.Log(infoMessage);

@@ -24,10 +24,9 @@ namespace StellaQL
             }
         }
 
-        public void ScanAnimatorController(AnimatorController ac, out AniconData aniconData, StringBuilder message)
+        public void ScanAnimatorController(AnimatorController ac, StringBuilder message)
         {
             message.AppendLine("Animator controller Scanning...☆（＾～＾）");
-            aniconData = new AniconData();
 
             // パラメーター
             if(parameterScan){
@@ -35,32 +34,32 @@ namespace StellaQL
                 int num = 0;
                 foreach (AnimatorControllerParameter acp in acpArray)
                 {
-                    OnParameter(aniconData, num, acp);
+                    OnParameter( num, acp);
                     num++;
                 }
             }
 
             foreach (AnimatorControllerLayer layer in ac.layers)//レイヤー
             {
-                if(OnLayer(aniconData, layer))
+                if(OnLayer( layer))
                 {
                     Dictionary<string, AnimatorStateMachine> statemachineList_flat = new Dictionary<string, AnimatorStateMachine>(); // フルパス, ステートマシン
                     ScanRecursive("", layer.stateMachine, statemachineList_flat);// 再帰をスキャンして、フラットにする。
                     foreach (KeyValuePair<string, AnimatorStateMachine> statemachine_pair in statemachineList_flat)
                     { // ステート・マシン
-                        if(OnStatemachine(aniconData, statemachine_pair.Key, statemachine_pair.Value))
+                        if(OnStatemachine( statemachine_pair.Key, statemachine_pair.Value))
                         {
                             foreach (ChildAnimatorState caState in statemachine_pair.Value.states)
                             { //ステート（ラッパー）
-                                if(OnState(aniconData, statemachine_pair.Key, caState))
+                                if(OnState( statemachine_pair.Key, caState))
                                 {
                                     foreach (AnimatorStateTransition transition in caState.state.transitions)
                                     { // トランジション
-                                        if(OnTransition(aniconData, transition))
+                                        if(OnTransition( transition))
                                         {
                                             foreach (AnimatorCondition aniCondition in transition.conditions)
                                             { // コンディション
-                                                OnCondition(aniconData, aniCondition);
+                                                OnCondition( aniCondition);
                                             } // コンディション
                                         }
                                     }//トランジション
@@ -74,14 +73,14 @@ namespace StellaQL
             message.AppendLine("Scanned☆（＾▽＾）");
         }
 
-        public virtual void OnParameter(AniconData aniconData, int num, AnimatorControllerParameter acp) { }
+        public virtual void OnParameter(int num, AnimatorControllerParameter acp) { }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="aniconData"></param>
         /// <param name="layer"></param>
         /// <returns>下位を検索するなら真</returns>
-        public virtual bool OnLayer(AniconData aniconData, AnimatorControllerLayer layer) { return false; }
+        public virtual bool OnLayer(AnimatorControllerLayer layer) { return false; }
         /// <summary>
         /// 
         /// </summary>
@@ -89,7 +88,7 @@ namespace StellaQL
         /// <param name="fullnameEndWithDot"></param>
         /// <param name="statemachine"></param>
         /// <returns>下位を検索するなら真</returns>
-        public virtual bool OnStatemachine(AniconData aniconData, string fullnameEndWithDot, AnimatorStateMachine statemachine) { return false; }
+        public virtual bool OnStatemachine(string fullnameEndWithDot, AnimatorStateMachine statemachine) { return false; }
         /// <summary>
         /// 
         /// </summary>
@@ -97,21 +96,21 @@ namespace StellaQL
         /// <param name="parentPath"></param>
         /// <param name="caState"></param>
         /// <returns>下位を検索するなら真</returns>
-        public virtual bool OnState(AniconData aniconData, string parentPath, ChildAnimatorState caState) { return false; }
+        public virtual bool OnState(string parentPath, ChildAnimatorState caState) { return false; }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="aniconData"></param>
         /// <param name="transition"></param>
         /// <returns>下位を検索するなら真</returns>
-        public virtual bool OnTransition(AniconData aniconData, AnimatorStateTransition transition) { return false; }
+        public virtual bool OnTransition(AnimatorStateTransition transition) { return false; }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="aniconData"></param>
         /// <param name="aniCondition"></param>
         /// <returns>下位を検索するなら真</returns>
-        public virtual bool OnCondition(AniconData aniconData, AnimatorCondition aniCondition) { return false; }
+        public virtual bool OnCondition(AnimatorCondition aniCondition) { return false; }
     }
 
     /// <summary>
@@ -121,43 +120,44 @@ namespace StellaQL
     {
         public AniconScanner() : base(true)
         {
-
+            AniconData = new AniconData();
         }
+        public AniconData AniconData { get; private set; }
 
-        public override void OnParameter(AniconData aniconData, int num, AnimatorControllerParameter acp)
+        public override void OnParameter( int num, AnimatorControllerParameter acp)
         {
             ParameterRecord record = new ParameterRecord(num, acp.name, acp.defaultBool, acp.defaultFloat, acp.defaultInt, acp.nameHash);
-            aniconData.table_parameter.Add(record);
+            AniconData.table_parameter.Add(record);
         }
 
-        public override bool OnLayer(AniconData aniconData, AnimatorControllerLayer layer)
+        public override bool OnLayer( AnimatorControllerLayer layer)
         {
-            LayerRecord layerRecord = new LayerRecord(aniconData.table_layer.Count, layer);
-            aniconData.table_layer.Add(layerRecord); return true;
+            LayerRecord layerRecord = new LayerRecord(AniconData.table_layer.Count, layer);
+            AniconData.table_layer.Add(layerRecord); return true;
         }
 
-        public override bool OnStatemachine(AniconData aniconData, string fullnameEndWithDot, AnimatorStateMachine statemachine)
+        public override bool OnStatemachine( string fullnameEndWithDot, AnimatorStateMachine statemachine)
         {
-            StatemachineRecord stateMachineRecord = new StatemachineRecord(aniconData.table_layer.Count, aniconData.table_statemachine.Count, fullnameEndWithDot, statemachine, aniconData.table_position);
-            aniconData.table_statemachine.Add(stateMachineRecord); return true;
+            StatemachineRecord stateMachineRecord = new StatemachineRecord(AniconData.table_layer.Count, AniconData.table_statemachine.Count, fullnameEndWithDot, statemachine, AniconData.table_position);
+            AniconData.table_statemachine.Add(stateMachineRecord); return true;
         }
 
-        public override bool OnState(AniconData aniconData, string parentPath, ChildAnimatorState caState)
+        public override bool OnState( string parentPath, ChildAnimatorState caState)
         {
-            StateRecord stateRecord = StateRecord.CreateInstance(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, parentPath, caState, aniconData.table_position);
-            aniconData.table_state.Add(stateRecord); return true;
+            StateRecord stateRecord = StateRecord.CreateInstance(AniconData.table_layer.Count, AniconData.table_statemachine.Count, AniconData.table_state.Count, parentPath, caState, AniconData.table_position);
+            AniconData.table_state.Add(stateRecord); return true;
         }
 
-        public override bool OnTransition(AniconData aniconData, AnimatorStateTransition transition)
+        public override bool OnTransition( AnimatorStateTransition transition)
         {
-            TransitionRecord transitionRecord = new TransitionRecord(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, aniconData.table_transition.Count, transition, "");
-            aniconData.table_transition.Add(transitionRecord); return true;
+            TransitionRecord transitionRecord = new TransitionRecord(AniconData.table_layer.Count, AniconData.table_statemachine.Count, AniconData.table_state.Count, AniconData.table_transition.Count, transition, "");
+            AniconData.table_transition.Add(transitionRecord); return true;
         }
 
-        public override bool OnCondition(AniconData aniconData, AnimatorCondition aniCondition)
+        public override bool OnCondition( AnimatorCondition aniCondition)
         {
-            ConditionRecord conditionRecord = new ConditionRecord(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, aniconData.table_transition.Count, aniconData.table_condition.Count, aniCondition);
-            aniconData.table_condition.Add(conditionRecord); return true;
+            ConditionRecord conditionRecord = new ConditionRecord(AniconData.table_layer.Count, AniconData.table_statemachine.Count, AniconData.table_state.Count, AniconData.table_transition.Count, AniconData.table_condition.Count, aniCondition);
+            AniconData.table_condition.Add(conditionRecord); return true;
         }
     }
 
@@ -168,23 +168,33 @@ namespace StellaQL
     {
         public AniconStateNameScanner() : base(false)
         {
-            fullpathSet = new HashSet<string>();
+            FullpathSet = new HashSet<string>();
         }
-        public HashSet<string> fullpathSet;
+        public HashSet<string> FullpathSet { get; private set; }
 
-        public override bool OnLayer(AniconData aniconData, AnimatorControllerLayer layer)
+        public override bool OnLayer( AnimatorControllerLayer layer)
         {
             return true;
         }
 
-        public override bool OnStatemachine(AniconData aniconData, string fullnameEndWithDot, AnimatorStateMachine statemachine)
+        public override bool OnStatemachine( string fullnameEndWithDot, AnimatorStateMachine statemachine)
         {
-            fullpathSet.Add(fullnameEndWithDot); return true;
+            FullpathSet.Add(fullnameEndWithDot); return true;
         }
 
-        public override bool OnState(AniconData aniconData, string parentPath, ChildAnimatorState caState)
+        public override bool OnState( string parentPath, ChildAnimatorState caState)
         {
-            fullpathSet.Add(parentPath + caState.state.name); return false;
+            FullpathSet.Add(parentPath + caState.state.name); return false;
+        }
+
+        public string Dump()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (string path in this.FullpathSet)
+            {
+                sb.AppendLine(path);
+            }
+            return sb.ToString();
         }
     }
 }
