@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using UnityEditor.Animations;
 
 namespace StellaQL
 {
-    public abstract class StateConst
+    public abstract class FullpathConstantGenerator
     {
         public static void WriteCshapScript(AnimatorController ac, StringBuilder message)
         {
@@ -18,15 +19,17 @@ namespace StellaQL
 
             StringBuilder contents = new StringBuilder();
 
-            string namespaceStr = StateConst.String_split_toUppercaseAlphabetFigureOnly_join(ac.name, "@", "_");
-            contents.AppendLine("namespace StellaQL");
+            string namespaceStr = FullpathConstantGenerator.String_split_toUppercaseAlphabetFigureOnly_join(ac.name, "@", "_");
+            contents.AppendLine("namespace StellaQL.FullpathConst");
             contents.AppendLine("{");
             contents.Append("    public abstract class "); contents.AppendLine(namespaceStr);
             contents.AppendLine("    {");
-            foreach (string fullpath in aniconScanner.FullpathSet)
+            List<string> fullpaths = new List<string>(aniconScanner.FullpathSet);
+            fullpaths.Sort();
+            foreach (string fullpath in fullpaths)
             {
                 contents.Append("        public const string ");
-                contents.Append(StateConst.String_split_toUppercaseAlphabetFigureOnly_join(fullpath, ".", "_"));
+                contents.Append(FullpathConstantGenerator.String_split_toUppercaseAlphabetFigureOnly_join(fullpath, ".", "_"));
                 contents.Append(@" = """);
                 contents.Append(fullpath);
                 contents.AppendLine(@""";");

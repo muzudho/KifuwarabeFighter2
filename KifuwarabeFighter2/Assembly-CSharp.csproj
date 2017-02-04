@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Resources\AnimatorControllers\AniCon@Char3_stateConst.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\AniCon@Select_stateConst.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\AniConChar3Behaviour.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\SampleBehaviour.cs" />
      <Compile Include="Assets\Scripts\CommonScript.cs" />
@@ -69,6 +70,7 @@
      <Compile Include="Assets\Scripts\SceneSelect\Select_UserDefinedStateTable.cs" />
      <Compile Include="Assets\Scripts\SceneTitle\Title_CameraScript.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\AbstractUserDefinedDatabase.cs" />
+     <Compile Include="Assets\Scripts\StellaQLEngine\Anicon@StellaQL_stateConst.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\CliptypeExtend.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\StellaQLCode.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\Test_UserDefinedStateTable.cs" />

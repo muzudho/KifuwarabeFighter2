@@ -1,8 +1,7 @@
-﻿using UnityEngine;
+﻿using StellaQL;
+using StellaQL.FullpathConst;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using System.Collections;
-using StellaQL;
 
 namespace SceneSelect
 {
@@ -35,9 +34,9 @@ namespace SceneSelect
             UserDefindStateRecordable astateRecord0 = UserDefinedStateTable.Instance.GetCurrentUserDefinedStateRecord(player_to_animator[(int)PlayerIndex.Player1]);
             UserDefindStateRecordable astateRecord1 = UserDefinedStateTable.Instance.GetCurrentUserDefinedStateRecord(player_to_animator[(int)PlayerIndex.Player2]);
             if (
-                UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_READY)].Name == astateRecord0.Name
+                UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_SELECT.BASELAYER_READY)].Name == astateRecord0.Name
                 &&
-                UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_READY)].Name == astateRecord1.Name
+                UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_SELECT.BASELAYER_READY)].Name == astateRecord1.Name
                 )
             {
                 // １プレイヤー、２プレイヤー　ともに Ready ステートなら。

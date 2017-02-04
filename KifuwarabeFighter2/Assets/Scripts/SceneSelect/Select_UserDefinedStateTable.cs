@@ -1,4 +1,5 @@
 ﻿using StellaQL;
+using StellaQL.FullpathConst;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -37,11 +38,7 @@ namespace SceneSelect
         static UserDefinedStateTable() { Instance = new UserDefinedStateTable(); }
         public static UserDefinedStateTable Instance { get; private set; }
 
-        #region (Step 4.) Unfortunaly, Please, list fullpath of statemachines of states.  (残念ですが、ステートマシン、ステートのフルパスを定数にしてください)
-        public const string STATE_STAY = "Base Layer.Stay";
-        public const string STATE_MOVE = "Base Layer.Move";
-        public const string STATE_READY = "Base Layer.Ready";
-        public const string STATE_TIMEOVER = "Base Layer.Timeover";
+        #region (Step 4.) Click [Generate fullpath constant C#] button. and "using StellaQL.FullpathConst;". ([Generate fullpath constant C#]ボタンをクリックしてください)
         #endregion
 
         #region (Step 5.) Unfortunaly, Please, list user defined tags for StellaQL.  (残念ですが、StellaQL用のユーザー定義タグを定数にしてください)
@@ -59,10 +56,10 @@ namespace SceneSelect
             #region (Step 7.) Register and activate user defined record of statemachines or states.(ステートマシン、ステートのユーザー定義レコードを設定してください)
             Code.Register(StateHash_to_record, new List<UserDefindStateRecordable>()
             {
-                new UserDefinedStateRecord( STATE_STAY),
-                new UserDefinedStateRecord( STATE_MOVE),
-                new UserDefinedStateRecord( STATE_READY),
-                new UserDefinedStateRecord( STATE_TIMEOVER),
+                new UserDefinedStateRecord( ANICON_SELECT.BASELAYER_STAY),
+                new UserDefinedStateRecord( ANICON_SELECT.BASELAYER_MOVE),
+                new UserDefinedStateRecord( ANICON_SELECT.BASELAYER_READY),
+                new UserDefinedStateRecord( ANICON_SELECT.BASELAYER_TIMEOVER),
             });
             #endregion
         }

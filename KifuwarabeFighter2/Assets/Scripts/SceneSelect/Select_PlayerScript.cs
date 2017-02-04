@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using StellaQL;
+using StellaQL.FullpathConst;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using StellaQL;
 
 namespace SceneSelect
 {
@@ -91,7 +91,7 @@ namespace SceneSelect
             }
             #endregion
 
-            if (UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_STAY)].Name == astateRecord.Name)
+            if (UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_SELECT.BASELAYER_STAY)].Name == astateRecord.Name)
             {
                 //カーソル移動中でなければ。
 
@@ -152,10 +152,10 @@ namespace SceneSelect
                     myRigidbody2D.velocity = new Vector2(0, myRigidbody2D.velocity.y);
                 }
             }
-            else if (UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_MOVE)].Name == astateRecord.Name)
+            else if (UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_SELECT.BASELAYER_MOVE)].Name == astateRecord.Name)
             {
             }
-            else if (UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_READY)].Name == astateRecord.Name)
+            else if (UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_SELECT.BASELAYER_READY)].Name == astateRecord.Name)
             {
                 // キャラクター選択済みのとき
 

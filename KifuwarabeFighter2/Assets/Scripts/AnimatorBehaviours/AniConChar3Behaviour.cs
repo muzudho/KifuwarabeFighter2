@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SceneMain;
+using StellaQL.FullpathConst;
 
 public class AniConChar3Behaviour : StateMachineBehaviour {
 
@@ -9,18 +10,18 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         #region 立ち
-        if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_SWAIT)].Name)) // 立ち待機
+        if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_CHAR3.BASELAYER_SWAIT)].Name)) // 立ち待機
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Stand);
         }
         #endregion
         #region ジャンプ
-        else if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_JMOVE0)].Name)) // ジャンプに着手した。
+        else if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_CHAR3.BASELAYER_JMOVE_JMOVE0)].Name)) // ジャンプに着手した。
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Jump);
             animator.SetBool(SceneCommon.BOOL_JMOVE0, true);
         }
-        else if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_JMOVE1)].Name)) // 上昇
+        else if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_CHAR3.BASELAYER_JMOVE_JMOVE1)].Name)) // 上昇
         {
             Main_PlayerScript script = animator.gameObject.GetComponent<Main_PlayerScript>();
             script.Jump1();
@@ -29,17 +30,17 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
         #region 走り
         #endregion
         #region 屈み
-        else if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_CWAIT)].Name)) // かがみ待機
+        else if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_CHAR3.BASELAYER_CWAIT)].Name)) // かがみ待機
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Crouch);
         }
         #endregion
         #region その他
-        else if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_OBACKSTEP)].Name)) // バックステップ
+        else if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_CHAR3.BASELAYER_OBACKSTEP)].Name)) // バックステップ
         {
             animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Stand);
         }
-        else if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_OGIVEUP)].Name))
+        else if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_CHAR3.BASELAYER_OGIVEUP)].Name))
         {
             // 投了モーションに入る時。
             //Debug.Log("投了モーション始まり☆ layerIndex = " + layerIndex + " stateInfo.fullPathHash = " + stateInfo.fullPathHash + " animator.name = " + animator.name);
@@ -52,7 +53,7 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
     // OnStateUpdate is called before OnStateUpdate is called on any state inside this state machine
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_OGIVEUP)].Name))
+        if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_CHAR3.BASELAYER_OGIVEUP)].Name))
         {
             // 投了モーション中
             if(2.0f<=stateInfo.normalizedTime % 1 * animator.GetCurrentAnimatorClipInfo(0)[0].clip.frameRate)
@@ -69,12 +70,12 @@ public class AniConChar3Behaviour : StateMachineBehaviour {
     // OnStateExit is called before OnStateExit is called on any state inside this state machine
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_JMOVE0)].Name)) // 屈伸が終わった時
+        if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_CHAR3.BASELAYER_JMOVE_JMOVE0)].Name)) // 屈伸が終わった時
         {
             Main_PlayerScript script = animator.gameObject.GetComponent<Main_PlayerScript>();
             script.JMove0Exit();
         }
-        else if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_OGIVEUP)].Name))
+        else if (stateInfo.IsName(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_CHAR3.BASELAYER_OGIVEUP)].Name))
         {
             //Debug.Log("投了モーション終わり☆ layerIndex = " + layerIndex + " stateInfo.fullPathHash = " + stateInfo.fullPathHash + " animator.name = " + animator.name);
 

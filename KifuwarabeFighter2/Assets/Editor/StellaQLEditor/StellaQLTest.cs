@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
 using System.Text;
+using StellaQL.FullpathConst;
 
 namespace StellaQL
 {
@@ -24,9 +25,9 @@ namespace StellaQL
 
             Assert.IsTrue(successful);
             Assert.AreEqual(3, recordHashes.Count);
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_RABBIT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ALPACA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_CAT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_RABBIT)));
         }
 
         /// <summary>
@@ -53,9 +54,9 @@ namespace StellaQL
 
             Assert.IsTrue(successful);
             Assert.AreEqual(3, recordHashes.Count);
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_RABBIT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ALPACA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_CAT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_RABBIT)));
         }
 
         [Test]
@@ -70,11 +71,11 @@ namespace StellaQL
             bool successful = Querier.ExecuteTransitionSelect(query, UserDefinedStateTable.Instance.StateHash_to_record, out recordHashesSrc, out recordHashesDst, message);
 
             Assert.AreEqual(1, recordHashesSrc.Count);
-            Assert.IsTrue(recordHashesSrc.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ZEBRA)));
+            Assert.IsTrue(recordHashesSrc.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ZEBRA)));
             Assert.AreEqual(3, recordHashesDst.Count);
-            Assert.IsTrue(recordHashesDst.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
-            Assert.IsTrue(recordHashesDst.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
-            Assert.IsTrue(recordHashesDst.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_RABBIT)));
+            Assert.IsTrue(recordHashesDst.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ALPACA)));
+            Assert.IsTrue(recordHashesDst.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_CAT)));
+            Assert.IsTrue(recordHashesDst.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_RABBIT)));
         }
 
         [Test]
@@ -139,42 +140,42 @@ namespace StellaQL
 
             Assert.AreEqual(5, recordHashesLockers.Count);
             Assert.AreEqual(2, recordHashesLockers[0].Count);
-            Assert.IsTrue(recordHashesLockers[0].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
-            Assert.IsTrue(recordHashesLockers[0].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
+            Assert.IsTrue(recordHashesLockers[0].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ALPACA)));
+            Assert.IsTrue(recordHashesLockers[0].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_CAT)));
             Assert.AreEqual(3, recordHashesLockers[1].Count);
-            Assert.IsTrue(recordHashesLockers[1].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_BEAR)));
-            Assert.IsTrue(recordHashesLockers[1].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_RABBIT)));
-            Assert.IsTrue(recordHashesLockers[1].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ZEBRA)));
+            Assert.IsTrue(recordHashesLockers[1].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_BEAR)));
+            Assert.IsTrue(recordHashesLockers[1].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_RABBIT)));
+            Assert.IsTrue(recordHashesLockers[1].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ZEBRA)));
             Assert.AreEqual(5, recordHashesLockers[2].Count);
-            Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
-            Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
-            Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_BEAR)));
-            Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_RABBIT)));
-            Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ZEBRA)));
+            Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ALPACA)));
+            Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_CAT)));
+            Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_BEAR)));
+            Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_RABBIT)));
+            Assert.IsTrue(recordHashesLockers[2].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ZEBRA)));
             Assert.AreEqual(19, recordHashesLockers[3].Count);
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATEMACHINE_BASELAYER)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ANYSTATE)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ENTRY)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_EXIT)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_FOO)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_DOG)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_FOX)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_IGUANA)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_KANGAROO)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_LION)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_NUTRIA)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_OX)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_PIG)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_RABBIT)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_UNICORN)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_WOLF)));
-            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_YAK)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ANYSTATE)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ENTRY)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_EXIT)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_FOO)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ALPACA)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_CAT)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_DOG)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_FOX)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_IGUANA)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_KANGAROO)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_LION)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_NUTRIA)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_OX)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_PIG)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_RABBIT)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_UNICORN)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_WOLF)));
+            Assert.IsTrue(recordHashesLockers[3].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_YAK)));
             Assert.AreEqual(3, recordHashesLockers[4].Count);
-            Assert.IsTrue(recordHashesLockers[4].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
-            Assert.IsTrue(recordHashesLockers[4].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
-            Assert.IsTrue(recordHashesLockers[4].Contains(Animator.StringToHash(UserDefinedStateTable.STATE_RABBIT)));
+            Assert.IsTrue(recordHashesLockers[4].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ALPACA)));
+            Assert.IsTrue(recordHashesLockers[4].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_CAT)));
+            Assert.IsTrue(recordHashesLockers[4].Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_RABBIT)));
         }
         #endregion
 
@@ -189,8 +190,8 @@ namespace StellaQL
             HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
             List<HashSet<int>> reordIndexLockers = new List<HashSet<int>>()
         {
-            new HashSet<int>() { Animator.StringToHash(UserDefinedStateTable.STATE_BEAR),Animator.StringToHash(UserDefinedStateTable.STATE_ELEPHANT) },
-            new HashSet<int>() { Animator.StringToHash(UserDefinedStateTable.STATE_BEAR), Animator.StringToHash(UserDefinedStateTable.STATE_GIRAFFE) },
+            new HashSet<int>() { Animator.StringToHash(ANICON_STELLAQL.BASELAYER_BEAR),Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ELEPHANT) },
+            new HashSet<int>() { Animator.StringToHash(ANICON_STELLAQL.BASELAYER_BEAR), Animator.StringToHash(ANICON_STELLAQL.BASELAYER_GIRAFFE) },
         };
             HashSet<int> recordHashes = RecordsFilter.Records_And(lockerNumbers, reordIndexLockers);
 
@@ -198,7 +199,7 @@ namespace StellaQL
             Assert.AreEqual(1, recordHashes.Count);
             if (1 == recordHashes.Count)
             {
-                Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_BEAR)));
+                Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_BEAR)));
             }
         }
 
@@ -212,8 +213,8 @@ namespace StellaQL
             HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
             List<HashSet<int>> recordHasheslockers = new List<HashSet<int>>()
         {
-            new HashSet<int>() { Animator.StringToHash(UserDefinedStateTable.STATE_BEAR),Animator.StringToHash(UserDefinedStateTable.STATE_ELEPHANT) },
-            new HashSet<int>() { Animator.StringToHash(UserDefinedStateTable.STATE_BEAR),Animator.StringToHash(UserDefinedStateTable.STATE_GIRAFFE) },
+            new HashSet<int>() { Animator.StringToHash(ANICON_STELLAQL.BASELAYER_BEAR),Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ELEPHANT) },
+            new HashSet<int>() { Animator.StringToHash(ANICON_STELLAQL.BASELAYER_BEAR),Animator.StringToHash(ANICON_STELLAQL.BASELAYER_GIRAFFE) },
         };
             HashSet<int> recordHashes = RecordsFilter.Records_Or(lockerNumbers, recordHasheslockers);
 
@@ -221,9 +222,9 @@ namespace StellaQL
             Assert.AreEqual(3, recordHashes.Count);
             if (3 == recordHashes.Count)
             {
-                Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_BEAR)));
-                Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ELEPHANT)));
-                Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_GIRAFFE)));
+                Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_BEAR)));
+                Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ELEPHANT)));
+                Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_GIRAFFE)));
             }
         }
 
@@ -237,41 +238,41 @@ namespace StellaQL
             HashSet<int> lockerNumbers = new HashSet<int>() { 0, 1 };
             List<HashSet<int>> recordHashesLockers = new List<HashSet<int>>()
             {
-                new HashSet<int>() { Animator.StringToHash(UserDefinedStateTable.STATE_BEAR),Animator.StringToHash(UserDefinedStateTable.STATE_ELEPHANT) },
-                new HashSet<int>() { Animator.StringToHash(UserDefinedStateTable.STATE_BEAR),Animator.StringToHash(UserDefinedStateTable.STATE_GIRAFFE) },
+                new HashSet<int>() { Animator.StringToHash(ANICON_STELLAQL.BASELAYER_BEAR),Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ELEPHANT) },
+                new HashSet<int>() { Animator.StringToHash(ANICON_STELLAQL.BASELAYER_BEAR),Animator.StringToHash(ANICON_STELLAQL.BASELAYER_GIRAFFE) },
             };
             HashSet<int> recordHashes = RecordsFilter.Records_NotAndNot(lockerNumbers, recordHashesLockers, UserDefinedStateTable.Instance.StateHash_to_record);
 
             // 結果は　"Base Layout","Any State","Entry","Exit",Foo,Alpaca,Cat,Dog,Fox,Horse,Iguana,Jellyfish,Kangaroo,Lion,Monkey,Nutria,Ox,Pig,Quetzal,Rabbit,Sheep,Tiger,Unicorn,Vixen,Wolf,Xenopus,Yak,Zebra
             Assert.AreEqual(28, recordHashes.Count);
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATEMACHINE_BASELAYER)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ANYSTATE)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ENTRY)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_EXIT)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_FOO)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_DOG)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_FOX)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_HORSE)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_IGUANA)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_JELLYFISH)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_KANGAROO)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_LION)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_MONKEY)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_NUTRIA)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_OX)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_PIG)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_QUETZAL)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_RABBIT)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_SHEEP)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_TIGER)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_UNICORN)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_VIXEN)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_WOLF)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_XENOPUS)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_YAK)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ZEBRA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ANYSTATE)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ENTRY)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_EXIT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_FOO)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ALPACA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_CAT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_DOG)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_FOX)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_HORSE)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_IGUANA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_JELLYFISH)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_KANGAROO)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_LION)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_MONKEY)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_NUTRIA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_OX)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_PIG)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_QUETZAL)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_RABBIT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_SHEEP)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_TIGER)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_UNICORN)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_VIXEN)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_WOLF)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_XENOPUS)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_YAK)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ZEBRA)));
         }
 
         /// <summary>
@@ -287,17 +288,17 @@ namespace StellaQL
 
             // 結果は　"Any Stat", "Entry", Elephant、Iguana、Kangaroo、Lion、Monkey、Nutria、Unicorn、Vixen、Xenopus
             Assert.AreEqual(11, recordHashes.Count);
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ANYSTATE)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ENTRY)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ELEPHANT)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_IGUANA)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_KANGAROO)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_LION)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_MONKEY)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_NUTRIA)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_UNICORN)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_VIXEN)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_XENOPUS)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ANYSTATE)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ENTRY)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ELEPHANT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_IGUANA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_KANGAROO)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_LION)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_MONKEY)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_NUTRIA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_UNICORN)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_VIXEN)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_XENOPUS)));
         }
 
         /// <summary>
@@ -312,11 +313,11 @@ namespace StellaQL
 
             // 結果は　Bear、Elephant、Giraffe、Quetzal、Zebra
             Assert.AreEqual(5, recordHashes.Count);
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_BEAR)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ELEPHANT)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_GIRAFFE)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_QUETZAL)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ZEBRA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_BEAR)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ELEPHANT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_GIRAFFE)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_QUETZAL)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ZEBRA)));
         }
 
         /// <summary>
@@ -336,19 +337,19 @@ namespace StellaQL
             // 結果は　Bear、Elephant、Giraffe、Horse、Jellyfish、Monkey、Quetzal、Rabbit、Sheep、Tiger、Vixen、Xenopus、Zebra
             //foreach (int hash in recordHashes) { Debug.Log("fullpath=[" + UserDefinedStateTable.Instance.StateHash_to_record[hash].Fullpath + "]"); }
             Assert.AreEqual(13, recordHashes.Count);
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_BEAR)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ELEPHANT)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_GIRAFFE)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_HORSE)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_JELLYFISH)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_MONKEY)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_QUETZAL)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_RABBIT)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_SHEEP)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_TIGER)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_VIXEN)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_XENOPUS)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ZEBRA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_BEAR)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ELEPHANT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_GIRAFFE)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_HORSE)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_JELLYFISH)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_MONKEY)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_QUETZAL)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_RABBIT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_SHEEP)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_TIGER)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_VIXEN)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_XENOPUS)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ZEBRA)));
         }
 
         /// <summary>
@@ -363,24 +364,24 @@ namespace StellaQL
 
             // 結果は　"Base Layout","Any State","Entry","Exit",Foo, Alpaca、Cat、Dog、Fox、Iguana、Kangaroo、Lion、Nutria、Ox、Pig、Unicorn、Wolf、Yak
             Assert.AreEqual(18, recordHashes.Count);
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATEMACHINE_BASELAYER)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ANYSTATE)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ENTRY)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_EXIT)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_FOO)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_ALPACA)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_CAT)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_DOG)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_FOX)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_IGUANA)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_KANGAROO)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_LION)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_NUTRIA)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_OX)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_PIG)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_UNICORN)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_WOLF)));
-            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(UserDefinedStateTable.STATE_YAK)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ANYSTATE)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ENTRY)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_EXIT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_FOO)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ALPACA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_CAT)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_DOG)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_FOX)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_IGUANA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_KANGAROO)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_LION)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_NUTRIA)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_OX)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_PIG)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_UNICORN)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_WOLF)));
+            Assert.IsTrue(recordHashes.Contains(Animator.StringToHash(ANICON_STELLAQL.BASELAYER_YAK)));
         }
         #endregion
 
@@ -1044,15 +1045,15 @@ a", ref caret);
                 Code.Hashes(new[] {UserDefinedStateTable.TAG_ZERO}));
 
             Assert.AreEqual(9, recordset.Count);
-            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATEMACHINE_BASELAYER)]));
-            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_FOO)]));
-            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_ANYSTATE)]));
-            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_ENTRY)]));
-            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_EXIT)]));
-            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_FOX)]));
-            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_LION)]));
-            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_PIG)]));
-            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(UserDefinedStateTable.STATE_WOLF)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_STELLAQL.BASELAYER_)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_STELLAQL.BASELAYER_FOO)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ANYSTATE)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_STELLAQL.BASELAYER_ENTRY)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_STELLAQL.BASELAYER_EXIT)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_STELLAQL.BASELAYER_FOX)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_STELLAQL.BASELAYER_LION)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_STELLAQL.BASELAYER_PIG)]));
+            Assert.IsTrue(recordset.Contains(UserDefinedStateTable.Instance.StateHash_to_record[Animator.StringToHash(ANICON_STELLAQL.BASELAYER_WOLF)]));
         }
         #endregion
     }

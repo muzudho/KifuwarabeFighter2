@@ -102,7 +102,8 @@ public class StateCmdline : EditorWindow
         // アニメーター・コントローラーを取得。
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>(path_animatorController);//"Assets/Resources/AnimatorControllers/AniCon@Char3.controller"
 
-        #region アニメーターコントローラー読込み可否判定とコマンド実行ボタン
+        bool isActivate;
+        #region アニメーターコントローラー読込み可否判定
         if (!UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.ContainsKey(path_animatorController))
         {
             GUILayout.Label("Animator controller No Data", EditorStyles.boldLabel);
@@ -114,85 +115,97 @@ public class StateCmdline : EditorWindow
             {
                 message.AppendLine("[" + path + "]");
             }
+            isActivate = false;
         }
         else
         {
-            UserDefinedStateTableable userDefinedStateTable = UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[path_animatorController];
-
-            GUILayout.Label("Command line (StellaQL)");
-            scroll = EditorGUILayout.BeginScrollView(scroll);
-            commandline = EditorGUILayout.TextArea(commandline, GUILayout.Height(position.height - 30));
-            EditorGUILayout.EndScrollView();
-
-            if (GUILayout.Button("Execute"))
+            isActivate = true;
+        }
+        #endregion
+        if (isActivate)
+        {
+            #region フルパス定数作成ボタン
+            if (GUILayout.Button("Generate fullpath constant C#"))
             {
-                Debug.Log("Executeボタンを押した☆");
-                Querier.Execute(ac, commandline, userDefinedStateTable, message);
-                Repaint();
-                //HandleUtility.Repaint();
+                message.AppendLine("Create State Const Start☆（＾～＾）！ filename(without extension) = " + ac.name);
+                FullpathConstantGenerator.WriteCshapScript(ac, message);
+
                 infoMessage = message.ToString();
+                Debug.Log(infoMessage);
+                Repaint();
             }
-        }
-        #endregion
-        #region CSV出力ボタン
-        GUILayout.Space(4.0f);
-        if (GUILayout.Button("Export CSV"))
-        {
-            Debug.Log("Export Start☆（＾～＾）！ filename(without extension) = " + ac.name);
-
-            AniconScanner aniconScanner = new AniconScanner();
-            aniconScanner.ScanAnimatorController(ac, message);
-            AniconData aniconData = aniconScanner.AniconData;
-            bool outputDefinition = false;
-            for (int i=0; i<2; i++)
+            GUILayout.Space(4.0f);
+            #endregion
+            #region テキストエリアとコマンド実行ボタン
             {
-                if (i == 1) { outputDefinition = true; }
-                AniconDataUtility.WriteCsv_Parameters(aniconData, ac.name, outputDefinition, message);
-                AniconDataUtility.WriteCsv_Layers(aniconData, ac.name, outputDefinition, message);
-                AniconDataUtility.WriteCsv_Statemachines(aniconData, ac.name, outputDefinition, message);
-                AniconDataUtility.WriteCsv_States(aniconData, ac.name, outputDefinition, message);
-                AniconDataUtility.WriteCsv_Transitions(aniconData, ac.name, outputDefinition, message);
-                AniconDataUtility.WriteCsv_Conditions(aniconData, ac.name, outputDefinition, message);
-                AniconDataUtility.WriteCsv_Positions(aniconData, ac.name, outputDefinition, message);
+                UserDefinedStateTableable userDefinedStateTable = UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[path_animatorController];
+
+                GUILayout.Label("Command line (StellaQL)");
+                scroll = EditorGUILayout.BeginScrollView(scroll);
+                commandline = EditorGUILayout.TextArea(commandline, GUILayout.Height(position.height - 30));
+                EditorGUILayout.EndScrollView();
+
+                if (GUILayout.Button("Execute"))
+                {
+                    Debug.Log("Executeボタンを押した☆");
+                    Querier.Execute(ac, commandline, userDefinedStateTable, message);
+                    Repaint();
+                    //HandleUtility.Repaint();
+                    infoMessage = message.ToString();
+                }
             }
+            #endregion
+            #region コマンド リファレンス ボタン
+            if (GUILayout.Button("Command Reference"))
+            {
+                Reference.ToContents(message);
+                infoMessage = message.ToString();
+                Repaint();
+            }
+            #endregion
+            #region CSV出力ボタン
+            GUILayout.Space(4.0f);
+            if (GUILayout.Button("Export CSV"))
+            {
+                Debug.Log("Export Start☆（＾～＾）！ filename(without extension) = " + ac.name);
 
-            infoMessage = message.ToString();
-            Repaint();
+                AniconScanner aniconScanner = new AniconScanner();
+                aniconScanner.ScanAnimatorController(ac, message);
+                AniconData aniconData = aniconScanner.AniconData;
+                bool outputDefinition = false;
+                for (int i = 0; i < 2; i++)
+                {
+                    if (i == 1) { outputDefinition = true; }
+                    AniconDataUtility.WriteCsv_Parameters(aniconData, ac.name, outputDefinition, message);
+                    AniconDataUtility.WriteCsv_Layers(aniconData, ac.name, outputDefinition, message);
+                    AniconDataUtility.WriteCsv_Statemachines(aniconData, ac.name, outputDefinition, message);
+                    AniconDataUtility.WriteCsv_States(aniconData, ac.name, outputDefinition, message);
+                    AniconDataUtility.WriteCsv_Transitions(aniconData, ac.name, outputDefinition, message);
+                    AniconDataUtility.WriteCsv_Conditions(aniconData, ac.name, outputDefinition, message);
+                    AniconDataUtility.WriteCsv_Positions(aniconData, ac.name, outputDefinition, message);
+                }
+
+                infoMessage = message.ToString();
+                Repaint();
+            }
+            #endregion
+            #region CSV入力ボタン
+            if (GUILayout.Button("Import CSV"))
+            {
+                message.AppendLine("Import Start☆（＾～＾）！ filename(without extension) = " + ac.name);
+
+                HashSet<UpateReqeustRecord> recordSet;
+                StellaQLReader.ReadUpdateRequestCsv(out recordSet, message); // CSVファイル読取
+                Operation_Something.Update(ac, recordSet, message); // 更新を実行
+                StellaQLReader.DeleteUpdateRequestCsv(message);
+
+                infoMessage = message.ToString();
+                Debug.Log(infoMessage);
+                Repaint();
+            }
+            #endregion
         }
-        #endregion
 
-        if (GUILayout.Button("Import CSV"))
-        {
-            message.AppendLine("Import Start☆（＾～＾）！ filename(without extension) = " + ac.name);
-
-            HashSet<UpateReqeustRecord> recordSet;
-            StellaQLReader.ReadUpdateRequestCsv(out recordSet, message); // CSVファイル読取
-            Operation_Something.Update(ac, recordSet, message); // 更新を実行
-            StellaQLReader.DeleteUpdateRequestCsv(message);
-
-            infoMessage = message.ToString();
-            Debug.Log(infoMessage);
-            Repaint();
-        }
-
-        if (GUILayout.Button("Write state names const C# file"))
-        {
-            message.AppendLine("Create State Const Start☆（＾～＾）！ filename(without extension) = " + ac.name);
-            StateConst.WriteCshapScript(ac, message);
-
-            infoMessage = message.ToString();
-            Debug.Log(infoMessage);
-            Repaint();
-        }
-
-        #region コマンド リファレンス ボタン
-        if (GUILayout.Button("Command Reference"))
-        {
-            Reference.ToContents(message);
-            infoMessage = message.ToString();
-            Repaint();
-        }
-        #endregion
         #region メッセージ出力欄
         GUILayout.Label("Info");
         scroll = EditorGUILayout.BeginScrollView(scroll);

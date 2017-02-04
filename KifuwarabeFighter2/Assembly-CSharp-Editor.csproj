@@ -53,9 +53,9 @@
      <Compile Include="Assets\Editor\StellaQLEditor\AniconScanner.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\CsvParser.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\FileUtility.cs" />
+     <Compile Include="Assets\Editor\StellaQLEditor\FullpathConstantGenerator.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\Reference.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\StateCmdline.cs" />
-     <Compile Include="Assets\Editor\StellaQLEditor\StateConst.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\StellaQL.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\StellaQLTest.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\UpateReqeust.cs" />
