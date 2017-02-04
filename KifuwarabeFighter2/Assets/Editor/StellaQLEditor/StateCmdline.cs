@@ -162,14 +162,15 @@ public class StateCmdline : EditorWindow
 
         if (GUILayout.Button("Import CSV(under construction)"))
         {
-            Debug.Log("Import Start☆（＾～＾）！ filename(without extension) = " + ac.name);
-            //message.AppendLine("Import Start☆（＾～＾）！ filename(without extension) = " + ac.name);
+            message.AppendLine("Import Start☆（＾～＾）！ filename(without extension) = " + ac.name);
 
             HashSet<UpateReqeustRecord> recordSet;
             StellaQLReader.ReadUpdateRequestCsv(out recordSet, message); // CSVファイル読取
             Operation_Something.Update(ac, recordSet, message); // 更新を実行
+            StellaQLReader.DeleteUpdateRequestCsv(message);
 
             infoMessage = message.ToString();
+            Debug.Log(infoMessage);
             Repaint();
         }
 

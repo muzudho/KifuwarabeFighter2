@@ -30,6 +30,13 @@ namespace StellaQL
 
             message.AppendLine("Read☆（＾▽＾） " + lines.Length + " rows to " + updateRequestRecords.Count + " records. " + Path.GetFullPath(filepath));
         }
+
+        public static void DeleteUpdateRequestCsv( StringBuilder message)
+        {
+            string filepath = Filepath_UpdateRequestCsv();
+            File.Delete(Path.GetFullPath(filepath));
+            message.AppendLine("Deleted file☆（＾▽＾） " + Path.GetFullPath(filepath));
+        }
     }
 
     public abstract class StellaQLWriter
