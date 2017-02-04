@@ -1,4 +1,0 @@
-LayerNum,MachineStateNum,StateNum,TransitionNum,canTransitionToSelf,destinationState_name,destinationState_nameHash,destinationStateMachine,duration,exitTime,hasExitTime,hasFixedDuration,hideFlags,interruptionSource,isExit,mute,name,offset,orderedInterruption,solo,
-0,0,0,0,True,Ox,1759950907,,0.1,0.9,False,True,HideInHierarchy,None,False,False,,0,True,False,
-0,0,0,0,True,Unicorn,-1756962397,,0.1,0.9,False,True,HideInHierarchy,None,False,False,,0,True,False,
-0,0,0,0,True,Yak,984231451,,0.1,0.9,False,True,HideInHierarchy,None,False,False,,0,True,False,

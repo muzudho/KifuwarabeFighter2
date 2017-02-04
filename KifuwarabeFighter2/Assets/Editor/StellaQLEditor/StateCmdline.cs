@@ -141,7 +141,7 @@ public class StateCmdline : EditorWindow
             Debug.Log("Export Start☆（＾～＾）！ filename(without extension) = " + ac.name);
 
             AniconData aniconData;
-            AniconDataUtility.ScanAnimatorController(ac, out aniconData, message);
+            new AniconScanner().ScanAnimatorController(ac, out aniconData, message);
             bool outputDefinition = false;
             for (int i=0; i<2; i++)
             {
@@ -160,7 +160,7 @@ public class StateCmdline : EditorWindow
         }
         #endregion
 
-        if (GUILayout.Button("Import CSV(under construction)"))
+        if (GUILayout.Button("Import CSV"))
         {
             message.AppendLine("Import Start☆（＾～＾）！ filename(without extension) = " + ac.name);
 
@@ -168,6 +168,16 @@ public class StateCmdline : EditorWindow
             StellaQLReader.ReadUpdateRequestCsv(out recordSet, message); // CSVファイル読取
             Operation_Something.Update(ac, recordSet, message); // 更新を実行
             StellaQLReader.DeleteUpdateRequestCsv(message);
+
+            infoMessage = message.ToString();
+            Debug.Log(infoMessage);
+            Repaint();
+        }
+
+        if (GUILayout.Button("Create State Const(under construction)"))
+        {
+            message.AppendLine("Create State Const Start☆（＾～＾）！ filename(without extension) = " + ac.name);
+
 
             infoMessage = message.ToString();
             Debug.Log(infoMessage);

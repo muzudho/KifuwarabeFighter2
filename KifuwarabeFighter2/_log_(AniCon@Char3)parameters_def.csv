@@ -1,8 +1,0 @@
-Name,Type,KeyField,Input,[EOL],
-num,int,TemporaryNumbering,False,
-name,string,Identifiable,False,
-numberBool,bool,None,False,
-numberFloat,float,None,False,
-numberInt,int,None,False,
-nameHash,int,None,False,
-[EOF],

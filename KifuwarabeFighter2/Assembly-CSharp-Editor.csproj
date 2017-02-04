@@ -50,6 +50,7 @@
      <Compile Include="Assets\Editor\SM.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\AniconData.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\AniconOperation.cs" />
+     <Compile Include="Assets\Editor\StellaQLEditor\AniconScanner.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\CsvParser.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\FileUtility.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\Reference.cs" />

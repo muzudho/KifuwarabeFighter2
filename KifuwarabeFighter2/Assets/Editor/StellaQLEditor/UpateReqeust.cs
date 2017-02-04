@@ -43,6 +43,7 @@ namespace StellaQL
         public int NewInt { get { return int.Parse(New); } }
 
         public string Delete { get; private set; }
+        public bool IsDelete { get { bool val; if (!bool.TryParse(Delete, out val)) { val = false; } return val; } }
 
         /// <summary>
         /// 中身を確認するのに使う（＾～＾）

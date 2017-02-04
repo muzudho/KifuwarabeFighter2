@@ -155,6 +155,11 @@ namespace StellaQL
         public delegate string GettterString(object instance);                  GettterString m_getterString;
         public delegate void   SetterString (object instance, string value);    SetterString m_setterString;
 
+        public static bool EqualsOld(object actualOld, object requestOld)
+        {
+            if (actualOld != requestOld) { throw new UnityException("Old値が異なる actual=[" + actualOld + "] old=[" + requestOld + "]"); } return true;
+        }
+
         public void Update(object instance, UpateReqeustRecord record, StringBuilder message)
         {
             if (null == instance) { throw new UnityException("instanceがヌルだったぜ☆（／＿＼）"); }
@@ -166,24 +171,21 @@ namespace StellaQL
                     {
                         if (null == m_getterBool) { throw new UnityException("m_getterBoolがヌルだったぜ☆（／＿＼）"); }
                         bool actual = m_getterBool(instance);
-                        if (actual == record.OldBool) { m_setterBool(instance, record.NewBool); }
-                        else { throw new UnityException("Old値が異なる actual=[" + actual + "] old=[" + record.OldBool + "]"); }
+                        if (RecordDefinition.EqualsOld(actual, record.OldBool)) { m_setterBool(instance, record.NewBool); }
                     }
                     break;
                 case FieldType.Float:
                     {
                         if (null == m_getterFloat) { throw new UnityException("m_getterFloatがヌルだったぜ☆（／＿＼）"); }
                         float actual = m_getterFloat(instance);
-                        if (actual == record.OldFloat) { m_setterFloat(instance, record.NewFloat); }
-                        else { throw new UnityException("Old値が異なる actual=[" + actual + "] old=[" + record.OldFloat + "]"); }
+                        if (RecordDefinition.EqualsOld(actual, record.OldFloat)) { m_setterFloat(instance, record.NewFloat); }
                     }
                     break;
                 case FieldType.Int:
                     {
                         if (null == m_getterInt) { throw new UnityException("m_getterIntがヌルだったぜ☆（／＿＼）"); }
                         int actual = m_getterInt(instance);
-                        if (actual == record.OldInt) { m_setterInt(instance, record.NewInt); }
-                        else { throw new UnityException("Old値が異なる actual=[" + actual + "] old=[" + record.OldInt + "]"); }
+                        if (RecordDefinition.EqualsOld(actual, record.OldInt)) { m_setterInt(instance, record.NewInt); }
                     }
                     break;
                 case FieldType.Other:
@@ -193,8 +195,10 @@ namespace StellaQL
                     {
                         if (null == m_getterString) { throw new UnityException("m_getterStringがヌルだったぜ☆（／＿＼）"); }
                         string actual = m_getterString(instance);
-                        if (actual == record.Old) { m_setterString(instance, record.New); }
-                        else { throw new UnityException("Old値が異なる actual=[" + actual + "] old=[" + record.Old + "]"); }
+                        if (RecordDefinition.EqualsOld(actual, record.Old)) {
+                            if (record.IsDelete) { m_setterString(instance, ""); } // 空文字列にセットする
+                            else { m_setterString(instance, record.New); }
+                        }
                     }
                     break;
                 default: throw new UnityException("未定義の型だぜ☆（＾～＾） FieldType=["+Type.ToString()+"]");
@@ -1042,66 +1046,5 @@ namespace StellaQL
             contents.AppendLine("[EOF],");
             StellaQLWriter.Write(StellaQLWriter.Filepath_LogPositions(aniconName, outputDefinition), contents, message);
         }
-
-        private static void ScanRecursive(string path, AnimatorStateMachine stateMachine, Dictionary<string,AnimatorStateMachine> statemachineList_flat)
-        {
-            path += stateMachine.name + ".";
-            statemachineList_flat.Add(path, stateMachine);
-
-            foreach (ChildAnimatorStateMachine caStateMachine in stateMachine.stateMachines)
-            {
-                ScanRecursive(path, caStateMachine.stateMachine, statemachineList_flat);
-            }
-        }
-
-        public static void ScanAnimatorController(AnimatorController ac, out AniconData aniconData, StringBuilder message)
-        {
-            message.AppendLine("Animator controller Scanning...☆（＾～＾）");
-            aniconData = new AniconData();
-
-            // パラメーター
-            {
-                AnimatorControllerParameter[] acpArray = ac.parameters;
-                int num = 0;
-                foreach (AnimatorControllerParameter acp in acpArray)
-                {
-                    ParameterRecord record = new ParameterRecord(num, acp.name, acp.defaultBool, acp.defaultFloat, acp.defaultInt, acp.nameHash);
-                    aniconData.table_parameter.Add(record);
-                    num++;
-                }
-            }
-
-            foreach (AnimatorControllerLayer layer in ac.layers)//レイヤー
-            {
-                LayerRecord layerRecord = new LayerRecord(aniconData.table_layer.Count, layer);
-                aniconData.table_layer.Add(layerRecord);
-                
-                Dictionary<string,AnimatorStateMachine> statemachineList_flat = new Dictionary<string,AnimatorStateMachine>(); // フルパス, ステートマシン
-                ScanRecursive("", layer.stateMachine, statemachineList_flat);// 再帰をスキャンして、フラットにする。
-                foreach (KeyValuePair<string,AnimatorStateMachine> statemachine_pair in statemachineList_flat) { // ステート・マシン
-                    StatemachineRecord stateMachineRecord = new StatemachineRecord(
-                        aniconData.table_layer.Count, aniconData.table_statemachine.Count, statemachine_pair.Key, statemachine_pair.Value, aniconData.table_position);
-                    aniconData.table_statemachine.Add(stateMachineRecord);
-
-                    foreach (ChildAnimatorState caState in statemachine_pair.Value.states) { //ステート（ラッパー）
-                        StateRecord stateRecord = StateRecord.CreateInstance(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, statemachine_pair.Key, caState, aniconData.table_position);
-                        aniconData.table_state.Add(stateRecord);
-
-                        foreach (AnimatorStateTransition transition in caState.state.transitions) { // トランジション
-                            TransitionRecord transitionRecord = new TransitionRecord(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, aniconData.table_transition.Count, transition, "");
-                            aniconData.table_transition.Add(transitionRecord);
-
-                            foreach (AnimatorCondition aniCondition in transition.conditions) { // コンディション
-                                ConditionRecord conditionRecord = new ConditionRecord(aniconData.table_layer.Count, aniconData.table_statemachine.Count, aniconData.table_state.Count, aniconData.table_transition.Count, aniconData.table_condition.Count, aniCondition);
-                                aniconData.table_condition.Add(conditionRecord);
-                            } // コンディション
-                        }//トランジション
-                    }//ステート（ラッパー）
-                }//ステートマシン
-            }//レイヤー
-
-            message.AppendLine( "Scanned☆（＾▽＾）");
-        }
-
     }
 }
