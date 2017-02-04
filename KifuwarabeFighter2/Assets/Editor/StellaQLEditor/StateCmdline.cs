@@ -175,13 +175,10 @@ public class StateCmdline : EditorWindow
             Repaint();
         }
 
-        if (GUILayout.Button("Create State Const(under construction)"))
+        if (GUILayout.Button("Write state names const C# file"))
         {
             message.AppendLine("Create State Const Start☆（＾～＾）！ filename(without extension) = " + ac.name);
-
-            AniconStateNameScanner aniconScanner = new AniconStateNameScanner();
-            aniconScanner.ScanAnimatorController(ac, message);
-            message.Append(aniconScanner.Dump());
+            StateConst.WriteCshapScript(ac, message);
 
             infoMessage = message.ToString();
             Debug.Log(infoMessage);

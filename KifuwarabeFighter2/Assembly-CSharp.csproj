@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Resources\AnimatorControllers\AniCon@Char3_stateConst.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\AniConChar3Behaviour.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\SampleBehaviour.cs" />
      <Compile Include="Assets\Scripts\CommonScript.cs" />

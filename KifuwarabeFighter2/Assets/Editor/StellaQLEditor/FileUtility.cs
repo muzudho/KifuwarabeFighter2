@@ -2,6 +2,8 @@
 using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
+using UnityEditor.Animations;
 
 namespace StellaQL
 {
@@ -42,6 +44,15 @@ namespace StellaQL
     public abstract class StellaQLWriter
     {
         #region 可変のファイル名
+        public static string Filepath_StateConstCs(AnimatorController ac)
+        {
+            string fullpath = System.IO.Path.GetFullPath(AssetDatabase.GetAssetPath(ac.GetInstanceID()));
+
+            return Path.Combine(
+                Directory.GetParent(fullpath).FullName,
+                Path.GetFileNameWithoutExtension(fullpath) + "_stateConst.cs"
+                );
+        }
         public static string Filepath_LogStateSelect(string aniconName)
         {
             return "./_log_(" + aniconName + ")STATE_SELECT.csv";
@@ -90,7 +101,6 @@ namespace StellaQL
         {
             File.WriteAllText(filepath, contents.ToString());
             message.AppendLine("Writed☆（＾▽＾） " + Path.GetFullPath(filepath));
-            //Debug.Log(message2.ToString());
         }
     }
 }

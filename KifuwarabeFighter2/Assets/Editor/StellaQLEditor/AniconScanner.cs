@@ -192,7 +192,9 @@ namespace StellaQL
             StringBuilder sb = new StringBuilder();
             foreach (string path in this.FullpathSet)
             {
-                sb.AppendLine(path);
+                sb.Append(path);
+                sb.Append(" To26= ");
+                sb.AppendLine(StateConst.String_split_toUppercaseAlphabetFigureOnly_join(path,".","_"));
             }
             return sb.ToString();
         }
