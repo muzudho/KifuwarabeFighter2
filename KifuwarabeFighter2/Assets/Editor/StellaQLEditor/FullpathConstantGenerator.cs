@@ -18,6 +18,10 @@ namespace StellaQL
             contents.AppendLine();
             contents.AppendLine("namespace StellaQL.Acons");
             contents.AppendLine("{");
+            contents.AppendLine("    /// <summary>");
+            contents.AppendLine("    /// This file was automatically generated.");
+            contents.AppendLine("    /// It was created by [Generate fullpath constant C #] button.");
+            contents.AppendLine("    /// </summary>");
             string className = FullpathConstantGenerator.String_to36_pascalCase(ac.name, "@");
             contents.Append("    public abstract class "); contents.Append(className);
             contents.AppendLine(" : AbstractAControll");

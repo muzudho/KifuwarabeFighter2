@@ -2,6 +2,10 @@ using System.Collections.Generic;
 
 namespace StellaQL.Acons
 {
+    /// <summary>
+    /// This file was automatically generated.
+    /// It was created by [Generate fullpath constant C #] button.
+    /// </summary>
     public abstract class AconChar3 : AbstractAControll
     {
         public const string BASELAYER_ = "Base Layer.";
