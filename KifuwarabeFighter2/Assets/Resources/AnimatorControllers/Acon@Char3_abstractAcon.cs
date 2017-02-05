@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 
-namespace StellaQL.Acons
+namespace StellaQL.Acons.AconChar3
 {
     /// <summary>
     /// This file was automatically generated.
     /// It was created by [Generate fullpath constant C #] button.
     /// </summary>
-    public abstract class AconChar3 : AbstractAControll
+    public abstract class AbstractAconChar3 : AbstractAControll
     {
         public const string BASELAYER_ = "Base Layer.";
         public const string BASELAYER_CATKHK = "Base Layer.CAtkHK";
@@ -73,7 +73,7 @@ namespace StellaQL.Acons
         public const string BASELAYER_SDAMAGEM = "Base Layer.SDamageM";
         public const string BASELAYER_SMOVE = "Base Layer.SMove";
         public const string BASELAYER_SWAIT = "Base Layer.SWait";
-        public AconChar3()
+        public AbstractAconChar3()
         {
             Code.Register(StateHash_to_record, new List<AcStateRecordable>()
             {

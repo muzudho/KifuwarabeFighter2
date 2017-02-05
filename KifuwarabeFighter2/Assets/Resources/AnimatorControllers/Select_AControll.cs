@@ -1,9 +1,4 @@
-﻿using StellaQL;
-using StellaQL.Acons;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace SceneSelect
+﻿namespace StellaQL.Acons.AconSelect
 {
     /// <summary>
     /// (Step 3.) Click [Generate fullpath constant C#] button. and "using StellaQL.FullpathConst;". ([Generate fullpath constant C#]ボタンをクリックしてください)
@@ -11,7 +6,7 @@ namespace SceneSelect
     /// (Step 4.) Please, create table definition of statemachines or states. (ステートマシン、ステートのテーブル定義を作成してください)
     /// Extend generated class. ([Generate fullpath constant C#]ボタンで作ったクラスを継承してください)
     /// </summary>
-    public class AControll : AconSelect
+    public class AControll : AbstractAconSelect
     {
         /// <summary>
         /// (Step 8.) Please, make singleton. (シングルトンにしてください)

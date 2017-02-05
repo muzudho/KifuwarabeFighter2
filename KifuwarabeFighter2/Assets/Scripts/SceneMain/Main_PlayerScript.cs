@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using StellaQL;
+using StellaQL.Acons.AconChar3;
 
 namespace SceneMain
 {

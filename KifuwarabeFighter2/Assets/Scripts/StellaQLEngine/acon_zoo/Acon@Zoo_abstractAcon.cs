@@ -1,8 +1,12 @@
 using System.Collections.Generic;
 
-namespace StellaQL.Acons
+namespace StellaQL.Acons.AconZoo
 {
-    public abstract class AconZoo : AbstractAControll
+    /// <summary>
+    /// This file was automatically generated.
+    /// It was created by [Generate fullpath constant C #] button.
+    /// </summary>
+    public abstract class AbstractAconZoo : AbstractAControll
     {
         public const string BASELAYER_ = "Base Layer.";
         public const string BASELAYER_ALPACA = "Base Layer.Alpaca";
@@ -35,7 +39,7 @@ namespace StellaQL.Acons
         public const string BASELAYER_XENOPUS = "Base Layer.Xenopus";
         public const string BASELAYER_YAK = "Base Layer.Yak";
         public const string BASELAYER_ZEBRA = "Base Layer.Zebra";
-        public AconZoo()
+        public AbstractAconZoo()
         {
             Code.Register(StateHash_to_record, new List<AcStateRecordable>()
             {

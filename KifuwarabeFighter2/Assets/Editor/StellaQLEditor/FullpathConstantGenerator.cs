@@ -14,16 +14,16 @@ namespace StellaQL
 
             StringBuilder contents = new StringBuilder();
 
+            string className = FullpathConstantGenerator.String_to36_pascalCase(ac.name, "@");
             contents.AppendLine("using System.Collections.Generic;");
             contents.AppendLine();
-            contents.AppendLine("namespace StellaQL.Acons");
+            contents.Append("namespace StellaQL.Acons."); contents.AppendLine(className);
             contents.AppendLine("{");
             contents.AppendLine("    /// <summary>");
             contents.AppendLine("    /// This file was automatically generated.");
             contents.AppendLine("    /// It was created by [Generate fullpath constant C #] button.");
             contents.AppendLine("    /// </summary>");
-            string className = FullpathConstantGenerator.String_to36_pascalCase(ac.name, "@");
-            contents.Append("    public abstract class "); contents.Append(className);
+            contents.Append("    public abstract class Abstract"); contents.Append(className);
             contents.AppendLine(" : AbstractAControll");
             contents.AppendLine("    {");
             List<string> fullpaths = new List<string>(aconScanner.FullpathSet);
@@ -37,7 +37,7 @@ namespace StellaQL
                 contents.AppendLine(@""";");
             }
 
-            contents.Append("        public "); contents.Append(className); contents.AppendLine("()");
+            contents.Append("        public Abstract"); contents.Append(className); contents.AppendLine("()");
             contents.AppendLine("        {");
             contents.AppendLine("            Code.Register(StateHash_to_record, new List<AcStateRecordable>()");
             contents.AppendLine("            {");

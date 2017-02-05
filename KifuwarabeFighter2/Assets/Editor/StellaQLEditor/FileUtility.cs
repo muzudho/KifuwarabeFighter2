@@ -50,7 +50,7 @@ namespace StellaQL
 
             return Path.Combine(
                 Directory.GetParent(fullpath).FullName,
-                Path.GetFileNameWithoutExtension(fullpath) + "_acon.cs"
+                Path.GetFileNameWithoutExtension(fullpath) + "_abstractAcon.cs"
                 );
         }
         public static string Filepath_LogStateSelect(string aconName)

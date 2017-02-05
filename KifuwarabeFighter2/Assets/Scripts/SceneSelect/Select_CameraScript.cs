@@ -1,7 +1,7 @@
 ﻿using StellaQL;
-using StellaQL.Acons;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using StellaQL.Acons.AconSelect;
 
 namespace SceneSelect
 {
@@ -34,9 +34,9 @@ namespace SceneSelect
             AcStateRecordable astateRecord0 = AControll.Instance.GetCurrentUserDefinedStateRecord(player_to_animator[(int)PlayerIndex.Player1]);
             AcStateRecordable astateRecord1 = AControll.Instance.GetCurrentUserDefinedStateRecord(player_to_animator[(int)PlayerIndex.Player2]);
             if (
-                AControll.Instance.StateHash_to_record[Animator.StringToHash(AconSelect.BASELAYER_READY)].Name == astateRecord0.Name
+                AControll.Instance.StateHash_to_record[Animator.StringToHash(AbstractAconSelect.BASELAYER_READY)].Name == astateRecord0.Name
                 &&
-                AControll.Instance.StateHash_to_record[Animator.StringToHash(AconSelect.BASELAYER_READY)].Name == astateRecord1.Name
+                AControll.Instance.StateHash_to_record[Animator.StringToHash(AbstractAconSelect.BASELAYER_READY)].Name == astateRecord1.Name
                 )
             {
                 // １プレイヤー、２プレイヤー　ともに Ready ステートなら。

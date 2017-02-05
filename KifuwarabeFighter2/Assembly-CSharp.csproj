@@ -46,8 +46,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Resources\AnimatorControllers\Acon@Char3_acon.cs" />
-     <Compile Include="Assets\Resources\AnimatorControllers\Acon@Select_acon.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\Acon@Char3_abstractAcon.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\Acon@Select_abstractAcon.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\Main_AControll.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\Select_AControll.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\AconChar3Behaviour.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\SampleBehaviour.cs" />
      <Compile Include="Assets\Scripts\CommonScript.cs" />
@@ -56,24 +58,22 @@
      <Compile Include="Assets\Scripts\SceneMain\Hitbox2DScript.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_BulletScript.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_CameraScript.cs" />
+     <Compile Include="Assets\Scripts\SceneMain\Main_CliptypeExTable.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_PlayerScript.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_SceneCommon.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_UserDefinedStateTableUtility.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_WeakboxScript.cs" />
-     <Compile Include="Assets\Scripts\SceneMain\acon\Main_AControll.cs" />
-     <Compile Include="Assets\Scripts\SceneMain\acon\Main_CliptypeExTable.cs" />
      <Compile Include="Assets\Scripts\SceneResult\Result_CameraScript.cs" />
      <Compile Include="Assets\Scripts\SceneResult\Result_SceneCommon.cs" />
      <Compile Include="Assets\Scripts\SceneSelect\Select_CameraScript.cs" />
      <Compile Include="Assets\Scripts\SceneSelect\Select_PlayerScript.cs" />
      <Compile Include="Assets\Scripts\SceneSelect\Select_SceneCommon.cs" />
-     <Compile Include="Assets\Scripts\SceneSelect\acon\Select_AControll.cs" />
      <Compile Include="Assets\Scripts\SceneTitle\Title_CameraScript.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\AbstractUserDefinedDatabase.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\CliptypeExtend.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\StellaQLCode.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\UserDefinedDatabase.cs" />
-     <Compile Include="Assets\Scripts\StellaQLEngine\acon_zoo\Acon@Zoo_acon.cs" />
+     <Compile Include="Assets\Scripts\StellaQLEngine\acon_zoo\Acon@Zoo_abstractAcon.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\acon_zoo\Zoo_AControll.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\acons\AbstractAControll.cs" />
      <Compile Include="Assets\Scripts\TakoyakiParticleScript.cs" />
