@@ -42,14 +42,13 @@ public class StateCmdline : EditorWindow
     {
         GUILayout.Label("Animator controller", EditorStyles.boldLabel);
         #region ドラッグ＆ドロップ エリア
-        var evt = Event.current;
         var dropArea = GUILayoutUtility.GetRect(0.0f, 20.0f, GUILayout.ExpandWidth(true));
         GUI.Box(dropArea, "Animation Controller Drag & Drop");
         path_animatorController = EditorGUILayout.TextField(path_animatorController);
         //マウス位置が GUI の範囲内であれば
-        if (dropArea.Contains(evt.mousePosition))
+        if (dropArea.Contains(Event.current.mousePosition))
         {
-            switch (evt.type)
+            switch (Event.current.type)
             {
                 case EventType.DragUpdated: // マウス・ホバー中☆
                     {
@@ -171,11 +170,15 @@ public class StateCmdline : EditorWindow
                 Repaint();
             }
             #endregion
-            #region CSV出力ボタン
+            #region スプレッドシート出力ボタン
+            // 実際は CSV形式ファイルを出力する
             GUILayout.Space(4.0f);
-            if (GUILayout.Button("Export CSV"))
+            if (GUILayout.Button("Export spread sheet")) // Export CSV
             {
-                Debug.Log("Export Start☆（＾～＾）！ filename(without extension) = " + ac.name);
+                Debug.Log("Export spread sheet Start☆（＾～＾）！ filename(without extension) = " + ac.name);
+                message.AppendLine("Please, Use Libre Office Calc.");
+                message.AppendLine("And open StellaQL_MacroApplication.ods file.");
+                message.Append("location: "); message.AppendLine(StellaQLWriter.Filepath_StellaQLMacroApplicationOds());
 
                 AconScanner aconScanner = new AconScanner();
                 aconScanner.ScanAnimatorController(ac, message);
@@ -198,9 +201,10 @@ public class StateCmdline : EditorWindow
             }
             #endregion
             #region CSV入力ボタン
-            if (GUILayout.Button("Import CSV"))
+            // 実際はCSV形式ファイルを出力する
+            if (GUILayout.Button("Import spread sheet")) // Import CSV
             {
-                message.AppendLine("Import Start☆（＾～＾）！ filename(without extension) = " + ac.name);
+                message.AppendLine("Import spread sheet Start☆（＾～＾）！ filename(without extension) = " + ac.name);
 
                 HashSet<UpateReqeustRecord> recordSet;
                 StellaQLReader.ReadUpdateRequestCsv(out recordSet, message); // CSVファイル読取

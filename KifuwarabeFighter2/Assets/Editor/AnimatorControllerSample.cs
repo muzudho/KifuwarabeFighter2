@@ -8,7 +8,7 @@ using UnityEngine;
 
 //[ExecuteInEditMode]
 public class AnimatorControllerSample : MonoBehaviour {
-
+    /*
     /// <summary>
     /// エディット・モードでは、ルックアップはできなさそう。
     /// </summary>
@@ -109,5 +109,5 @@ public class AnimatorControllerSample : MonoBehaviour {
         Debug.Log("結果： (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B | Flag.C) = " + (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B | Flag.C));
         Debug.Log("結果： (Flag.A | Flag.B).HasFlag(Flag.A | Flag.B | Flag.C) = " + (Flag.A | Flag.B).HasFlag(Flag.A | Flag.B | Flag.C));
     }
-
+    */
 }

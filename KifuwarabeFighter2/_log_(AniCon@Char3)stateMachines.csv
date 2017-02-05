@@ -1,4 +1,0 @@
-#layerNum#,#machineStateNum#,#fullnameEndsWithDot#,name,anyStateTransitions,behaviours,defaultState,entryTransitions,hideFlags,[EOL],
-1,0,Base Layer.,Base Layer,UnityEditor.Animations.AnimatorStateTransition[],UnityEngine.StateMachineBehaviour[],SWait (UnityEngine.AnimatorState),UnityEditor.Animations.AnimatorTransition[],HideInHierarchy,
-1,1,Base Layer.JMove.,JMove,UnityEditor.Animations.AnimatorStateTransition[],UnityEngine.StateMachineBehaviour[],JMove0 (UnityEngine.AnimatorState),UnityEditor.Animations.AnimatorTransition[],HideInHierarchy,
-[EOF],

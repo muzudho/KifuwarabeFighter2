@@ -43,6 +43,10 @@ namespace StellaQL
 
     public abstract class StellaQLWriter
     {
+        #region 固定のファイル名
+        public static string Filepath_StellaQLMacroApplicationOds() { return Path.GetFullPath( "./StellaQL_MacroApplication.ods"); }
+        #endregion
+
         #region 可変のファイル名
         public static string Filepath_GenerateFullpathConstCs(AnimatorController ac)
         {
