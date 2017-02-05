@@ -1,7 +1,5 @@
-﻿using UnityEngine;
-using UnityEditor;
-using UnityEditor.Animations;
-using System.Collections;
+﻿using UnityEditor;
+using UnityEngine;
 
 /// <summary>
 /// 新しいコントローラーと　ステートマシンを作成させる [MyMenu] - [Create Controller] メニューを　メニューバーに追加するぜ☆

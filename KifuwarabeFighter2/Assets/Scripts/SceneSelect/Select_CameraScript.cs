@@ -1,7 +1,7 @@
 ﻿using StellaQL;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using StellaQL.Acons.AconSelect;
+using StellaQL.Acons.Select_Cursor;
 
 namespace SceneSelect
 {
@@ -31,12 +31,12 @@ namespace SceneSelect
             ReadyingTime++;
 
             // 現在のアニメーター・ステートに紐づいたデータ
-            AcStateRecordable astateRecord0 = AControll.Instance.GetCurrentUserDefinedStateRecord(player_to_animator[(int)PlayerIndex.Player1]);
-            AcStateRecordable astateRecord1 = AControll.Instance.GetCurrentUserDefinedStateRecord(player_to_animator[(int)PlayerIndex.Player2]);
+            AcStateRecordable astateRecord0 = AControl.Instance.GetCurrentUserDefinedStateRecord(player_to_animator[(int)PlayerIndex.Player1]);
+            AcStateRecordable astateRecord1 = AControl.Instance.GetCurrentUserDefinedStateRecord(player_to_animator[(int)PlayerIndex.Player2]);
             if (
-                AControll.Instance.StateHash_to_record[Animator.StringToHash(AbstractAconSelect.BASELAYER_READY)].Name == astateRecord0.Name
+                AControl.Instance.StateHash_to_record[Animator.StringToHash(Select_Cursor_AbstractAControl.BASELAYER_READY)].Name == astateRecord0.Name
                 &&
-                AControll.Instance.StateHash_to_record[Animator.StringToHash(AbstractAconSelect.BASELAYER_READY)].Name == astateRecord1.Name
+                AControl.Instance.StateHash_to_record[Animator.StringToHash(Select_Cursor_AbstractAControl.BASELAYER_READY)].Name == astateRecord1.Name
                 )
             {
                 // １プレイヤー、２プレイヤー　ともに Ready ステートなら。

@@ -87,10 +87,10 @@ namespace SceneMain
         };
         public static string[] Character_to_animationController = new[]
         {
-            "AnimatorControllers/Acon@Char0",
-            "AnimatorControllers/Acon@Char1",
-            "AnimatorControllers/Acon@Char2",
-            "AnimatorControllers/Acon@Char3",
+            "AnimatorControllers/Main_Char0",
+            "AnimatorControllers/Main_Char1",
+            "AnimatorControllers/Main_Char2",
+            "AnimatorControllers/Main_Char3",
         };
 
         public static string[] Player_to_tag = new[] { "Player0", "Player1" };

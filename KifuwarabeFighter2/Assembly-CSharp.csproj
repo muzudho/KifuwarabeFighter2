@@ -46,11 +46,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Resources\AnimatorControllers\Acon@Char3_abstractAcon.cs" />
-     <Compile Include="Assets\Resources\AnimatorControllers\Acon@Select_abstractAcon.cs" />
-     <Compile Include="Assets\Resources\AnimatorControllers\Main_AControll.cs" />
-     <Compile Include="Assets\Resources\AnimatorControllers\Select_AControll.cs" />
-     <Compile Include="Assets\Scripts\AnimatorBehaviours\AconChar3Behaviour.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_Abstract.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\Select_Cursor.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\Select_Cursor_Abstract.cs" />
+     <Compile Include="Assets\Scripts\AnimatorBehaviours\Main_Char3_Behaviour.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\SampleBehaviour.cs" />
      <Compile Include="Assets\Scripts\CommonScript.cs" />
      <Compile Include="Assets\Scripts\EnumExtensions.cs" />
@@ -69,13 +69,13 @@
      <Compile Include="Assets\Scripts\SceneSelect\Select_PlayerScript.cs" />
      <Compile Include="Assets\Scripts\SceneSelect\Select_SceneCommon.cs" />
      <Compile Include="Assets\Scripts\SceneTitle\Title_CameraScript.cs" />
+     <Compile Include="Assets\Scripts\StellaQLEngine\AbstractAControll.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\AbstractUserDefinedDatabase.cs" />
+     <Compile Include="Assets\Scripts\StellaQLEngine\AnimatorControllers\Demo_Zoo.cs" />
+     <Compile Include="Assets\Scripts\StellaQLEngine\AnimatorControllers\Demo_Zoo_Abstract.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\CliptypeExtend.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\StellaQLCode.cs" />
      <Compile Include="Assets\Scripts\StellaQLEngine\UserDefinedDatabase.cs" />
-     <Compile Include="Assets\Scripts\StellaQLEngine\acon_zoo\Acon@Zoo_abstractAcon.cs" />
-     <Compile Include="Assets\Scripts\StellaQLEngine\acon_zoo\Zoo_AControll.cs" />
-     <Compile Include="Assets\Scripts\StellaQLEngine\acons\AbstractAControll.cs" />
      <Compile Include="Assets\Scripts\TakoyakiParticleScript.cs" />
      <Compile Include="Assets\Scripts\TakoyakiTokenScript.cs" />
      <Compile Include="Assets\Scripts\TakoyakiUtilScript.cs" />

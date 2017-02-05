@@ -1,11 +1,10 @@
-﻿using System.Collections;
+﻿using StellaQL;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Text;
 using UnityEditor;
 using UnityEditor.Animations;
-using System;
-using System.Text;
-using StellaQL;
+using UnityEngine;
 
 //[ExecuteInEditMode]
 public class AnimatorControllerSample : MonoBehaviour {
@@ -26,7 +25,7 @@ public class AnimatorControllerSample : MonoBehaviour {
     static void SetTag()
     {
         // アニメーター・コントローラーを取得。
-        AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/Acon@Char3.controller");
+        AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/Main_Char3.controller");
 
         AnimatorState state = Operation_State.Lookup(ac, "Base Layer.JMove.JMove0");
         //AnimatorState state;
@@ -46,7 +45,7 @@ public class AnimatorControllerSample : MonoBehaviour {
     static void SetTransitionTag()
     {
         // アニメーター・コントローラーを取得。
-        AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/Acon@Char3.controller");
+        AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/Main_Char3.controller");
 
         AnimatorStateTransition transition = Operation_Transition.Lookup(ac, "Base Layer.JMove.Tamesi1 1", "Base Layer.JMove.Tamesi1");
         transition.name = "tamesi(^q^)6";
@@ -56,7 +55,7 @@ public class AnimatorControllerSample : MonoBehaviour {
     static void AddTransition()
     {
         // アニメーター・コントローラーを取得。
-        AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/Acon@Char3.controller");
+        AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/Main_Char3.controller");
 
         StringBuilder message = new StringBuilder();
         Operation_Transition.Insert(ac,
@@ -69,7 +68,7 @@ public class AnimatorControllerSample : MonoBehaviour {
     static void AddTransitions()
     {
         // アニメーター・コントローラーを取得。
-        AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/Acon@Char3.controller");
+        AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/Main_Char3.controller");
 
         HashSet<AnimatorState> states = new HashSet<AnimatorState>() {
             Operation_State.Lookup(ac, "Base Layer.JMove.TamesiMachine1.Tamesi1"),

@@ -57,7 +57,7 @@
      <Compile Include="Assets\Editor\StellaQLEditor\Reference.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\StateCmdline.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\StellaQL.cs" />
-     <Compile Include="Assets\Editor\StellaQLEditor\StellaQLTest.cs" />
+     <Compile Include="Assets\Editor\StellaQLEditor\StellaQLDemoTest.cs" />
      <Compile Include="Assets\Editor\StellaQLEditor\UpateReqeust.cs" />
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>

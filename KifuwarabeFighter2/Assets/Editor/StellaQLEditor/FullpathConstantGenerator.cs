@@ -14,7 +14,15 @@ namespace StellaQL
 
             StringBuilder contents = new StringBuilder();
 
-            string className = FullpathConstantGenerator.String_to36_pascalCase(ac.name, "@");
+            // 変換例：
+            // 「Main_Char3」は「Main_Char3」、
+            // 「BattleFloor_char@arm@finger」は「Battolefloor_Chararmfinger」
+            string className = FullpathConstantGenerator.String_to36_pascalCase(ac.name, "_", "_");
+            // 変換例
+            // 「Main_Char3」は「Main_Char3_AbstractAControl」
+            // 「Battolefloor_Chararmfinger」は「Battolefloor_Chararmfinger_AbstractAControl」
+            string abstractClassName = className + "_AbstractAControl";
+
             contents.AppendLine("using System.Collections.Generic;");
             contents.AppendLine();
             contents.Append("namespace StellaQL.Acons."); contents.AppendLine(className);
@@ -23,8 +31,8 @@ namespace StellaQL
             contents.AppendLine("    /// This file was automatically generated.");
             contents.AppendLine("    /// It was created by [Generate fullpath constant C #] button.");
             contents.AppendLine("    /// </summary>");
-            contents.Append("    public abstract class Abstract"); contents.Append(className);
-            contents.AppendLine(" : AbstractAControll");
+            contents.Append("    public abstract class "); contents.Append(abstractClassName);
+            contents.AppendLine(" : AbstractAControl");
             contents.AppendLine("    {");
             List<string> fullpaths = new List<string>(aconScanner.FullpathSet);
             fullpaths.Sort();
@@ -37,7 +45,7 @@ namespace StellaQL
                 contents.AppendLine(@""";");
             }
 
-            contents.Append("        public Abstract"); contents.Append(className); contents.AppendLine("()");
+            contents.Append("        public "); contents.Append(abstractClassName); contents.AppendLine("()");
             contents.AppendLine("        {");
             contents.AppendLine("            Code.Register(StateHash_to_record, new List<AcStateRecordable>()");
             contents.AppendLine("            {");
@@ -64,32 +72,30 @@ namespace StellaQL
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static string String_to36_pascalCase(string source1, string splitSeparator)
+        public static string String_to36_pascalCase(string source1, string splitSeparator, string joinSeparator)
         {
-            StringBuilder fullnameSb = new StringBuilder();
             string[] tokens = source1.Split(new string[] { splitSeparator }, StringSplitOptions.None);
             for (int iToken = 0; iToken < tokens.Length; iToken++)
             {
-                StringBuilder tokenSb = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 string token = tokens[iToken];
                 for (int caret = 0; caret < token.Length; caret++)
                 {
-                    if (tokenSb.Length == 0)//先頭の文字
+                    if (sb.Length == 0)//先頭の文字
                     {
-                        if (Char.IsUpper(token[caret]) || Char.IsDigit(token[caret])) { tokenSb.Append(token[caret]); } // 大文字と数字はそのまま追加
-                        else if (Char.IsLower(token[caret])) { tokenSb.Append(Char.ToUpper(token[caret])); } // 小文字は大文字にして追加
+                        if (Char.IsUpper(token[caret]) || Char.IsDigit(token[caret])) { sb.Append(token[caret]); } // 大文字と数字はそのまま追加
+                        else if (Char.IsLower(token[caret])) { sb.Append(Char.ToUpper(token[caret])); } // 小文字は大文字にして追加
                                                                                                         // その他の文字は無視
                     }
                     else//先頭以降の文字
                     {
-                        if (Char.IsLower(token[caret]) || Char.IsDigit(token[caret])) { tokenSb.Append(token[caret]); } // 小文字と数字はそのまま追加
-                        else if (Char.IsUpper(token[caret])) { tokenSb.Append(Char.ToLower(token[caret])); } // 大文字は小文字にして追加
+                        if (Char.IsLower(token[caret]) || Char.IsDigit(token[caret])) { sb.Append(token[caret]); } // 小文字と数字はそのまま追加
+                        else if (Char.IsUpper(token[caret])) { sb.Append(Char.ToLower(token[caret])); } // 大文字は小文字にして追加
                                                                                                         // その他の文字は無視
                     }
                 }
-                fullnameSb.Append(tokenSb.ToString());
             }
-            return fullnameSb.ToString();
+            return string.Join(joinSeparator, tokens);
         }
 
         /// <summary>

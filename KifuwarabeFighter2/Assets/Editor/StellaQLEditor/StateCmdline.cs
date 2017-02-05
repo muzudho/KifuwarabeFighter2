@@ -23,7 +23,7 @@ public class StateCmdline : EditorWindow
         "STATE SELECT" + Environment.NewLine +
         "WHERE \".*Dog\"" + Environment.NewLine;
     string infoMessage = "Konnichiwa.";
-    string path_animatorController = "Assets/Scripts/StellaQLEngine/acon_zoo/Acon@Zoo.controller";
+    string path_animatorController = "Assets/Scripts/StellaQLEngine/AnimatorControllers/Demo_Zoo.controller";
     Vector2 scroll;
     #endregion
 
@@ -106,15 +106,23 @@ public class StateCmdline : EditorWindow
         #region アニメーターコントローラー読込み可否判定
         if (!UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.ContainsKey(path_animatorController))
         {
-            GUILayout.Label("Animator controller No Data", EditorStyles.boldLabel);
-            GUILayout.Label("(UserDefinedDatabase.cs)", EditorStyles.boldLabel);
             message = new StringBuilder();
-            message.AppendLine("指定されたパスは登録されていないぜ☆（＾～＾） path_animatorController=[" + path_animatorController + "]");
-            message.AppendLine("登録されている拡張テーブル " + UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.Count + " 件");
-            foreach (string path in UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.Keys)
-            {
-                message.AppendLine("[" + path + "]");
-            }
+
+            string row;
+            row = "Failure.";
+            GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
+            row = "Please, Animator controller";
+            GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
+            row = " set path to ";
+            GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
+            row = "(Assets/StellaQLEngine/";
+            GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
+            row = " UserDefinedDatabase.cs)";
+            GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
+            message.AppendLine();
+
+            UserDefinedDatabase.Instance.Dump_Presentable(message);
+            infoMessage = message.ToString();
             isActivate = false;
         }
         else

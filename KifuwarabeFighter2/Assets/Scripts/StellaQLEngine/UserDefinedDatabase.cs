@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 /// <summary>
 /// Please, read Step 1 to 8. Assets/Scripts/StellaQLEngine/Test_UserDefinedStateTable.cs
@@ -14,16 +15,35 @@ namespace StellaQL
         static UserDefinedDatabase() { Instance = new UserDefinedDatabase(); }
         public static UserDefinedDatabase Instance { get; private set; }
 
+        /// <summary>
+        /// デモ・テスト用のアニメーター・コントローラーへのパス。
+        /// </summary>
+        public const string PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST = "Assets/Scripts/StellaQLEngine/AnimatorControllers/Demo_Zoo.controller";
+
         UserDefinedDatabase()
         {
             #region (Step 9.) Link A to B. A is animation controller file path. B is UserDefinedStateTable instance. (アニメーション・コントローラーと、ユーザー定義テーブルの紐付けを、ユーザー定義データベースに追加して有効化)
             AnimationControllerFilePath_to_table = new Dictionary<string, AControllable>()
             {
-                {"Assets/Scripts/StellaQLEngine/acon_zoo/Acon@Zoo.controller", StellaQL.Acons.AconZoo.AControll.Instance },
-                {"Assets/Resources/AnimatorControllers/Acon@Select.controller", StellaQL.Acons.AconSelect.AControll.Instance},
-                {"Assets/Resources/AnimatorControllers/Acon@Char3.controller", StellaQL.Acons.AconChar3.AControll.Instance },
+                {PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST, StellaQL.Acons.Demo_Zoo.AControl.Instance },
+                {"Assets/Resources/AnimatorControllers/Select_Cursor.controller", StellaQL.Acons.Select_Cursor.AControl.Instance},
+                {"Assets/Resources/AnimatorControllers/Main_Char3.controller", StellaQL.Acons.Main_Char3.AControl.Instance },
             };
             #endregion
+        }
+
+        /// <summary>
+        /// エラー表示時に利用
+        /// </summary>
+        public void Dump_Presentable(StringBuilder message)
+        {
+            message.Append("Registerd "); message.Append(AnimationControllerFilePath_to_table.Count); message.AppendLine(" paths.");
+            int i = 0;
+            foreach (string path in AnimationControllerFilePath_to_table.Keys)
+            {
+                message.Append("["); message.Append(i); message.Append("]"); message.AppendLine(path);
+                i++;
+            }
         }
     }
 }

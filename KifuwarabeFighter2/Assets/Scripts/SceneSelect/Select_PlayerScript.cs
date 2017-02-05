@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using StellaQL.Acons.AconSelect;
+using StellaQL.Acons.Select_Cursor;
 
 namespace SceneSelect
 {
@@ -42,7 +42,7 @@ namespace SceneSelect
         void Update()
         {
             // 現在のアニメーター・ステートに紐づいたデータ
-            AcStateRecordable astateRecord = AControll.Instance.GetCurrentUserDefinedStateRecord(animator);
+            AcStateRecordable astateRecord = AControl.Instance.GetCurrentUserDefinedStateRecord(animator);
 
             #region 入力受付と途中参加
             CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
@@ -91,7 +91,7 @@ namespace SceneSelect
             }
             #endregion
 
-            if (AControll.Instance.StateHash_to_record[Animator.StringToHash(AbstractAconSelect.BASELAYER_STAY)].Name == astateRecord.Name)
+            if (AControl.Instance.StateHash_to_record[Animator.StringToHash(Select_Cursor_AbstractAControl.BASELAYER_STAY)].Name == astateRecord.Name)
             {
                 //カーソル移動中でなければ。
 
@@ -152,10 +152,10 @@ namespace SceneSelect
                     myRigidbody2D.velocity = new Vector2(0, myRigidbody2D.velocity.y);
                 }
             }
-            else if (AControll.Instance.StateHash_to_record[Animator.StringToHash(AbstractAconSelect.BASELAYER_MOVE)].Name == astateRecord.Name)
+            else if (AControl.Instance.StateHash_to_record[Animator.StringToHash(Select_Cursor_AbstractAControl.BASELAYER_MOVE)].Name == astateRecord.Name)
             {
             }
-            else if (AControll.Instance.StateHash_to_record[Animator.StringToHash(AbstractAconSelect.BASELAYER_READY)].Name == astateRecord.Name)
+            else if (AControl.Instance.StateHash_to_record[Animator.StringToHash(Select_Cursor_AbstractAControl.BASELAYER_READY)].Name == astateRecord.Name)
             {
                 // キャラクター選択済みのとき
 
