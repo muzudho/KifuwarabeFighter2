@@ -666,6 +666,9 @@ namespace StellaQL
         }
     }
 
+    /// <summary>
+    /// コンディション関連
+    /// </summary>
     public abstract class Operation_Condition
     {
         public static void Update(AnimatorController ac, UpateReqeustRecord record, StringBuilder message)

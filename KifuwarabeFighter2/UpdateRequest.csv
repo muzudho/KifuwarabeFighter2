@@ -1,0 +1,4 @@
+#Category#,#Foreignkeycategory#,#Fullpath#,#FullpathTransition#,#FullpathCondition#,#FullpathPropertyname#,#Name#,#Old#,#New#,#Delete#,[EOL],
+states,states,Base Layer.SAtkLP,,,,speed,6,123.456,,
+conditions,transitions,Base Layer.JMove.JMove4,147,100,,threshold,,AtkLP,,
+[EOF],
