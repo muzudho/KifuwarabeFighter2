@@ -53,15 +53,19 @@ namespace StellaQL
                             { //ステート（ラッパー）
                                 if(OnState( statemachine_pair.Key, caState))
                                 {
+                                    int tNum = 0; // トランジション番号
                                     foreach (AnimatorStateTransition transition in caState.state.transitions)
                                     { // トランジション
-                                        if(OnTransition( transition))
+                                        if(OnTransition( transition, tNum))
                                         {
+                                            int cNum = 0; // コンディション番号
                                             foreach (AnimatorCondition condition in transition.conditions)
                                             { // コンディション
-                                                OnCondition( condition);
+                                                OnCondition( condition, tNum, cNum);
+                                                cNum++;
                                             } // コンディション
                                         }
+                                        tNum++;
                                     }//トランジション
                                 }
                             }//ステート（ラッパー）
@@ -99,13 +103,13 @@ namespace StellaQL
         /// </summary>
         /// <param name="transition"></param>
         /// <returns>下位を検索するなら真</returns>
-        public virtual bool OnTransition(AnimatorStateTransition transition) { return false; }
+        public virtual bool OnTransition(AnimatorStateTransition transition, int tNum) { return false; }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="condition"></param>
         /// <returns>下位を検索するなら真</returns>
-        public virtual bool OnCondition(AnimatorCondition condition) { return false; }
+        public virtual bool OnCondition(AnimatorCondition condition, int tNum, int cNum) { return false; }
     }
 
     /// <summary>
@@ -143,15 +147,21 @@ namespace StellaQL
             AconData.table_state.Add(stateRecord); return true;
         }
 
-        public override bool OnTransition( AnimatorStateTransition transition)
+        public override bool OnTransition( AnimatorStateTransition transition, int tNum)
         {
-            TransitionRecord transitionRecord = new TransitionRecord(AconData.table_layer.Count, AconData.table_statemachine.Count, AconData.table_state.Count, AconData.table_transition.Count, transition, "");
+            TransitionRecord transitionRecord = new TransitionRecord(AconData.table_layer.Count, AconData.table_statemachine.Count, AconData.table_state.Count,
+                tNum,//AconData.table_transition.Count,
+                transition, "");
             AconData.table_transition.Add(transitionRecord); return true;
         }
 
-        public override bool OnCondition( AnimatorCondition condition)
+        public override bool OnCondition( AnimatorCondition condition, int tNum, int cNum)
         {
-            ConditionRecord conditionRecord = new ConditionRecord(AconData.table_layer.Count, AconData.table_statemachine.Count, AconData.table_state.Count, AconData.table_transition.Count, AconData.table_condition.Count, condition);
+            ConditionRecord conditionRecord = new ConditionRecord(
+                AconData.table_layer.Count, AconData.table_statemachine.Count, AconData.table_state.Count,
+                tNum, //AconData.table_transition.Count,
+                cNum, //AconData.table_condition.Count,
+                condition);
             AconData.table_condition.Add(conditionRecord); return true;
         }
     }

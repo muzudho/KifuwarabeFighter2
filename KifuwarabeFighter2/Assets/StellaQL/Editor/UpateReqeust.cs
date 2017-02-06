@@ -10,6 +10,19 @@ namespace StellaQL
     /// </summary>
     public class UpateReqeustRecord
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="category"></param>
+        /// <param name="foreignkeycategory"></param>
+        /// <param name="fullpath">レイヤー、ステートマシン、ステートのいずれかのフルパス。</param>
+        /// <param name="fullpathTransition"></param>
+        /// <param name="fullpathCondition"></param>
+        /// <param name="fullpathPropertyname"></param>
+        /// <param name="name"></param>
+        /// <param name="oldValue"></param>
+        /// <param name="newValue"></param>
+        /// <param name="delete"></param>
         public UpateReqeustRecord(string category, string foreignkeycategory, string fullpath, string fullpathTransition, string fullpathCondition, string fullpathPropertyname, string name, string oldValue, string newValue, string delete)
         {
             this.Category = category;

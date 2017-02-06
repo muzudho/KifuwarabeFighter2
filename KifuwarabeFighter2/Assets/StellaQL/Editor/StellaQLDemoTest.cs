@@ -12,7 +12,7 @@ namespace StellaQL
     {
         static StellaQLDemoTest()
         {
-            m_ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(UserDefinedDatabase.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST);// アニメーター・コントローラーを取得。
+            m_ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST);// アニメーター・コントローラーを取得。
         }
         static AnimatorController m_ac;
 
@@ -85,7 +85,6 @@ namespace StellaQL
         [Test]
         public void N30_Query_TransitionAnysateInsert()
         {
-            // AssetDatabase.LoadAssetAtPath<AnimatorController>(path_AnimationController);// アニメーター・コントローラーを取得。
             string query = @"TRANSITION ANYSTATE INSERT
                             FROM ""Base Layer""
                             TO ""Base Layer\.Foo""";
@@ -98,7 +97,6 @@ namespace StellaQL
         [Test]
         public void N30_Query_TransitionEntryInsert()
         {
-            //AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(path_AnimationController);// アニメーター・コントローラーを取得。
             string query = @"TRANSITION ENTRY INSERT
                             FROM ""Base Layer""
                             TO ""Base Layer\.Foo""";
@@ -111,7 +109,6 @@ namespace StellaQL
         [Test]
         public void N30_Query_TransitionExitInsert()
         {
-            //AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(path_AnimationController);// アニメーター・コントローラーを取得。
             string query = @"TRANSITION EXIT INSERT
                             FROM ""Base Layer\.Foo""";
             StringBuilder message = new StringBuilder();

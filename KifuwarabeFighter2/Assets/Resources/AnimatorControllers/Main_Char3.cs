@@ -38,7 +38,7 @@ namespace StellaQL.Acons.Main_Char3
     {
         /// <summary>
         /// (Step 8.) Please, make singleton. (シングルトンにしてください)
-        /// Use by StellaQLEngine/UserDefinedDatabase.cs file. (StellaQLEngine/UserDefinedDatabase.cs ファイルで使います)
+        /// Use by Assets/StellaQL/UserDefinedDatabase.cs file. (Assets/StellaQL/UserDefinedDatabase.cs ファイルで使います)
         /// </summary>
         static AControl() { Instance = new AControl(); }
         public static AControl Instance { get; private set; }

@@ -2,7 +2,7 @@
 using System.Text;
 
 /// <summary>
-/// Please, read Step 1 to 8. Assets/Scripts/StellaQLEngine/Test_UserDefinedStateTable.cs
+/// Please, read Step 1 to 8. Assets/StellaQL/Demo_Zoo.cs
 /// Step 9 here.
 /// </summary>
 namespace StellaQL
@@ -15,17 +15,12 @@ namespace StellaQL
         static UserDefinedDatabase() { Instance = new UserDefinedDatabase(); }
         public static UserDefinedDatabase Instance { get; private set; }
 
-        /// <summary>
-        /// デモ・テスト用のアニメーター・コントローラーへのパス。
-        /// </summary>
-        public const string PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST = "Assets/Scripts/StellaQLEngine/AnimatorControllers/Demo_Zoo.controller";
-
         UserDefinedDatabase()
         {
             #region (Step 9.) Link A to B. A is animation controller file path. B is UserDefinedStateTable instance. (アニメーション・コントローラーと、ユーザー定義テーブルの紐付けを、ユーザー定義データベースに追加して有効化)
             AnimationControllerFilePath_to_table = new Dictionary<string, AControllable>()
             {
-                {PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST, StellaQL.Acons.Demo_Zoo.AControl.Instance },
+                {FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST, StellaQL.Acons.Demo_Zoo.AControl.Instance },
                 {"Assets/Resources/AnimatorControllers/Select_Cursor.controller", StellaQL.Acons.Select_Cursor.AControl.Instance},
                 {"Assets/Resources/AnimatorControllers/Main_Char3.controller", StellaQL.Acons.Main_Char3.AControl.Instance },
             };

@@ -14,7 +14,7 @@ namespace StellaQL
             contents.AppendLine(@"");
             contents.AppendLine(@"    [Window] - [State Machine Command Line (StellaQL)] is here.");
             contents.AppendLine(@"");
-            contents.AppendLine(@"    Please, open ""Assets/Scripts/StellaQL/AnimatorControllers/Demo_Zoo"".");
+            contents.Append(@"    Please, open """); contents.Append(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST); contents.AppendLine(@""".");
             contents.AppendLine(@"");
             contents.AppendLine(@"    And condition check (Option).");
             contents.AppendLine(@"");

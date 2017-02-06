@@ -23,7 +23,7 @@ public class StateCmdline : EditorWindow
         "STATE SELECT" + Environment.NewLine +
         "WHERE \".*Dog\"" + Environment.NewLine;
     string infoMessage = "Konnichiwa.";
-    string path_animatorController = "Assets/Scripts/StellaQLEngine/AnimatorControllers/Demo_Zoo.controller";
+    string path_animatorController = FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST;
     Vector2 scroll;
     #endregion
 
@@ -108,16 +108,10 @@ public class StateCmdline : EditorWindow
             message = new StringBuilder();
 
             string row;
-            row = "Failure.";
-            GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
-            row = "Please, Animator controller";
-            GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
-            row = " set path to ";
-            GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
-            row = "(Assets/StellaQLEngine/";
-            GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
-            row = " UserDefinedDatabase.cs)";
-            GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
+            row = "Failure.";                       GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
+            row = "Please, Animator controller";    GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
+            row = " set path to ";                  GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
+            row = String.Concat("(", FileUtility_Engine.PATH_USER_DEFINED_DATABASE, ")"); GUILayout.Label(row, EditorStyles.boldLabel); message.Append(row);
             message.AppendLine();
 
             UserDefinedDatabase.Instance.Dump_Presentable(message);
@@ -177,7 +171,7 @@ public class StateCmdline : EditorWindow
             {
                 Debug.Log("Export spread sheet Start☆（＾～＾）！ filename(without extension) = " + ac.name);
                 message.AppendLine("Please, Use Libre Office Calc.");
-                message.AppendLine("And open StellaQL_MacroApplication.ods file.");
+                message.Append("And use macro application.");
                 message.Append("location: "); message.AppendLine(StellaQLWriter.Filepath_StellaQLMacroApplicationOds());
 
                 AconScanner aconScanner = new AconScanner();

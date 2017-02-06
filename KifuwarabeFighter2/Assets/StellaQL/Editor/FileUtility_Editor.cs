@@ -7,6 +7,9 @@ using UnityEditor.Animations;
 
 namespace StellaQL
 {
+    /// <summary>
+    /// ユニティー・エディター関連での、読込み関連のファイルパスをまとめる。
+    /// </summary>
     public abstract class StellaQLReader
     {
         #region 固定のファイル名
@@ -41,6 +44,9 @@ namespace StellaQL
         }
     }
 
+    /// <summary>
+    /// ユニティー・エディター関連での、書込み関連のファイルパスをまとめる。
+    /// </summary>
     public abstract class StellaQLWriter
     {
         #region 固定のファイル名

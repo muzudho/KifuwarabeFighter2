@@ -46,13 +46,13 @@ namespace StellaQL
             }
         }
 
-        public static bool HasProperty(string name, Dictionary<string,RecordDefinition> definitions)
+        public static bool HasProperty(string name, Dictionary<string,RecordDefinition> definitions, string calling)
         {
             if (definitions.ContainsKey(name)) { return true; }
             else
             {
-                StringBuilder sb = new StringBuilder(); foreach (string name2 in StateRecord.Definitions.Keys) { sb.Append(name2); sb.Append(","); }
-                throw new UnityException("更新できないプロパティ名が指定されたぜ☆（＾～＾） name=[" + name + "] 対応しているのは次の名前だぜ☆ : " + sb.ToString() + " ここまで");
+                StringBuilder sb = new StringBuilder(); int i = 0; foreach (string name2 in StateRecord.Definitions.Keys) { sb.Append("[");sb.Append(i);sb.Append("]"); sb.AppendLine(name2); i++; }
+                throw new UnityException(calling + " : 更新できないプロパティ名が指定されたぜ☆（＾～＾） name=[" + name + "] 対応しているのは次の名前だぜ☆ : " + Environment.NewLine + sb.ToString() + " ここまで");
             }
         }
     }
@@ -72,7 +72,7 @@ namespace StellaQL
             AnimatorControllerLayer layer = Lookup(ac, record.Fullpath);
             if (null == layer) { throw new UnityException("[" + record.Fullpath + "]レイヤーは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-            if (Operation_Something.HasProperty(record.Name, LayerRecord.Definitions))
+            if (Operation_Something.HasProperty(record.Name, LayerRecord.Definitions, "レイヤー操作"))
             {
                 StateRecord.Definitions[record.Name].Update(layer, record, message);
             }
@@ -111,7 +111,7 @@ namespace StellaQL
             AnimatorStateMachine statemachine = Lookup(ac, record.Fullpath);
             if (null == statemachine) { throw new UnityException("[" + record.Fullpath + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-            if (Operation_Something.HasProperty(record.Name, StatemachineRecord.Definitions))
+            if (Operation_Something.HasProperty(record.Name, StatemachineRecord.Definitions, "ステートマシン操作"))
             {
                 StateRecord.Definitions[record.Name].Update(statemachine, record, message);
             }
@@ -206,7 +206,7 @@ namespace StellaQL
             AnimatorState state = Lookup(ac, record.Fullpath);
             if (null == state) { throw new UnityException("[" + record.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-            if (Operation_Something.HasProperty(record.Name, StateRecord.Definitions))
+            if (Operation_Something.HasProperty(record.Name, StateRecord.Definitions, "ステート操作"))
             {
                 StateRecord.Definitions[record.Name].Update(state, record, message);
             }
@@ -350,6 +350,7 @@ namespace StellaQL
             recordSet = new HashSet<StateRecord>();
             foreach (AnimatorState state in states) // 指定されたステート全て対象
             {
+                if (null == state) { throw new UnityException("ヌル・ステートが含まれていたぜ☆（＞＿＜）"); }
                 recordSet.Add(new StateRecord(0,0,0,"#NoData",state));
             }
             message.Append("result: "); message.Append(recordSet.Count); message.AppendLine(" records.");
@@ -433,7 +434,7 @@ namespace StellaQL
 
             int transitionNum = int.Parse(record.FullpathTransition); // トランジション番号
 
-            if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions))
+            if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions, "トランジション操作"))
             {
                 int num = 0;
                 foreach( AnimatorStateTransition transition in state.transitions)
@@ -679,29 +680,37 @@ namespace StellaQL
             int transitionNum = int.Parse(record.FullpathTransition); // トランジション番号
             int conditionNum = int.Parse(record.FullpathCondition); // コンディション番号
 
-            if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions))
+            if (Operation_Something.HasProperty(record.Name, ConditionRecord.Definitions, "コンディション操作"))
             {
-                int tNum = 0;
+                int tNum = 0; // トランジションの何番目か
                 foreach (AnimatorStateTransition transition in state.transitions)
                 {
                     if (transitionNum == tNum)
                     {
-                        int cNum = 0;
+                        int cNum = 0; // コンディションの何番目か
                         foreach(AnimatorCondition condition in transition.conditions)
                         {
-                            ConditionRecord.Definitions[record.Name].Update(new ConditionRecord.AnimatorConditionWrapper(condition), record, message);
-                            goto gt_EndLoop; // 2重ループを脱出
+                            if (conditionNum == cNum)
+                            {
+                                ConditionRecord.Definitions[record.Name].Update(new ConditionRecord.AnimatorConditionWrapper(condition), record, message);
+                                goto gt_EndLoop; // 2重ループを脱出
+                            }
+                            cNum++;
                         }
-                        cNum++;
+                        throw new UnityException("存在しないコンディション番号だったぜ☆（＾～＾） 指定コンディション番号=["+ conditionNum + "] ループカウンター=["+cNum+"] コンディション数=["+ transition.conditions.Length + "]");
                     }
                     tNum++;
                 }
+                throw new UnityException("存在しないトランジション番号だったぜ☆（＾～＾） record.Fullpath=["+ record.Fullpath + "] ヒットしたステート=[" + state.name+"]  指定トランジション番号=[" + transitionNum + "] ループカウンター=["+tNum+"] トランジション数=[" + state.transitions.Length + "]");
                 gt_EndLoop:
                 ;
             }
         }
     }
 
+    /// <summary>
+    /// ポジション操作
+    /// </summary>
     public abstract class Operation_Position
     {
         public static void Update(AnimatorController ac, UpateReqeustRecord record, StringBuilder message)
@@ -712,7 +721,7 @@ namespace StellaQL
                 AnimatorStateMachine statemachine = Operation_Statemachine.Lookup(ac, record.Fullpath);
                 if (null == statemachine) { throw new UnityException("[" + record.Fullpath + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-                if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions))
+                if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions, "ステートマシンのポジション操作"))
                 {
                     PositionRecord.Definitions[record.Name].Update(new PositionRecord.PositionWrapper(statemachine, record.FullpathPropertyname), record, message);
                 }
@@ -723,7 +732,7 @@ namespace StellaQL
 
                 if ("states" == record.Foreignkeycategory)
                 {
-                    if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions))
+                    if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions, "ステートのポジション操作"))
                     {
                         PositionRecord.Definitions[record.Name].Update(new PositionRecord.PositionWrapper(caState, record.FullpathPropertyname), record, message);
                     }
