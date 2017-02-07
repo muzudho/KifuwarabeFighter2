@@ -175,7 +175,7 @@ namespace StellaQL
         /// <param name="instance"></param>
         /// <param name="record"></param>
         /// <param name="message"></param>
-        public void Update(object instance, UpateReqeustRecord record, StringBuilder message)
+        public void Update(object instance, DataManipulationRecord record, StringBuilder message)
         {
             if (null == instance) { throw new UnityException("instanceがヌルだったぜ☆（／＿＼）"); }
 

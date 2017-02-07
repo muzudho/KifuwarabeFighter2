@@ -16,10 +16,10 @@ namespace StellaQL
         public static string Filepath_UpdateRequestCsv() { return "./UpdateRequest.csv"; }
         #endregion
 
-        public static void ReadUpdateRequestCsv(out HashSet<UpateReqeustRecord> updateRequestRecords, StringBuilder message)
+        public static void ReadUpdateRequestCsv(out HashSet<DataManipulationRecord> updateRequestRecords, StringBuilder message)
         {
             string filepath = Filepath_UpdateRequestCsv();
-            updateRequestRecords = new HashSet<UpateReqeustRecord>();
+            updateRequestRecords = new HashSet<DataManipulationRecord>();
 
             string[] lines = File.ReadAllLines(filepath);
             int row = 0;
@@ -29,7 +29,7 @@ namespace StellaQL
                 if (row == 0) { row++; continue; } // [0]行目はヘッダー行なので飛ばす
                 List<string> cells = CsvParser.CsvLine_to_cellList(line);
                 if ("[EOF]" == cells[0]) { break; } // [EOF]を見つけたら終わり。
-                updateRequestRecords.Add(new UpateReqeustRecord(cells[0], cells[1], cells[2], cells[3], cells[4], cells[5], cells[6], cells[7], cells[8], cells[9]));
+                updateRequestRecords.Add(new DataManipulationRecord(cells[0], cells[1], cells[2], cells[3], cells[4], cells[5], cells[6], cells[7], cells[8], cells[9]));
                 row++;
             }
 

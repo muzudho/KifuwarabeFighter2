@@ -194,7 +194,7 @@ public class StateCmdline : EditorWindow
                 Repaint();
             }
             #endregion
-            #region CSV入力ボタン
+            #region スプレッドシート入力ボタン
             // 実際はCSV形式ファイルを出力する
             if (GUILayout.Button("Import spread sheet")) // Import CSV
             {
@@ -205,14 +205,23 @@ public class StateCmdline : EditorWindow
                 aconScanner.ScanAnimatorController(ac, message);
                 AconData aconData = aconScanner.AconData;
 
-                HashSet<UpateReqeustRecord> updateRequest;
+                HashSet<DataManipulationRecord> updateRequest;
                 StellaQLReader.ReadUpdateRequestCsv(out updateRequest, message); // CSVファイル読取
-                Operation_Something.Update(ac, aconData, updateRequest, message); // 更新を実行
+                Operation_Something.ManipulateData(ac, aconData, updateRequest, message); // 更新を実行
                 StellaQLReader.DeleteUpdateRequestCsv(message);
 
                 infoMessage = message.ToString();
                 Debug.Log(infoMessage);
-                Repaint();
+                Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
+
+                //// リフレクションを利用して、インスペクター・ウィンドウを再描画できるだろうか？
+                //// 出典 : unity 「Type of Inspector」 http://answers.unity3d.com/questions/948806/type-of-inspector.html
+                //{
+                //    var editorAsm = typeof(Editor).Assembly; // リフレクションを利用する
+                //    var inspWndType = editorAsm.GetType("UnityEditor.InspectorWindow"); // インスペクター・ウィンドウの型
+                //    var window = EditorWindow.GetWindow<StateCmdline>(inspWndType);
+                //    window.Repaint();
+                //}
             }
             #endregion
         }

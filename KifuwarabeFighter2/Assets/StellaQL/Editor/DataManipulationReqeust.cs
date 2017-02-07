@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 
 namespace StellaQL
 {
     /// <summary>
-    /// 更新を要求するレコード
+    /// データ操作を要求するレコード。ここでは　項目挿入、プロパティー更新、項目削除。項目選択を除く。
     /// </summary>
-    public class UpateReqeustRecord
+    public class DataManipulationRecord
     {
         /// <summary>
         /// 
@@ -23,7 +20,7 @@ namespace StellaQL
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
         /// <param name="delete"></param>
-        public UpateReqeustRecord(string category, string foreignkeycategory, string fullpath, string fullpathTransition, string fullpathCondition, string fullpathPropertyname, string name, string oldValue, string newValue, string delete)
+        public DataManipulationRecord(string category, string foreignkeycategory, string fullpath, string fullpathTransition, string fullpathCondition, string fullpathPropertyname, string name, string oldValue, string newValue, string delete)
         {
             this.Category = category;
             this.Foreignkeycategory = foreignkeycategory;
