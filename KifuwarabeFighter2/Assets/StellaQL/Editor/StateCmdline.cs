@@ -200,9 +200,14 @@ public class StateCmdline : EditorWindow
             {
                 message.AppendLine("Import spread sheet Start☆（＾～＾）！ filename(without extension) = " + ac.name);
 
-                HashSet<UpateReqeustRecord> recordSet;
-                StellaQLReader.ReadUpdateRequestCsv(out recordSet, message); // CSVファイル読取
-                Operation_Something.Update(ac, recordSet, message); // 更新を実行
+                // 現状のデータ
+                AconScanner aconScanner = new AconScanner();
+                aconScanner.ScanAnimatorController(ac, message);
+                AconData aconData = aconScanner.AconData;
+
+                HashSet<UpateReqeustRecord> updateRequest;
+                StellaQLReader.ReadUpdateRequestCsv(out updateRequest, message); // CSVファイル読取
+                Operation_Something.Update(ac, aconData, updateRequest, message); // 更新を実行
                 StellaQLReader.DeleteUpdateRequestCsv(message);
 
                 infoMessage = message.ToString();

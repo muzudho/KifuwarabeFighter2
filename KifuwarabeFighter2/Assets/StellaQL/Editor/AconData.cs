@@ -169,6 +169,12 @@ namespace StellaQL
             return true;
         }
 
+        /// <summary>
+        /// 既存のオブジェクトのプロパティー更新の場合、これを使う。
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="record"></param>
+        /// <param name="message"></param>
         public void Update(object instance, UpateReqeustRecord record, StringBuilder message)
         {
             if (null == instance) { throw new UnityException("instanceがヌルだったぜ☆（／＿＼）"); }
@@ -625,12 +631,63 @@ namespace StellaQL
         /// </summary>
         public class AnimatorConditionWrapper
         {
+            /// <summary>
+            /// 空コンストラクタで生成した場合、.IsNull( ) メソッドでヌルを返す。
+            /// </summary>
+            public AnimatorConditionWrapper()
+            {
+                this.IsNull = true;
+            }
+
             public AnimatorConditionWrapper(AnimatorCondition source)
             {
                 this.m_source = source;
+                this.IsNull = false;
             }
 
+            public bool IsNull { get; private set; }
             public AnimatorCondition m_source;
+        }
+
+        /// <summary>
+        /// モードには、数値型のときは演算子が入っているし、論理値型のときは論理値が入っている。
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        public static string Mode_to_string(AnimatorConditionMode mode)
+        {
+            if (0 == mode) { return ""; } // 0 もある。
+
+            switch (mode)
+            {
+                case AnimatorConditionMode.Greater: return ">";
+                case AnimatorConditionMode.Less: return "<";
+                case AnimatorConditionMode.Equals: return "=";
+                case AnimatorConditionMode.NotEqual: return "<>";
+                case AnimatorConditionMode.If: return "TRUE";
+                case AnimatorConditionMode.IfNot: return "FALSE";
+                default: throw new UnityException("コンディションの未対応の演算子だったんだぜ☆（＞＿＜）[" + mode + "]");
+            }
+        }
+        /// <summary>
+        /// モードには、数値型のときは演算子が入っているし、論理値型のときは論理値が入っている。
+        /// </summary>
+        /// <param name="modeString"></param>
+        /// <returns></returns>
+        public static AnimatorConditionMode String_to_mode(string modeString)
+        {
+            if ("" == modeString) { return 0; } // 0 もある。
+
+            switch (modeString.Trim().ToUpper())
+            {
+                case ">": return AnimatorConditionMode.Greater;
+                case "<": return AnimatorConditionMode.Less;
+                case "=": return AnimatorConditionMode.Equals;
+                case "<>": return AnimatorConditionMode.NotEqual;
+                case "TRUE": return AnimatorConditionMode.If;
+                case "FALSE": return AnimatorConditionMode.IfNot;
+                default: throw new UnityException("コンディションの未定義の演算子だったんだぜ☆（＞＿＜）[" + modeString + "]");
+            }
         }
 
         static ConditionRecord()
@@ -642,8 +699,14 @@ namespace StellaQL
                 new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
                 new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
                 new RecordDefinition("#conditionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("mode",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+
+                // parameter, mode, threshold の順に並べた方が、理解しやすい。
                 new RecordDefinition("parameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None                ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.parameter; } ,(object i,string v)=>{ ((AnimatorConditionWrapper)i).m_source.parameter = v; }),
+                // 演算子。本来はイニューム型だが、文字列型にする。
+                // 値は本来は Greater,less,Equals,NotEqual,If,IfNot の６つだが、分かりづらいので >, <, =, <>, TRUE, FALSE の６つにする。
+                new RecordDefinition("mode",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None                     ,
+                    (object i)=>{ return Mode_to_string(((AnimatorConditionWrapper)i).m_source.mode);},
+                    (object i,string v)=>{((AnimatorConditionWrapper)i).m_source.mode = String_to_mode(v);}),
                 new RecordDefinition("threshold",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                 ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.threshold; } ,(object i,float v)=>{ ((AnimatorConditionWrapper)i).m_source.threshold = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
@@ -663,7 +726,7 @@ namespace StellaQL
                 { "#stateNum#", stateNum},
                 { "#transitionNum#", transitionNum},
                 { "#conditionNum#", conditionNum},
-                { "mode", condition.mode.ToString()},
+                { "mode", Mode_to_string( condition.mode)}, // 内容を変えて入れる。
                 { "parameter", condition.parameter},
                 { "threshold", condition.threshold},
             };

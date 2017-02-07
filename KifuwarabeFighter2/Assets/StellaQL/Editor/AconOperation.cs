@@ -14,23 +14,26 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_Something
     {
-        public static void Update(AnimatorController ac, HashSet<UpateReqeustRecord> recordSet, StringBuilder message)
+        public static void Update(AnimatorController ac, AconData aconData_old, HashSet<UpateReqeustRecord> request, StringBuilder message)
         {
             // テスト出力
             {
                 StringBuilder contents = new StringBuilder();
                 contents.Append("Update request ");
-                contents.Append(recordSet.Count);
+                contents.Append(request.Count);
                 contents.Append(" record sets.");
                 contents.AppendLine();
-                foreach (UpateReqeustRecord record in recordSet)
+                foreach (UpateReqeustRecord record in request)
                 {
                     record.ToCsvLine(contents);
                 }
                 Debug.Log(contents.ToString());
             }
 
-            foreach (UpateReqeustRecord record in recordSet)
+            // [ステート・フルパス、トランジション番号、コンディション番号]
+            Dictionary<string,Dictionary<int, Dictionary<int, Operation_Condition.UpateReqeustRecordSet>>> conditionRecordSet = new Dictionary<string, Dictionary<int, Dictionary<int, Operation_Condition.UpateReqeustRecordSet>>>();
+
+            foreach (UpateReqeustRecord record in request)
             {
                 switch (record.Category)
                 {
@@ -39,9 +42,100 @@ namespace StellaQL
                     case "stateMachines": Operation_Statemachine.Update(ac, record, message); break;
                     case "states": Operation_State.Update(ac, record, message); break;
                     case "transitions": Operation_Transition.Update(ac, record, message); break;
-                    case "conditions": Operation_Condition.Update(ac, record, message); break;
+                    case "conditions":
+                        {
+                            // 条件を溜め込む。 mode, parameter, threshold の３つが揃って更新ができる。
+                            Operation_Condition.UpateReqeustRecordSet buffer;
+
+                            // [ステートフルパス,,]
+                            Dictionary<int, Dictionary<int, Operation_Condition.UpateReqeustRecordSet>> conditionRecordSet1;
+                            if (conditionRecordSet.ContainsKey(record.Fullpath))
+                            {
+                                Debug.Log("既存 [ステートフルパス,,]=" + record.Fullpath);
+                                conditionRecordSet1 = conditionRecordSet[record.Fullpath];
+                            }
+                            else
+                            {
+                                Debug.Log("新規追加 [ステートフルパス,,]=" + record.Fullpath);
+                                conditionRecordSet1 = new Dictionary<int, Dictionary<int, Operation_Condition.UpateReqeustRecordSet>>();
+                                conditionRecordSet[record.Fullpath] = conditionRecordSet1;
+                            }
+
+                            // [ステートフルパス,トランジション番号,]
+                            Dictionary<int, Operation_Condition.UpateReqeustRecordSet> conditionRecordSet2;
+                            int fullpathTransition = int.Parse(record.FullpathTransition);
+                            if (conditionRecordSet1.ContainsKey(fullpathTransition))
+                            {
+                                Debug.Log("既存 [ステートフルパス,トランジション番号,]=" + record.Fullpath + ", " + fullpathTransition);
+                                conditionRecordSet2 = conditionRecordSet1[fullpathTransition];
+                            }
+                            else
+                            {
+                                Debug.Log("新規追加 [ステートフルパス,トランジション番号,]=" + record.Fullpath + ", " + fullpathTransition);
+                                conditionRecordSet2 = new Dictionary<int, Operation_Condition.UpateReqeustRecordSet>();
+                                conditionRecordSet1[fullpathTransition] = conditionRecordSet2;
+                            }
+
+                            // [ステートフルパス,トランジション番号,コンディション番号]
+                            int fullpathCondition = int.Parse(record.FullpathCondition);
+                            if (conditionRecordSet2.ContainsKey(fullpathCondition))
+                            {
+                                Debug.Log("既存 [ステートフルパス,トランジション番号,コンディション番号]=" + record.Fullpath + ", " + fullpathTransition + ", " + fullpathCondition);
+                                buffer = conditionRecordSet2[fullpathCondition];
+                            }
+                            else
+                            {
+                                Debug.Log("新規追加 [ステートフルパス,トランジション番号,コンディション番号]=" + record.Fullpath + ", " + fullpathTransition + ", " + fullpathCondition);
+                                // 空の要求セットを作成・追加
+                                buffer = new Operation_Condition.UpateReqeustRecordSet(fullpathTransition, fullpathCondition);
+                                conditionRecordSet2[fullpathCondition] = buffer;
+                            }
+
+                            {
+                                // 新規作成。
+                                //ConditionRecord.AnimatorConditionWrapper wrapper = Operation_Condition.Lookup(ac, record);
+
+                                //ConditionRecord cRecord = wrapper.A Operation_Condition.Lookup(,
+                                //    int.Parse(record.FullpathTransition),
+                                //    int.Parse(record.FullpathCondition)
+                                //    );
+
+                                //UpateReqeustRecord record_mode = new UpateReqeustRecord();
+                                //buffer = new Operation_Condition.UpateReqeustRecordSet(wrapper.m_source.mode, wrapper.m_source.threshold, wrapper.m_source.parameter);
+                            }
+
+                            // セットに、レコードを追加
+                            Debug.Log("追加 record.Name=[" + record.Name + "]");
+                            switch (record.Name)
+                            {
+                                case "parameter": Debug.Log("追加 パラメーター"); buffer.Parameter = record; break;
+                                case "mode": Debug.Log("追加 モード"); buffer.Mode = record; break;
+                                case "threshold": Debug.Log("追加 スレッショルド"); buffer.Threshold = record; break;
+                                default: Debug.Log("追加失敗"); throw new UnityException("未定義のプロパティ名だぜ☆（＞＿＜） record.Name=[" + record.Name + "]");
+                            }
+                        }
+                        break;
                     case "positinos": Operation_Position.Update(ac, record, message); break;
                     default: throw new UnityException("未対応のカテゴリー=["+ record.Category + "]");
+                }
+            }
+
+            // 条件を消化
+            // [ステート・フルパス,トランジション番号,コンディション番号]
+            Debug.Log("conditionRecordSet.Count=" + conditionRecordSet.Count);
+            foreach (KeyValuePair<string,Dictionary<int, Dictionary<int, Operation_Condition.UpateReqeustRecordSet>>> conditionRecordSetPair in conditionRecordSet)
+            {
+                // [,トランジション番号,コンディション番号]
+                Debug.Log("conditionRecordSetPair.Value.Count=" + conditionRecordSetPair.Value.Count);
+                foreach (KeyValuePair<int, Dictionary<int, Operation_Condition.UpateReqeustRecordSet>> conditionRecordSet1Pair in conditionRecordSetPair.Value)
+                {
+                    // [,,コンディション番号]
+                    Debug.Log("conditionRecordSet1Pair.Value.Count=" + conditionRecordSet1Pair.Value.Count);
+                    foreach (KeyValuePair<int, Operation_Condition.UpateReqeustRecordSet> conditionRecordSet2Pair in conditionRecordSet1Pair.Value)
+                    {
+                        // FIXME: 更新要求がなかったフィールドは、前のを引き継ぐのでは。→新規作成なら既存データは無いが、更新の場合は。
+                        Operation_Condition.Update(ac, conditionRecordSet2Pair.Value, message);
+                    }
                 }
             }
         }
@@ -59,22 +153,22 @@ namespace StellaQL
 
     public abstract class Operation_Parameter
     {
-        public static void Update(AnimatorController ac, UpateReqeustRecord record, StringBuilder message)
+        public static void Update(AnimatorController ac, UpateReqeustRecord request, StringBuilder message)
         {
-            throw new UnityException("[" + record.Fullpath + "]パラメーターには未対応だぜ☆（＾～＾） ac=[" + ac.name + "]");
+            throw new UnityException("[" + request.Fullpath + "]パラメーターには未対応だぜ☆（＾～＾） ac=[" + ac.name + "]");
         }
     }
 
     public abstract class Operation_Layer
     {
-        public static void Update(AnimatorController ac, UpateReqeustRecord record, StringBuilder message)
+        public static void Update(AnimatorController ac, UpateReqeustRecord request, StringBuilder message)
         {
-            AnimatorControllerLayer layer = Lookup(ac, record.Fullpath);
-            if (null == layer) { throw new UnityException("[" + record.Fullpath + "]レイヤーは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+            AnimatorControllerLayer layer = Lookup(ac, request.Fullpath);
+            if (null == layer) { throw new UnityException("[" + request.Fullpath + "]レイヤーは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-            if (Operation_Something.HasProperty(record.Name, LayerRecord.Definitions, "レイヤー操作"))
+            if (Operation_Something.HasProperty(request.Name, LayerRecord.Definitions, "レイヤー操作"))
             {
-                StateRecord.Definitions[record.Name].Update(layer, record, message);
+                StateRecord.Definitions[request.Name].Update(layer, request, message);
             }
         }
 
@@ -106,14 +200,14 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_Statemachine
     {
-        public static void Update(AnimatorController ac, UpateReqeustRecord record, StringBuilder message)
+        public static void Update(AnimatorController ac, UpateReqeustRecord request, StringBuilder message)
         {
-            AnimatorStateMachine statemachine = Lookup(ac, record.Fullpath);
-            if (null == statemachine) { throw new UnityException("[" + record.Fullpath + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+            AnimatorStateMachine statemachine = Lookup(ac, request.Fullpath);
+            if (null == statemachine) { throw new UnityException("[" + request.Fullpath + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-            if (Operation_Something.HasProperty(record.Name, StatemachineRecord.Definitions, "ステートマシン操作"))
+            if (Operation_Something.HasProperty(request.Name, StatemachineRecord.Definitions, "ステートマシン操作"))
             {
-                StateRecord.Definitions[record.Name].Update(statemachine, record, message);
+                StateRecord.Definitions[request.Name].Update(statemachine, request, message);
             }
         }
 
@@ -127,7 +221,7 @@ namespace StellaQL
             string[] nodes = path.Split('.');
             // [0～length-1] ステートマシン名
 
-            if (nodes.Length < 1) { throw new UnityException("ノード数が１つ未満だったぜ☆（＾～＾） ステートマシン名は無いのかだぜ☆？"); }
+            if (nodes.Length < 1) { throw new UnityException("ノード数が１つ未満だったぜ☆（＾～＾） ステートマシン名は無いのかだぜ☆？ ac.name=[" + ac.name + "]"); }
 
             // 最初の名前[0]は、レイヤーを検索する。
             AnimatorStateMachine currentMachine = null;
@@ -135,12 +229,12 @@ namespace StellaQL
             {
                 if (nodes[0] == layer.name) { currentMachine = layer.stateMachine; break; }
             }
-            if (null == currentMachine) { throw new UnityException("見つからないぜ☆（＾～＾）nodes=[" + string.Join("][", nodes) + "]"); }
+            if (null == currentMachine) { throw new UnityException("見つからないぜ☆（＾～＾）nodes=[" + string.Join("][", nodes) + "] ac.name=[" + ac.name + "]"); }
 
             if (2 < nodes.Length) // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
             {
-                currentMachine = GetLeafMachine(currentMachine, nodes);
-                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", nodes) + "]"); }
+                currentMachine = GetLeafMachine(ac, currentMachine, nodes);
+                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", nodes) + "] ac.name=["+ac.name+"]"); }
             }
 
             return currentMachine;
@@ -149,12 +243,12 @@ namespace StellaQL
         /// <summary>
         /// 分かりづらいが、ノードの[1]～[length-1]を辿って、最後のステートマシンを返す。
         /// </summary>
-        private static AnimatorStateMachine GetLeafMachine(AnimatorStateMachine currentMachine, string[] nodes)
+        private static AnimatorStateMachine GetLeafMachine(AnimatorController ac, AnimatorStateMachine currentMachine, string[] nodes)
         {
             for (int i = Operation_Common.ROOT_NODE_IS_LAYER; i < nodes.Length + Operation_Common.LEAF_NODE_IS_STATE; i++)
             {
                 currentMachine = GetChildMachine(currentMachine, nodes[i]);
-                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）10 i=[" + i + "] node=[" + nodes[i] + "]"); }
+                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）10 i=[" + i + "] node=[" + nodes[i] + "] ac.name=["+ac.name+"]"); }
             }
             return currentMachine;
         }
@@ -201,14 +295,14 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_State
     {
-        public static void Update(AnimatorController ac, UpateReqeustRecord record, StringBuilder message)
+        public static void Update(AnimatorController ac, UpateReqeustRecord request, StringBuilder message)
         {
-            AnimatorState state = Lookup(ac, record.Fullpath);
-            if (null == state) { throw new UnityException("[" + record.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+            AnimatorState state = Lookup(ac, request.Fullpath);
+            if (null == state) { throw new UnityException("[" + request.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-            if (Operation_Something.HasProperty(record.Name, StateRecord.Definitions, "ステート操作"))
+            if (Operation_Something.HasProperty(request.Name, StateRecord.Definitions, "ステート操作"))
             {
-                StateRecord.Definitions[record.Name].Update(state, record, message);
+                StateRecord.Definitions[request.Name].Update(state, request, message);
             }
         }
 
@@ -427,15 +521,58 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_Transition
     {
+        #region 検索
+        public static AnimatorStateTransition Lookup(AnimatorController ac, UpateReqeustRecord request)
+        {
+            if (null == request.FullpathTransition) { throw new UnityException("トランジション番号が指定されていないぜ☆（＾～＾） トランジション番号=[" + request.FullpathTransition + "] ac=[" + ac.name + "]"); }
+            int fullpathTransition = int.Parse(request.FullpathTransition);
+
+            AnimatorState state = Operation_State.Lookup(ac, request.Fullpath);
+            if (null == state) { throw new UnityException("[" + request.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+            int tNum = 0;
+            foreach (AnimatorStateTransition transition in state.transitions)
+            {
+                if (fullpathTransition == tNum)
+                {
+                    return transition;
+                }
+                tNum++;
+            }
+
+            // TODO:
+            return null;
+        }
+
+        /// <summary>
+        /// ２つのステートを トランジションで結ぶ。
+        /// </summary>
+        /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
+        public static AnimatorStateTransition Lookup(AnimatorController ac, string path_src, string path_dst)
+        {
+            AnimatorState state_src = Operation_State.Lookup(ac, path_src);
+            AnimatorState state_dst = Operation_State.Lookup(ac, path_dst);
+
+            foreach (AnimatorStateTransition transition in state_src.transitions)
+            {
+                if (transition.destinationState.name == state_dst.name)
+                {
+                    return transition;
+                }
+            }
+            return null;
+        }
+        #endregion
+
         public static void Update(AnimatorController ac, UpateReqeustRecord record, StringBuilder message)
         {
-            AnimatorState state = Operation_State.Lookup(ac, record.Fullpath);
-            if (null == state) { throw new UnityException("[" + record.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
-
-            int transitionNum = int.Parse(record.FullpathTransition); // トランジション番号
-
             if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions, "トランジション操作"))
             {
+                AnimatorState state = Operation_State.Lookup(ac, record.Fullpath);
+                if (null == state) { throw new UnityException("[" + record.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+                int transitionNum = int.Parse(record.FullpathTransition); // トランジション番号
+
                 int num = 0;
                 foreach( AnimatorStateTransition transition in state.transitions)
                 {
@@ -506,25 +643,6 @@ namespace StellaQL
                 state_src.AddExitTransition();
             }
             return true;
-        }
-
-        /// <summary>
-        /// ２つのステートを トランジションで結ぶ。
-        /// </summary>
-        /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
-        public static AnimatorStateTransition Lookup(AnimatorController ac, string path_src, string path_dst)
-        {
-            AnimatorState state_src = Operation_State.Lookup(ac, path_src);
-            AnimatorState state_dst = Operation_State.Lookup(ac, path_dst);
-
-            foreach (AnimatorStateTransition transition in state_src.transitions)
-            {
-                if (transition.destinationState.name == state_dst.name)
-                {
-                    return transition;
-                }
-            }
-            return null;
         }
 
         /// <summary>
@@ -672,39 +790,216 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_Condition
     {
-        public static void Update(AnimatorController ac, UpateReqeustRecord record, StringBuilder message)
+        #region 検索
+        public static ConditionRecord.AnimatorConditionWrapper Lookup(AnimatorController ac, UpateReqeustRecord request)
         {
-            AnimatorState state = Operation_State.Lookup(ac, record.Fullpath);
-            if (null == state) { throw new UnityException("[" + record.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
-
-            int transitionNum = int.Parse(record.FullpathTransition); // トランジション番号
-            int conditionNum = int.Parse(record.FullpathCondition); // コンディション番号
-
-            if (Operation_Something.HasProperty(record.Name, ConditionRecord.Definitions, "コンディション操作"))
+            AnimatorStateTransition transition = Operation_Transition.Lookup(ac, request);
+            if(null!= transition)
             {
-                int tNum = 0; // トランジションの何番目か
-                foreach (AnimatorStateTransition transition in state.transitions)
-                {
-                    if (transitionNum == tNum)
-                    {
-                        int cNum = 0; // コンディションの何番目か
-                        foreach(AnimatorCondition condition in transition.conditions)
-                        {
-                            if (conditionNum == cNum)
-                            {
-                                ConditionRecord.Definitions[record.Name].Update(new ConditionRecord.AnimatorConditionWrapper(condition), record, message);
-                                goto gt_EndLoop; // 2重ループを脱出
-                            }
-                            cNum++;
-                        }
-                        throw new UnityException("存在しないコンディション番号だったぜ☆（＾～＾） 指定コンディション番号=["+ conditionNum + "] ループカウンター=["+cNum+"] コンディション数=["+ transition.conditions.Length + "]");
-                    }
-                    tNum++;
-                }
-                throw new UnityException("存在しないトランジション番号だったぜ☆（＾～＾） record.Fullpath=["+ record.Fullpath + "] ヒットしたステート=[" + state.name+"]  指定トランジション番号=[" + transitionNum + "] ループカウンター=["+tNum+"] トランジション数=[" + state.transitions.Length + "]");
-                gt_EndLoop:
-                ;
+                return Operation_Condition.Lookup(ac, request);
             }
+
+            // TODO:
+            return null;
+        }
+
+        public static ConditionRecord.AnimatorConditionWrapper Lookup(AnimatorController ac, AnimatorStateTransition transition, UpateReqeustRecord request)
+        {
+            int fullpathCondition = int.Parse(request.FullpathCondition);
+
+            int cNum = 0;
+            foreach (AnimatorCondition condition in transition.conditions)
+            {
+                if (fullpathCondition == cNum)
+                {
+                    return new ConditionRecord.AnimatorConditionWrapper(condition);
+                }
+                cNum++;
+            }
+
+            return new ConditionRecord.AnimatorConditionWrapper(); // 空コンストラクタで生成した場合、.IsNull( ) メソッドでヌルを返す。
+        }
+
+        //public static ConditionRecord Lookup(AconData aconData, int lNum, int msNum, int sNum, int tNum, int cNum)
+        //{
+        //    foreach (ConditionRecord cRecord in aconData.table_condition)
+        //    {
+        //        if ((int)cRecord.Fields["#layerNum#"] == lNum &&
+        //            (int)cRecord.Fields["#machineStateNum#"] == msNum &&
+        //            (int)cRecord.Fields["#stateNum#"] == sNum &&
+        //            (int)cRecord.Fields["#transitionNum#"] == tNum &&
+        //            (int)cRecord.Fields["#conditionNum#"] == cNum                    
+        //            )
+        //        {
+        //            return cRecord;
+        //        }
+        //    }
+        //    return null;
+        //}
+        #endregion
+
+        public class UpateReqeustRecordSet
+        {
+            public UpateReqeustRecordSet(int fullpathTransition_forDebug, int fullpathCondition_forDebug)
+            {
+                this.FullpathTransition_forDebug = fullpathTransition_forDebug;
+                this.FullpathCondition_forDebug = fullpathCondition_forDebug;
+            }
+            //public UpateReqeustRecordSet(UpateReqeustRecord mode, UpateReqeustRecord threshold, UpateReqeustRecord parameter, int fullpathCondition_forDebug)
+            //{
+            //    this.Mode = mode;
+            //    this.Threshold = threshold;
+            //    this.Parameter = parameter;
+            //    this.FullpathCondition_ForDebug = fullpathCondition_forDebug;
+            //}
+
+            /// <summary>
+            /// エラーを追跡するための情報として記録。
+            /// </summary>
+            public int FullpathTransition_forDebug { get; set; }
+            /// <summary>
+            /// エラーを追跡するための情報として記録。
+            /// </summary>
+            public int FullpathCondition_forDebug { get; set; }
+            public UpateReqeustRecord Mode { get; set; }
+            public UpateReqeustRecord Threshold { get; set; }
+            public UpateReqeustRecord Parameter { get; set; }
+
+            /// <summary>
+            /// どれか１つしか更新要求されていないことがあるので、設定されているレコードを引っ張り出す。
+            /// </summary>
+            public UpateReqeustRecord RepresentativeRecord {
+                get {
+                    if (null != Mode) { return Mode; }
+                    else if (null != Threshold) { return Threshold; }
+                    else if (null != Parameter) { return Parameter; }
+                    throw new UnityException(this.Dump_Error("RepresentativeRecord"));
+                }
+            }
+            public string RepresentativeName { get { return RepresentativeRecord.Name; } }
+            public string RepresentativeFullpath { get { return RepresentativeRecord.Fullpath; } }
+            public int RepresentativeFullpathTransition { get { return int.Parse(RepresentativeRecord.FullpathTransition); } }
+            public int RepresentativeFullpathCondition { get { return int.Parse(RepresentativeRecord.FullpathCondition); } }
+
+            public bool TryParameterValue(out string parameter) {
+                if (null == Parameter) { parameter = ""; return false; }
+                if (""!=Parameter.New) { parameter = Parameter.New; return true; }
+                parameter = this.Parameter.Old; return true;
+            }
+            public bool TryModeValue(out AnimatorConditionMode mode) {
+                if (null==Mode) { mode = 0; return false; }
+                if ("" != Mode.New) { mode = ConditionRecord.String_to_mode(Mode.New); return true; }
+                mode = ConditionRecord.String_to_mode(this.Mode.Old); return true;
+            }
+            public bool TryThresholdValue(out float threshold) {
+                if (null == Threshold) { threshold = 0.0f; return false; }
+                if ("" != Threshold.New) { threshold = float.Parse(Threshold.New); return true; }
+                threshold = float.Parse(this.Threshold.Old); return true;
+            }
+
+            public string Dump_Error(string calling)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("エラー : " + calling + " ");
+                sb.AppendLine("fullpathTransition=[" + this.FullpathTransition_forDebug + "]");
+                sb.AppendLine("fullpathCondition=[" + this.FullpathCondition_forDebug + "]");
+                if (null == Mode) { sb.AppendLine("Modeがヌル☆（＞＿＜）"); }
+                if (null == Threshold) { sb.AppendLine("Thresholdがヌル☆（＞＿＜）"); }
+                if (null == Parameter) { sb.AppendLine("Parameterがヌル☆（＞＿＜）"); }
+                return sb.ToString();
+            }
+        }
+
+
+        public static void Update(AnimatorController ac, UpateReqeustRecordSet requestSet, StringBuilder message)
+        {
+            AnimatorState state = Operation_State.Lookup(ac, requestSet.RepresentativeFullpath);
+            if (null == state) { throw new UnityException("[" + requestSet.RepresentativeFullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac.name=[" + ac.name + "]"); }
+
+            int transitionNum = requestSet.RepresentativeFullpathTransition; // トランジション番号
+            int conditionNum = requestSet.RepresentativeFullpathCondition; // コンディション番号
+
+            if (Operation_Something.HasProperty(requestSet.RepresentativeName, ConditionRecord.Definitions, "コンディション操作"))
+            {
+                // トランジション
+                AnimatorStateTransition transition = Operation_Transition.Lookup(ac, requestSet.RepresentativeRecord);
+                ConditionRecord.AnimatorConditionWrapper wapper = Operation_Condition.Lookup(ac, transition, requestSet.RepresentativeRecord);
+
+                if(wapper.IsNull)
+                {
+                    // 存在しないコンディション番号だった場合、新規追加する。
+                    Insert(transition, requestSet, message);//"velY", AnimatorConditionMode.Greater, 123.456f
+                }
+                else
+                {
+                    // 既存のコンディションなら、更新する。
+                    if (null != requestSet.Parameter) { ConditionRecord.Definitions[requestSet.RepresentativeName].Update(new ConditionRecord.AnimatorConditionWrapper(wapper.m_source), requestSet.Parameter, message); }
+                    if (null != requestSet.Mode) { ConditionRecord.Definitions[requestSet.RepresentativeName].Update(new ConditionRecord.AnimatorConditionWrapper(wapper.m_source), requestSet.Mode, message); }
+                    if (null != requestSet.Threshold) { ConditionRecord.Definitions[requestSet.RepresentativeName].Update(new ConditionRecord.AnimatorConditionWrapper(wapper.m_source), requestSet.Threshold, message); }
+                }
+
+
+
+                //int tNum = 0; // トランジションの何番目か
+                //foreach (AnimatorStateTransition transition in state.transitions)
+                //{
+                //    if (transitionNum == tNum)
+                //    {
+                //int cNum = 0; // コンディションの何番目か
+                //        foreach(AnimatorCondition condition in transition.conditions)
+                //        {
+                //            if (conditionNum == cNum)
+                //            {
+                //if (null != recordSet.Parameter) { ConditionRecord.Definitions[recordSet.Name].Update(new ConditionRecord.AnimatorConditionWrapper(condition), recordSet.Parameter, message); }
+                //                if (null != recordSet.Mode) { ConditionRecord.Definitions[recordSet.Name].Update(new ConditionRecord.AnimatorConditionWrapper(condition), recordSet.Mode, message); }
+                //                if (null != recordSet.Threshold) { ConditionRecord.Definitions[recordSet.Name].Update(new ConditionRecord.AnimatorConditionWrapper(condition), recordSet.Threshold, message); }
+                //                goto gt_EndLoop; // 2重ループを脱出
+                //    }
+                //    cNum++;
+                //}
+                //// 存在しないコンディション番号だった場合、新規追加する。
+                //Insert(transition, recordSet, message);//"velY", AnimatorConditionMode.Greater, 123.456f
+                //cNum++;
+                //throw new UnityException("存在しないコンディション番号だったぜ☆（＾～＾） 指定コンディション番号=["+ conditionNum + "] ループカウンター=["+cNum+"] コンディション数=["+ transition.conditions.Length + "]");
+                //    }
+                //    tNum++;
+                //}
+                //throw new UnityException("存在しないトランジション番号だったぜ☆（＾～＾） record.Fullpath=["+ recordSet.Fullpath + "] ヒットしたステート=[" + state.name+"]  指定トランジション番号=[" + transitionNum + "] ループカウンター=["+tNum+"] トランジション数=[" + state.transitions.Length + "] ac.name=[" + ac.name + "]");
+                //gt_EndLoop:
+                //;
+            }
+        }
+
+        /// <summary>
+        /// コンディションを新規作成します。
+        /// </summary>
+        /// <param name="transition"></param>
+        /// <param name="name"></param>
+        /// <param name="operatorFlag"></param>
+        /// <param name="value"></param>
+        /// <param name="message"></param>
+        public static void Insert(AnimatorStateTransition transition, UpateReqeustRecordSet requestSet, StringBuilder message)
+        {
+            // float型引数の場合、使える演算子は Greater か less のみ。
+            // int型引数の場合、使える演算子は Greater、less、Equals、NotEqual のいずれか。
+            // bool型引数の場合、使える演算子は表示上は true、false だが、内部的には推測するに If、IfNot の２つだろうか？
+
+            AnimatorConditionMode mode;
+            if (requestSet.TryModeValue(out mode)){
+                Debug.Log("FIXME: Insert mode");
+            }
+
+            float threshold;
+            if (requestSet.TryThresholdValue(out threshold)){
+                Debug.Log("FIXME: Insert threshold");
+            }
+
+            string parameter;
+            if (requestSet.TryParameterValue(out parameter)){
+                Debug.Log("FIXME: Insert parameter");
+            }
+
+            transition.AddCondition(mode, threshold, parameter);
         }
     }
 
@@ -713,34 +1008,34 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_Position
     {
-        public static void Update(AnimatorController ac, UpateReqeustRecord record, StringBuilder message)
+        public static void Update(AnimatorController ac, UpateReqeustRecord request, StringBuilder message)
         {
-            if ("stateMachines" == record.Foreignkeycategory)
+            if ("stateMachines" == request.Foreignkeycategory)
             {
                 // ステートマシンのポジション
-                AnimatorStateMachine statemachine = Operation_Statemachine.Lookup(ac, record.Fullpath);
-                if (null == statemachine) { throw new UnityException("[" + record.Fullpath + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                AnimatorStateMachine statemachine = Operation_Statemachine.Lookup(ac, request.Fullpath);
+                if (null == statemachine) { throw new UnityException("[" + request.Fullpath + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-                if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions, "ステートマシンのポジション操作"))
+                if (Operation_Something.HasProperty(request.Name, TransitionRecord.Definitions, "ステートマシンのポジション操作"))
                 {
-                    PositionRecord.Definitions[record.Name].Update(new PositionRecord.PositionWrapper(statemachine, record.FullpathPropertyname), record, message);
+                    PositionRecord.Definitions[request.Name].Update(new PositionRecord.PositionWrapper(statemachine, request.FullpathPropertyname), request, message);
                 }
             }
             else // ステートのポジション
             {
-                ChildAnimatorState caState = Operation_ChildState.Lookup(ac, record.Fullpath); // 構造体☆
+                ChildAnimatorState caState = Operation_ChildState.Lookup(ac, request.Fullpath); // 構造体☆
 
-                if ("states" == record.Foreignkeycategory)
+                if ("states" == request.Foreignkeycategory)
                 {
-                    if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions, "ステートのポジション操作"))
+                    if (Operation_Something.HasProperty(request.Name, TransitionRecord.Definitions, "ステートのポジション操作"))
                     {
-                        PositionRecord.Definitions[record.Name].Update(new PositionRecord.PositionWrapper(caState, record.FullpathPropertyname), record, message);
+                        PositionRecord.Definitions[request.Name].Update(new PositionRecord.PositionWrapper(caState, request.FullpathPropertyname), request, message);
                     }
                 }
                 else
                 {
                     // ステートマシン、ステート以外のポジション
-                    throw new UnityException("ステートマシン、ステート以外のポジションは未対応だぜ☆（＾～＾） fullpath=[" + record.Fullpath + "] ac=[" + ac.name + "]");
+                    throw new UnityException("ステートマシン、ステート以外のポジションは未対応だぜ☆（＾～＾） fullpath=[" + request.Fullpath + "] ac=[" + ac.name + "]");
                 }
             }
         }
