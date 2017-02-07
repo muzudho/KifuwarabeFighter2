@@ -14,109 +14,63 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_Something
     {
-        public static void ManipulateData(AnimatorController ac, AconData aconData_old, HashSet<DataManipulationRecord> request, StringBuilder message)
+        public static void ManipulateData(AnimatorController ac, AconData aconData_old, HashSet<DataManipulationRecord> request_packets, StringBuilder message)
         {
             // テスト出力
             {
                 StringBuilder contents = new StringBuilder();
                 contents.Append("Update request ");
-                contents.Append(request.Count);
+                contents.Append(request_packets.Count);
                 contents.Append(" record sets.");
                 contents.AppendLine();
-                foreach (DataManipulationRecord record in request)
+                foreach (DataManipulationRecord request_packet in request_packets)
                 {
-                    record.ToCsvLine(contents);
+                    request_packet.ToCsvLine(contents);
                 }
                 Debug.Log(contents.ToString());
             }
 
-            // [ステート・フルパス、トランジション番号、コンディション番号]
-            Dictionary<string,Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>> conditionRecordSet = new Dictionary<string, Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>>();
+            // 三重構造 [ステート・フルパス、トランジション番号、コンディション番号]
+            Dictionary<string,Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>> largeDic = new Dictionary<string, Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>>();
 
-            foreach (DataManipulationRecord record in request)
+            foreach (DataManipulationRecord request_packet in request_packets)
             {
-                switch (record.Category)
+                switch (request_packet.Category)
                 {
-                    case "parameters": Operation_Parameter.ManipulateData(ac, record, message); break;
-                    case "layers": Operation_Layer.ManipulateData(ac, record, message); break;
-                    case "stateMachines": Operation_Statemachine.ManipulateData(ac, record, message); break;
-                    case "states": Operation_State.ManipulateData(ac, record, message); break;
-                    case "transitions": Operation_Transition.ManipulateData(ac, record, message); break;
+                    case "parameters":      Operation_Parameter     .ManipulateData(ac, request_packet, message); break;
+                    case "layers":          Operation_Layer         .Update(ac, request_packet, message); break;
+                    case "stateMachines":   Operation_Statemachine  .Update(ac, request_packet, message); break;
+                    case "states":          Operation_State         .Update(ac, request_packet, message); break;
+                    case "transitions":     Operation_Transition    .Update(ac, request_packet, message); break;
                     case "conditions":
                         {
-                            // 条件を溜め込む。 mode, parameter, threshold の３つが揃って更新ができる。
-                            Operation_Condition.DataManipulatRecordSet buffer;
+                            Operation_Condition.DataManipulatRecordSet request_buffer; // 条件を溜め込む。 mode, parameter, threshold の３つが揃って更新ができる。
 
-                            // [ステートフルパス,,]
-                            Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>> conditionRecordSet1;
-                            if (conditionRecordSet.ContainsKey(record.Fullpath))
-                            {
-                                Debug.Log("既存 [ステートフルパス,,]=" + record.Fullpath);
-                                conditionRecordSet1 = conditionRecordSet[record.Fullpath];
-                            }
-                            else
-                            {
-                                Debug.Log("新規追加 [ステートフルパス,,]=" + record.Fullpath);
-                                conditionRecordSet1 = new Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>();
-                                conditionRecordSet[record.Fullpath] = conditionRecordSet1;
-                            }
+                            // 三重構造
+                            Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>> middleDic; // [ステートフルパス,,]
+                            if (largeDic.ContainsKey(request_packet.Fullpath)) { middleDic = largeDic[request_packet.Fullpath]; } // 既存
+                            else { middleDic = new Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>(); largeDic[request_packet.Fullpath] = middleDic; } // 新規追加
+                            
+                            Dictionary<int, Operation_Condition.DataManipulatRecordSet> smallDic; // [ステートフルパス,トランジション番号,]
+                            int tNum = int.Parse(request_packet.TransitionNum_ofFullpath);
+                            if (middleDic.ContainsKey(tNum)) { smallDic = middleDic[tNum]; } // 既存
+                            else { smallDic = new Dictionary<int, Operation_Condition.DataManipulatRecordSet>(); middleDic[tNum] = smallDic; } // 新規追加
+                            
+                            int cNum = int.Parse(request_packet.ConditionNum_ofFullpath); // [ステートフルパス,トランジション番号,コンディション番号]
+                            if (smallDic.ContainsKey(cNum)) { request_buffer = smallDic[cNum]; } // 既存
+                            else { request_buffer = new Operation_Condition.DataManipulatRecordSet(tNum, cNum); smallDic[cNum] = request_buffer; }// 空っぽの要求セットを新規作成・追加
 
-                            // [ステートフルパス,トランジション番号,]
-                            Dictionary<int, Operation_Condition.DataManipulatRecordSet> conditionRecordSet2;
-                            int fullpathTransition = int.Parse(record.FullpathTransition);
-                            if (conditionRecordSet1.ContainsKey(fullpathTransition))
+                            switch (request_packet.Name) // 複数行に分かれていた命令を、１つのセットにまとめる
                             {
-                                Debug.Log("既存 [ステートフルパス,トランジション番号,]=" + record.Fullpath + ", " + fullpathTransition);
-                                conditionRecordSet2 = conditionRecordSet1[fullpathTransition];
-                            }
-                            else
-                            {
-                                Debug.Log("新規追加 [ステートフルパス,トランジション番号,]=" + record.Fullpath + ", " + fullpathTransition);
-                                conditionRecordSet2 = new Dictionary<int, Operation_Condition.DataManipulatRecordSet>();
-                                conditionRecordSet1[fullpathTransition] = conditionRecordSet2;
-                            }
-
-                            // [ステートフルパス,トランジション番号,コンディション番号]
-                            int fullpathCondition = int.Parse(record.FullpathCondition);
-                            if (conditionRecordSet2.ContainsKey(fullpathCondition))
-                            {
-                                Debug.Log("既存 [ステートフルパス,トランジション番号,コンディション番号]=" + record.Fullpath + ", " + fullpathTransition + ", " + fullpathCondition);
-                                buffer = conditionRecordSet2[fullpathCondition];
-                            }
-                            else
-                            {
-                                Debug.Log("新規追加 [ステートフルパス,トランジション番号,コンディション番号]=" + record.Fullpath + ", " + fullpathTransition + ", " + fullpathCondition);
-                                // 空の要求セットを作成・追加
-                                buffer = new Operation_Condition.DataManipulatRecordSet(fullpathTransition, fullpathCondition);
-                                conditionRecordSet2[fullpathCondition] = buffer;
-                            }
-
-                            {
-                                // 新規作成。
-                                //ConditionRecord.AnimatorConditionWrapper wrapper = Operation_Condition.Lookup(ac, record);
-
-                                //ConditionRecord cRecord = wrapper.A Operation_Condition.Lookup(,
-                                //    int.Parse(record.FullpathTransition),
-                                //    int.Parse(record.FullpathCondition)
-                                //    );
-
-                                //UpateReqeustRecord record_mode = new UpateReqeustRecord();
-                                //buffer = new Operation_Condition.UpateReqeustRecordSet(wrapper.m_source.mode, wrapper.m_source.threshold, wrapper.m_source.parameter);
-                            }
-
-                            // セットに、レコードを追加
-                            Debug.Log("追加 record.Name=[" + record.Name + "]");
-                            switch (record.Name)
-                            {
-                                case "parameter": Debug.Log("追加 パラメーター"); buffer.Parameter = record; break;
-                                case "mode": Debug.Log("追加 モード"); buffer.Mode = record; break;
-                                case "threshold": Debug.Log("追加 スレッショルド"); buffer.Threshold = record; break;
-                                default: Debug.Log("追加失敗"); throw new UnityException("未定義のプロパティ名だぜ☆（＞＿＜） record.Name=[" + record.Name + "]");
+                                case "parameter":   request_buffer.Parameter    = request_packet; break;
+                                case "mode":        request_buffer.Mode         = request_packet; break;
+                                case "threshold":   request_buffer.Threshold    = request_packet; break;
+                                default:            throw new UnityException("未定義のプロパティ名だぜ☆（＞＿＜） record.Name=[" + request_packet.Name + "]"); //Debug.Log("追加失敗");
                             }
                         }
                         break;
-                    case "positinos": Operation_Position.ManipulateData(ac, record, message); break;
-                    default: throw new UnityException("未対応のカテゴリー=["+ record.Category + "]");
+                    case "positinos": Operation_Position.Update(ac, request_packet, message); break;
+                    default: throw new UnityException("未対応のカテゴリー=["+ request_packet.Category + "]");
                 }
             }
 
@@ -126,8 +80,8 @@ namespace StellaQL
             List<Operation_Condition.DataManipulatRecordSet> insertsSet = new List<Operation_Condition.DataManipulatRecordSet>();
             List<Operation_Condition.DataManipulatRecordSet> deletesSet = new List<Operation_Condition.DataManipulatRecordSet>();
             List<Operation_Condition.DataManipulatRecordSet> updatesSet = new List<Operation_Condition.DataManipulatRecordSet>();
-            Debug.Log("conditionRecordSet.Count=" + conditionRecordSet.Count);// [ステート・フルパス,トランジション番号,コンディション番号]
-            foreach (KeyValuePair<string,Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>> conditionRecordSetPair in conditionRecordSet){
+            Debug.Log("conditionRecordSet.Count=" + largeDic.Count);// [ステート・フルパス,トランジション番号,コンディション番号]
+            foreach (KeyValuePair<string,Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>> conditionRecordSetPair in largeDic){
                 Debug.Log("conditionRecordSetPair.Value.Count=" + conditionRecordSetPair.Value.Count);// [,トランジション番号,コンディション番号]
                 foreach (KeyValuePair<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>> conditionRecordSet1Pair in conditionRecordSetPair.Value){
                     Debug.Log("conditionRecordSet1Pair.Value.Count=" + conditionRecordSet1Pair.Value.Count);// [,,コンディション番号]
@@ -180,17 +134,6 @@ namespace StellaQL
 
     public abstract class Operation_Layer
     {
-        public static void ManipulateData(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
-        {
-            AnimatorControllerLayer layer = Lookup(ac, request.Fullpath);
-            if (null == layer) { throw new UnityException("[" + request.Fullpath + "]レイヤーは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
-
-            if (Operation_Something.HasProperty(request.Name, LayerRecord.Definitions, "レイヤー操作"))
-            {
-                StateRecord.Definitions[request.Name].Update(layer, request, message);
-            }
-        }
-
         #region 検索
         /// <summary>
         /// パスを指定すると ステートマシンを返す。
@@ -212,6 +155,17 @@ namespace StellaQL
             //return null;
         }
         #endregion
+
+        public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
+        {
+            AnimatorControllerLayer layer = Lookup(ac, request.Fullpath);
+            if (null == layer) { throw new UnityException("[" + request.Fullpath + "]レイヤーは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+            if (Operation_Something.HasProperty(request.Name, LayerRecord.Definitions, "レイヤー操作"))
+            {
+                StateRecord.Definitions[request.Name].Update(layer, request, message);
+            }
+        }
     }
 
     /// <summary>
@@ -219,17 +173,6 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_Statemachine
     {
-        public static void ManipulateData(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
-        {
-            AnimatorStateMachine statemachine = Lookup(ac, request.Fullpath);
-            if (null == statemachine) { throw new UnityException("[" + request.Fullpath + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
-
-            if (Operation_Something.HasProperty(request.Name, StatemachineRecord.Definitions, "ステートマシン操作"))
-            {
-                StateRecord.Definitions[request.Name].Update(statemachine, request, message);
-            }
-        }
-
         #region 検索
         /// <summary>
         /// パスを指定すると ステートマシンを返す。
@@ -281,6 +224,17 @@ namespace StellaQL
             return null;
         }
         #endregion
+
+        public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
+        {
+            AnimatorStateMachine statemachine = Lookup(ac, request.Fullpath);
+            if (null == statemachine) { throw new UnityException("[" + request.Fullpath + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+            if (Operation_Something.HasProperty(request.Name, StatemachineRecord.Definitions, "ステートマシン操作"))
+            {
+                StateRecord.Definitions[request.Name].Update(statemachine, request, message);
+            }
+        }
     }
 
     /// <summary>
@@ -314,17 +268,6 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_State
     {
-        public static void ManipulateData(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
-        {
-            AnimatorState state = Lookup(ac, request.Fullpath);
-            if (null == state) { throw new UnityException("[" + request.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
-
-            if (Operation_Something.HasProperty(request.Name, StateRecord.Definitions, "ステート操作"))
-            {
-                StateRecord.Definitions[request.Name].Update(state, request, message);
-            }
-        }
-
         #region 検索
         /// <summary>
         /// パスを指定すると ステートを返す。
@@ -386,6 +329,17 @@ namespace StellaQL
             return null;
         }
         #endregion
+
+        public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
+        {
+            AnimatorState state = Lookup(ac, request.Fullpath);
+            if (null == state) { throw new UnityException("[" + request.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+            if (Operation_Something.HasProperty(request.Name, StateRecord.Definitions, "ステート操作"))
+            {
+                StateRecord.Definitions[request.Name].Update(state, request, message);
+            }
+        }
 
         /// <summary>
         /// ステートマシンに、ステートを追加する。
@@ -543,8 +497,8 @@ namespace StellaQL
         #region 検索
         public static AnimatorStateTransition Lookup(AnimatorController ac, DataManipulationRecord request)
         {
-            if (null == request.FullpathTransition) { throw new UnityException("トランジション番号が指定されていないぜ☆（＾～＾） トランジション番号=[" + request.FullpathTransition + "] ac=[" + ac.name + "]"); }
-            int fullpathTransition = int.Parse(request.FullpathTransition);
+            if (null == request.TransitionNum_ofFullpath) { throw new UnityException("トランジション番号が指定されていないぜ☆（＾～＾） トランジション番号=[" + request.TransitionNum_ofFullpath + "] ac=[" + ac.name + "]"); }
+            int fullpathTransition = int.Parse(request.TransitionNum_ofFullpath);
 
             AnimatorState state = Operation_State.Lookup(ac, request.Fullpath);
             if (null == state) { throw new UnityException("[" + request.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
@@ -583,26 +537,44 @@ namespace StellaQL
         }
         #endregion
 
-        public static void ManipulateData(AnimatorController ac, DataManipulationRecord record, StringBuilder message)
+        public static void Insert(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
-            if (Operation_Something.HasProperty(record.Name, TransitionRecord.Definitions, "トランジション操作"))
-            {
-                AnimatorState state = Operation_State.Lookup(ac, record.Fullpath);
-                if (null == state) { throw new UnityException("[" + record.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+            AnimatorState sourceState = Operation_State.Lookup(ac, request.Fullpath); // 遷移元のステート
+            //AnimatorStateTransition sourceTransition = Operation_Transition.Lookup(ac, request); // トランジション
 
-                int transitionNum = int.Parse(record.FullpathTransition); // トランジション番号
+            // TODO: 遷移先のステートを指定する？
+            //sourceState.AddTransition(destinationState)
+        }
+        public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
+        {
+            if (Operation_Something.HasProperty(request.Name, TransitionRecord.Definitions, "トランジション操作"))
+            {
+                AnimatorState state = Operation_State.Lookup(ac, request.Fullpath);
+                if (null == state) { throw new UnityException("[" + request.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+                int transitionNum = int.Parse(request.TransitionNum_ofFullpath); // トランジション番号
 
                 int num = 0;
                 foreach( AnimatorStateTransition transition in state.transitions)
                 {
                     if (transitionNum==num)
                     {
-                        TransitionRecord.Definitions[record.Name].Update(transition, record, message);
+                        TransitionRecord.Definitions[request.Name].Update(transition, request, message);
                         break;
                     }
                     num++;
                 }
             }
+        }
+        /// <summary>
+        /// トランジションを削除します。
+        /// トランジション番号の大きい物から順に削除してください。トランジション番号の小さい物から削除すると番号が繰り上がってしまうため。
+        /// </summary>
+        public static void Delete(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
+        {
+            AnimatorState sourceState = Operation_State.Lookup(ac, request.Fullpath); // 遷移元のステート
+            AnimatorStateTransition sourceTransition = Lookup(ac, request); // 削除するトランジション
+            sourceState.RemoveTransition(sourceTransition);
         }
 
         /// <summary>
@@ -824,7 +796,7 @@ namespace StellaQL
 
         public static ConditionRecord.AnimatorConditionWrapper Lookup(AnimatorController ac, AnimatorStateTransition transition, DataManipulationRecord request)
         {
-            int fullpathCondition = int.Parse(request.FullpathCondition);
+            int fullpathCondition = int.Parse(request.ConditionNum_ofFullpath);
 
             int cNum = 0;
             foreach (AnimatorCondition condition in transition.conditions)
@@ -897,8 +869,8 @@ namespace StellaQL
             }
             public string RepresentativeName { get { return RepresentativeRecord.Name; } }
             public string RepresentativeFullpath { get { return RepresentativeRecord.Fullpath; } }
-            public int RepresentativeFullpathTransition { get { return int.Parse(RepresentativeRecord.FullpathTransition); } }
-            public int RepresentativeFullpathCondition { get { return int.Parse(RepresentativeRecord.FullpathCondition); } }
+            public int RepresentativeFullpathTransition { get { return int.Parse(RepresentativeRecord.TransitionNum_ofFullpath); } }
+            public int RepresentativeFullpathCondition { get { return int.Parse(RepresentativeRecord.ConditionNum_ofFullpath); } }
 
             public bool TryParameterValue(out string parameter) {
                 if (null == Parameter) { parameter = ""; return false; }
@@ -931,7 +903,7 @@ namespace StellaQL
 
         public static void Insert(AnimatorController ac, DataManipulatRecordSet requestSet, StringBuilder message)
         {
-            AnimatorStateTransition transition = Operation_Transition.Lookup(ac, requestSet.RepresentativeRecord);// トランジション
+            AnimatorStateTransition transition = Operation_Transition.Lookup(ac, requestSet.RepresentativeRecord); // １つ上のオブジェクト（トランジション）
             AnimatorConditionMode mode;     if (requestSet.TryModeValue(out mode))              { Debug.Log("FIXME: Insert mode"); }
             float threshold;                if (requestSet.TryThresholdValue(out threshold))    { Debug.Log("FIXME: Insert threshold"); }
             string parameter;               if (requestSet.TryParameterValue(out parameter))    { Debug.Log("FIXME: Insert parameter"); }
@@ -965,7 +937,7 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_Position
     {
-        public static void ManipulateData(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
+        public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
             if ("stateMachines" == request.Foreignkeycategory)
             {
@@ -975,7 +947,7 @@ namespace StellaQL
 
                 if (Operation_Something.HasProperty(request.Name, TransitionRecord.Definitions, "ステートマシンのポジション操作"))
                 {
-                    PositionRecord.Definitions[request.Name].Update(new PositionRecord.PositionWrapper(statemachine, request.FullpathPropertyname), request, message);
+                    PositionRecord.Definitions[request.Name].Update(new PositionRecord.PositionWrapper(statemachine, request.Propertyname_ofFullpath), request, message);
                 }
             }
             else // ステートのポジション
@@ -986,7 +958,7 @@ namespace StellaQL
                 {
                     if (Operation_Something.HasProperty(request.Name, TransitionRecord.Definitions, "ステートのポジション操作"))
                     {
-                        PositionRecord.Definitions[request.Name].Update(new PositionRecord.PositionWrapper(caState, request.FullpathPropertyname), request, message);
+                        PositionRecord.Definitions[request.Name].Update(new PositionRecord.PositionWrapper(caState, request.Propertyname_ofFullpath), request, message);
                     }
                 }
                 else

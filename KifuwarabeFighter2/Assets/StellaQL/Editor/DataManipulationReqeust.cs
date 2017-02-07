@@ -25,9 +25,9 @@ namespace StellaQL
             this.Category = category;
             this.Foreignkeycategory = foreignkeycategory;
             this.Fullpath = fullpath;
-            this.FullpathTransition = fullpathTransition;
-            this.FullpathCondition = fullpathCondition;
-            this.FullpathPropertyname = fullpathPropertyname;
+            this.TransitionNum_ofFullpath = fullpathTransition;
+            this.ConditionNum_ofFullpath = fullpathCondition;
+            this.Propertyname_ofFullpath = fullpathPropertyname;
             this.Name = name;
             this.Old = oldValue;
             this.New = newValue;
@@ -37,9 +37,9 @@ namespace StellaQL
         public string Category { get; private set; }
         public string Foreignkeycategory { get; private set; }
         public string Fullpath { get; private set; }
-        public string FullpathTransition { get; private set; }
-        public string FullpathCondition { get; private set; }
-        public string FullpathPropertyname { get; private set; }
+        public string TransitionNum_ofFullpath { get; private set; }
+        public string ConditionNum_ofFullpath { get; private set; }
+        public string Propertyname_ofFullpath { get; private set; } // position で使う
         public string Name { get; private set; }
 
         public string Old { get; private set; }
@@ -65,11 +65,11 @@ namespace StellaQL
             contents.Append(",");
             contents.Append(CsvParser.EscapeCell(Fullpath));
             contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(FullpathTransition));
+            contents.Append(CsvParser.EscapeCell(TransitionNum_ofFullpath));
             contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(FullpathCondition));
+            contents.Append(CsvParser.EscapeCell(ConditionNum_ofFullpath));
             contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(FullpathPropertyname));
+            contents.Append(CsvParser.EscapeCell(Propertyname_ofFullpath));
             contents.Append(",");
             contents.Append(CsvParser.EscapeCell(Name));
             contents.Append(",");
