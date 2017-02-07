@@ -155,9 +155,18 @@ namespace StellaQL
         public delegate string GettterString(object instance);                  GettterString m_getterString;
         public delegate void   SetterString (object instance, string value);    SetterString m_setterString;
 
-        public static bool EqualsOld(object actualOld, object requestOld)
+        public bool EqualsOld(object actualOld, object requestOld)
         {
-            if (actualOld != requestOld) { throw new UnityException("Old値が異なる actual=[" + actualOld + "] old=[" + requestOld + "]"); } return true;
+            switch (this.Type)
+            {
+                case FieldType.Bool:    if ((bool)actualOld != (bool)requestOld) { throw new UnityException("Old値が異なる bool型 actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
+                case FieldType.Float:   if ((float)actualOld != (float)requestOld) { throw new UnityException("Old値が異なる float型 actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
+                case FieldType.Int:     if ((int)actualOld != (int)requestOld) { throw new UnityException("Old値が異なる int型 actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
+                case FieldType.Other:   throw new UnityException("対応しないデータだぜ☆（＾～＾） FieldType=[" + Type.ToString() + "]"); // 未対応は、この型にしてあるんだぜ☆（＾▽＾）
+                case FieldType.String:  if ((string)actualOld != (string)requestOld) { throw new UnityException("Old値が異なる string型 actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
+                default: throw new UnityException("未定義の型だぜ☆（＾～＾） FieldType=[" + Type.ToString() + "]");
+            }            
+            return true;
         }
 
         public void Update(object instance, UpateReqeustRecord record, StringBuilder message)
@@ -171,21 +180,21 @@ namespace StellaQL
                     {
                         if (null == m_getterBool) { throw new UnityException("m_getterBoolがヌルだったぜ☆（／＿＼）"); }
                         bool actual = m_getterBool(instance);
-                        if (RecordDefinition.EqualsOld(actual, record.OldBool)) { m_setterBool(instance, record.NewBool); }
+                        if (EqualsOld(actual, record.OldBool)) { m_setterBool(instance, record.NewBool); }
                     }
                     break;
                 case FieldType.Float:
                     {
                         if (null == m_getterFloat) { throw new UnityException("m_getterFloatがヌルだったぜ☆（／＿＼）"); }
                         float actual = m_getterFloat(instance);
-                        if (RecordDefinition.EqualsOld(actual, record.OldFloat)) { m_setterFloat(instance, record.NewFloat); }
+                        if (EqualsOld(actual, record.OldFloat)) { m_setterFloat(instance, record.NewFloat); }
                     }
                     break;
                 case FieldType.Int:
                     {
                         if (null == m_getterInt) { throw new UnityException("m_getterIntがヌルだったぜ☆（／＿＼）"); }
                         int actual = m_getterInt(instance);
-                        if (RecordDefinition.EqualsOld(actual, record.OldInt)) { m_setterInt(instance, record.NewInt); }
+                        if (EqualsOld(actual, record.OldInt)) { m_setterInt(instance, record.NewInt); }
                     }
                     break;
                 case FieldType.Other:
@@ -195,7 +204,7 @@ namespace StellaQL
                     {
                         if (null == m_getterString) { throw new UnityException("m_getterStringがヌルだったぜ☆（／＿＼）"); }
                         string actual = m_getterString(instance);
-                        if (RecordDefinition.EqualsOld(actual, record.Old)) {
+                        if (EqualsOld(actual, record.Old)) {
                             if (record.IsDelete) { m_setterString(instance, ""); } // 空文字列にセットする
                             else { m_setterString(instance, record.New); }
                         }
