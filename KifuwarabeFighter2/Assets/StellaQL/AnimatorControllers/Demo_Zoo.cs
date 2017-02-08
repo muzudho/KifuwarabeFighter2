@@ -46,10 +46,10 @@ namespace StellaQL.Acons.Demo_Zoo
             });
             #endregion
 
-            #region (Step 7.) You can set user defined tags. (ユーザー定義タグを設定することができます)
+            #region (Step 7.) You can set your defined tags. (あなたの定義したタグを設定することができます)
             SetTag(BASELAYER_           , new[] { TAG_ZERO });
 
-            // 別のケースの例。
+            // 別のやり方の例。(Another way)
             // もし独自のプロパティーがあって初期化したい場合は、レコードごと上書きしてください。
             Set(new DefaultAcState(BASELAYER_FOO, new[] { TAG_ZERO }));
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System;
 
 namespace StellaQL
 {
@@ -86,7 +87,7 @@ namespace StellaQL
             StringBuilder s = new StringBuilder();
 
             for (int caret = 0; caret < source.Length;) {
-                if (',' == source[caret]) { isEscape = true; s.Append(source[caret]); caret++; }// カンマが含まれていたので、エスケープが必要になった
+                if (',' == source[caret] || '\r' == source[caret] || '\n' == source[caret]) { isEscape = true; s.Append(source[caret]); caret++; }// カンマが含まれていたので、エスケープが必要になった。(2017-02-09 追加 '\r'、'\n')
                 else if ('"' == source[caret]) { isEscape = true; s.Append("\"\""); caret++; }// ダブルクォーテーションが含まれていたので、エスケープが必要になった
                 else { s.Append(source[caret]); caret++; }
             }

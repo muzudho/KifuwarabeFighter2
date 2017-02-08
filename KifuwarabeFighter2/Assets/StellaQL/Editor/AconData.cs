@@ -1064,7 +1064,7 @@ namespace StellaQL
 
         public static void CreateCsvTable_Transition(HashSet<TransitionRecord> table, bool outputDefinition, StringBuilder contents)
         {
-            if (outputDefinition)
+            if (outputDefinition) // 列定義シートを作る場合
             {
                 RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
                 TransitionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力

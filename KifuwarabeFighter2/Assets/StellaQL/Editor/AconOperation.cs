@@ -781,10 +781,10 @@ namespace StellaQL
 
 
 
-        public static void Select(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, out HashSet<TransitionRecord> recordSet, StringBuilder message)
+        public static void Select(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, out HashSet<TransitionRecord> hitRecords, StringBuilder message)
         {
-            recordSet = new HashSet<TransitionRecord>();
-            StringBuilder stellaQLComment = new StringBuilder();
+            hitRecords = new HashSet<TransitionRecord>();
+            StringBuilder stellaQLComment = new StringBuilder(); // SELECT文で出力するシート用の人間に読みやすいように補足する説明
             foreach (AnimatorState state_src in states_src) // 指定されたステート全て対象
             {
                 foreach (AnimatorStateTransition transition in state_src.transitions)
@@ -793,14 +793,14 @@ namespace StellaQL
                     {
                         if (state_dst == transition.destinationState)
                         {
-                            stellaQLComment.Append("Select: "); stellaQLComment.Append(state_src.name); stellaQLComment.Append(" -> "); stellaQLComment.AppendLine(state_dst.name);
-                            recordSet.Add(new TransitionRecord(0,0,0,0,transition, stellaQLComment.ToString()));
+                            stellaQLComment.Append("Select: "); stellaQLComment.Append(state_src.name); stellaQLComment.Append(" -> "); stellaQLComment.Append(state_dst.name); // CSVにするので改行は入れない。
+                            hitRecords.Add(new TransitionRecord(0,0,0,0,transition, stellaQLComment.ToString()));
                             stellaQLComment.Length = 0;
                         }
                     }
                 }
             }
-            message.Append("Select: result "); message.Append(recordSet.Count); message.AppendLine(" transitions.");;
+            message.Append("Select: result "); message.Append(hitRecords.Count); message.AppendLine(" transitions.");;
         }
     }
 
