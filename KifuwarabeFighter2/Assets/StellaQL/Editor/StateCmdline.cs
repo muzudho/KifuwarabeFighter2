@@ -172,7 +172,7 @@ public class StateCmdline : EditorWindow
             {
                 GUILayout.Label("Command line (StellaQL)");
                 scroll_commandBox = EditorGUILayout.BeginScrollView(scroll_commandBox);
-                commandline = EditorGUILayout.TextArea(commandline, GUILayout.Height(position.height - 30));
+                commandline = EditorGUILayout.TextArea(commandline);//, GUILayout.Height(position.height - 30)
                 EditorGUILayout.EndScrollView();
             }
             #endregion
@@ -243,9 +243,6 @@ public class StateCmdline : EditorWindow
                 //isRefreshAnimatorWindow = true;
                 //isRefreshInspectorWindow = true;
                 info_message.Append("Import spread sheet End☆（＾▽＾）！ filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
-                info_message.AppendLine();
-                info_message.AppendLine("I'm sorry! I clickeded the play button!");
-                info_message.AppendLine("Because, This is for refreshing the animator window!");
                 //info_message.AppendLine("Please, Refresh Animator window.");
                 //info_message.AppendLine("  case 1: (1) mouse right button click on Animator window tab.");
                 //info_message.AppendLine("          (2) [Close Tab] click.");
@@ -264,7 +261,7 @@ public class StateCmdline : EditorWindow
                 info_message.Length = 0;
             }
             scroll_infoBox = EditorGUILayout.BeginScrollView(scroll_infoBox);
-            info_message_ofTextbox = EditorGUILayout.TextArea(info_message_ofTextbox, GUILayout.Height(position.height - 30));
+            info_message_ofTextbox = EditorGUILayout.TextArea(info_message_ofTextbox);//, GUILayout.Height(position.height - 30)
             EditorGUILayout.EndScrollView();
         }
         #endregion
@@ -276,6 +273,9 @@ public class StateCmdline : EditorWindow
                 Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
 
                 UnityEditor.EditorApplication.isPlaying = true; // 再生する
+                info_message.AppendLine();
+                info_message.AppendLine("I'm sorry! I clickeded the play button!");
+                info_message.AppendLine("Because, This is for refreshing the animator window!");
                 //UnityEditor.EditorApplication.isPaused = true; // 一時停止する
                 //UnityEditor.EditorApplication.isPlaying = false; // 再生を停止する
 
