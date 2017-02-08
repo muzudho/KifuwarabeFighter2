@@ -11,6 +11,7 @@ using UnityEngine;
 /// </summary>
 public class SM : MonoBehaviour
 {
+    /*
     /// <summary>
     /// 
     /// </summary>
@@ -71,5 +72,5 @@ public class SM : MonoBehaviour
         // （１２）smA（六角形）から smB（六角形）につなげる。
         rootStateMachine.AddStateMachineTransition(smA, smB);
     }
-
+    */
 }

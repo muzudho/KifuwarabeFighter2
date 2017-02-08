@@ -14,7 +14,7 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_Something
     {
-        public static void ManipulateData(AnimatorController ac, AconData aconData_old, HashSet<DataManipulationRecord> request_packets, StringBuilder message)
+        public static void ManipulateData(AnimatorController ac, AconData aconData_old, HashSet<DataManipulationRecord> request_packets, StringBuilder info_message)
         {
             // テスト出力
             {
@@ -30,26 +30,38 @@ namespace StellaQL
                 Debug.Log(contents.ToString());
             }
 
+            // 更新要求を、届け先別に仕分ける。コレクションを入れ子にし、フルパスで更新要求を仕分ける。
+            // 二重構造 [ステート・フルパス、トランジション番号]
+            Dictionary<string, Dictionary<int, DataManipulationRecord>> largeDic_transition = new Dictionary<string, Dictionary<int, DataManipulationRecord>>();
             // 三重構造 [ステート・フルパス、トランジション番号、コンディション番号]
-            Dictionary<string,Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>> largeDic = new Dictionary<string, Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>>();
-
+            Dictionary<string,Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>> largeDic_condition = new Dictionary<string, Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>>();
             foreach (DataManipulationRecord request_packet in request_packets)
             {
                 switch (request_packet.Category)
                 {
-                    case "parameters":      Operation_Parameter     .ManipulateData(ac, request_packet, message); break;
-                    case "layers":          Operation_Layer         .Update(ac, request_packet, message); break;
-                    case "stateMachines":   Operation_Statemachine  .Update(ac, request_packet, message); break;
-                    case "states":          Operation_State         .Update(ac, request_packet, message); break;
-                    case "transitions":     Operation_Transition    .Update(ac, request_packet, message); break;
+                    case "parameters":      Operation_Parameter     .ManipulateData(ac, request_packet, info_message); break;
+                    case "layers":          Operation_Layer         .Update(ac, request_packet, info_message); break;
+                    case "stateMachines":   Operation_Statemachine  .Update(ac, request_packet, info_message); break;
+                    case "states":          Operation_State         .Update(ac, request_packet, info_message); break;
+                    case "transitions":
+                        {
+                            // 二重構造
+                            Dictionary<int, DataManipulationRecord> middleDic; // [ステートフルパス,]
+                            if (largeDic_transition.ContainsKey(request_packet.Fullpath)) { middleDic = largeDic_transition[request_packet.Fullpath]; } // 既存
+                            else { middleDic = new Dictionary<int, DataManipulationRecord>(); largeDic_transition[request_packet.Fullpath] = middleDic; } // 新規追加
+
+                            int tNum = int.Parse(request_packet.TransitionNum_ofFullpath); // トランジション番号
+                            middleDic.Add(tNum, request_packet);
+                        }
+                        break;
                     case "conditions":
                         {
                             Operation_Condition.DataManipulatRecordSet request_buffer; // 条件を溜め込む。 mode, parameter, threshold の３つが揃って更新ができる。
 
                             // 三重構造
                             Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>> middleDic; // [ステートフルパス,,]
-                            if (largeDic.ContainsKey(request_packet.Fullpath)) { middleDic = largeDic[request_packet.Fullpath]; } // 既存
-                            else { middleDic = new Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>(); largeDic[request_packet.Fullpath] = middleDic; } // 新規追加
+                            if (largeDic_condition.ContainsKey(request_packet.Fullpath)) { middleDic = largeDic_condition[request_packet.Fullpath]; } // 既存
+                            else { middleDic = new Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>(); largeDic_condition[request_packet.Fullpath] = middleDic; } // 新規追加
                             
                             Dictionary<int, Operation_Condition.DataManipulatRecordSet> smallDic; // [ステートフルパス,トランジション番号,]
                             int tNum = int.Parse(request_packet.TransitionNum_ofFullpath);
@@ -69,48 +81,93 @@ namespace StellaQL
                             }
                         }
                         break;
-                    case "positinos": Operation_Position.Update(ac, request_packet, message); break;
+                    case "positinos": Operation_Position.Update(ac, request_packet, info_message); break;
                     default: throw new UnityException("未対応のカテゴリー=["+ request_packet.Category + "]");
                 }
             }
 
-            // 条件を消化
-            //
-            // 挿入、更新、削除に振り分けたい。
-            List<Operation_Condition.DataManipulatRecordSet> insertsSet = new List<Operation_Condition.DataManipulatRecordSet>();
-            List<Operation_Condition.DataManipulatRecordSet> deletesSet = new List<Operation_Condition.DataManipulatRecordSet>();
-            List<Operation_Condition.DataManipulatRecordSet> updatesSet = new List<Operation_Condition.DataManipulatRecordSet>();
-            Debug.Log("conditionRecordSet.Count=" + largeDic.Count);// [ステート・フルパス,トランジション番号,コンディション番号]
-            foreach (KeyValuePair<string,Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>> conditionRecordSetPair in largeDic){
-                Debug.Log("conditionRecordSetPair.Value.Count=" + conditionRecordSetPair.Value.Count);// [,トランジション番号,コンディション番号]
-                foreach (KeyValuePair<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>> conditionRecordSet1Pair in conditionRecordSetPair.Value){
-                    Debug.Log("conditionRecordSet1Pair.Value.Count=" + conditionRecordSet1Pair.Value.Count);// [,,コンディション番号]
-                    foreach (KeyValuePair<int, Operation_Condition.DataManipulatRecordSet> conditionRecordSet2Pair in conditionRecordSet1Pair.Value) {
-                        if (Operation_Something.HasProperty(conditionRecordSet2Pair.Value.RepresentativeName, ConditionRecord.Definitions, "コンディション操作")) {
-                            AnimatorStateTransition transition = Operation_Transition.Lookup(ac, conditionRecordSet2Pair.Value.RepresentativeRecord);// トランジション
-                            ConditionRecord.AnimatorConditionWrapper wapper = Operation_Condition.Lookup(ac, transition, conditionRecordSet2Pair.Value.RepresentativeRecord);// コンディション
+            // トランジションを消化
+            {
+                // 挿入、更新、削除に振り分けたい。
+                List<DataManipulationRecord> insertsSet = new List<DataManipulationRecord>();
+                List<DataManipulationRecord> deletesSet = new List<DataManipulationRecord>();
+                List<DataManipulationRecord> updatesSet = new List<DataManipulationRecord>();
+                Debug.Log("largeDic_transition.Count=" + largeDic_transition.Count);// [ステート・フルパス,トランジション番号]
+                foreach (KeyValuePair<string, Dictionary<int, DataManipulationRecord>> request_2wrap in largeDic_transition)
+                {
+                    Debug.Log("request_2wrap.Value.Count=" + request_2wrap.Value.Count);// [,トランジション番号]
+                    foreach (KeyValuePair<int, DataManipulationRecord> request_1wrap in request_2wrap.Value)
+                    {
+                        AnimatorStateTransition transition = Operation_Transition.Lookup(ac, request_1wrap.Value);// トランジション
 
-                            if (wapper.IsNull) { insertsSet.Add(conditionRecordSet2Pair.Value); }// 存在しないコンディション番号だった場合、 挿入 に振り分ける。
-                            else if (null != conditionRecordSet2Pair.Value.Parameter && conditionRecordSet2Pair.Value.Parameter.IsDelete) { deletesSet.Add(conditionRecordSet2Pair.Value); }// 削除要求の場合、削除 に振り分ける。
-                            else { updatesSet.Add(conditionRecordSet2Pair.Value); }// それ以外の場合は、更新 に振り分ける。
+                        if ("#DestinationFullpath#" == request_1wrap.Value.Name)
+                        {
+                            if ("" != request_1wrap.Value.New) { insertsSet.Add(request_1wrap.Value); }// Newに指定があれば、 挿入 に振り分ける。
+                            else if (request_1wrap.Value.IsDelete) { deletesSet.Add(request_1wrap.Value); }// 削除要求の場合、削除 に振り分ける。
+                            else {
+                                if (HasProperty(request_1wrap.Value.Name, TransitionRecord.Definitions, "トランジション操作"))
+                                {
+                                    updatesSet.Add(request_1wrap.Value);
+                                }
+                            }// それ以外の場合は、更新 に振り分ける。
                         }
                     }
                 }
-            }
 
-            foreach (Operation_Condition.DataManipulatRecordSet requestSet in insertsSet) { Operation_Condition.Insert(ac, requestSet, message); }// 更新を処理
-            deletesSet.Sort((Operation_Condition.DataManipulatRecordSet a, Operation_Condition.DataManipulatRecordSet b) =>
-            { // 削除要求を、連番の逆順にする
-                int stringCompareOrder = string.CompareOrdinal(a.RepresentativeFullpath, b.RepresentativeFullpath);
-                if (0!=stringCompareOrder) { return stringCompareOrder; } // ステート名の順番はそのまま。
-                else if (a.RepresentativeFullpathTransition < b.RepresentativeFullpathTransition) { return -1; } // トランジションの順番は一応後ろから
-                else if (b.RepresentativeFullpathTransition < a.RepresentativeFullpathTransition) { return 1; }
-                else if (a.RepresentativeFullpathCondition < b.RepresentativeFullpathCondition) { return -1; } // コンディションの削除は後ろから
-                else if (b.RepresentativeFullpathCondition < a.RepresentativeFullpathCondition) { return 1; }
-                return 0;
-            });
-            foreach (Operation_Condition.DataManipulatRecordSet requestSet in deletesSet) { Operation_Condition.Delete(ac, requestSet, message); }// 削除を処理
-            foreach (Operation_Condition.DataManipulatRecordSet requestSet in updatesSet) { Operation_Condition.Update(ac, requestSet, message); }// 挿入を処理
+                foreach (DataManipulationRecord request in insertsSet) { Operation_Transition.Insert(ac, request, info_message); }// 更新を処理
+                deletesSet.Sort((DataManipulationRecord a, DataManipulationRecord b) =>
+                { // 削除要求を、連番の逆順にする
+                    int stringCompareOrder = string.CompareOrdinal(a.Fullpath, b.Fullpath);
+                    if (0 != stringCompareOrder) { return stringCompareOrder; } // ステート名の順番はそのまま。
+                    else if (int.Parse(a.TransitionNum_ofFullpath) < int.Parse(b.TransitionNum_ofFullpath)) { return -1; } // トランジションの順番は一応後ろから
+                    else if (int.Parse(b.TransitionNum_ofFullpath) < int.Parse(a.TransitionNum_ofFullpath)) { return 1; }
+                    return 0;
+                });
+                foreach (DataManipulationRecord request in deletesSet) { Operation_Transition.Delete(ac, request, info_message); }// 削除を処理
+                foreach (DataManipulationRecord request in updatesSet) { Operation_Transition.Update(ac, request, info_message); }// 挿入を処理
+            }
+            // コンディションを消化
+            {
+                // 挿入、更新、削除に振り分けたい。
+                List<Operation_Condition.DataManipulatRecordSet> insertsSet = new List<Operation_Condition.DataManipulatRecordSet>();
+                List<Operation_Condition.DataManipulatRecordSet> deletesSet = new List<Operation_Condition.DataManipulatRecordSet>();
+                List<Operation_Condition.DataManipulatRecordSet> updatesSet = new List<Operation_Condition.DataManipulatRecordSet>();
+                Debug.Log("conditionRecordSet.Count=" + largeDic_condition.Count);// [ステート・フルパス,トランジション番号,コンディション番号]
+                foreach (KeyValuePair<string, Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>> conditionRecordSetPair in largeDic_condition)
+                {
+                    Debug.Log("conditionRecordSetPair.Value.Count=" + conditionRecordSetPair.Value.Count);// [,トランジション番号,コンディション番号]
+                    foreach (KeyValuePair<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>> conditionRecordSet1Pair in conditionRecordSetPair.Value)
+                    {
+                        Debug.Log("conditionRecordSet1Pair.Value.Count=" + conditionRecordSet1Pair.Value.Count);// [,,コンディション番号]
+                        foreach (KeyValuePair<int, Operation_Condition.DataManipulatRecordSet> conditionRecordSet2Pair in conditionRecordSet1Pair.Value)
+                        {
+                            if (Operation_Something.HasProperty(conditionRecordSet2Pair.Value.RepresentativeName, ConditionRecord.Definitions, "コンディション操作"))
+                            {
+                                AnimatorStateTransition transition = Operation_Transition.Lookup(ac, conditionRecordSet2Pair.Value.RepresentativeRecord);// トランジション
+                                ConditionRecord.AnimatorConditionWrapper wapper = Operation_Condition.Lookup(ac, transition, conditionRecordSet2Pair.Value.RepresentativeRecord);// コンディション
+
+                                if (wapper.IsNull) { insertsSet.Add(conditionRecordSet2Pair.Value); }// 存在しないコンディション番号だった場合、 挿入 に振り分ける。
+                                else if (null != conditionRecordSet2Pair.Value.Parameter && conditionRecordSet2Pair.Value.Parameter.IsDelete) { deletesSet.Add(conditionRecordSet2Pair.Value); }// 削除要求の場合、削除 に振り分ける。
+                                else { updatesSet.Add(conditionRecordSet2Pair.Value); }// それ以外の場合は、更新 に振り分ける。
+                            }
+                        }
+                    }
+                }
+
+                foreach (Operation_Condition.DataManipulatRecordSet requestSet in insertsSet) { Operation_Condition.Insert(ac, requestSet, info_message); }// 更新を処理
+                deletesSet.Sort((Operation_Condition.DataManipulatRecordSet a, Operation_Condition.DataManipulatRecordSet b) =>
+                { // 削除要求を、連番の逆順にする
+                    int stringCompareOrder = string.CompareOrdinal(a.RepresentativeFullpath, b.RepresentativeFullpath);
+                    if (0 != stringCompareOrder) { return stringCompareOrder; } // ステート名の順番はそのまま。
+                    else if (a.RepresentativeFullpathTransition < b.RepresentativeFullpathTransition) { return -1; } // トランジションの順番は一応後ろから
+                    else if (b.RepresentativeFullpathTransition < a.RepresentativeFullpathTransition) { return 1; }
+                    else if (a.RepresentativeFullpathCondition < b.RepresentativeFullpathCondition) { return -1; } // コンディションの削除は後ろから
+                    else if (b.RepresentativeFullpathCondition < a.RepresentativeFullpathCondition) { return 1; }
+                    return 0;
+                });
+                foreach (Operation_Condition.DataManipulatRecordSet requestSet in deletesSet) { Operation_Condition.Delete(ac, requestSet, info_message); }// 削除を処理
+                foreach (Operation_Condition.DataManipulatRecordSet requestSet in updatesSet) { Operation_Condition.Update(ac, requestSet, info_message); }// 挿入を処理
+            }
         }
 
         public static bool HasProperty(string name, Dictionary<string,RecordDefinition> definitions, string calling)
@@ -543,7 +600,9 @@ namespace StellaQL
             //AnimatorStateTransition sourceTransition = Operation_Transition.Lookup(ac, request); // トランジション
 
             // TODO: 遷移先のステートを指定する？
-            //sourceState.AddTransition(destinationState)
+            string destinationFullpath = request.New;
+            AnimatorState destinationState = Operation_State.Lookup(ac, destinationFullpath); // 遷移先のステート
+            sourceState.AddTransition(destinationState);
         }
         public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
