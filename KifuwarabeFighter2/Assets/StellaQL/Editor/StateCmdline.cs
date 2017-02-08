@@ -53,8 +53,6 @@ public class StateCmdline : EditorWindow
             m_ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(oldPath_animatorController);// アニメーター・コントローラーを再取得。
         }
         bool repaint = false;
-        //bool isRefreshInspectorWindow = false;
-        //bool isRefreshAnimatorWindow = false;
 
         GUILayout.Label("Animator controller", EditorStyles.boldLabel);
         #region ドラッグ＆ドロップ エリア
@@ -96,7 +94,6 @@ public class StateCmdline : EditorWindow
                                 {
                                     droppedPath_animatorController = AssetDatabase.GetAssetPath(ac_temp.GetInstanceID());
                                     repaint = true;
-                                    //HandleUtility.Repaint(); // このウィンドウを更新
                                 }
                             }
                         }
@@ -176,7 +173,7 @@ public class StateCmdline : EditorWindow
                 EditorGUILayout.EndScrollView();
             }
             #endregion
-            #region テキストエリアとコマンド実行ボタン
+            #region コマンド実行ボタン
             {
                 if (GUILayout.Button("Execute"))
                 {
@@ -184,8 +181,6 @@ public class StateCmdline : EditorWindow
                     AControllable userDefinedStateTable = UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[oldPath_animatorController];
                     Querier.Execute(m_ac, commandline, userDefinedStateTable, info_message);
                     repaint = true;
-                    //isRefreshAnimatorWindow = true;
-                    //isRefreshInspectorWindow = true;
                     info_message.Append("Execute終わり☆（＾▽＾）！ "); info_message.AppendLine();
                 }
             }
@@ -252,20 +247,6 @@ public class StateCmdline : EditorWindow
             #endregion
         }
 
-        #region メッセージ出力欄
-        {
-            GUILayout.Label("Info");
-            if (0 < info_message.Length)
-            {
-                info_message_ofTextbox = info_message.ToString(); // 更新
-                info_message.Length = 0;
-            }
-            scroll_infoBox = EditorGUILayout.BeginScrollView(scroll_infoBox);
-            info_message_ofTextbox = EditorGUILayout.TextArea(info_message_ofTextbox);//, GUILayout.Height(position.height - 30)
-            EditorGUILayout.EndScrollView();
-        }
-        #endregion
-
         #region 各種リフレッシュ
         {
             if (repaint)
@@ -278,8 +259,6 @@ public class StateCmdline : EditorWindow
                 info_message.AppendLine("Because, This is for");
                 info_message.AppendLine("    refreshing the animator window!");
                 info_message.AppendLine("Please, Push back the play button.");
-                //UnityEditor.EditorApplication.isPaused = true; // 一時停止する
-                //UnityEditor.EditorApplication.isPlaying = false; // 再生を停止する
 
                 // これ全部、アニメーター・ウィンドウには効かない
                 //{
@@ -293,10 +272,6 @@ public class StateCmdline : EditorWindow
                 //}
             }
 
-            //if (isRefreshAnimatorWindow)
-            //{
-            //}
-
             //if (isRefreshInspectorWindow)
             //{
             //    // リフレクションを利用して、インスペクター・ウィンドウを再描画できるだろうか？
@@ -308,6 +283,20 @@ public class StateCmdline : EditorWindow
             //        targetWindow.Repaint();
             //    }
             //}
+        }
+        #endregion
+
+        #region メッセージ出力欄
+        {
+            GUILayout.Label("Info");
+            if (0 < info_message.Length)
+            {
+                info_message_ofTextbox = info_message.ToString(); // 更新
+                info_message.Length = 0;
+            }
+            scroll_infoBox = EditorGUILayout.BeginScrollView(scroll_infoBox);
+            info_message_ofTextbox = EditorGUILayout.TextArea(info_message_ofTextbox);//, GUILayout.Height(position.height - 30)
+            EditorGUILayout.EndScrollView();
         }
         #endregion
     }

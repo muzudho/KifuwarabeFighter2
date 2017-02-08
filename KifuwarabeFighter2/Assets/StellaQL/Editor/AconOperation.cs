@@ -407,7 +407,7 @@ namespace StellaQL
             {
                 foreach (string name in set.Values)// プロパティー名は見ない。
                 {
-                    message.Append("Insert: "); message.AppendLine(name);
+                    // message.Append("Insert: "); message.AppendLine(name);
                     statemachine.AddState(name);
                 }
             }
@@ -422,7 +422,7 @@ namespace StellaQL
             {
                 foreach (string name in set.Values)// プロパティー名は見ない。
                 {
-                    message.Append("Remove: "); message.AppendLine(name);
+                    // message.Append("Remove: "); message.AppendLine(name);
                     foreach (ChildAnimatorState caState in statemachine.states)
                     {
                         if (caState.state.name == name)
@@ -474,7 +474,7 @@ namespace StellaQL
             recordSet = new HashSet<StateRecord>();
             foreach (AnimatorState state in states) // 指定されたステート全て対象
             {
-                if (null == state) { throw new UnityException("ヌル・ステートが含まれていたぜ☆（＞＿＜）"); }
+                if (null == state) { throw new UnityException("検索結果にヌル・ステートが含まれていたぜ☆（＞＿＜） states.Count=[" + states.Count + "]"); }
                 recordSet.Add(new StateRecord(0,0,0,"#NoData",state));
             }
             message.Append("result: "); message.Append(recordSet.Count); message.AppendLine(" records.");
@@ -639,40 +639,32 @@ namespace StellaQL
         /// <summary>
         /// ステートマシンの[Any State]からステートへ、トランジションで結ぶ。
         /// </summary>
-        public static bool AddAnyState(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines_src, HashSet<AnimatorState> states_dst, StringBuilder message)
+        public static bool AddAnyState(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines_src, HashSet<AnimatorState> states_dst, StringBuilder info_message)
         {
-            message.Append("Transition.AddAnyState: Source "); message.Append(statemachines_src.Count); message.Append(" states. Destination "); message.Append(states_dst.Count); message.AppendLine(" states.");
+            info_message.Append("Transition.AddAnyState: Source "); info_message.Append(statemachines_src.Count); info_message.Append(" states. Destination "); info_message.Append(states_dst.Count); info_message.AppendLine(" states.");
             foreach (AnimatorStateMachine statemachine_src in statemachines_src)
             {
                 foreach (AnimatorState state_dst in states_dst)
                 {
-                    message.Append("Insert: "); message.Append(null== statemachine_src ? "ヌル" : statemachine_src.name); message.Append(" -> "); message.AppendLine(null== state_dst ? "ヌル" : state_dst.name);
+                    // info_message.Append("Insert: "); info_message.Append(null== statemachine_src ? "ヌル" : statemachine_src.name); info_message.Append(" -> "); info_message.AppendLine(null== state_dst ? "ヌル" : state_dst.name);
                     if (null == statemachine_src) { return false; }
                     statemachine_src.AddAnyStateTransition(state_dst);
                 }
             }
-            message.AppendLine();
-            message.AppendLine("----------");
-            message.AppendLine("(!)Mension");
-            message.AppendLine("----------");
-            message.AppendLine("Please, Close window and Open window");
-            message.AppendLine(" (Re Open) Animation Controller!!");
-            message.AppendLine("If not paint line.");
-            message.AppendLine();
             return true;
         }
 
         /// <summary>
         /// ステートマシンの[Entry]からステートへ、トランジションで結ぶ。
         /// </summary>
-        public static bool AddEntryState(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines_src, HashSet<AnimatorState> states_dst, StringBuilder message)
+        public static bool AddEntryState(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines_src, HashSet<AnimatorState> states_dst, StringBuilder info_message)
         {
-            message.Append("Transition.AddEntryState: Source "); message.Append(statemachines_src.Count); message.Append(" states. Destination "); message.Append(states_dst.Count); message.AppendLine(" states.");
+            info_message.Append("Transition.AddEntryState: Source "); info_message.Append(statemachines_src.Count); info_message.Append(" states. Destination "); info_message.Append(states_dst.Count); info_message.AppendLine(" states.");
             foreach (AnimatorStateMachine statemachine_src in statemachines_src)
             {
                 foreach (AnimatorState state_dst in states_dst)
                 {
-                    message.Append("Insert: "); message.Append(null == statemachine_src ? "ヌル" : statemachine_src.name); message.Append(" -> "); message.AppendLine(null == state_dst ? "ヌル" : state_dst.name);
+                    //info_message.Append("Insert: "); info_message.Append(null == statemachine_src ? "ヌル" : statemachine_src.name); info_message.Append(" -> "); info_message.AppendLine(null == state_dst ? "ヌル" : state_dst.name);
                     if (null == statemachine_src) { return false; }
                     statemachine_src.AddEntryTransition(state_dst);
                 }
@@ -688,7 +680,7 @@ namespace StellaQL
             message.Append("Transition.AddExitState: "); message.Append(states.Count); message.AppendLine(" states.");
             foreach (AnimatorState state_src in states)
             {
-                message.Append("Insert: "); message.Append(null == state_src ? "ヌル" : state_src.name); message.Append(" -> Exit");;
+                //message.Append("Insert: "); message.Append(null == state_src ? "ヌル" : state_src.name); message.Append(" -> Exit");;
                 if (null == state_src) { return false; }
                 state_src.AddExitTransition();
             }
@@ -715,9 +707,9 @@ namespace StellaQL
         /// ２つのステート間の トランジションを削除する。ステートは複数指定でき、src→dst方向の総当たりで全部削除する。
         /// </summary>
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
-        public static void RemoveAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, StringBuilder message)
+        public static void RemoveAll(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, StringBuilder info_message)
         {
-            message.Append("Transition.RemoveAll: Source "); message.Append(states_src.Count); message.Append(" states. Destination "); message.Append(states_dst.Count); message.AppendLine(" states.");
+            info_message.Append("Transition.RemoveAll: Source "); info_message.Append(states_src.Count); info_message.Append(" states. Destination "); info_message.Append(states_dst.Count); info_message.AppendLine(" states.");
 
             foreach (AnimatorState state_src in states_src)
             {
@@ -728,11 +720,11 @@ namespace StellaQL
                         if (state_dst == transition.destinationState)
                         {
                             state_src.RemoveTransition(transition);
-                            message.Append("deleted: ");
-                            message.Append(state_src.name);
-                            message.Append(" -> ");
-                            message.Append(state_dst.name);
-                            message.AppendLine();
+                            //info_message.Append("deleted: ");
+                            //info_message.Append(state_src.name);
+                            //info_message.Append(" -> ");
+                            //info_message.Append(state_dst.name);
+                            //info_message.AppendLine();
                             // break; // src → dst 間に複数のトランジションを貼れるみたいなんで、全部消そう☆
                         }
                     }
@@ -740,7 +732,7 @@ namespace StellaQL
             }
         }
 
-        public static void Update(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, Dictionary<string, string> properties, StringBuilder message)
+        public static void Update(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, Dictionary<string, string> properties, StringBuilder info_message)
         {
             foreach (AnimatorState state_src in states_src) // 指定されたステート全て対象
             {
@@ -750,34 +742,11 @@ namespace StellaQL
                     {
                         if (state_dst == transition.destinationState)
                         {
-                            message.Append("Update: ");
-                            message.Append(state_src.name);
-                            message.Append(" -> ");
-                            message.Append(state_dst.name);
+                            //message.Append("Update: ");
+                            //message.Append(state_src.name);
+                            //message.Append(" -> ");
+                            //message.Append(state_dst.name);
                             UpdateProperty(ac, transition, properties);
-                            //foreach (KeyValuePair<string, string> pair in properties)
-                            //{
-                            //    switch (pair.Key)
-                            //    {
-                            //        case "canTransitionToSelf": transition.canTransitionToSelf = bool.Parse(pair.Value); break;
-                            //        // transition.conditions (not primal)
-                            //        // transition.destinationState (not primal)
-                            //        // transition.destinationStateMachine (not primal)
-                            //        case "duration": transition.duration = float.Parse(pair.Value); break;
-                            //        case "exitTime": transition.exitTime = float.Parse(pair.Value); break;
-                            //        case "hasExitTime": transition.hasExitTime = bool.Parse(pair.Value); break;
-                            //        case "hasFixedDuration": transition.hasFixedDuration = bool.Parse(pair.Value); break;
-                            //        // transition.hideFlags (not primal)
-                            //        // transition.interruptionSource (not primal)
-                            //        case "isExit": transition.isExit = bool.Parse(pair.Value); break;
-                            //        case "mute": transition.mute = bool.Parse(pair.Value); break;
-                            //        case "name": transition.name = pair.Value; break;
-                            //        case "offset": transition.offset = float.Parse(pair.Value); break;
-                            //        case "orderedInterruption": transition.orderedInterruption = bool.Parse(pair.Value); break;
-                            //        case "solo": transition.solo = bool.Parse(pair.Value); break;
-                            //        default: throw new UnityException("未対応のトランジション・プロパティー [" + pair.Key + "]=[" + pair.Value + "]");
-                            //    }
-                            //}
                         }
                     }
                 }

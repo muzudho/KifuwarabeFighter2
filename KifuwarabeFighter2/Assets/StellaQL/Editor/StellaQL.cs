@@ -109,7 +109,7 @@ namespace StellaQL
     /// </summary>
     public abstract class Querier
     {
-        public static bool Execute(AnimatorController ac, string query, AControllable userDefinedStateTable, StringBuilder message)
+        public static bool Execute(AnimatorController ac, string query, AControllable userDefinedStateTable, StringBuilder info_message)
         {
             Dictionary<int, AcStateRecordable> universe = userDefinedStateTable.StateHash_to_record;
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
@@ -119,77 +119,77 @@ namespace StellaQL
             if (SyntaxP.Parse_TransitionAnystateInsert(query, ref qt))
             {
                 return Operation_Transition.AddAnyState(ac,
-                    Fetcher.Statemachines(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
-                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
-                    message);
+                    Fetcher.Statemachines(ac, RecordsFilter.Qt_From(qt, universe, info_message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, info_message), universe),
+                    info_message);
             }
             else if (SyntaxP.Parse_TransitionEntryInsert(query, ref qt))
             {
                 return Operation_Transition.AddEntryState(ac,
-                    Fetcher.Statemachines(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
-                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
-                    message);
+                    Fetcher.Statemachines(ac, RecordsFilter.Qt_From(qt, universe, info_message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, info_message), universe),
+                    info_message);
             }
             else if (SyntaxP.Parse_TransitionExitInsert(query, ref qt))
             {
                 return Operation_Transition.AddExitState(ac,
-                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
-                    message);
+                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, info_message), universe),
+                    info_message);
             }
             else if (SyntaxP.Parse_StateInsert(query, ref qt))
             {
-                Operation_State.AddAll(ac, Fetcher.Statemachines(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), qt.Set, message); return true;
+                Operation_State.AddAll(ac, Fetcher.Statemachines(ac, RecordsFilter.Qt_Where(qt, universe, info_message), universe), qt.Set, info_message); return true;
             }
             else if (SyntaxP.Parse_StateUpdate(query, ref qt))
             {
-                Operation_State.UpdateProperty(ac, qt.Set, Fetcher.States(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), message); return true;
+                Operation_State.UpdateProperty(ac, qt.Set, Fetcher.States(ac, RecordsFilter.Qt_Where(qt, universe, info_message), universe), info_message); return true;
             }
             else if (SyntaxP.Parse_StateDelete(query, ref qt))
             {
-                Operation_State.RemoveAll(ac, Fetcher.Statemachines(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), qt.Set, message); return true;
+                Operation_State.RemoveAll(ac, Fetcher.Statemachines(ac, RecordsFilter.Qt_Where(qt, universe, info_message), universe), qt.Set, info_message); return true;
             }
             else if (SyntaxP.Parse_StateSelect(query, ref qt))
             {
                 HashSet<StateRecord> recordSet;
-                Operation_State.Select(ac, Fetcher.States(ac, RecordsFilter.Qt_Where(qt, universe, message), universe), out recordSet, message);
+                Operation_State.Select(ac, Fetcher.States(ac, RecordsFilter.Qt_Where(qt, universe, info_message), universe), out recordSet, info_message);
                 StringBuilder contents = new StringBuilder();
                 AconDataUtility.CreateCsvTable_State( recordSet, false, contents);
-                StellaQLWriter.Write(StellaQLWriter.Filepath_LogStateSelect(ac.name), contents, message); return true;
+                StellaQLWriter.Write(StellaQLWriter.Filepath_LogStateSelect(ac.name), contents, info_message); return true;
             }
             else if (SyntaxP.Parse_TransitionInsert(query, ref qt))
             {
                 Operation_Transition.Insert(ac,
-                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
-                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
-                    qt.Set, message); return true;
+                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, info_message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, info_message), universe),
+                    qt.Set, info_message); return true;
             }
             else if (SyntaxP.Parse_TransitionUpdate(query, ref qt))
             {
-                foreach (KeyValuePair<string, string> pair in qt.Set) { message.AppendLine(pair.Key + "=" + pair.Value); }
+                foreach (KeyValuePair<string, string> pair in qt.Set) { info_message.AppendLine(pair.Key + "=" + pair.Value); }
                 Operation_Transition.Update(ac,
-                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
-                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
-                     qt.Set, message); return true;
+                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, info_message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, info_message), universe),
+                     qt.Set, info_message); return true;
             }
             else if (SyntaxP.Parse_TransitionDelete(query, ref qt))
             {
                 Operation_Transition.RemoveAll(ac,
-                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
-                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
-                    message); return true;
+                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, info_message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, info_message), universe),
+                    info_message); return true;
             } else if (SyntaxP.Parse_TransitionSelect(query, ref qt)) {
                 HashSet<TransitionRecord> recordSet;
                 Operation_Transition.Select(ac,
-                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, message), universe),
-                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, info_message), universe),
+                    Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, info_message), universe),
                     out recordSet,
-                    message);
+                    info_message);
                 StringBuilder contents = new StringBuilder();
                 AconDataUtility.CreateCsvTable_Transition(recordSet, false, contents);
-                StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransitionSelect(ac.name), contents, message); return true;
+                StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransitionSelect(ac.name), contents, info_message); return true;
             }
-            message.Append("構文エラー: "); message.Append( qt.MatchedSyntaxName); message.Append(" ");
-            message.Append(qt.MatchedSyntaxCaret); message.AppendLine(" 文字目まで一致（改行は２文字とカウント）"); return false;
+            info_message.Append("構文エラー: "); info_message.Append( qt.MatchedSyntaxName); info_message.Append(" ");
+            info_message.Append(qt.MatchedSyntaxCaret); info_message.AppendLine(" 文字目まで一致（改行は２文字とカウント）"); return false;
         }
 
         /// <summary>
@@ -300,12 +300,35 @@ namespace StellaQL
             return statemachines;
         }
 
+        /// <summary>
+        /// 検索結果に含まれるステートマシンは無視する。
+        /// </summary>
+        /// <param name="ac"></param>
+        /// <param name="recordHashes"></param>
+        /// <param name="universe"></param>
+        /// <returns></returns>
         public static HashSet<AnimatorState> States(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, AcStateRecordable> universe)
         {
             HashSet<AnimatorState> states = new HashSet<AnimatorState>();
             foreach (int recordHash in recordHashes)
             {
-                states.Add(Operation_State.Lookup(ac, universe[recordHash].Fullpath));//.Name
+                AnimatorState state = Operation_State.Lookup(ac, universe[recordHash].Fullpath);
+                if (null== state)
+                {
+                    // ステートマシンかもしれない。
+                    AnimatorStateMachine stateMachine = Operation_Statemachine.Lookup(ac, universe[recordHash].Fullpath);
+                    if(null!= stateMachine)
+                    {
+                        // ステートマシンだったのなら、ヌルで合っている☆（＾～＾）
+                        continue; // このレコードは飛ばして次へ☆
+                    }
+                    else
+                    {
+                        throw new UnityException("フルパス[" + universe[recordHash].Fullpath + "]に対応するステートは無いぜ☆（＞＿＜）フルパス一覧を確かめろだぜ☆！ universe.Count=[" + universe.Count + "]");
+                    }
+                }
+
+                states.Add(state);
             }
             return states;
         }
@@ -939,8 +962,6 @@ namespace StellaQL
         {
             QueryTokens qt = new QueryTokens("TRANSITION UPDATE");
             int caret = 0;
-            //string propertyName;
-            //string propertyValue;
             string stringWithoutDoubleQuotation;
             string parenthesis;
             LexcalP.VarSpaces(query, ref caret);
@@ -955,12 +976,6 @@ namespace StellaQL
             {
                 // 「項目名、スペース、値、スペース」の繰り返し。項目名が FROM だった場合終わり。
                 if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.FROM, qt.Set)) { return SyntaxP.Error(qt, caret, ref maxQt); }
-                //while (caret < query.Length && !LexcalP.FixedWord(QueryTokens.FROM, query, ref caret))
-                //{
-                //    if (!LexcalP.VarWord(query, ref caret, out propertyName)) { return false; }
-                //    if (!LexcalP.VarValue(query, ref caret, out propertyValue)) { return false; }
-                //    qTokens.Set.Add(propertyName, propertyValue);
-                //}
             }
             else {
                 if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.Error(qt, caret, ref maxQt); }
