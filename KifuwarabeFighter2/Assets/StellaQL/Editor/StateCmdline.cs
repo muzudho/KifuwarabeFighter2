@@ -160,11 +160,11 @@ public class StateCmdline : EditorWindow
             }
 
             #region フルパス定数作成ボタン
-            if (GUILayout.Button("Generate fullpath constant C#"))
+            if (GUILayout.Button("Generate C# (Fullpath of all states)"))
             {
-                info_message.Append("Create State Const Start☆（＾～＾）！ filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
+                info_message.Append("Generate fullpath Start☆（＾～＾）！ filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
                 FullpathConstantGenerator.WriteCshapScript(m_ac, info_message);
-                info_message.Append("Create State Const End☆（＾▽＾）！ filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
+                info_message.Append("Generate fullpath End☆（＾▽＾）！ filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
             }
             GUILayout.Space(4.0f);
             #endregion
@@ -273,9 +273,11 @@ public class StateCmdline : EditorWindow
                 Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
 
                 UnityEditor.EditorApplication.isPlaying = true; // 再生する
-                info_message.AppendLine();
-                info_message.AppendLine("I'm sorry! I clickeded the play button!");
-                info_message.AppendLine("Because, This is for refreshing the animator window!");
+                info_message.AppendLine("I'm sorry!");
+                info_message.AppendLine("    I clickeded the play button!");
+                info_message.AppendLine("Because, This is for");
+                info_message.AppendLine("    refreshing the animator window!");
+                info_message.AppendLine("Please, Push back the play button.");
                 //UnityEditor.EditorApplication.isPaused = true; // 一時停止する
                 //UnityEditor.EditorApplication.isPlaying = false; // 再生を停止する
 
