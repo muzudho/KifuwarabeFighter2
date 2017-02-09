@@ -401,31 +401,43 @@ namespace StellaQL
         /// <summary>
         /// ステートマシンに、ステートを追加する。
         /// </summary>
-        public static void AddAll(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines, Dictionary<string,string> set, StringBuilder message)
+        public static void AddAll(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines, List<string> statenameWords, StringBuilder message)
         {
             foreach (AnimatorStateMachine statemachine in statemachines)
             {
-                foreach (string name in set.Values)// プロパティー名は見ない。
+                foreach (string stateName in statenameWords)
                 {
-                    // message.Append("Insert: "); message.AppendLine(name);
-                    statemachine.AddState(name);
+                    statemachine.AddState(stateName);
                 }
             }
         }
+        ///// <summary>
+        ///// ステートマシンに、ステートを追加する。
+        ///// </summary>
+        //public static void AddAll(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines, Dictionary<string, string> nameAndValues, StringBuilder message)
+        //{
+        //    foreach (AnimatorStateMachine statemachine in statemachines)
+        //    {
+        //        foreach (string stateName in nameAndValues.Values)// 名前と値のうち、値の方にステート名が入っている。
+        //        {
+        //            // message.Append("Insert: "); message.AppendLine(name);
+        //            statemachine.AddState(stateName);
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// ステートマシンから、ステートを削除する。
         /// </summary>
-        public static void RemoveAll(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines, Dictionary<string, string> set, StringBuilder message)
+        public static void RemoveAll(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines, List<string> statenameWords, StringBuilder message)
         {
             foreach (AnimatorStateMachine statemachine in statemachines)
             {
-                foreach (string name in set.Values)// プロパティー名は見ない。
+                foreach (string stateName in statenameWords)
                 {
-                    // message.Append("Remove: "); message.AppendLine(name);
                     foreach (ChildAnimatorState caState in statemachine.states)
                     {
-                        if (caState.state.name == name)
+                        if (caState.state.name == stateName)
                         {
                             statemachine.RemoveState(caState.state);
                         }
@@ -433,6 +445,26 @@ namespace StellaQL
                 }
             }
         }
+        ///// <summary>
+        ///// ステートマシンから、ステートを削除する。
+        ///// </summary>
+        //public static void RemoveAll(AnimatorController ac, HashSet<AnimatorStateMachine> statemachines, Dictionary<string, string> set, StringBuilder message)
+        //{
+        //    foreach (AnimatorStateMachine statemachine in statemachines)
+        //    {
+        //        foreach (string name in set.Values)// プロパティー名は見ない。
+        //        {
+        //            // message.Append("Remove: "); message.AppendLine(name);
+        //            foreach (ChildAnimatorState caState in statemachine.states)
+        //            {
+        //                if (caState.state.name == name)
+        //                {
+        //                    statemachine.RemoveState(caState.state);
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         public static void UpdateProperty(AnimatorController ac, Dictionary<string,string> properties, HashSet<AnimatorState> states, StringBuilder message)
         {

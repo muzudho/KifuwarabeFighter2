@@ -509,6 +509,7 @@ namespace StellaQL
             Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
             Assert.AreEqual(QueryTokens.ANYSTATE, qt.Target2);
             Assert.AreEqual(QueryTokens.INSERT, qt.Manipulation);
+            Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("Base Layer", qt.From_FullnameRegex);
             Assert.AreEqual("", qt.From_Attr);
@@ -536,6 +537,7 @@ namespace StellaQL
             Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
             Assert.AreEqual(QueryTokens.ENTRY, qt.Target2);
             Assert.AreEqual(QueryTokens.INSERT, qt.Manipulation);
+            Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("Base Layer", qt.From_FullnameRegex);
             Assert.AreEqual("", qt.From_Attr);
@@ -562,6 +564,7 @@ namespace StellaQL
             Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
             Assert.AreEqual(QueryTokens.EXIT, qt.Target2);
             Assert.AreEqual(QueryTokens.INSERT, qt.Manipulation);
+            Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual(@"Base Layer\.Foo", qt.From_FullnameRegex);
             Assert.AreEqual("", qt.From_Attr);
@@ -579,7 +582,7 @@ namespace StellaQL
         public void N70_Syntax_StateInsert()
         {
             string query = @"STATE INSERT
-                        SET name0 ""WhiteCat"" name1 ""WhiteDog""
+                        WORDS WhiteCat ""White Dog""
                         WHERE ""Base Layout""";
             QueryTokens qt = new QueryTokens();
             int caret = 0;
@@ -588,9 +591,10 @@ namespace StellaQL
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, qt.Target);
             Assert.AreEqual(QueryTokens.INSERT, qt.Manipulation);
-            Assert.AreEqual(2, qt.Set.Count);
-            Assert.AreEqual("WhiteCat", qt.Set["name0"]);
-            Assert.AreEqual("WhiteDog", qt.Set["name1"]);
+            Assert.AreEqual(2, qt.Words.Count);
+            Assert.AreEqual("WhiteCat", qt.Words[0]);
+            Assert.AreEqual("White Dog", qt.Words[1]);
+            Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("", qt.From_FullnameRegex);
             Assert.AreEqual("", qt.From_Attr);
             Assert.AreEqual("", qt.To_FullnameRegex);
@@ -616,6 +620,7 @@ namespace StellaQL
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, qt.Target);
             Assert.AreEqual(QueryTokens.UPDATE, qt.Manipulation);
+            Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(2, qt.Set.Count);
             Assert.AreEqual("WhiteCat", qt.Set["name"]);
             Assert.AreEqual("7", qt.Set["age"]);
@@ -635,7 +640,7 @@ namespace StellaQL
         public void N70_Syntax_StateDelete()
         {
             string query = @"STATE DELETE
-                        SET name0 ""WhiteCat"" name1 ""WhiteDog""
+                        WORDS WhiteCat ""White Dog""
                         WHERE ""Base Layout""";
             QueryTokens qt = new QueryTokens();
             int caret = 0;
@@ -644,9 +649,10 @@ namespace StellaQL
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, qt.Target);
             Assert.AreEqual(QueryTokens.DELETE, qt.Manipulation);
-            Assert.AreEqual(2, qt.Set.Count);
-            Assert.AreEqual("WhiteCat", qt.Set["name0"]);
-            Assert.AreEqual("WhiteDog", qt.Set["name1"]);
+            Assert.AreEqual(2, qt.Words.Count);
+            Assert.AreEqual("WhiteCat", qt.Words[0]);
+            Assert.AreEqual("White Dog", qt.Words[1]);
+            Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("", qt.From_FullnameRegex);
             Assert.AreEqual("", qt.From_Attr);
             Assert.AreEqual("", qt.To_FullnameRegex);
@@ -671,6 +677,7 @@ namespace StellaQL
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, qt.Target);
             Assert.AreEqual(QueryTokens.SELECT, qt.Manipulation);
+            Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("", qt.From_FullnameRegex);
             Assert.AreEqual("", qt.From_Attr);
@@ -696,6 +703,7 @@ namespace StellaQL
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, qt.Target);
             Assert.AreEqual(QueryTokens.SELECT, qt.Manipulation);
+            Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("", qt.From_FullnameRegex);
             Assert.AreEqual("", qt.From_Attr);
@@ -723,6 +731,7 @@ namespace StellaQL
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
             Assert.AreEqual(QueryTokens.INSERT, qt.Manipulation);
+            Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(2, qt.Set.Count);
             Assert.IsTrue(qt.Set.ContainsKey("Duration"));
             Assert.AreEqual("0", qt.Set["Duration"]);
@@ -766,6 +775,7 @@ namespace StellaQL
                 Assert.IsTrue(successful);
                 Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
                 Assert.AreEqual(QueryTokens.UPDATE, qt.Manipulation);
+                Assert.AreEqual(0, qt.Words.Count);
                 Assert.AreEqual(2, qt.Set.Count);
                 Assert.IsTrue(qt.Set.ContainsKey("Duration"));
                 Assert.AreEqual("0.25", qt.Set["Duration"]);
@@ -795,6 +805,7 @@ namespace StellaQL
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
             Assert.AreEqual(QueryTokens.DELETE, qt.Manipulation);
+            Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("Base Layer.SMove", qt.From_FullnameRegex);
             Assert.AreEqual("", qt.From_Attr);
@@ -819,6 +830,7 @@ namespace StellaQL
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
             Assert.AreEqual(QueryTokens.SELECT, qt.Manipulation);
+            Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("Base Layer.SMove", qt.From_FullnameRegex);
             Assert.AreEqual("", qt.From_Attr);
@@ -829,6 +841,23 @@ namespace StellaQL
         #endregion
 
         #region N75 syntax parser pharse (構文パーサー　句)
+        /// <summary>
+        /// 構文解析 WORDS 句
+        /// </summary>
+        [Test]
+        public void N70_SyntaxPhrase_AfterWords()
+        {
+            string phrase = @"WhiteCat ""White Dog""";
+            List<string> words = new List<string>();
+            int caret = 0;
+            bool successful = SyntaxP.ParsePhrase_AfterWords(phrase, ref caret, QueryTokens.WHERE, words);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(2, words.Count);
+            Assert.AreEqual("WhiteCat", words[0]);
+            Assert.AreEqual("White Dog", words[1]);
+        }
+
         /// <summary>
         /// 構文解析 SET 句
         /// </summary>

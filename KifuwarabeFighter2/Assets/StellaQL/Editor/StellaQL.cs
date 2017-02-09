@@ -75,6 +75,7 @@ namespace StellaQL
             Target = "";
             Target2 = "";
             Manipulation = "";
+            Words = new List<string>();
             Set = new Dictionary<string, string>();
             From_FullnameRegex = "";
             From_Attr = "";
@@ -97,6 +98,7 @@ namespace StellaQL
         public const string UPDATE = "UPDATE";
         public const string DELETE = "DELETE";
         public const string SELECT = "SELECT";
+        public const string WORDS = "WORDS";
         public const string SET = "SET";
         public const string FROM = "FROM";
         public const string TO = "TO";
@@ -116,6 +118,10 @@ namespace StellaQL
         /// INSERT, UPDATE, DELETE, SELECT のいずれか。
         /// </summary>
         public string Manipulation { get; set; }
+        /// <summary>
+        /// WORDS部。大文字小文字は区別したい。
+        /// </summary>
+        public List<string> Words { get; set; }
         /// <summary>
         /// SET部。大文字小文字は区別したい。
         /// </summary>
@@ -192,7 +198,7 @@ namespace StellaQL
                     }
                 case SyntaxP.Pattern.StateInsert:
                     {
-                        Operation_State.AddAll(ac, Fetcher.Statemachines(ac, RecordsFilter.Qt_Where(qt, universe, info_message), universe), qt.Set, info_message);
+                        Operation_State.AddAll(ac, Fetcher.Statemachines(ac, RecordsFilter.Qt_Where(qt, universe, info_message), universe), qt.Words, info_message);
                         return true;
                     }
                 case SyntaxP.Pattern.StateUpdate:
@@ -202,7 +208,7 @@ namespace StellaQL
                     }
                 case SyntaxP.Pattern.StateDelete:
                     {
-                        Operation_State.RemoveAll(ac, Fetcher.Statemachines(ac, RecordsFilter.Qt_Where(qt, universe, info_message), universe), qt.Set, info_message);
+                        Operation_State.RemoveAll(ac, Fetcher.Statemachines(ac, RecordsFilter.Qt_Where(qt, universe, info_message), universe), qt.Words, info_message);
                         return true;
                     }
                 case SyntaxP.Pattern.StateSelect:
@@ -738,15 +744,30 @@ namespace StellaQL
         }
 
         /// <summary>
+        /// WORDS句だけ。
+        /// Example（代表例）: INSERT文のWORDS句。
+        /// </summary>
+        public static bool ParsePhrase_AfterWords(string query, ref int caret, string endsDelimiterWord, List<string> ref_words)
+        {
+            string word;
+            while (caret < query.Length && !LexcalP.FixedWord(endsDelimiterWord, query, ref caret))
+            {
+                if (LexcalP.VarStringliteral(query, ref caret, out word)) { } // 一致しなければelse～ifへ
+                else if (!LexcalP.VarValue(query, ref caret, out word)) { return false; }
+                ref_words.Add(word);
+            }
+            return true;
+        }
+        /// <summary>
         /// SET句だけ。
         /// Example（代表例）: UPDATE文のSET句。
         /// </summary>
-        public static bool ParsePhrase_AfterSet(string query, ref int caret, string delimiterWord, Dictionary<string,string> ref_properties)
+        public static bool ParsePhrase_AfterSet(string query, ref int caret, string endsDelimiterWord, Dictionary<string,string> ref_properties)
         {
             string propertyName;
             string propertyValue;
 
-            while (caret < query.Length && !LexcalP.FixedWord(delimiterWord, query, ref caret))
+            while (caret < query.Length && !LexcalP.FixedWord(endsDelimiterWord, query, ref caret))
             {   // 名前
                 if (!LexcalP.VarWord(query, ref caret, out propertyName)) { return false; }
                 // 値
@@ -891,10 +912,16 @@ namespace StellaQL
             if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             qt.Manipulation = QueryTokens.INSERT;
 
-            if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
+            if (LexcalP.FixedWord(QueryTokens.WORDS, query, ref caret))
             {
-                // 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
-                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qt.Set)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+                // 「値、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
+                if (!SyntaxP.ParsePhrase_AfterWords(query, ref caret, QueryTokens.WHERE, qt.Words)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+            }
+            else if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
+            {
+                throw new UnityException("SET句は廃止したぜ☆（＾～＾） これからは WORDS句を使えだぜ☆（＾▽＾） WORDS Bear Cat Dog Elephant だぜ☆楽だろ☆（＾▽＾）");
+                //// 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
+                //if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qt.Set)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             }
             else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); } }
 
@@ -956,10 +983,16 @@ namespace StellaQL
             if (!LexcalP.FixedWord(QueryTokens.DELETE, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             qt.Manipulation = QueryTokens.DELETE;
 
-            if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
+            if (LexcalP.FixedWord(QueryTokens.WORDS, query, ref caret))
             {
-                // 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
-                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qt.Set)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+                // 「値、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
+                if (!SyntaxP.ParsePhrase_AfterWords(query, ref caret, QueryTokens.WHERE, qt.Words)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+            }
+            else if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
+            {
+                throw new UnityException("SET句は廃止したぜ☆（＾～＾） これからは WORDS句を使えだぜ☆（＾▽＾） WORDS Bear Cat Dog Elephant だぜ☆楽だろ☆（＾▽＾）");
+                //// 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
+                //if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qt.Set)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             }
             else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); } }
 
