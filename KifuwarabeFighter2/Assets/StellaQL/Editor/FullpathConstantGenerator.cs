@@ -36,13 +36,21 @@ namespace StellaQL
             contents.AppendLine("    {");
             List<string> fullpaths = new List<string>(aconScanner.FullpathSet);
             fullpaths.Sort();
-            foreach (string fullpath in fullpaths)
+            if(0< fullpaths.Count)
             {
-                contents.Append("        public const string ");
-                contents.Append(FullpathConstantGenerator.String_split_toUppercaseAlphabetFigureOnly_join(fullpath, ".", "_"));
-                contents.Append(@" = """);
-                contents.Append(fullpath);
-                contents.AppendLine(@""";");
+                contents.Append("        public const string");
+                foreach (string fullpath in fullpaths)
+                {
+                    contents.AppendLine(); // 先に改行を持ってくる。最後のセミコロンを付ける処理を簡単にする。
+                    contents.Append("            ");
+                    contents.Append(FullpathConstantGenerator.String_split_toUppercaseAlphabetFigureOnly_join(fullpath, ".", "_"));
+                    contents.Append(@" = """);
+                    contents.Append(fullpath);
+                    contents.Append(@""","); // 改行は最後ではなく、最初に付けておく。
+                }
+                contents.Length--; // 最後のコンマを削る。
+                contents.AppendLine(@"; // semi colon"); // 代わりにセミコロンを追加する。
+                contents.AppendLine();
             }
 
             contents.Append("        public "); contents.Append(abstractClassName); contents.AppendLine("()");

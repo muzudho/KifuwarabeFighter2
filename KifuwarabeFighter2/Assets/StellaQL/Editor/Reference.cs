@@ -1,13 +1,22 @@
 ﻿using System.Text;
+using System.IO;
 
 namespace StellaQL
 {
+    /// <summary>
+    /// [How to use] ボタンを押したときに出るメッセージ。
+    /// </summary>
     public abstract class Reference
     {
         public static void ToContents(StringBuilder contents)
         {
-            contents.AppendLine(@"StellaQL コマンド・リファレンス");
-            contents.AppendLine(@"StellaQL Command Reference");
+            contents.AppendLine(@"---------------------------------------------------------------");
+            contents.AppendLine(@"StellaQL コマンドライン・ウィンドウ (StateCmdline window) の使い方");
+            contents.AppendLine(@"How to use StellaQL Command line (StateCmdline window)");
+            contents.AppendLine(@"---------------------------------------------------------------");
+            contents.AppendLine(@"    作者  : 高橋 智史 (ハンドルネーム: むずでょ)");
+            contents.AppendLine(@"    Author: TAKAHASHI Satoshi (Handle. Muzudho)");
+            contents.AppendLine(@"---------------------------------------------------------------");
             contents.AppendLine(@"");
             contents.AppendLine(@"(0) 注意書き");
             contents.AppendLine(@"(0) Attention");
@@ -28,6 +37,10 @@ namespace StellaQL
             contents.AppendLine(@"");
             contents.Append(@"    """); contents.Append(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST); contents.AppendLine(@"""ファイルを開いてくれだぜ☆（＾～＾）");
             contents.Append(@"    Please, open """); contents.Append(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST); contents.AppendLine(@""".");
+            contents.AppendLine(@"");
+            contents.Append(@"    また、その "); contents.Append(Path.GetFileName(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST)); contents.AppendLine(" ファイルを [Animation Controller Drag & Drop] 枠にドラッグ＆ドロップしてください。");
+            contents.Append(@"    And Drag&Drop the "); contents.Append(Path.GetFileName(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST)); contents.AppendLine(" file to [Animation Controller Drag & Drop] box.");
+            contents.AppendLine(@"");
             contents.AppendLine(@"");
             contents.AppendLine(@"    プログラムが正常に動くかテストすることができるぜ☆（＾～＾）（任意）");
             contents.AppendLine(@"    And condition unit test check (Option).");
@@ -288,17 +301,14 @@ namespace StellaQL
             contents.AppendLine(@"サンキュー☆（＾▽＾）");
             contents.AppendLine(@"Thank you:-)");
             contents.AppendLine(@"");
-            contents.AppendLine(@"            ステラ キューエル");
-            contents.AppendLine(@"            StellaQL");
+            contents.AppendLine(@"    ステラ キューエル");
+            contents.AppendLine(@"    StellaQL");
             contents.AppendLine(@"");
-            contents.AppendLine(@"            (ステートマシン コマンドライン)");
-            contents.AppendLine(@"            (State Machine Command Line)");
+            contents.AppendLine(@"    (ステートマシン コマンドライン)");
+            contents.AppendLine(@"    (State Machine Command Line)");
             contents.AppendLine(@"");
-            contents.AppendLine(@"    作者  : 高橋 智史 (ハンドルネーム: むずでょ)");
-            contents.AppendLine(@"    Author: TAKAHASHI Satoshi (Handle. Muzudho)");
-            contents.AppendLine(@"");
-            contents.AppendLine(@"            著作(C) 2017年");
-            contents.AppendLine(@"            (C) 2017");
+            contents.AppendLine(@"    著作(C) TAKAHASHI satoshi / 2017年");
+            contents.AppendLine(@"    (C) TAKAHASHI satoshi / 2017");
             contents.AppendLine(@"");
             contents.AppendLine(@"    日本在住");
             contents.AppendLine(@"    From    Japan");

@@ -8,37 +8,39 @@ namespace StellaQL.Acons.Demo_Zoo
     /// </summary>
     public abstract class Demo_Zoo_AbstractAControl : AbstractAControl
     {
-        public const string BASELAYER_ = "Base Layer.";
-        public const string BASELAYER_ALPACA = "Base Layer.Alpaca";
-        public const string BASELAYER_ANYSTATE = "Base Layer.Any State";
-        public const string BASELAYER_BEAR = "Base Layer.Bear";
-        public const string BASELAYER_CAT = "Base Layer.Cat";
-        public const string BASELAYER_DOG = "Base Layer.Dog";
-        public const string BASELAYER_ELEPHANT = "Base Layer.Elephant";
-        public const string BASELAYER_ENTRY = "Base Layer.Entry";
-        public const string BASELAYER_EXIT = "Base Layer.Exit";
-        public const string BASELAYER_FOO = "Base Layer.Foo";
-        public const string BASELAYER_FOX = "Base Layer.Fox";
-        public const string BASELAYER_GIRAFFE = "Base Layer.Giraffe";
-        public const string BASELAYER_HORSE = "Base Layer.Horse";
-        public const string BASELAYER_IGUANA = "Base Layer.Iguana";
-        public const string BASELAYER_JELLYFISH = "Base Layer.Jellyfish";
-        public const string BASELAYER_KANGAROO = "Base Layer.Kangaroo";
-        public const string BASELAYER_LION = "Base Layer.Lion";
-        public const string BASELAYER_MONKEY = "Base Layer.Monkey";
-        public const string BASELAYER_NUTRIA = "Base Layer.Nutria";
-        public const string BASELAYER_OX = "Base Layer.Ox";
-        public const string BASELAYER_PIG = "Base Layer.Pig";
-        public const string BASELAYER_QUETZAL = "Base Layer.Quetzal";
-        public const string BASELAYER_RABBIT = "Base Layer.Rabbit";
-        public const string BASELAYER_SHEEP = "Base Layer.Sheep";
-        public const string BASELAYER_TIGER = "Base Layer.Tiger";
-        public const string BASELAYER_UNICORN = "Base Layer.Unicorn";
-        public const string BASELAYER_VIXEN = "Base Layer.Vixen";
-        public const string BASELAYER_WOLF = "Base Layer.Wolf";
-        public const string BASELAYER_XENOPUS = "Base Layer.Xenopus";
-        public const string BASELAYER_YAK = "Base Layer.Yak";
-        public const string BASELAYER_ZEBRA = "Base Layer.Zebra";
+        public const string
+            BASELAYER_ = "Base Layer.",
+            BASELAYER_ALPACA = "Base Layer.Alpaca",
+            BASELAYER_ANYSTATE = "Base Layer.Any State",
+            BASELAYER_BEAR = "Base Layer.Bear",
+            BASELAYER_CAT = "Base Layer.Cat",
+            BASELAYER_DOG = "Base Layer.Dog",
+            BASELAYER_ELEPHANT = "Base Layer.Elephant",
+            BASELAYER_ENTRY = "Base Layer.Entry",
+            BASELAYER_EXIT = "Base Layer.Exit",
+            BASELAYER_FOO = "Base Layer.Foo",
+            BASELAYER_FOX = "Base Layer.Fox",
+            BASELAYER_GIRAFFE = "Base Layer.Giraffe",
+            BASELAYER_HORSE = "Base Layer.Horse",
+            BASELAYER_IGUANA = "Base Layer.Iguana",
+            BASELAYER_JELLYFISH = "Base Layer.Jellyfish",
+            BASELAYER_KANGAROO = "Base Layer.Kangaroo",
+            BASELAYER_LION = "Base Layer.Lion",
+            BASELAYER_MONKEY = "Base Layer.Monkey",
+            BASELAYER_NUTRIA = "Base Layer.Nutria",
+            BASELAYER_OX = "Base Layer.Ox",
+            BASELAYER_PIG = "Base Layer.Pig",
+            BASELAYER_QUETZAL = "Base Layer.Quetzal",
+            BASELAYER_RABBIT = "Base Layer.Rabbit",
+            BASELAYER_SHEEP = "Base Layer.Sheep",
+            BASELAYER_TIGER = "Base Layer.Tiger",
+            BASELAYER_UNICORN = "Base Layer.Unicorn",
+            BASELAYER_VIXEN = "Base Layer.Vixen",
+            BASELAYER_WOLF = "Base Layer.Wolf",
+            BASELAYER_XENOPUS = "Base Layer.Xenopus",
+            BASELAYER_YAK = "Base Layer.Yak",
+            BASELAYER_ZEBRA = "Base Layer.Zebra"; // semi colon
+
         public Demo_Zoo_AbstractAControl()
         {
             Code.Register(StateHash_to_record, new List<AcStateRecordable>()

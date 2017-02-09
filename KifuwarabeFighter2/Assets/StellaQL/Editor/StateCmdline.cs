@@ -52,8 +52,18 @@ public class StateCmdline : EditorWindow
         {
             m_ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(oldPath_animatorController);// アニメーター・コントローラーを再取得。
         }
-        bool repaint = false;
+        bool repaint_allWindow = false;
+        bool show_reference = false;
 
+        #region 使い方ボタン
+        if (GUILayout.Button("How to use (使い方)"))
+        {
+            show_reference = true;
+            Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
+            repaint_allWindow = true;
+        }
+        GUILayout.Space(4.0f);
+        #endregion
         GUILayout.Label("Animator controller", EditorStyles.boldLabel);
         #region ドラッグ＆ドロップ エリア
         var dropArea = GUILayoutUtility.GetRect(0.0f, 20.0f, GUILayout.ExpandWidth(true));
@@ -93,7 +103,8 @@ public class StateCmdline : EditorWindow
                                 if (null != ac_temp)
                                 {
                                     droppedPath_animatorController = AssetDatabase.GetAssetPath(ac_temp.GetInstanceID());
-                                    repaint = true;
+                                    Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
+                                    repaint_allWindow = true;
                                 }
                             }
                         }
@@ -180,15 +191,10 @@ public class StateCmdline : EditorWindow
                     info_message.Append("Executeボタンを押した☆（＾～＾）！ "); info_message.AppendLine();
                     AControllable userDefinedStateTable = UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[oldPath_animatorController];
                     Querier.Execute(m_ac, commandline, userDefinedStateTable, info_message);
-                    repaint = true;
+                    Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
+                    repaint_allWindow = true;
                     info_message.Append("Execute終わり☆（＾▽＾）！ "); info_message.AppendLine();
                 }
-            }
-            #endregion
-            #region コマンド リファレンス ボタン
-            if (GUILayout.Button("Command Reference"))
-            {
-                Reference.ToContents(info_message);
             }
             #endregion
             #region スプレッドシート出力ボタン
@@ -234,9 +240,8 @@ public class StateCmdline : EditorWindow
                 Operation_Something.ManipulateData(m_ac, aconData, updateRequest, info_message); // 更新を実行
                 StellaQLReader.DeleteUpdateRequestCsv(info_message);
 
-                repaint = true;
-                //isRefreshAnimatorWindow = true;
-                //isRefreshInspectorWindow = true;
+                Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
+                repaint_allWindow = true;
                 info_message.Append("Import spread sheet End☆（＾▽＾）！ filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
                 //info_message.AppendLine("Please, Refresh Animator window.");
                 //info_message.AppendLine("  case 1: (1) mouse right button click on Animator window tab.");
@@ -249,11 +254,11 @@ public class StateCmdline : EditorWindow
 
         #region 各種リフレッシュ
         {
-            if (repaint)
+            if (repaint_allWindow)
             {
-                Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
 
                 UnityEditor.EditorApplication.isPlaying = true; // 再生する
+                info_message.AppendLine("失敬！ 再生ボタンを押し戻してくれだぜ☆（＾▽＾）");
                 info_message.AppendLine("I'm sorry!");
                 info_message.AppendLine("    I clickeded the play button!");
                 info_message.AppendLine("Because, This is for");
@@ -262,6 +267,7 @@ public class StateCmdline : EditorWindow
 
                 // これ全部、アニメーター・ウィンドウには効かない
                 //{
+                //    Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
                 //    EditorApplication.RepaintAnimationWindow();
                 //    EditorApplication.RepaintHierarchyWindow();
                 //    EditorApplication.RepaintProjectWindow();
@@ -270,6 +276,13 @@ public class StateCmdline : EditorWindow
                 //    EditorWindow animatorWindow = EditorWindow.GetWindow<EditorWindow>("Animator");
                 //    animatorWindow.Repaint();
                 //}
+            }
+
+            // 再生ボタンを押したという注意書きのあとで。
+            if (show_reference)
+            {
+                info_message.AppendLine(); // 注意書きとの間に、1行隙間を空けておく。
+                Reference.ToContents(info_message);
             }
 
             //if (isRefreshInspectorWindow)

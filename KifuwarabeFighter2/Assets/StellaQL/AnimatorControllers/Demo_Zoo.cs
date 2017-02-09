@@ -8,49 +8,38 @@
 namespace StellaQL.Acons.Demo_Zoo
 {
     /// <summary>
-    /// (Step 3.) Click [Generate fullpath constant C#] button. and "using StellaQL.FullpathConst;". ([Generate fullpath constant C#]ボタンをクリックしてください)
-    /// 
-    /// (Step 4.) Please, create table definition of statemachines or states. (ステートマシン、ステートのテーブル定義を作成してください)
-    /// Extend generated class. ([Generate fullpath constant C#]ボタンで作ったクラスを継承してください)
+    /// (Step 3.) Click [Generate C# (Fullpath of all states)] button. ([Generate C# (Fullpath of all states)]ボタンをクリックしてください)
+    /// (Step 4.) Please, create AControl class extends generated XXXX_YYYY_AbstractAControl class. ([Generate fullpath constant C#]ボタンで作ったクラスを継承してください)
     /// </summary>
     public class AControl : Demo_Zoo_AbstractAControl
     {
         /// <summary>
-        /// (Step 8.) Please, make singleton. (シングルトンにしてください)
-        /// Use by Assets/StellaQL/UserDefinedDatabase.cs file. (Assets/StellaQL/UserDefinedDatabase.cs ファイルで使います)
+        /// (Step 8.) Please, make singleton. Use by Assets/StellaQL/UserDefinedDatabase.cs file. (シングルトンにしてください。Assets/StellaQL/UserDefinedDatabase.cs ファイルで使います)
         /// </summary>
         static AControl() { Instance = new AControl(); }
         public static AControl Instance { get; private set; }
 
-        #region (Step 5.) Unfortunaly, Please, list user defined tags for StellaQL.  (残念ですが、StellaQL用のユーザー定義タグを定数にしてください)
-        public const string TAG_ZERO = "Zero";
-        public const string TAG_ALPHA = "Alpha";
-        public const string TAG_BETA = "Beta";
-        public const string TAG_CEE = "Cee";
-        public const string TAG_DEE = "Dee";
-        public const string TAG_EEE = "Eee";
-        public const string TAG_HORN = "Horn";
+        #region (Step 5.) You can defined tags for StellaQL command line.  (StellaQLのコマンドライン用タグを作ることができます)
+        public const string
+            TAG_ZERO = "Zero",
+            TAG_ALPHA = "Alpha",
+            TAG_BETA = "Beta",
+            TAG_CEE = "Cee",
+            TAG_DEE = "Dee",
+            TAG_EEE = "Eee",
+            TAG_HORN = "Horn",
+            TAG_ = ""; // Don't use. Sentinel value for a list that ends with a comma. カンマで終わるリストを作るために置いてあるぜ☆（＾～＾）使うなだぜ☆（＾～＾）
         #endregion
 
-        AControl()
-        {
+        AControl() {
             #region (Step 6.) Activate user defined tags. (ユーザー定義タグの有効化)
-            TagString_to_hash = Code.HashesDic(new []{
-                TAG_ZERO,
-                TAG_ALPHA,
-                TAG_BETA,
-                TAG_CEE,
-                TAG_DEE,
-                TAG_EEE,
-                TAG_HORN,
-            });
+            TagString_to_hash = Code.HashesDic(new []{  TAG_ZERO,   TAG_ALPHA,  TAG_BETA,   TAG_CEE,    TAG_DEE,    TAG_EEE,    TAG_HORN,   });
             #endregion
 
-            #region (Step 7.) You can set your defined tags. (あなたの定義したタグを設定することができます)
+            #region (Step 7.) You can set your defined tags to state. (あなたの定義したタグをステートに関連付けることができます)
             SetTag(BASELAYER_           , new[] { TAG_ZERO });
 
-            // 別のやり方の例。(Another way)
-            // もし独自のプロパティーがあって初期化したい場合は、レコードごと上書きしてください。
+            // 別のやり方の例。(Another way) もし独自のプロパティーがあって初期化したい場合は、レコードごと上書きしてください。
             Set(new DefaultAcState(BASELAYER_FOO, new[] { TAG_ZERO }));
 
             SetTag(BASELAYER_ANYSTATE   , new[] { TAG_ZERO });// 青緑色の[Any State]とは違って、灰色の[Any State]
