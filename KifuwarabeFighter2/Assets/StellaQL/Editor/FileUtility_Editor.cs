@@ -63,13 +63,33 @@ namespace StellaQL
                 Path.GetFileNameWithoutExtension(fullpath) + "_Abstract.cs"
                 );
         }
-        public static string Filepath_LogStateSelect(string aconName)
+        public static string Filepath_LogStateSelect(string aconName, string theName)
         {
-            return "./_log_(" + aconName + ")STATE_SELECT.csv";
+            StringBuilder sb = new StringBuilder();
+            if ("" == theName)
+            {
+                sb.Append("./_log_("); sb.Append(aconName); sb.Append(")STATE_SELECT.csv");
+                return sb.ToString();
+            }
+            else
+            {
+                sb.Append("./_log_("); sb.Append(aconName); sb.Append(")("); sb.Append(theName); sb.Append(")STATE_SELECT.csv");
+                return sb.ToString();
+            }
         }
-        public static string Filepath_LogTransitionSelect(string aconName)
+        public static string Filepath_LogTransitionSelect(string aconName, string theName)
         {
-            return "./_log_(" + aconName + ")TRANSITION_SELECT.csv";
+            StringBuilder sb = new StringBuilder();
+            if ("" == theName)
+            {
+                sb.Append("./_log_("); sb.Append(aconName); sb.Append(")TRANSITION_SELECT.csv");
+                return sb.ToString();
+            }
+            else
+            {
+                sb.Append("./_log_("); sb.Append(aconName); sb.Append(")("); sb.Append(theName); sb.Append(")TRANSITION_SELECT.csv");
+                return sb.ToString();
+            }
         }
         public static string Filepath_LogParameters(string aconName, bool outputDefinition)
         {

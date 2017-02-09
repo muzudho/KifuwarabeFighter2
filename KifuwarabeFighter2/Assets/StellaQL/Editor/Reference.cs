@@ -76,6 +76,9 @@ namespace StellaQL
             contents.AppendLine(@"    # 単語は１つ以上のスペース区切りです。");
             contents.AppendLine(@"    # A word is separated by one or more spaces.");
             contents.AppendLine(@"");
+            contents.AppendLine(@"    # 命令文はセミコロン区切りです。");
+            contents.AppendLine(@"    # A statement is separated by semi colon(;).");
+            contents.AppendLine(@"");
             contents.AppendLine(@"    # 次の文はどちらも同じです。");
             contents.AppendLine(@"    # Both of the following sentences are the same.");
             contents.AppendLine(@"");

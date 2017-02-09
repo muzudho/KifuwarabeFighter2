@@ -28,7 +28,17 @@ public class StateCmdline : EditorWindow
     /// </summary>
     string commandline = "# Sample" + Environment.NewLine+
         "STATE SELECT" + Environment.NewLine +
-        "WHERE \".*Dog\"" + Environment.NewLine;
+        "WHERE" + Environment.NewLine +
+        @"    "".*Dog""" + Environment.NewLine +
+        "THE" + Environment.NewLine +
+        @"    Zoo001" + Environment.NewLine +
+        @";" + Environment.NewLine +
+        "STATE SELECT" + Environment.NewLine +
+        "WHERE" + Environment.NewLine +
+        @"    "".*Cat""" + Environment.NewLine +
+        "THE" + Environment.NewLine +
+        @"    Zoo002" + Environment.NewLine +
+        "";
     string info_message_ofTextbox = "Konnichiwa.";
     static StringBuilder info_message; // 情報メッセージ
     Vector2 scroll_commandBox;
@@ -193,6 +203,10 @@ public class StateCmdline : EditorWindow
                     info_message.Append("Executeボタンを押した☆（＾～＾）！ "); info_message.AppendLine();
                     AControllable userDefinedStateTable = UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[oldPath_animatorController];
                     SequenceQuerier.Execute(m_ac, commandline, userDefinedStateTable, info_message);
+                    //{
+                    //    int caret = 0;
+                    //    Querier.Execute(m_ac, commandline, ref caret, userDefinedStateTable, info_message);
+                    //}
                     Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
                     repaint_allWindow = true;
                     info_message.Append("Execute終わり☆（＾▽＾）！ "); info_message.AppendLine();
