@@ -46,6 +46,8 @@ public class StateCmdline : EditorWindow
         window.Show();
     }
 
+    public const string BUTTON_LABEL_GENERATE_FULLPATH = "Generate C# (Fullpath of all states)";
+
     void OnGUI()
     {
         if (null== m_ac)
@@ -168,7 +170,7 @@ public class StateCmdline : EditorWindow
             }
 
             #region フルパス定数作成ボタン
-            if (GUILayout.Button("Generate C# (Fullpath of all states)"))
+            if (GUILayout.Button(BUTTON_LABEL_GENERATE_FULLPATH))
             {
                 info_message.Append("Generate fullpath Start☆（＾～＾）！ filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
                 FullpathConstantGenerator.WriteCshapScript(m_ac, info_message);

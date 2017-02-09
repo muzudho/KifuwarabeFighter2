@@ -199,6 +199,7 @@ namespace StellaQL
         }
 
         /// <summary>
+        /// FIXME: この関数は使うんだろうか☆（＾～＾）？
         /// 完全一致タグ検索
         /// </summary>
         public HashSet<AcStateRecordable> FetchByEverythingTags(HashSet<int> requiredAllTags)

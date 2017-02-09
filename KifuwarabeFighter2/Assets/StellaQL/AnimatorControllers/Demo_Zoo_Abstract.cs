@@ -4,7 +4,7 @@ namespace StellaQL.Acons.Demo_Zoo
 {
     /// <summary>
     /// This file was automatically generated.
-    /// It was created by [Generate fullpath constant C #] button.
+    /// It was created by [Generate C# (Fullpath of all states)] button.
     /// </summary>
     public abstract class Demo_Zoo_AbstractAControl : AbstractAControl
     {

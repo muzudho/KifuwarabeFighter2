@@ -691,12 +691,12 @@ namespace StellaQL
         /// ２つのステートを トランジションで結ぶ。ステートは複数指定でき、src→dst方向の総当たりで全部結ぶ。
         /// </summary>
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
-        public static void Insert(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, Dictionary<string, string> properties, StringBuilder message)
+        public static void Insert(AnimatorController ac, HashSet<AnimatorState> states_src, HashSet<AnimatorState> states_dst, Dictionary<string, string> properties, StringBuilder info_message)
         {
-            message.Append("Transition.Insert: Source "); message.Append(states_src.Count); message.Append(" states. Destination "); message.Append(states_dst.Count); message.AppendLine(" states.");
+            info_message.Append("Transition.Insert: Source "); info_message.Append(states_src.Count); info_message.Append(" states. Destination "); info_message.Append(states_dst.Count); info_message.AppendLine(" states.");
             foreach (AnimatorState state_src in states_src) {
                 foreach (AnimatorState state_dst in states_dst) {
-                    message.Append("Insert: "); message.Append(state_src.name); message.Append(" -> "); message.AppendLine(state_dst.name);
+                    //message.Append("Insert: "); message.Append(state_src.name); message.Append(" -> "); message.AppendLine(state_dst.name);
                     AnimatorStateTransition transition = state_src.AddTransition(state_dst);
                     UpdateProperty(ac, transition, properties);
                 }

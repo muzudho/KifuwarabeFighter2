@@ -1045,16 +1045,12 @@ a", ref caret);
             HashSet<AcStateRecordable> recordset = AControl.Instance.FetchByEverythingTags(
                 Code.Hashes(new[] {AControl.TAG_ZERO}));
 
-            Assert.AreEqual(9, recordset.Count);
+            Assert.AreEqual(5, recordset.Count);
             Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_)]));
             Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_FOO)]));
             Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_ANYSTATE)]));
             Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_ENTRY)]));
             Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_EXIT)]));
-            Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_FOX)]));
-            Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_LION)]));
-            Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_PIG)]));
-            Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_WOLF)]));
         }
         #endregion
     }

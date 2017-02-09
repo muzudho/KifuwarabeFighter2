@@ -29,7 +29,7 @@ namespace StellaQL
             contents.AppendLine("{");
             contents.AppendLine("    /// <summary>");
             contents.AppendLine("    /// This file was automatically generated.");
-            contents.AppendLine("    /// It was created by [Generate fullpath constant C #] button.");
+            contents.Append("    /// It was created by ["); contents.Append(StateCmdline.BUTTON_LABEL_GENERATE_FULLPATH); contents.AppendLine("] button.");
             contents.AppendLine("    /// </summary>");
             contents.Append("    public abstract class "); contents.Append(abstractClassName);
             contents.AppendLine(" : AbstractAControl");
