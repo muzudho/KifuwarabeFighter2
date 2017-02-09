@@ -20,8 +20,30 @@ namespace StellaQL
     {
         public static bool Execute(AnimatorController ac, string query, AControllable userDefinedAControl, StringBuilder info_message)
         {
+            LexcalP.DeleteLineCommentAndBlankLine(ref query);// コメントと空行を全削除する。
+
             int caret = 0;
-            return Querier.Execute( ac, query, ref caret, userDefinedAControl, info_message);
+            QueryTokens qt = new QueryTokens();
+            for (;;) // 無限ループ
+            {
+                qt.Clear("構文該当なし");
+                if (Querier.FixedQuery(ac, query, ref caret, ref qt, userDefinedAControl, info_message))
+                // if (Querier.Execute(ac, query, ref caret, userDefinedAControl, info_message))
+                {
+                        // クエリーが有ったときは　とりあえず正常終了させとく。
+                        return true;
+                }
+                else if (LexcalP.FixedWord(";", query, ref caret))
+                {
+                    // セミコロンが有ったときは　とりあえず正常終了させとく。
+                    return true;
+                }
+                else
+                {
+                    // クエリーもセミコロンも無いときは異常終了。
+                    throw new UnityException("クエリーも、セミコロンも無いぜ☆（＾▽＾）！ 残り:"+ query.Substring(caret));
+                }
+            }
         }
     }
 
@@ -34,6 +56,10 @@ namespace StellaQL
         {
         }
         public QueryTokens(string matchedSyntaxName)
+        {
+            this.Clear(matchedSyntaxName);
+        }
+        public void Clear(string matchedSyntaxName)
         {
             Target = "";
             Target2 = "";
@@ -123,10 +149,22 @@ namespace StellaQL
     {
         public static bool Execute(AnimatorController ac, string query, ref int ref_caret, AControllable userDefinedAControl, StringBuilder info_message)
         {
-            Dictionary<int, AcStateRecordable> universe = userDefinedAControl.StateHash_to_record;
-            LexcalP.DeleteLineCommentAndBlankLine(ref query);
+            LexcalP.DeleteLineCommentAndBlankLine(ref query);// コメントと空行を全削除する。
 
             QueryTokens qt = new QueryTokens("構文該当なし");
+            bool matched = FixedQuery(ac, query, ref ref_caret, ref qt, userDefinedAControl, info_message);
+            if (!matched) // 構文にマッチしなかった。
+            {
+                info_message.Append("構文エラー: "); info_message.Append(qt.MatchedSyntaxName); info_message.Append(" ");
+                info_message.Append(qt.MatchedSyntaxCaret); info_message.AppendLine(" 文字目まで一致（改行は２文字とカウント）");
+            }
+            return matched;
+        }
+
+        public static bool FixedQuery(AnimatorController ac, string query, ref int ref_caret, ref QueryTokens qt, AControllable userDefinedAControl, StringBuilder info_message)
+        {
+            Dictionary<int, AcStateRecordable> universe = userDefinedAControl.StateHash_to_record;
+
             int caret = ref_caret;
 
             if (SyntaxP.Parse_TransitionAnystateInsert(query, ref caret, ref qt))
@@ -220,8 +258,8 @@ namespace StellaQL
                 StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransitionSelect(ac.name), contents, info_message);
                 return true;
             }
-            info_message.Append("構文エラー: "); info_message.Append( qt.MatchedSyntaxName); info_message.Append(" ");
-            info_message.Append(qt.MatchedSyntaxCaret); info_message.AppendLine(" 文字目まで一致（改行は２文字とカウント）"); return false;
+            // 構文にはマッチしなかった。
+            return false;
         }
 
         /// <summary>
@@ -1200,6 +1238,13 @@ namespace StellaQL
             if (match.Success) { caret += match.Groups[1].Value.Length; return true; } return false;
         }
 
+        /// <summary>
+        /// 固定の単語がそこにあるか判定する。
+        /// </summary>
+        /// <param name="word"></param>
+        /// <param name="query"></param>
+        /// <param name="caret"></param>
+        /// <returns></returns>
         public static bool FixedWord(string word, string query, ref int caret) {
             int oldCaret = caret;
             if (caret == query.IndexOf(word, caret, StringComparison.OrdinalIgnoreCase)){
