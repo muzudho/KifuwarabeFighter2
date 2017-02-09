@@ -89,7 +89,8 @@ namespace StellaQL
                             FROM ""Base Layer""
                             TO ""Base Layer\.Foo""";
             StringBuilder message = new StringBuilder();
-            bool successful = Querier.Execute(m_ac, query, AControl.Instance, message);
+            int caret = 0;
+            bool successful = Querier.Execute(m_ac, query, ref caret, AControl.Instance, message);
 
             Debug.Log(message.ToString());
             Assert.IsTrue(successful);
@@ -101,7 +102,8 @@ namespace StellaQL
                             FROM ""Base Layer""
                             TO ""Base Layer\.Foo""";
             StringBuilder message = new StringBuilder();
-            bool successful = Querier.Execute(m_ac, query, AControl.Instance, message);
+            int caret = 0;
+            bool successful = Querier.Execute(m_ac, query, ref caret, AControl.Instance, message);
 
             Debug.Log(message.ToString());
             Assert.IsTrue(successful);
@@ -112,7 +114,8 @@ namespace StellaQL
             string query = @"TRANSITION EXIT INSERT
                             FROM ""Base Layer\.Foo""";
             StringBuilder message = new StringBuilder();
-            bool successful = Querier.Execute(m_ac, query, AControl.Instance, message);
+            int caret = 0;
+            bool successful = Querier.Execute(m_ac, query, ref caret, AControl.Instance, message);
 
             Debug.Log(message.ToString());
             Assert.IsTrue(successful);
@@ -490,7 +493,8 @@ namespace StellaQL
                         FROM ""Base Layer""
                         TO ""Base Layer\.Foo""";
             QueryTokens qt = new QueryTokens();
-            bool successful = SyntaxP.Parse_TransitionAnystateInsert(query, ref qt);
+            int caret = 0;
+            bool successful = SyntaxP.Parse_TransitionAnystateInsert(query, ref caret, ref qt);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
@@ -515,7 +519,8 @@ namespace StellaQL
                         FROM ""Base Layer""
                         TO ""Base Layer\.Foo""";
             QueryTokens qt = new QueryTokens();
-            bool successful = SyntaxP.Parse_TransitionEntryInsert(query, ref qt);
+            int caret = 0;
+            bool successful = SyntaxP.Parse_TransitionEntryInsert(query, ref caret, ref qt);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
@@ -539,7 +544,8 @@ namespace StellaQL
             string query = @"TRANSITION EXIT INSERT
                         FROM ""Base Layer\.Foo""";
             QueryTokens qt = new QueryTokens();
-            bool successful = SyntaxP.Parse_TransitionExitInsert(query, ref qt);
+            int caret = 0;
+            bool successful = SyntaxP.Parse_TransitionExitInsert(query, ref caret, ref qt);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
@@ -564,7 +570,8 @@ namespace StellaQL
                         SET name0 ""WhiteCat"" name1 ""WhiteDog""
                         WHERE ""Base Layout""";
             QueryTokens qt = new QueryTokens();
-            bool successful = SyntaxP.Parse_StateInsert(query, ref qt);
+            int caret = 0;
+            bool successful = SyntaxP.Parse_StateInsert(query, ref caret, ref qt);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, qt.Target);
@@ -590,7 +597,8 @@ namespace StellaQL
                         SET name ""WhiteCat"" age 7
                         WHERE TAG ([(Alpha Cee)(Beta)]{Eee})";
             QueryTokens qt = new QueryTokens();
-            bool successful = SyntaxP.Parse_StateUpdate(query, ref qt);
+            int caret = 0;
+            bool successful = SyntaxP.Parse_StateUpdate(query, ref caret, ref qt);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, qt.Target);
@@ -616,7 +624,8 @@ namespace StellaQL
                         SET name0 ""WhiteCat"" name1 ""WhiteDog""
                         WHERE ""Base Layout""";
             QueryTokens qt = new QueryTokens();
-            bool successful = SyntaxP.Parse_StateDelete(query, ref qt);
+            int caret = 0;
+            bool successful = SyntaxP.Parse_StateDelete(query, ref caret, ref qt);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, qt.Target);
@@ -641,7 +650,8 @@ namespace StellaQL
             string query = @"STATE SELECT
                         WHERE TAG ([(Alpha Cee)(Beta)]{Eee})";
             QueryTokens qt = new QueryTokens();
-            bool successful = SyntaxP.Parse_StateSelect(query, ref qt);
+            int caret = 0;
+            bool successful = SyntaxP.Parse_StateSelect(query, ref caret, ref qt);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.STATE, qt.Target);
@@ -666,7 +676,8 @@ namespace StellaQL
                         FROM ""Base Layer\.Cat""
                         TO ""Base Layer\.Dog""";
             QueryTokens qt = new QueryTokens();
-            bool successful = SyntaxP.Parse_TransitionInsert(query, ref qt);
+            int caret = 0;
+            bool successful = SyntaxP.Parse_TransitionInsert(query, ref caret, ref qt);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
@@ -695,7 +706,8 @@ namespace StellaQL
                         FROM ""Base Layer\.Cat""
                         TO ""Base Layer\.Dog""";
                 QueryTokens qt = new QueryTokens();
-                bool successful = SyntaxP.Parse_TransitionInsert(query, ref qt);
+                int caret = 0;
+                bool successful = SyntaxP.Parse_TransitionInsert(query, ref caret, ref qt);
                 Assert.IsTrue(successful);
             }
 
@@ -706,7 +718,8 @@ namespace StellaQL
                         FROM ""Base Layer\.Cat""
                         TO ""Base Layer\.Dog""";
                 QueryTokens qt = new QueryTokens();
-                bool successful = SyntaxP.Parse_TransitionUpdate(query, ref qt);
+                int caret = 0;
+                bool successful = SyntaxP.Parse_TransitionUpdate(query, ref caret, ref qt);
 
                 Assert.IsTrue(successful);
                 Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
@@ -733,7 +746,8 @@ namespace StellaQL
                         FROM ""Base Layer.SMove""
                         TO TAG (BusyX Block)";
             QueryTokens qt = new QueryTokens();
-            bool successful = SyntaxP.Parse_TransitionDelete(query, ref qt);
+            int caret = 0;
+            bool successful = SyntaxP.Parse_TransitionDelete(query, ref caret, ref qt);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);
@@ -755,7 +769,8 @@ namespace StellaQL
                         FROM ""Base Layer.SMove""
                         TO TAG (BusyX Block)";
             QueryTokens qt = new QueryTokens();
-            bool successful = SyntaxP.Parse_TransitionSelect(query, ref qt);
+            int caret = 0;
+            bool successful = SyntaxP.Parse_TransitionSelect(query, ref caret, ref qt);
 
             Assert.IsTrue(successful);
             Assert.AreEqual(QueryTokens.TRANSITION, qt.Target);

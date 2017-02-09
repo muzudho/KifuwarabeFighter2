@@ -192,7 +192,7 @@ public class StateCmdline : EditorWindow
                 {
                     info_message.Append("Executeボタンを押した☆（＾～＾）！ "); info_message.AppendLine();
                     AControllable userDefinedStateTable = UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[oldPath_animatorController];
-                    Querier.Execute(m_ac, commandline, userDefinedStateTable, info_message);
+                    SequenceQuerier.Execute(m_ac, commandline, userDefinedStateTable, info_message);
                     Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
                     repaint_allWindow = true;
                     info_message.Append("Execute終わり☆（＾▽＾）！ "); info_message.AppendLine();
