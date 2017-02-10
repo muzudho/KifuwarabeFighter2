@@ -1,5 +1,44 @@
-STATE INSERT
-SET
-    name0 Alpaca
+# FIXME: これを実行すると、テストケースが変わってしまうのも難点。
+
+STATE DELETE
+WORDS
+    ".*"
 WHERE
     "New Layer"
+;
+STATE INSERT
+WORDS
+    Alpaca
+    "Any State"
+    Bear
+    Cat
+    Dog
+    Elephant
+    Entry
+    Exit
+    Foo
+    Fox
+    Giraffe
+    Horse
+    Iguana
+    Jellyfish
+    Kangaroo
+    Lion
+    Monkey
+    Nutria
+    Ox
+    Pig
+    Quetzal
+    Rabbit
+    Sheep
+    Tiger
+    Unicorn
+    Vixen
+    Wolf
+    Xenopus
+    Yak
+    Zebra
+WHERE
+    "New Layer"
+;
+CSHARPSCRIPT GENERATE_FULLPATH

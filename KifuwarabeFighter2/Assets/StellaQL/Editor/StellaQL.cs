@@ -78,7 +78,7 @@ namespace StellaQL
             Words = new List<string>();
             Set = new Dictionary<string, string>();
             From_FullnameRegex = "";
-            From_Attr = "";
+            From_Tag = "";
             To_FullnameRegex = "";
             To_Tag = "";
             Where_FullnameRegex = "";
@@ -94,10 +94,12 @@ namespace StellaQL
         public const string ANYSTATE = "ANYSTATE";
         public const string ENTRY = "ENTRY";
         public const string EXIT = "EXIT";
+        public const string CSHARPSCRIPT = "CSHARPSCRIPT";
         public const string INSERT = "INSERT";
         public const string UPDATE = "UPDATE";
         public const string DELETE = "DELETE";
         public const string SELECT = "SELECT";
+        public const string GENERATE_FULLPATH = "GENERATE_FULLPATH";
         public const string WORDS = "WORDS";
         public const string SET = "SET";
         public const string FROM = "FROM";
@@ -133,7 +135,7 @@ namespace StellaQL
         /// <summary>
         /// 括弧を使った式 が入る。
         /// </summary>
-        public string From_Attr { get; set; }
+        public string From_Tag { get; set; }
         /// <summary>
         /// ステート・フルネーム が入る。
         /// </summary>
@@ -256,6 +258,11 @@ namespace StellaQL
                         StringBuilder contents = new StringBuilder();
                         AconDataUtility.CreateCsvTable_Transition(recordSet, false, contents);
                         StellaQLWriter.Write(StellaQLWriter.Filepath_LogTransitionSelect(ac.name, qt.The), contents, info_message);
+                        return true;
+                    }
+                case SyntaxP.Pattern.CsharpscriptGenerateFullpath:
+                    {
+                        FullpathConstantGenerator.WriteCshapScript(ac, info_message);
                         return true;
                     }
                 case SyntaxP.Pattern.NotMatch: // thru
@@ -463,7 +470,7 @@ namespace StellaQL
         {
             if ("" != qt.From_FullnameRegex) { return RecordsFilter.String_StateFullNameRegex(qt.From_FullnameRegex, universe, message); }
             else {
-                List<string> tokens; SyntaxPOther.String_to_tokens(qt.From_Attr, out tokens);
+                List<string> tokens; SyntaxPOther.String_to_tokens(qt.From_Tag, out tokens);
 
                 List<List<string>> tokenLockers;
                 List<string> tokenLockersOperation;
@@ -522,8 +529,8 @@ namespace StellaQL
 
             if (hitRecordHashes.Count < 1) {
                 message.AppendLine("Mension: Animation Controller Path OK?");
-                message.AppendLine("Mension: const string STATE_xxx OK?");
-                message.AppendLine("Mension: Full path OK? ex.) Base Layer.Hoge");
+                message.AppendLine("Mension: ["+ StateCmdline.BUTTON_LABEL_GENERATE_FULLPATH + "] update OK?");
+                message.AppendLine("Mension: parent path OK? ex.) Base Layer.Hoge");
                 message.AppendLine("Mension: Spell OK?");
             }
             return hitRecordHashes;
@@ -715,6 +722,7 @@ namespace StellaQL
             TransitionUpdate,
             TransitionDelete,
             TransitionSelect,
+            CsharpscriptGenerateFullpath,
             NotMatch
         }
 
@@ -735,6 +743,7 @@ namespace StellaQL
             else if (Fixed_TransitionUpdate(query, ref caret, ref qt)) { ref_caret = caret; return Pattern.TransitionUpdate; }
             else if (Fixed_TransitionDelete(query, ref caret, ref qt)) { ref_caret = caret; return Pattern.TransitionDelete; }
             else if (Fixed_TransitionSelect(query, ref caret, ref qt)) { ref_caret = caret; return Pattern.TransitionSelect; }
+            else if (Fixed_CsharpscriptGenerateFullpath(query, ref caret, ref qt)) { ref_caret = caret; return Pattern.CsharpscriptGenerateFullpath; }
             return Pattern.NotMatch;// 構文にはマッチしなかった。
         }
 
@@ -805,7 +814,7 @@ namespace StellaQL
                 qt.From_FullnameRegex = stringWithoutDoubleQuotation;
             }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return NotMatched(qt, caret, ref maxQt); }
-                qt.From_Attr = parenthesis;
+                qt.From_Tag = parenthesis;
             }else { return NotMatched(qt, caret, ref maxQt); }
 
             if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); }
@@ -848,7 +857,7 @@ namespace StellaQL
                 qt.From_FullnameRegex = stringWithoutDoubleQuotation;
             }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
-                qt.From_Attr = parenthesis;
+                qt.From_Tag = parenthesis;
             }else { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
             if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
@@ -891,7 +900,7 @@ namespace StellaQL
                 qt.From_FullnameRegex = stringWithoutDoubleQuotation;
             }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
-                qt.From_Attr = parenthesis;
+                qt.From_Tag = parenthesis;
             }else { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             maxQt = qt; ref_caret = caret; return true;
         }
@@ -1080,7 +1089,7 @@ namespace StellaQL
             else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
-                qt.From_Attr = parenthesis;
+                qt.From_Tag = parenthesis;
             }
             else { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
@@ -1135,7 +1144,7 @@ namespace StellaQL
             else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
-                qt.From_Attr = parenthesis;
+                qt.From_Tag = parenthesis;
             }
             else {
                 return SyntaxP.NotMatched(qt, caret, ref maxQt);
@@ -1185,7 +1194,7 @@ namespace StellaQL
             else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
-                qt.From_Attr = parenthesis;
+                qt.From_Tag = parenthesis;
             }
             else { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
@@ -1233,7 +1242,7 @@ namespace StellaQL
             else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret))
             {
                 if (!LexcalP.VarParentesis(query, ref caret, out parenthesis)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
-                qt.From_Attr = parenthesis;
+                qt.From_Tag = parenthesis;
             }
             else { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
@@ -1257,6 +1266,24 @@ namespace StellaQL
                 else if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)) { qt.The = stringWithoutDoubleQuotation; }
                 else { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             }
+
+            maxQt = qt; ref_caret = caret; return true;
+        }
+
+        /// <summary>
+        /// CSHARPSCRIPT GENERATE_FULLPATH
+        /// </summary>
+        public static bool Fixed_CsharpscriptGenerateFullpath(string query, ref int ref_caret, ref QueryTokens maxQt)
+        {
+            QueryTokens qt = new QueryTokens(QueryTokens.CSHARPSCRIPT + " " + QueryTokens.GENERATE_FULLPATH);
+            int caret = ref_caret;
+            LexcalP.VarSpaces(query, ref caret);
+
+            if (!LexcalP.FixedWord(QueryTokens.CSHARPSCRIPT, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.CSHARPSCRIPT;
+
+            if (!LexcalP.FixedWord(QueryTokens.GENERATE_FULLPATH, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.GENERATE_FULLPATH;
 
             maxQt = qt; ref_caret = caret; return true;
         }

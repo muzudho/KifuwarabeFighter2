@@ -512,7 +512,7 @@ namespace StellaQL
             Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("Base Layer", qt.From_FullnameRegex);
-            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.From_Tag);
             Assert.AreEqual(@"Base Layer\.Foo", qt.To_FullnameRegex);
             Assert.AreEqual("", qt.To_Tag);
             Assert.AreEqual("", qt.Where_FullnameRegex);
@@ -540,7 +540,7 @@ namespace StellaQL
             Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("Base Layer", qt.From_FullnameRegex);
-            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.From_Tag);
             Assert.AreEqual(@"Base Layer\.Foo", qt.To_FullnameRegex);
             Assert.AreEqual("", qt.To_Tag);
             Assert.AreEqual("", qt.Where_FullnameRegex);
@@ -567,7 +567,7 @@ namespace StellaQL
             Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual(@"Base Layer\.Foo", qt.From_FullnameRegex);
-            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.From_Tag);
             Assert.AreEqual("", qt.To_FullnameRegex);
             Assert.AreEqual("", qt.To_Tag);
             Assert.AreEqual("", qt.Where_FullnameRegex);
@@ -596,7 +596,7 @@ namespace StellaQL
             Assert.AreEqual("White Dog", qt.Words[1]);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("", qt.From_FullnameRegex);
-            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.From_Tag);
             Assert.AreEqual("", qt.To_FullnameRegex);
             Assert.AreEqual("", qt.To_Tag);
             Assert.AreEqual("Base Layout", qt.Where_FullnameRegex);
@@ -625,7 +625,7 @@ namespace StellaQL
             Assert.AreEqual("WhiteCat", qt.Set["name"]);
             Assert.AreEqual("7", qt.Set["age"]);
             Assert.AreEqual("", qt.From_FullnameRegex);
-            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.From_Tag);
             Assert.AreEqual("", qt.To_FullnameRegex);
             Assert.AreEqual("", qt.To_Tag);
             Assert.AreEqual("", qt.Where_FullnameRegex);
@@ -654,7 +654,7 @@ namespace StellaQL
             Assert.AreEqual("White Dog", qt.Words[1]);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("", qt.From_FullnameRegex);
-            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.From_Tag);
             Assert.AreEqual("", qt.To_FullnameRegex);
             Assert.AreEqual("", qt.To_Tag);
             Assert.AreEqual("Base Layout", qt.Where_FullnameRegex);
@@ -680,7 +680,7 @@ namespace StellaQL
             Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("", qt.From_FullnameRegex);
-            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.From_Tag);
             Assert.AreEqual("", qt.To_FullnameRegex);
             Assert.AreEqual("", qt.To_Tag);
             Assert.AreEqual(".*Dog", qt.Where_FullnameRegex);
@@ -706,7 +706,7 @@ namespace StellaQL
             Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("", qt.From_FullnameRegex);
-            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.From_Tag);
             Assert.AreEqual("", qt.To_FullnameRegex);
             Assert.AreEqual("", qt.To_Tag);
             Assert.AreEqual("", qt.Where_FullnameRegex);
@@ -738,7 +738,7 @@ namespace StellaQL
             Assert.IsTrue(qt.Set.ContainsKey("ExitTime"));
             Assert.AreEqual("1", qt.Set["ExitTime"]);
             Assert.AreEqual(@"Base Layer\.Cat", qt.From_FullnameRegex);
-            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.From_Tag);
             Assert.AreEqual(@"Base Layer\.Dog", qt.To_FullnameRegex);
             Assert.AreEqual("", qt.To_Tag);
             Assert.AreEqual("", qt.The);
@@ -782,7 +782,7 @@ namespace StellaQL
                 Assert.IsTrue(qt.Set.ContainsKey("ExitTime"));
                 Assert.AreEqual("0.75", qt.Set["ExitTime"]);
                 Assert.AreEqual(@"Base Layer\.Cat", qt.From_FullnameRegex);
-                Assert.AreEqual("", qt.From_Attr);
+                Assert.AreEqual("", qt.From_Tag);
                 Assert.AreEqual(@"Base Layer\.Dog", qt.To_FullnameRegex);
                 Assert.AreEqual("", qt.To_Tag);
                 Assert.AreEqual("", qt.The);
@@ -808,7 +808,7 @@ namespace StellaQL
             Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("Base Layer.SMove", qt.From_FullnameRegex);
-            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.From_Tag);
             Assert.AreEqual("", qt.To_FullnameRegex);
             Assert.AreEqual("(BusyX Block)", qt.To_Tag);
             Assert.AreEqual("", qt.The);
@@ -833,9 +833,34 @@ namespace StellaQL
             Assert.AreEqual(0, qt.Words.Count);
             Assert.AreEqual(0, qt.Set.Count);
             Assert.AreEqual("Base Layer.SMove", qt.From_FullnameRegex);
-            Assert.AreEqual("", qt.From_Attr);
+            Assert.AreEqual("", qt.From_Tag);
             Assert.AreEqual("", qt.To_FullnameRegex);
             Assert.AreEqual("(BusyX Block)", qt.To_Tag);
+            Assert.AreEqual("", qt.The);
+        }
+
+        /// <summary>
+        /// 構文解析 CSHARPSCRIPT GENERATE_FULLPATH 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_CsharpscriptGenerateFullpath()
+        {
+            string query = @"CSHARPSCRIPT GENERATE_FULLPATH";
+            QueryTokens qt = new QueryTokens();
+            int caret = 0;
+            bool successful = SyntaxP.Fixed_CsharpscriptGenerateFullpath(query, ref caret, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.CSHARPSCRIPT, qt.Target);
+            Assert.AreEqual(QueryTokens.GENERATE_FULLPATH, qt.Manipulation);
+            Assert.AreEqual(0, qt.Words.Count);
+            Assert.AreEqual(0, qt.Set.Count);
+            Assert.AreEqual("", qt.Where_FullnameRegex);
+            Assert.AreEqual("", qt.Where_Tag);
+            Assert.AreEqual("", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Tag);
+            Assert.AreEqual("", qt.To_FullnameRegex);
+            Assert.AreEqual("", qt.To_Tag);
             Assert.AreEqual("", qt.The);
         }
         #endregion
