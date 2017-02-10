@@ -310,6 +310,16 @@ namespace StellaQL
             contents.AppendLine(@"");
             contents.AppendLine(@"    =================");
             contents.AppendLine(@"");
+            contents.AppendLine(@"(6) その他");
+            contents.AppendLine(@"(6) Other");
+            contents.AppendLine(@"");
+            contents.AppendLine(@"    CSHARPSCRIPT GENERATE_FULLPATH");
+            contents.AppendLine(@"");
+            contents.Append(@"    # ["); contents.Append(StateCmdline.BUTTON_LABEL_GENERATE_FULLPATH); contents.AppendLine("]ボタンを押下するのと同じだぜ☆（＾～＾）");
+            contents.Append(@"    # Same as pressing a ["); contents.Append(StateCmdline.BUTTON_LABEL_GENERATE_FULLPATH); contents.AppendLine("] button.");
+            contents.AppendLine(@"");
+            contents.AppendLine(@"    =================");
+            contents.AppendLine(@"");
             contents.AppendLine(@"サンキュー☆（＾▽＾）");
             contents.AppendLine(@"Thank you:-)");
             contents.AppendLine(@"");
