@@ -224,6 +224,36 @@ namespace StellaQL
                 StateRecord.Definitions[request.Name].Update(layer, request, message);
             }
         }
+
+        /// <summary>
+        /// アニメーター・コントローラーに、レイヤーを追加する。
+        /// </summary>
+        public static void AddAll(AnimatorController ac, List<string> layernameWords, StringBuilder message)
+        {
+            foreach (string layerName in layernameWords)
+            {
+                ac.AddLayer(layerName);
+            }
+        }
+
+        /// <summary>
+        /// アニメーター・コントローラーから、レイヤーを削除する。
+        /// </summary>
+        public static void RemoveAll(AnimatorController ac, List<string> layernameWords, StringBuilder message)
+        {
+            for (int lNum = ac.layers.Length - 1; -1 < lNum; lNum--) // 順序が繰り下がらないように、後ろから削除していく
+            {
+                AnimatorControllerLayer layer = ac.layers[lNum];
+                foreach (string stateName in layernameWords)
+                {
+                    Regex regex = new Regex(stateName);
+                    if (regex.IsMatch(layer.name))
+                    {
+                        ac.RemoveLayer(lNum);
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -423,10 +453,12 @@ namespace StellaQL
                 foreach (string stateName in statenameWords)
                 {
                     Regex regex = new Regex(stateName);
-                    foreach (ChildAnimatorState caState in statemachine.states)
+
+                    for (int caNum = statemachine.states.Length - 1; -1 < caNum; caNum--) // 順序が繰り下がらないように、後ろから削除していく
                     {
+                        ChildAnimatorState caState = statemachine.states[caNum];
+
                         if (regex.IsMatch(caState.state.name))
-                        //if (caState.state.name == stateName)
                         {
                             statemachine.RemoveState(caState.state);
                         }

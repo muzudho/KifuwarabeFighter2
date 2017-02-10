@@ -21,12 +21,13 @@ namespace StellaQL
         public static bool Execute(AnimatorController ac, string query, AControllable userDefinedAControl, StringBuilder info_message)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);// コメントと空行を全削除する。
+            int caret = 0;
+            LexcalP.VarSpaces(query, ref caret); // 最初の空白を削除。
 
             // phase
             // 0: 次はクエリーか、セミコロンのどちらか。（読込み初期時や、セミコロンを読込んだ直後など）
             // 1: 次にセミコロンがくることが必要。（クエリーを読込んだ直後など）
             int phase = 0; 
-            int caret = 0;
             QueryTokens qt = new QueryTokens("クエリー構文該当なし");
             while (caret<query.Length)
             {
@@ -88,25 +89,28 @@ namespace StellaQL
             MatchedSyntaxName = matchedSyntaxName;
         }
 
-        public const string STATEMACHINE = "STATEMACHINE";
-        public const string STATE = "STATE";
-        public const string TRANSITION = "TRANSITION";
-        public const string ANYSTATE = "ANYSTATE";
-        public const string ENTRY = "ENTRY";
-        public const string EXIT = "EXIT";
-        public const string CSHARPSCRIPT = "CSHARPSCRIPT";
-        public const string INSERT = "INSERT";
-        public const string UPDATE = "UPDATE";
-        public const string DELETE = "DELETE";
-        public const string SELECT = "SELECT";
-        public const string GENERATE_FULLPATH = "GENERATE_FULLPATH";
-        public const string WORDS = "WORDS";
-        public const string SET = "SET";
-        public const string FROM = "FROM";
-        public const string TO = "TO";
-        public const string WHERE = "WHERE";
-        public const string TAG = "TAG";
-        public const string THE = "THE";
+        public const string
+            LAYER = "LAYER",
+            STATEMACHINE = "STATEMACHINE",
+            STATE = "STATE",
+            TRANSITION = "TRANSITION",
+            ANYSTATE = "ANYSTATE",
+            ENTRY = "ENTRY",
+            EXIT = "EXIT",
+            CSHARPSCRIPT = "CSHARPSCRIPT",
+            INSERT = "INSERT",
+            UPDATE = "UPDATE",
+            DELETE = "DELETE",
+            SELECT = "SELECT",
+            GENERATE_FULLPATH = "GENERATE_FULLPATH",
+            WORDS = "WORDS",
+            SET = "SET",
+            SEMICOLON = ";",
+            FROM = "FROM",
+            TO = "TO",
+            WHERE = "WHERE",
+            TAG = "TAG",
+            THE = "THE";
 
         /// <summary>
         /// STATEMACHINE, STATE, TRANSITION のいずれか。
@@ -265,6 +269,16 @@ namespace StellaQL
                         FullpathConstantGenerator.WriteCshapScript(ac, info_message);
                         return true;
                     }
+                case SyntaxP.Pattern.LayerInsert:
+                    {
+                        Operation_Layer.AddAll(ac, qt.Words, info_message);
+                        return true;
+                    }
+                case SyntaxP.Pattern.LayerDelete:
+                    {
+                        Operation_Layer.RemoveAll(ac, qt.Words, info_message);
+                        return true;
+                    }
                 case SyntaxP.Pattern.NotMatch: // thru
                 default:
                     {
@@ -281,10 +295,11 @@ namespace StellaQL
         public static bool ExecuteStateSelect(string query, Dictionary<int, AcStateRecordable> universe, out HashSet<int> recordHashes, StringBuilder message)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
+            int caret = 0;
+            LexcalP.VarSpaces(query, ref caret); // 最初の空白を削除。
 
             recordHashes = null;
             QueryTokens qt = new QueryTokens();
-            int caret = 0;
             if (!SyntaxP.Fixed_StateSelect(query, ref caret, ref qt)) { return false; }
 
             recordHashes = RecordsFilter.Qt_Where(qt, universe, message);
@@ -299,11 +314,12 @@ namespace StellaQL
         public static bool ExecuteTransitionSelect(string query, Dictionary<int, AcStateRecordable> universe, out HashSet<int> recordHashesSrc, out HashSet<int> recordHashesDst, StringBuilder message)
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
+            int caret = 0;
+            LexcalP.VarSpaces(query, ref caret); // 最初の空白を削除。
 
             recordHashesSrc = null;
             recordHashesDst = null;
             QueryTokens qt = new QueryTokens();
-            int caret = 0;
             if (!SyntaxP.Fixed_TransitionSelect(query, ref caret, ref qt)) { return false; }
 
             recordHashesSrc = RecordsFilter.Qt_From(qt, universe, message);// FROM
@@ -373,12 +389,22 @@ namespace StellaQL
     /// </summary>
     public abstract class Fetcher
     {
-        public static HashSet<AnimatorStateMachine> Statemachines(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, AcStateRecordable> universe)
+        public static HashSet<AnimatorControllerLayer> Layers(AnimatorController ac, HashSet<int> targetHashes, Dictionary<int, AcStateRecordable> universe)
+        {
+            HashSet<AnimatorControllerLayer> layers = new HashSet<AnimatorControllerLayer>();
+            foreach (int targetHash in targetHashes)
+            {
+                layers.Add(Operation_Layer.Lookup(ac, universe[targetHash].Fullpath));
+            }
+            return layers;
+        }
+
+        public static HashSet<AnimatorStateMachine> Statemachines(AnimatorController ac, HashSet<int> targetHashes, Dictionary<int, AcStateRecordable> universe)
         {
             HashSet<AnimatorStateMachine> statemachines = new HashSet<AnimatorStateMachine>();
-            foreach (int recordHash in recordHashes)
+            foreach (int targetHash in targetHashes)
             {
-                statemachines.Add(Operation_Statemachine.Lookup(ac, universe[recordHash].Fullpath));
+                statemachines.Add(Operation_Statemachine.Lookup(ac, universe[targetHash].Fullpath));
             }
             return statemachines;
         }
@@ -387,19 +413,19 @@ namespace StellaQL
         /// 検索結果に含まれるステートマシンは無視する。
         /// </summary>
         /// <param name="ac"></param>
-        /// <param name="recordHashes"></param>
+        /// <param name="targetHashes"></param>
         /// <param name="universe"></param>
         /// <returns></returns>
-        public static HashSet<AnimatorState> States(AnimatorController ac, HashSet<int> recordHashes, Dictionary<int, AcStateRecordable> universe)
+        public static HashSet<AnimatorState> States(AnimatorController ac, HashSet<int> targetHashes, Dictionary<int, AcStateRecordable> universe)
         {
             HashSet<AnimatorState> states = new HashSet<AnimatorState>();
-            foreach (int recordHash in recordHashes)
+            foreach (int targetHash in targetHashes)
             {
-                AnimatorState state = Operation_State.Lookup(ac, universe[recordHash].Fullpath);
+                AnimatorState state = Operation_State.Lookup(ac, universe[targetHash].Fullpath);
                 if (null== state)
                 {
                     // ステートマシンかもしれない。
-                    AnimatorStateMachine stateMachine = Operation_Statemachine.Lookup(ac, universe[recordHash].Fullpath);
+                    AnimatorStateMachine stateMachine = Operation_Statemachine.Lookup(ac, universe[targetHash].Fullpath);
                     if(null!= stateMachine)
                     {
                         // ステートマシンだったのなら、ヌルで合っている☆（＾～＾）
@@ -407,7 +433,7 @@ namespace StellaQL
                     }
                     else
                     {
-                        throw new UnityException("フルパス[" + universe[recordHash].Fullpath + "]に対応するステートは無いぜ☆（＞＿＜）フルパス一覧を確かめろだぜ☆！ universe.Count=[" + universe.Count + "]");
+                        throw new UnityException("フルパス[" + universe[targetHash].Fullpath + "]に対応するステートは無いぜ☆（＞＿＜）フルパス一覧を確かめろだぜ☆！ universe.Count=[" + universe.Count + "]");
                     }
                 }
 
@@ -723,6 +749,8 @@ namespace StellaQL
             TransitionDelete,
             TransitionSelect,
             CsharpscriptGenerateFullpath,
+            LayerInsert,
+            LayerDelete,
             NotMatch
         }
 
@@ -744,6 +772,8 @@ namespace StellaQL
             else if (Fixed_TransitionDelete(query, ref caret, ref qt)) { ref_caret = caret; return Pattern.TransitionDelete; }
             else if (Fixed_TransitionSelect(query, ref caret, ref qt)) { ref_caret = caret; return Pattern.TransitionSelect; }
             else if (Fixed_CsharpscriptGenerateFullpath(query, ref caret, ref qt)) { ref_caret = caret; return Pattern.CsharpscriptGenerateFullpath; }
+            else if (Fixed_LayerInsert(query, ref caret, ref qt)) { ref_caret = caret; return Pattern.LayerInsert; }
+            else if (Fixed_LayerDelete(query, ref caret, ref qt)) { ref_caret = caret; return Pattern.LayerDelete; }
             return Pattern.NotMatch;// 構文にはマッチしなかった。
         }
 
@@ -792,11 +822,10 @@ namespace StellaQL
         /// </summary>
         public static bool Fixed_TransitionAnystateInsert(string query, ref int ref_caret, ref QueryTokens maxQt)
         {
-            QueryTokens qt = new QueryTokens("TRANSITION ANYSTATE INSERT");
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.TRANSITION); sb.Append(" "); sb.Append(QueryTokens.ANYSTATE); sb.Append(" "); sb.Append(QueryTokens.INSERT);
+            QueryTokens qt = new QueryTokens(sb.ToString());
             int caret = ref_caret;
             string stringWithoutDoubleQuotation, parenthesis;
-
-            LexcalP.VarSpaces(query, ref caret);
 
             if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); }
             qt.Target = QueryTokens.TRANSITION;
@@ -835,11 +864,10 @@ namespace StellaQL
         /// </summary>
         public static bool Fixed_TransitionEntryInsert(string query, ref int ref_caret, ref QueryTokens maxQt)
         {
-            QueryTokens qt = new QueryTokens("TRANSITION ENTRY INSERT");
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.TRANSITION); sb.Append(" "); sb.Append(QueryTokens.ENTRY); sb.Append(" "); sb.Append(QueryTokens.INSERT);
+            QueryTokens qt = new QueryTokens(sb.ToString());
             int caret = ref_caret;
             string stringWithoutDoubleQuotation, parenthesis;
-
-            LexcalP.VarSpaces(query, ref caret);
 
             if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             qt.Target = QueryTokens.TRANSITION;
@@ -878,11 +906,10 @@ namespace StellaQL
         /// </summary>
         public static bool Fixed_TransitionExitInsert(string query, ref int ref_caret, ref QueryTokens maxQt)
         {
-            QueryTokens qt = new QueryTokens("TRANSITION EXIT INSERT");
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.TRANSITION); sb.Append(" "); sb.Append(QueryTokens.EXIT); sb.Append(" "); sb.Append(QueryTokens.INSERT);
+            QueryTokens qt = new QueryTokens(sb.ToString());
             int caret = ref_caret;
             string stringWithoutDoubleQuotation, parenthesis;
-
-            LexcalP.VarSpaces(query, ref caret);
 
             if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             qt.Target = QueryTokens.TRANSITION;
@@ -910,21 +937,21 @@ namespace StellaQL
         /// </summary>
         public static bool Fixed_StateInsert(string query, ref int ref_caret, ref QueryTokens maxQt)
         {
-            QueryTokens qt = new QueryTokens("STATE INSERT");
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.STATE); sb.Append(" "); sb.Append(QueryTokens.INSERT);
+            QueryTokens qt = new QueryTokens(sb.ToString());
             int caret = ref_caret;
             string stringWithoutDoubleQuotation;
-            LexcalP.VarSpaces(query, ref caret);
 
-            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+            if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); }
             qt.Target = QueryTokens.STATE;
 
-            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); }
             qt.Manipulation = QueryTokens.INSERT;
 
             if (LexcalP.FixedWord(QueryTokens.WORDS, query, ref caret))
             {
                 // 「値、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
-                if (!SyntaxP.ParsePhrase_AfterWords(query, ref caret, QueryTokens.WHERE, qt.Words)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+                if (!ParsePhrase_AfterWords(query, ref caret, QueryTokens.WHERE, qt.Words)) { return NotMatched(qt, caret, ref maxQt); }
             }
             else if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
             {
@@ -932,14 +959,14 @@ namespace StellaQL
                 //// 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
                 //if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qt.Set)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             }
-            else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); } }
+            else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); } }
 
             // 正規表現。
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qt.Where_FullnameRegex = stringWithoutDoubleQuotation;
             }
-            else { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+            else { return NotMatched(qt, caret, ref maxQt); }
             maxQt = qt; ref_caret = caret; return true;
         }
 
@@ -948,11 +975,11 @@ namespace StellaQL
         /// </summary>
         public static bool Fixed_StateUpdate(string query, ref int ref_caret, ref QueryTokens maxQt)
         {
-            QueryTokens qt = new QueryTokens("STATE UPDATE");
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.STATE); sb.Append(" "); sb.Append(QueryTokens.UPDATE);
+            QueryTokens qt = new QueryTokens(sb.ToString());
             int caret = ref_caret;
             string stringWithoutDoubleQuotation;
             string parenthesis;
-            LexcalP.VarSpaces(query, ref caret);
 
             if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             qt.Target = QueryTokens.STATE;
@@ -981,10 +1008,10 @@ namespace StellaQL
         /// </summary>
         public static bool Fixed_StateDelete(string query, ref int ref_caret, ref QueryTokens maxQt)
         {
-            QueryTokens qt = new QueryTokens("STATE DELETE");
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.STATE); sb.Append(" "); sb.Append(QueryTokens.DELETE);
+            QueryTokens qt = new QueryTokens(sb.ToString());
             int caret = ref_caret;
             string stringWithoutDoubleQuotation;
-            LexcalP.VarSpaces(query, ref caret);
 
             if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             qt.Target = QueryTokens.STATE;
@@ -1019,11 +1046,11 @@ namespace StellaQL
         /// </summary>
         public static bool Fixed_StateSelect(string query, ref int ref_caret, ref QueryTokens maxQt)
         {
-            QueryTokens qt = new QueryTokens("STATE SELECT");
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.STATE); sb.Append(" "); sb.Append(QueryTokens.SELECT);
+            QueryTokens qt = new QueryTokens(sb.ToString());
             int caret = ref_caret;
             string stringWithoutDoubleQuotation, word;
             string parenthesis;
-            LexcalP.VarSpaces(query, ref caret);
 
             if (!LexcalP.FixedWord(QueryTokens.STATE, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); }
             qt.Target = QueryTokens.STATE;
@@ -1060,11 +1087,11 @@ namespace StellaQL
         /// </summary>
         public static bool Fixed_TransitionInsert(string query, ref int ref_caret, ref QueryTokens maxQt)
         {
-            QueryTokens qt = new QueryTokens("TRANSITION INSERT");
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.TRANSITION); sb.Append(" "); sb.Append(QueryTokens.INSERT);
+            QueryTokens qt = new QueryTokens(sb.ToString());
             int caret = ref_caret;
             string stringWithoutDoubleQuotation;
             string parenthesis;
-            LexcalP.VarSpaces(query, ref caret);
 
             if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             qt.Target = QueryTokens.TRANSITION;
@@ -1115,11 +1142,11 @@ namespace StellaQL
         /// </summary>
         public static bool Fixed_TransitionUpdate(string query, ref int ref_caret, ref QueryTokens maxQt)
         {
-            QueryTokens qt = new QueryTokens("TRANSITION UPDATE");
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.TRANSITION); sb.Append(" "); sb.Append(QueryTokens.UPDATE);
+            QueryTokens qt = new QueryTokens(sb.ToString());
             int caret = ref_caret;
             string stringWithoutDoubleQuotation;
             string parenthesis;
-            LexcalP.VarSpaces(query, ref caret);
 
             if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             qt.Target = QueryTokens.TRANSITION;
@@ -1172,11 +1199,11 @@ namespace StellaQL
         /// </summary>
         public static bool Fixed_TransitionDelete(string query, ref int ref_caret, ref QueryTokens maxQt)
         {
-            QueryTokens qt = new QueryTokens("TRANSITION DELETE");
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.TRANSITION); sb.Append(" "); sb.Append(QueryTokens.DELETE);
+            QueryTokens qt = new QueryTokens(sb.ToString());
             int caret = ref_caret;
             string stringWithoutDoubleQuotation;
             string parenthesis;
-            LexcalP.VarSpaces(query, ref caret);
 
             if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             qt.Target = QueryTokens.TRANSITION;
@@ -1220,11 +1247,11 @@ namespace StellaQL
         /// </summary>
         public static bool Fixed_TransitionSelect(string query, ref int ref_caret, ref QueryTokens maxQt)
         {
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.TRANSITION); sb.Append(" "); sb.Append(QueryTokens.SELECT);
             QueryTokens qt = new QueryTokens("TRANSITION SELECT");
             int caret = ref_caret;
             string stringWithoutDoubleQuotation, word;
             string parenthesis;
-            LexcalP.VarSpaces(query, ref caret);
 
             if (!LexcalP.FixedWord(QueryTokens.TRANSITION, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             qt.Target = QueryTokens.TRANSITION;
@@ -1275,15 +1302,65 @@ namespace StellaQL
         /// </summary>
         public static bool Fixed_CsharpscriptGenerateFullpath(string query, ref int ref_caret, ref QueryTokens maxQt)
         {
-            QueryTokens qt = new QueryTokens(QueryTokens.CSHARPSCRIPT + " " + QueryTokens.GENERATE_FULLPATH);
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.CSHARPSCRIPT); sb.Append(" "); sb.Append(QueryTokens.GENERATE_FULLPATH);
+            QueryTokens qt = new QueryTokens(sb.ToString());
             int caret = ref_caret;
-            LexcalP.VarSpaces(query, ref caret);
 
             if (!LexcalP.FixedWord(QueryTokens.CSHARPSCRIPT, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             qt.Target = QueryTokens.CSHARPSCRIPT;
 
             if (!LexcalP.FixedWord(QueryTokens.GENERATE_FULLPATH, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             qt.Manipulation = QueryTokens.GENERATE_FULLPATH;
+
+            maxQt = qt; ref_caret = caret; return true;
+        }
+
+        /// <summary>
+        /// LAYER INSERT
+        /// </summary>
+        public static bool Fixed_LayerInsert(string query, ref int ref_caret, ref QueryTokens maxQt)
+        {
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.LAYER); sb.Append(" "); sb.Append(QueryTokens.INSERT);
+            QueryTokens qt = new QueryTokens(sb.ToString());
+            int caret = ref_caret;
+
+            if (!LexcalP.FixedWord(QueryTokens.LAYER, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.LAYER;
+
+            if (!LexcalP.FixedWord(QueryTokens.INSERT, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.INSERT;
+
+            if (LexcalP.FixedWord(QueryTokens.WORDS, query, ref caret))
+            {
+                // 「値、スペース、値、スペース」の繰り返し。項目名が セミコロン だった場合終わり。
+                if (!ParsePhrase_AfterWords(query, ref caret, QueryTokens.SEMICOLON, qt.Words)) { return NotMatched(qt, caret, ref maxQt); }
+            }
+            else { return NotMatched(qt, caret, ref maxQt); }
+
+            maxQt = qt; ref_caret = caret; return true;
+        }
+
+        /// <summary>
+        /// LAYER DELETE
+        /// </summary>
+        public static bool Fixed_LayerDelete(string query, ref int ref_caret, ref QueryTokens maxQt)
+        {
+            StringBuilder sb = new StringBuilder(); sb.Append(QueryTokens.LAYER); sb.Append(" "); sb.Append(QueryTokens.DELETE);
+            QueryTokens qt = new QueryTokens(sb.ToString());
+            int caret = ref_caret;
+
+            if (!LexcalP.FixedWord(QueryTokens.LAYER, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); }
+            qt.Target = QueryTokens.LAYER;
+
+            if (!LexcalP.FixedWord(QueryTokens.DELETE, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); }
+            qt.Manipulation = QueryTokens.DELETE;
+
+            if (LexcalP.FixedWord(QueryTokens.WORDS, query, ref caret))
+            {
+                // 「値、スペース、値、スペース」の繰り返し。項目名が セミコロン だった場合終わり。
+                if (!ParsePhrase_AfterWords(query, ref caret, QueryTokens.SEMICOLON, qt.Words)) { return NotMatched(qt, caret, ref maxQt); }
+            }
+            else { return NotMatched(qt, caret, ref maxQt); }
 
             maxQt = qt; ref_caret = caret; return true;
         }
@@ -1382,13 +1459,52 @@ namespace StellaQL
             word = ""; return false;
         }
 
+        /// <summary>
+        /// 「\"」「\n」「\r」「\\」をアンエスケープする。
+        /// </summary>
+        /// <param name="stringWithoutDoubleQuotation"></param>
+        /// <returns></returns>
+        public static string UnescapeEscapesequence(string stringWithoutDoubleQuotation)
+        {
+            StringBuilder dst = new StringBuilder();
+            int phase = 0;
+            for (int srcCaret = 0; srcCaret < stringWithoutDoubleQuotation.Length; srcCaret++)
+            {
+                switch (phase)
+                {
+                    case 1: // 「\」を読込んだ直後。
+                        switch (stringWithoutDoubleQuotation[srcCaret])
+                        {
+                            case '\\': //「"\\"」だった。
+                            case '\"': //「"\""」だった。
+                                dst.Append(stringWithoutDoubleQuotation[srcCaret]); break; // ２文字目だけを読込む。
+                            case 'n': dst.Append('\n'); break; //「"\r"」だった。改行記号ラインフィード(LF 10)を読込む。
+                            case 'r': dst.Append('\r'); break; //「"\n"」だった。改行記号キャリッジリターン(CR 13)を読込む。
+                            default: dst.Append('\\'); dst.Append(stringWithoutDoubleQuotation[srcCaret]); break; //「"\"」とその次の文字をそのまま読込む。
+                        }
+                        phase = 0;
+                        break;
+                    default:
+                        switch (stringWithoutDoubleQuotation[srcCaret])
+                        {
+                            case '\\': phase = 1; break; //「￥」が出てきた。まだ「￥」は読込まない。
+                            default: dst.Append(stringWithoutDoubleQuotation[srcCaret]); break;
+                        }
+                        break;
+                }
+            }
+            return dst.ToString();
+        }
         private static Regex regexStringliteralAndSpaces = new Regex(@"^""((?:(?:\\"")|[^""])*)""(\s*)", RegexOptions.IgnoreCase);
         public static bool VarStringliteral(string query, ref int caret, out string stringWithoutDoubleQuotation) {
             Match match = regexStringliteralAndSpaces.Match(query.Substring(caret));
             if (match.Success) {
                 stringWithoutDoubleQuotation = match.Groups[1].Value;
                 // ダブルクォーテーションの２文字分を足す
-                caret += stringWithoutDoubleQuotation.Length + 2 + match.Groups[2].Value.Length; return true;
+                caret += stringWithoutDoubleQuotation.Length + 2 + match.Groups[2].Value.Length;
+                // 「￥”」を「”」にアンエスケープするなどの、いくつかの加工。
+                stringWithoutDoubleQuotation = UnescapeEscapesequence(stringWithoutDoubleQuotation);
+                return true;
             }
             stringWithoutDoubleQuotation = ""; return false;
         }

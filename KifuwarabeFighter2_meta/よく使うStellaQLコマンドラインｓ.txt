@@ -1,3 +1,37 @@
+# \r は表示上見えず、\n は次の行が表示上見えないが存在するようだ。
+# \r、\n は表示上存在が見えなくなるので使わない方がいい。
+LAYER INSERT
+WORDS
+    NewLayer0
+    "New Layer1"
+    "\"New Layer2\""
+    "New\\Layer3"
+    "New\rLayer4"
+    "New\nLayer5"
+    "New\r\nLayer6"
+
+# 検索時は正規表現になるので、\ は \\ にする。
+LAYER DELETE
+WORDS
+    NewLayer0
+    "New Layer1"
+    "\"New Layer2\""
+    "New\\\\Layer3"
+    "New\rLayer4"
+    "New\nLayer5"
+    "New\r\nLayer6"
+
+#miss
+# LAYER DELETE
+# WORDS
+#     NewLayer0
+#     "New Layer1"
+#     "\"New Layer2\""
+#     "New\\Layer3"
+#     "NewLayer4"
+#     "New"
+#     "New"
+
 # FIXME: これを実行すると、テストケースが変わってしまうのも難点。
 
 STATE DELETE

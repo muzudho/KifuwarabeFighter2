@@ -863,6 +863,89 @@ namespace StellaQL
             Assert.AreEqual("", qt.To_Tag);
             Assert.AreEqual("", qt.The);
         }
+
+        /// <summary>
+        /// 構文解析 LAYER INSERT 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_LayerInsert()
+        {
+            string query = @"LAYER INSERT
+                            WORDS
+                            NewLayer0
+                            ""New Layer1""
+                            ""\""New Layer2\""""
+                            ""New\\Layer3""
+                            ""New\rLayer4""
+                            ""New\nLayer5""
+                            ""New\r\nLayer6""
+                            ";
+            QueryTokens qt = new QueryTokens();
+            int caret = 0;
+            bool successful = SyntaxP.Fixed_LayerInsert(query, ref caret, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.LAYER, qt.Target);
+            Assert.AreEqual(QueryTokens.INSERT, qt.Manipulation);
+            Assert.AreEqual(7, qt.Words.Count);
+            Assert.AreEqual("NewLayer0", qt.Words[0]);
+            Assert.AreEqual("New Layer1", qt.Words[1]); // ダブルクォーテーションの中身
+            Assert.AreEqual(@"""New Layer2""", qt.Words[2]); // ダブルクォーテーションの中身は「\"New Layer3\"」なので、値は「"New Layer3"」
+            Assert.AreEqual("New\\Layer3", qt.Words[3]); // エスケープシーケンス記号が含まれる場合
+            Assert.AreEqual("New\rLayer4", qt.Words[4]); // 改行キャリッジリターンが含まれる場合
+            Assert.AreEqual("New\nLayer5", qt.Words[5]); // 改行ニューラインが含まれる場合
+            Assert.AreEqual("New\r\nLayer6", qt.Words[6]); // 改行\r\nが含まれる場合
+            Assert.AreEqual(0, qt.Set.Count);
+            Assert.AreEqual("", qt.Where_FullnameRegex);
+            Assert.AreEqual("", qt.Where_Tag);
+            Assert.AreEqual("", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Tag);
+            Assert.AreEqual("", qt.To_FullnameRegex);
+            Assert.AreEqual("", qt.To_Tag);
+            Assert.AreEqual("", qt.The);
+        }
+
+        /// <summary>
+        /// 構文解析 LAYER DELETE 文
+        /// </summary>
+        [Test]
+        public void N70_Syntax_LayerDelete()
+        {
+            // 正規表現なので \ は \\ にする。
+            string query = @"LAYER DELETE
+                            WORDS
+                            NewLayer0
+                            ""New Layer1""
+                            ""\""New Layer2\""""
+                            ""New\\\\Layer3""
+                            ""New\rLayer4""
+                            ""New\nLayer5""
+                            ""New\r\nLayer6""
+                            ";
+            QueryTokens qt = new QueryTokens();
+            int caret = 0;
+            bool successful = SyntaxP.Fixed_LayerDelete(query, ref caret, ref qt);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(QueryTokens.LAYER, qt.Target);
+            Assert.AreEqual(QueryTokens.DELETE, qt.Manipulation);
+            Assert.AreEqual(7, qt.Words.Count);
+            Assert.AreEqual("NewLayer0", qt.Words[0]);
+            Assert.AreEqual("New Layer1", qt.Words[1]); // ダブルクォーテーションの中身
+            Assert.AreEqual(@"""New Layer2""", qt.Words[2]); // ダブルクォーテーションの中身は「\"New Layer3\"」なので、値は「"New Layer3"」
+            Assert.AreEqual("New\\\\Layer3", qt.Words[3]); // 正規表現なので\\にする。エスケープシーケンス記号が含まれる場合。
+            Assert.AreEqual("New\rLayer4", qt.Words[4]); // 改行キャリッジリターンが含まれる場合
+            Assert.AreEqual("New\nLayer5", qt.Words[5]); // 改行ニューラインが含まれる場合
+            Assert.AreEqual("New\r\nLayer6", qt.Words[6]); // 改行\r\nが含まれる場合
+            Assert.AreEqual(0, qt.Set.Count);
+            Assert.AreEqual("", qt.Where_FullnameRegex);
+            Assert.AreEqual("", qt.Where_Tag);
+            Assert.AreEqual("", qt.From_FullnameRegex);
+            Assert.AreEqual("", qt.From_Tag);
+            Assert.AreEqual("", qt.To_FullnameRegex);
+            Assert.AreEqual("", qt.To_Tag);
+            Assert.AreEqual("", qt.The);
+        }
         #endregion
 
         #region N75 syntax parser pharse (構文パーサー　句)
