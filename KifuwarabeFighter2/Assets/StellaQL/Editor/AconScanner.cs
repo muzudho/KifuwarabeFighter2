@@ -54,7 +54,15 @@ namespace StellaQL
                     int smNum = 0;
                     foreach (KeyValuePair<string, AnimatorStateMachine> statemachine_pair in statemachineList_flat)
                     { // ステート・マシン
-                        if(OnStatemachine( statemachine_pair.Key, statemachine_pair.Value, lNum, smNum))
+
+                        FullpathTokens ft = new FullpathTokens();
+                        int caret = 0;
+                        if(!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(statemachine_pair.Key, ref caret, ref ft)) {
+                            throw new UnityException("[" + statemachine_pair.Key + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+                        if(OnStatemachine( statemachine_pair.Key,
+                            string.Join(".",ft.StatemachineNamesEndsWithoutDot.ToArray()),// 例えばフルパスが "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
+                            statemachine_pair.Value, lNum, smNum))
                         {
                             int sNum = 0;
                             foreach (ChildAnimatorState caState in statemachine_pair.Value.states)
@@ -101,7 +109,7 @@ namespace StellaQL
         /// <param name="fullnameEndWithDot"></param>
         /// <param name="statemachine"></param>
         /// <returns>下位を検索するなら真</returns>
-        public virtual bool OnStatemachine(string fullnameEndWithDot, AnimatorStateMachine statemachine, int lNum, int smNum) { return false; }
+        public virtual bool OnStatemachine(string fullnameEndWithDot, string statemachinePath, AnimatorStateMachine statemachine, int lNum, int smNum) { return false; }
         /// <summary>
         /// 
         /// </summary>
@@ -148,22 +156,25 @@ namespace StellaQL
             AconData.table_layer.Add(layerRecord); return true;
         }
 
-        public override bool OnStatemachine( string fullnameEndWithDot, AnimatorStateMachine statemachine, int lNum, int smNum)
+        public override bool OnStatemachine( string fullnameEndWithDot, string statemachinePath, AnimatorStateMachine statemachine, int lNum, int smNum)
         {
             StatemachineRecord stateMachineRecord = new StatemachineRecord(
-                lNum,//AconData.table_layer.Count,
-                smNum,//AconData.table_statemachine.Count,
-                fullnameEndWithDot, statemachine, AconData.table_position);
+                lNum,
+                smNum,
+                fullnameEndWithDot,
+                statemachinePath,
+                statemachine, AconData.table_position);
             AconData.table_statemachine.Add(stateMachineRecord); return true;
         }
 
         public override bool OnState( string parentPath, ChildAnimatorState caState, int lNum, int smNum, int sNum)
         {
             StateRecord stateRecord = StateRecord.CreateInstance(
-                lNum, //AconData.table_layer.Count,
-                smNum, //AconData.table_statemachine.Count,
-                sNum, //AconData.table_state.Count,
-                parentPath, caState, AconData.table_position);
+                lNum,
+                smNum,
+                sNum,
+                parentPath,
+                caState, AconData.table_position);
             AconData.table_state.Add(stateRecord); return true;
         }
 
@@ -207,7 +218,7 @@ namespace StellaQL
             return true;
         }
 
-        public override bool OnStatemachine( string fullnameEndWithDot, AnimatorStateMachine statemachine, int lNum, int smNum)
+        public override bool OnStatemachine( string fullnameEndWithDot, string statemachinePath, AnimatorStateMachine statemachine, int lNum, int smNum)
         {
             FullpathSet.Add(fullnameEndWithDot); return true;
         }

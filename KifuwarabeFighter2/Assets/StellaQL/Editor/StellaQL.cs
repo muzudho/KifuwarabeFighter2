@@ -433,7 +433,14 @@ namespace StellaQL
             HashSet<AnimatorState> states = new HashSet<AnimatorState>();
             foreach (int targetHash in targetHashes)
             {
-                AnimatorState state = Operation_State.Fetch(ac, universe[targetHash].Fullpath);
+                AnimatorState state;
+                {
+                    int caret = 0;
+                    FullpathTokens ft = new FullpathTokens();
+                    if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("[" + universe[targetHash].Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                    state = Operation_State.Fetch(ac, ft);
+                }
+
                 if (null== state)
                 {
                     // ステートマシンかもしれない。

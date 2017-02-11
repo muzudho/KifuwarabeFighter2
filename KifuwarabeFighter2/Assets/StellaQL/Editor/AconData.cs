@@ -467,6 +467,22 @@ namespace StellaQL
     /// </summary>
     public class StatemachineRecord
     {
+        public class Wrapper {
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="source"></param>
+            /// <param name="statemachinePath">例えばフルパスが "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。</param>
+            public Wrapper(AnimatorStateMachine source, string statemachinePath)
+            {
+                Source = source;
+                StatemachinePath = statemachinePath;
+            }
+
+            public AnimatorStateMachine Source { get; private set; }
+            public string StatemachinePath { get; private set; }
+        }
+
         static StatemachineRecord()
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
@@ -475,40 +491,45 @@ namespace StellaQL
                 new RecordDefinition("#layerNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
                 new RecordDefinition("#machineStateNum#"            ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
                 new RecordDefinition("#fullnameEndsWithDot#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false), // 表示用フィールド（フルネーム）はこれで十分。後ろにドットが付いているが……。
+                new RecordDefinition("#statemachinePath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly          // "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
+                    ,(object i)=>{          return ((Wrapper)i).StatemachinePath; }
+                    ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                ),
+                
                 new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None              // 「#fullnameEndsWithDot#」フィールドで十分なので、これはIDにしない方が一貫性がある。
-                    ,(object i)=>{          return ((AnimatorStateMachine)i).name; }
-                    ,(object i,string v)=>{ ((AnimatorStateMachine)i).name = v;}
+                    ,(object i)=>{          return ((Wrapper)i).Source.name; }
+                    ,(object i,string v)=>{ ((Wrapper)i).Source.name = v;}
                 ),
                 new RecordDefinition("#anyStateTransitions_Length#" ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
-                    ,(object i)=>{          return ((AnimatorStateMachine)i).anyStateTransitions.Length.ToString(); }
+                    ,(object i)=>{          return ((Wrapper)i).Source.anyStateTransitions.Length.ToString(); }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
                 new RecordDefinition("#behaviours_Length#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
-                    ,(object i)=>{          return ((AnimatorStateMachine)i).behaviours.Length.ToString(); }
+                    ,(object i)=>{          return ((Wrapper)i).Source.behaviours.Length.ToString(); }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
                 new RecordDefinition("#defaultState_String#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
-                    ,(object i)=>{          return (((AnimatorStateMachine)i).defaultState==null) ? "" : ((AnimatorStateMachine)i).defaultState.ToString(); }
+                    ,(object i)=>{          return (((Wrapper)i).Source.defaultState==null) ? "" : ((Wrapper)i).Source.defaultState.ToString(); }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
                 new RecordDefinition("#entryTransitions_Length#"    ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
-                    ,(object i)=>{          return ((AnimatorStateMachine)i).entryTransitions.Length.ToString(); }
+                    ,(object i)=>{          return ((Wrapper)i).Source.entryTransitions.Length.ToString(); }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
                 new RecordDefinition("hideFlags"                    ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None
-                    ,(object i)=>{          return ((AnimatorStateMachine)i).hideFlags.ToString(); }
-                    ,(object i,string v)=>{ ((AnimatorStateMachine)i).hideFlags = (HideFlags)System.Enum.Parse(typeof(HideFlags), v);}
+                    ,(object i)=>{          return ((Wrapper)i).Source.hideFlags.ToString(); }
+                    ,(object i,string v)=>{ ((Wrapper)i).Source.hideFlags = (HideFlags)System.Enum.Parse(typeof(HideFlags), v);}
                 ),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
 
-            Empty = new StatemachineRecord(-1,-1,"",new AnimatorStateMachine(),new List<PositionRecord>());
+            Empty = new StatemachineRecord(-1,-1,"","",new AnimatorStateMachine(),new List<PositionRecord>());
         }
         public static Dictionary<string, RecordDefinition> Definitions { get; private set; }
         public static StatemachineRecord Empty { get; private set; }
 
-        public StatemachineRecord(int layerNum, int machineStateNum, string fullnameEndsWithDot, AnimatorStateMachine stateMachine, List<PositionRecord> positionsTable)
+        public StatemachineRecord(int layerNum, int machineStateNum, string fullnameEndsWithDot, string statemachinePath, AnimatorStateMachine stateMachine, List<PositionRecord> positionsTable)
         {
             // fullnameEndsWithDot には「Base Layer.」のような文字が入っているが、レイヤーの持つステートマシンの名前も「Base Layer」なので、つなげると「Base Layer.Base Layer」になってしまう。
             // state から見れば親パスだが。
@@ -518,6 +539,7 @@ namespace StellaQL
                 { "#layerNum#"                      ,layerNum                                                                                           },//レイヤー行番号
                 { "#machineStateNum#"               ,machineStateNum                                                                                    },
                 { "#fullnameEndsWithDot#"           ,fullnameEndsWithDot                                                                                },
+                { "#statemachinePath#"              ,statemachinePath                                                                                   },
                 { "name"                            ,stateMachine.name                                                                                  },
                 //{ "anyStateTransitions"         ,stateMachine.anyStateTransitions   == null ? "" : stateMachine.anyStateTransitions.ToString()      },
                 { "#anyStateTransitions_Length#"    ,stateMachine.anyStateTransitions.Length.ToString()                                                 },
@@ -547,6 +569,7 @@ namespace StellaQL
             Definitions["#layerNum#"                    ].AppendCsv(Fields, c, n, d); // レイヤー行番号
             Definitions["#machineStateNum#"             ].AppendCsv(Fields, c, n, d);
             Definitions["#fullnameEndsWithDot#"         ].AppendCsv(Fields, c, n, d);
+            Definitions["#statemachinePath#"            ].AppendCsv(Fields, c, n, d);
             Definitions["name"                          ].AppendCsv(Fields, c, n, d);
             Definitions["#anyStateTransitions_Length#"  ].AppendCsv(Fields, c, n, d);
             Definitions["#behaviours_Length#"           ].AppendCsv(Fields, c, n, d);

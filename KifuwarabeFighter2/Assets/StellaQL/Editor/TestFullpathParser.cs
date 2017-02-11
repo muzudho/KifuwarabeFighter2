@@ -7,6 +7,20 @@ namespace StellaQL
     {
         #region N70 シンタックス・パーサー
         [Test]
+        public void N80_Syntax_Fixed_LayerName()
+        {
+            string query = "Base Layer.Alpaca.Bear.Cat";
+            int caret = 0;
+            FullpathTokens ft = new FullpathTokens();
+
+            bool successful = FullpathSyntaxP.Fixed_LayerName(query, ref caret, ref ft);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(11, caret);
+            Assert.AreEqual("Base Layer", ft.LayerNameEndsWithoutDot);
+        }
+
+        [Test]
         public void N80_Syntax_Fixed_LayerName_And_StatemachineNames()
         {
             string query = "Base Layer.Alpaca.Bear.Cat";
@@ -24,21 +38,41 @@ namespace StellaQL
         }
 
         [Test]
-        public void N80_Syntax_Fixed_LayerName()
+        public void N80_Syntax_Fixed_LayerName_And_StatemachineNames_And_StateName()
         {
             string query = "Base Layer.Alpaca.Bear.Cat";
             int caret = 0;
             FullpathTokens ft = new FullpathTokens();
 
-            bool successful = FullpathSyntaxP.Fixed_LayerName(query, ref caret, ref ft);
+            bool successful = FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(query, ref caret, ref ft);
 
             Assert.IsTrue(successful);
-            Assert.AreEqual(11, caret);
+            Assert.AreEqual(26, caret);
             Assert.AreEqual("Base Layer", ft.LayerNameEndsWithoutDot);
+            Assert.AreEqual(2, ft.StatemachineNamesEndsWithoutDot.Count);
+            Assert.AreEqual("Alpaca", ft.StatemachineNamesEndsWithoutDot[0]);
+            Assert.AreEqual("Bear", ft.StatemachineNamesEndsWithoutDot[1]);
+            Assert.AreEqual("Cat", ft.StateName);
         }
         #endregion
 
+
+
         #region N80 レキシカル・パーサー
+        [Test]
+        public void N80_Lexical_VarLayerName()
+        {
+            string query = "Base Layer.Alpaca.Bear.Cat";
+            int caret = 0;
+            string layerNameEndsWithoutDot;
+
+            bool successful = FullpathLexcalP.VarLayerName(query, ref caret, out layerNameEndsWithoutDot);
+
+            Assert.IsTrue(successful);
+            Assert.AreEqual(11, caret);
+            Assert.AreEqual("Base Layer", layerNameEndsWithoutDot);
+        }
+
         [Test]
         public void N80_Lexical_VarStatemachineNames()
         {
@@ -56,17 +90,17 @@ namespace StellaQL
         }
 
         [Test]
-        public void N80_Lexical_VarLayerName()
+        public void N80_Lexical_VarStateName()
         {
             string query = "Base Layer.Alpaca.Bear.Cat";
-            int caret = 0;
-            string layerNameEndsWithoutDot;
+            int caret = "Base Layer.Alpaca.Bear.".Length; // "Base Layer.Alpaca.Bear." まで走査した続きから。
+            string stateName;
 
-            bool successful = FullpathLexcalP.VarLayerName(query, ref caret, out layerNameEndsWithoutDot);
+            bool successful = FullpathLexcalP.VarStateName(query, ref caret, out stateName);
 
             Assert.IsTrue(successful);
-            Assert.AreEqual(11, caret);
-            Assert.AreEqual("Base Layer", layerNameEndsWithoutDot);
+            Assert.AreEqual(26, caret); // "Cat" の次。
+            Assert.AreEqual("Cat", stateName);
         }
         #endregion
     }

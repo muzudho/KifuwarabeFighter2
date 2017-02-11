@@ -486,28 +486,6 @@ namespace StellaQL
 
             return currentMachine;
         }
-        ///// <summary>
-        ///// パスを指定すると ステートマシンを返す。
-        ///// </summary>
-        ///// <param name="path">"Base Layer.JMove" といった文字列。</param>
-        //public static AnimatorStateMachine Fetch(AnimatorController ac, string path)
-        //{
-        //    string[] nodes = path.Split('.'); // [0～length-1]ノードは、ステートマシン名（[0]はレイヤー名かも）
-        //    if (nodes.Length < 1) { throw new UnityException("ノード数が１つ未満だったぜ☆（＾～＾） ステートマシン名は無いのかだぜ☆？ ac.name=[" + ac.name + "]"); }
-
-        //    // 最初の名前[0]は、レイヤーを検索する。
-        //    AnimatorStateMachine currentMachine = null;
-        //    foreach (AnimatorControllerLayer layer in ac.layers) { if (nodes[0] == layer.name) { currentMachine = layer.stateMachine; break; } }
-        //    if (null == currentMachine) { throw new UnityException("見つからないぜ☆（＾～＾）nodes=[" + string.Join("][", nodes) + "] ac.name=[" + ac.name + "]"); }
-
-        //    if (2 < nodes.Length) // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
-        //    {
-        //        currentMachine = GetLeafMachine(ac, currentMachine, nodes);
-        //        if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", nodes) + "] ac.name=[" + ac.name + "]"); }
-        //    }
-
-        //    return currentMachine;
-        //}
 
         /// <summary>
         /// 分かりづらいが、ノードの[1]～[length-1]を辿って、最後のステートマシンを返す。
@@ -567,7 +545,9 @@ namespace StellaQL
 
             if (Operation_Something.HasProperty(request.Name, StatemachineRecord.Definitions, "ステートマシン操作"))
             {
-                StatemachineRecord.Definitions[request.Name].Update(statemachine, request, message);
+                StatemachineRecord.Definitions[request.Name].Update(new StatemachineRecord.Wrapper(statemachine,
+                    string.Join(".",ft.StatemachineNamesEndsWithoutDot.ToArray()) // 例えばフルパスが "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
+                    ), request, message);
             }
         }
     }
@@ -676,34 +656,36 @@ namespace StellaQL
         /// パスを指定すると ステートを返す。
         /// </summary>
         /// <param name="path">"Base Layer.JMove.JMove0" といった文字列。</param>
-        public static AnimatorState Fetch(AnimatorController ac, string path)
+        public static AnimatorState Fetch(AnimatorController ac, FullpathTokens ft)//string path
         {
-            string[] nodes = path.Split('.'); // [0～length-2] ステートマシン名、[length-1] ステート名　（[0]はレイヤー名かも）
-            if (nodes.Length < 2) { throw new UnityException("ノード数が２つ未満だったぜ☆（＾～＾） ステートマシン名か、ステート名は無いのかだぜ☆？ path=["+ path + "]"); }
+            //int caret = 0;
+            //FullpathTokens ft = new FullpathTokens();
+            //if(!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(path, ref caret, ref ft)) { throw new UnityException("[" + path + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
             // 最初の名前[0]は、レイヤーを検索する。
-            AnimatorStateMachine currentMachine = null;
-            foreach (AnimatorControllerLayer layer in ac.layers) { if (nodes[0] == layer.name) { currentMachine = layer.stateMachine; break; } }
-            if (null == currentMachine) { throw new UnityException("見つからないぜ☆（＾～＾）nodes=[" + string.Join("][", nodes) + "]"); }
+            AnimatorControllerLayer layer = Operation_Layer.Fetch_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
+            AnimatorStateMachine currentMachine = layer.stateMachine;
+            if (null == currentMachine) { throw new UnityException("見つからないぜ☆（＾～＾）nodes=[" + string.Join("][", ft.StatemachineNamesEndsWithoutDot.ToArray()) + "]"); }
 
-            if (2 < nodes.Length) // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
+            if (0 < ft.StatemachineNamesEndsWithoutDot.Count) // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
             {
-                currentMachine = FetchLeafMachine(currentMachine, nodes);
-                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", nodes) + "]"); }
+                currentMachine = FetchLeafMachine(currentMachine, ft.StatemachineNamesEndsWithoutDot);
+                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", ft.StatemachineNamesEndsWithoutDot.ToArray()) + "]"); }
             }
 
-            return FetchChildState(currentMachine, nodes[nodes.Length - 1]); // レイヤーと葉だけの場合
+            return FetchChildState(currentMachine, ft.StateName); // 葉
         }
 
         /// <summary>
         /// 分かりづらいが、ノードの[1]～[length-1]を辿って、最後のステートマシンを返す。
         /// </summary>
-        private static AnimatorStateMachine FetchLeafMachine(AnimatorStateMachine currentMachine, string[] nodes)
+        private static AnimatorStateMachine FetchLeafMachine(AnimatorStateMachine currentMachine, List<string> statemachineNamesEndsWithoutDot)// string[] nodes
         {
-            for (int i = Operation_Common.ROOT_NODE_IS_LAYER; i < nodes.Length + Operation_Common.LEAF_NODE_IS_STATE; i++)
+            //for (int i = Operation_Common.ROOT_NODE_IS_LAYER; i < nodes.Length + Operation_Common.LEAF_NODE_IS_STATE; i++)
+            for (int i = 0; i < statemachineNamesEndsWithoutDot.Count; i++)
             {
-                currentMachine = FetchChildMachine(currentMachine, nodes[i]);
-                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）10 i=[" + i + "] node=[" + nodes[i] + "]"); }
+                currentMachine = FetchChildMachine(currentMachine, statemachineNamesEndsWithoutDot[i]);
+                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）10 i=[" + i + "] node=[" + statemachineNamesEndsWithoutDot[i] + "]"); }
             }
             return currentMachine;
         }
@@ -755,7 +737,11 @@ namespace StellaQL
 
         public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
-            AnimatorState state = Fetch(ac, request.Fullpath);
+            int caret = 0;
+            FullpathTokens ft = new FullpathTokens();
+            if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(request.Fullpath, ref caret, ref ft)) { throw new UnityException("[" + request.Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+            AnimatorState state = Fetch(ac, ft);
             if (null == state) { throw new UnityException("[" + request.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
             if (Operation_Something.HasProperty(request.Name, StateRecord.Definitions, "ステート操作"))
@@ -860,7 +846,11 @@ namespace StellaQL
             if (null == request.TransitionNum_ofFullpath) { throw new UnityException("トランジション番号が指定されていないぜ☆（＾～＾） トランジション番号=[" + request.TransitionNum_ofFullpath + "] ac=[" + ac.name + "]"); }
             int fullpathTransition = int.Parse(request.TransitionNum_ofFullpath);
 
-            AnimatorState state = Operation_State.Fetch(ac, request.Fullpath);
+            int caret = 0;
+            FullpathTokens ft = new FullpathTokens();
+            if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(request.Fullpath, ref caret, ref ft)) { throw new UnityException("[" + request.Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+            AnimatorState state = Operation_State.Fetch(ac, ft);
             if (null == state) { throw new UnityException("[" + request.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
             int tNum = 0;
@@ -879,8 +869,20 @@ namespace StellaQL
         /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。</param>
         public static AnimatorStateTransition Fetch(AnimatorController ac, string path_src, string path_dst)
         {
-            AnimatorState state_src = Operation_State.Fetch(ac, path_src);
-            AnimatorState state_dst = Operation_State.Fetch(ac, path_dst);
+            AnimatorState state_src;
+            {
+                int caret = 0;
+                FullpathTokens ft = new FullpathTokens();
+                if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(path_src, ref caret, ref ft)) { throw new UnityException("[" + path_src + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                state_src = Operation_State.Fetch(ac, ft);
+            }
+            AnimatorState state_dst;
+            {
+                int caret = 0;
+                FullpathTokens ft = new FullpathTokens();
+                if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(path_dst, ref caret, ref ft)) { throw new UnityException("[" + path_dst + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                state_dst = Operation_State.Fetch(ac, ft);
+            }
 
             foreach (AnimatorStateTransition transition in state_src.transitions)
             {
@@ -895,19 +897,36 @@ namespace StellaQL
 
         public static void Insert(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
-            AnimatorState sourceState = Operation_State.Fetch(ac, request.Fullpath); // 遷移元のステート
+            AnimatorState sourceState; // 遷移元のステート
+            {
+                int caret = 0;
+                FullpathTokens ft = new FullpathTokens();
+                if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(request.Fullpath, ref caret, ref ft)) { throw new UnityException("[" + request.Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                sourceState = Operation_State.Fetch(ac, ft);
+            }
             //AnimatorStateTransition sourceTransition = Operation_Transition.Lookup(ac, request); // トランジション
 
-            // TODO: 遷移先のステートを指定する？
-            string destinationFullpath = request.New;
-            AnimatorState destinationState = Operation_State.Fetch(ac, destinationFullpath); // 遷移先のステート
+            string destinationFullpath = request.New;// TODO: 遷移先のステートを指定する？
+            AnimatorState destinationState; // 遷移先のステート
+            {
+                int caret = 0;
+                FullpathTokens ft = new FullpathTokens();
+                if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(destinationFullpath, ref caret, ref ft)) { throw new UnityException("[" + destinationFullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                destinationState = Operation_State.Fetch(ac, ft);
+            }
             sourceState.AddTransition(destinationState);
         }
         public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
             if (Operation_Something.HasProperty(request.Name, TransitionRecord.Definitions, "トランジション操作"))
             {
-                AnimatorState state = Operation_State.Fetch(ac, request.Fullpath);
+                AnimatorState state;
+                {
+                    int caret = 0;
+                    FullpathTokens ft = new FullpathTokens();
+                    if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(request.Fullpath, ref caret, ref ft)) { throw new UnityException("[" + request.Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                    state = Operation_State.Fetch(ac, ft);
+                }
                 if (null == state) { throw new UnityException("[" + request.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
                 int transitionNum = int.Parse(request.TransitionNum_ofFullpath); // トランジション番号
@@ -930,7 +949,14 @@ namespace StellaQL
         /// </summary>
         public static void Delete(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
-            AnimatorState sourceState = Operation_State.Fetch(ac, request.Fullpath); // 遷移元のステート
+            AnimatorState sourceState; // 遷移元のステート
+            {
+                int caret = 0;
+                FullpathTokens ft = new FullpathTokens();
+                if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(request.Fullpath, ref caret, ref ft)) { throw new UnityException("[" + request.Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                sourceState = Operation_State.Fetch(ac, ft);
+            }
+
             AnimatorStateTransition sourceTransition = Fetch(ac, request); // 削除するトランジション
             sourceState.RemoveTransition(sourceTransition);
         }
