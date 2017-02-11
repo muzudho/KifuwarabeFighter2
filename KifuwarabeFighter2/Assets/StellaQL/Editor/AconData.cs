@@ -43,6 +43,10 @@ namespace StellaQL
             /// Unityで識別子に使えそうなもの
             /// </summary>
             Identifiable,
+            /// <summary>
+            /// スプレッドシートで読取専用フィールドにしたい場合これ。
+            /// </summary>
+            ReadOnly,
             None,
         }
 
@@ -326,22 +330,21 @@ namespace StellaQL
                 // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
                 new RecordDefinition("#layerNum#"               ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
                 new RecordDefinition("name"                     ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false),
-                new RecordDefinition("#avatarMask_assetPath#"   ,RecordDefinition.FieldType.Other   ,RecordDefinition.KeyType.None                  ,false),
-                new RecordDefinition("#avatarMask_assetPath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None
+                new RecordDefinition("#avatarMask_assetPath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
                     ,(object i)=>{
-                        if(null==((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].avatarMask) { Debug.Log("アバターマスク無し☆（＞＿＜）"); return ""; }
-                        return AssetDatabase.GetAssetPath(((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].avatarMask.GetInstanceID());
+                        if(null==((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].avatarMask) { Debug.Log("アバターマスク無し☆（＞＿＜）"); return ""; }
+                        return AssetDatabase.GetAssetPath(((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].avatarMask.GetInstanceID());
                     }
                     ,(object i,string v)=>{
                         AvatarMask value = AssetDatabase.LoadAssetAtPath<AvatarMask>(v);
                         if(null==value) { throw new UnityException("["+v+"]というアセット・パスのアバターマスクは見つからなかったぜ☆（＞＿＜）！"); }
-                        ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].avatarMask = value;
+                        ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].avatarMask = value;
                         Debug.Log("アバターマスクアセットパス（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                         // TODO: Delete にも対応したい。
                     }),
-                new RecordDefinition("#blendingMode_string#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None
-                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].blendingMode.ToString(); }
+                new RecordDefinition("#blendingMode_string#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
+                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].blendingMode.ToString(); }
                     ,(object i,string v)=>{
                         HashSet<AnimatorLayerBlendingMode> hits = Operation_AnimatorLayerBlendingMode.Lookup(v);
                         if(0==hits.Count) { throw new UnityException("正規表現に該当する列挙型の要素が無いぜ☆（＞＿＜）！ v=["+v+"] hits.Count=["+hits.Count+"]"); }
@@ -353,36 +356,36 @@ namespace StellaQL
                         AnimatorLayerBlendingMode value = 0; bool found =false;
                         foreach(AnimatorLayerBlendingMode enumItem in hits) { value = enumItem; found=true; break; }
                         if(found) {
-                            ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].blendingMode = value;
+                            ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].blendingMode = value;
                             Debug.Log("ブレンドモードストリング（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
                             Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                         }
                     }),
-                new RecordDefinition("defaultWeight"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None
-                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].defaultWeight;           }
+                new RecordDefinition("defaultWeight"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.ReadOnly
+                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].defaultWeight;           }
                     ,(object i,float v)=>{
-                        ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].defaultWeight = v;
+                        ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].defaultWeight = v;
                         Debug.Log("デフォルトウェイト（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
-                new RecordDefinition("iKPass"                   ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None
-                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].iKPass;                  }
+                new RecordDefinition("iKPass"                   ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.ReadOnly
+                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].iKPass;                  }
                     ,(object i,bool v)=>{
-                        ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].iKPass = v;
+                        ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].iKPass = v;
                         Debug.Log("アイケーパス（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
-                new RecordDefinition("syncedLayerAffectsTiming" ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None
-                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].syncedLayerAffectsTiming;}
+                new RecordDefinition("syncedLayerAffectsTiming" ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.ReadOnly
+                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerAffectsTiming;}
                     ,(object i,bool v)=>{
-                        ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].syncedLayerAffectsTiming = v;
+                        ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerAffectsTiming = v;
                         Debug.Log("シンクレイヤーアフェクトタイミング（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
-                new RecordDefinition("syncedLayerIndex"         ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.None
-                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].syncedLayerIndex;        }
+                new RecordDefinition("syncedLayerIndex"         ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.ReadOnly
+                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerIndex;        }
                     ,(object i,int v)=>{
-                        ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].syncedLayerIndex = v;
+                        ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerIndex = v;
                         Debug.Log("シンクレイヤーインデックス（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),

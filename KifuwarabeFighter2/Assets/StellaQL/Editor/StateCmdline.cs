@@ -255,7 +255,7 @@ public class StateCmdline : EditorWindow
                 StellaQLReader.ReadUpdateRequestCsv(out updateRequest, info_message); // CSVファイル読取
                 AnimatorControllerWrapper acWrapper = new AnimatorControllerWrapper(m_ac);
                 Operation_Something.ManipulateData(acWrapper, aconData_scanned, updateRequest, info_message); // 更新を実行
-                Operation_Layer.RefreshAllLayers(acWrapper); // 編集したレイヤーのプロパティーを反映させる。
+                //Operation_Layer.RefreshAllLayers(acWrapper); // 編集したレイヤーのプロパティーを反映させる。
                 StellaQLReader.DeleteUpdateRequestCsv(info_message);
 
                 Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
