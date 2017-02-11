@@ -490,15 +490,15 @@ namespace StellaQL
                 // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
                 new RecordDefinition("#layerNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
                 new RecordDefinition("#machineStateNum#"            ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#fullnameEndsWithDot#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false), // 表示用フィールド（フルネーム）はこれで十分。後ろにドットが付いているが……。
-                new RecordDefinition("#statemachinePath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly          // "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
+                new RecordDefinition("#layerName#"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false), // 内容は空。 LibreOffice Basic に探させる
+                new RecordDefinition("#statemachinePath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      // "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
                     ,(object i)=>{          return ((Wrapper)i).StatemachinePath; }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                
-                new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None              // 「#fullnameEndsWithDot#」フィールドで十分なので、これはIDにしない方が一貫性がある。
+                // new RecordDefinition("#fullnameEndsWithDot#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false), // 表示用フィールド（フルネーム）はこれで十分。後ろにドットが付いているが……。
+                new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly          // 「#fullnameEndsWithDot#」フィールドで十分なので、これはIDにしない方が一貫性がある。
                     ,(object i)=>{          return ((Wrapper)i).Source.name; }
-                    ,(object i,string v)=>{ ((Wrapper)i).Source.name = v;}
+                    ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
                 new RecordDefinition("#anyStateTransitions_Length#" ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
                     ,(object i)=>{          return ((Wrapper)i).Source.anyStateTransitions.Length.ToString(); }
@@ -524,13 +524,15 @@ namespace StellaQL
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
 
-            Empty = new StatemachineRecord(-1,-1,"","",new AnimatorStateMachine(),new List<PositionRecord>());
+            Empty = new StatemachineRecord(-1,-1,"",new AnimatorStateMachine(),new List<PositionRecord>());
         }
         public static Dictionary<string, RecordDefinition> Definitions { get; private set; }
         public static StatemachineRecord Empty { get; private set; }
 
-        public StatemachineRecord(int layerNum, int machineStateNum, string fullnameEndsWithDot, string statemachinePath, AnimatorStateMachine stateMachine, List<PositionRecord> positionsTable)
+        public StatemachineRecord(int layerNum, int machineStateNum, string statemachinePath, AnimatorStateMachine stateMachine, List<PositionRecord> positionsTable)
         {
+            //, string fullnameEndsWithDot
+
             // fullnameEndsWithDot には「Base Layer.」のような文字が入っているが、レイヤーの持つステートマシンの名前も「Base Layer」なので、つなげると「Base Layer.Base Layer」になってしまう。
             // state から見れば親パスだが。
 
@@ -538,8 +540,9 @@ namespace StellaQL
             {
                 { "#layerNum#"                      ,layerNum                                                                                           },//レイヤー行番号
                 { "#machineStateNum#"               ,machineStateNum                                                                                    },
-                { "#fullnameEndsWithDot#"           ,fullnameEndsWithDot                                                                                },
+                { "#layerName#"                     ,""                                                                                                 },//空っぽ
                 { "#statemachinePath#"              ,statemachinePath                                                                                   },
+                // { "#fullnameEndsWithDot#"           ,fullnameEndsWithDot                                                                                },
                 { "name"                            ,stateMachine.name                                                                                  },
                 //{ "anyStateTransitions"         ,stateMachine.anyStateTransitions   == null ? "" : stateMachine.anyStateTransitions.ToString()      },
                 { "#anyStateTransitions_Length#"    ,stateMachine.anyStateTransitions.Length.ToString()                                                 },
@@ -568,8 +571,9 @@ namespace StellaQL
         {
             Definitions["#layerNum#"                    ].AppendCsv(Fields, c, n, d); // レイヤー行番号
             Definitions["#machineStateNum#"             ].AppendCsv(Fields, c, n, d);
-            Definitions["#fullnameEndsWithDot#"         ].AppendCsv(Fields, c, n, d);
+            Definitions["#layerName#"                   ].AppendCsv(Fields, c, n, d);
             Definitions["#statemachinePath#"            ].AppendCsv(Fields, c, n, d);
+            // Definitions["#fullnameEndsWithDot#"         ].AppendCsv(Fields, c, n, d);
             Definitions["name"                          ].AppendCsv(Fields, c, n, d);
             Definitions["#anyStateTransitions_Length#"  ].AppendCsv(Fields, c, n, d);
             Definitions["#behaviours_Length#"           ].AppendCsv(Fields, c, n, d);

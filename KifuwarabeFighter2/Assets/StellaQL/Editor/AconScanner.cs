@@ -60,7 +60,8 @@ namespace StellaQL
                         if(!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(statemachine_pair.Key, ref caret, ref ft)) {
                             throw new UnityException("[" + statemachine_pair.Key + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-                        if(OnStatemachine( statemachine_pair.Key,
+                        if(OnStatemachine(
+                            statemachine_pair.Key,
                             string.Join(".",ft.StatemachineNamesEndsWithoutDot.ToArray()),// 例えばフルパスが "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
                             statemachine_pair.Value, lNum, smNum))
                         {
@@ -110,6 +111,7 @@ namespace StellaQL
         /// <param name="statemachine"></param>
         /// <returns>下位を検索するなら真</returns>
         public virtual bool OnStatemachine(string fullnameEndWithDot, string statemachinePath, AnimatorStateMachine statemachine, int lNum, int smNum) { return false; }
+
         /// <summary>
         /// 
         /// </summary>
@@ -156,12 +158,12 @@ namespace StellaQL
             AconData.table_layer.Add(layerRecord); return true;
         }
 
-        public override bool OnStatemachine( string fullnameEndWithDot, string statemachinePath, AnimatorStateMachine statemachine, int lNum, int smNum)
+        public override bool OnStatemachine(string fullnameEndWithDot, string statemachinePath, AnimatorStateMachine statemachine, int lNum, int smNum)
         {
             StatemachineRecord stateMachineRecord = new StatemachineRecord(
                 lNum,
                 smNum,
-                fullnameEndWithDot,
+                //fullnameEndWithDot,
                 statemachinePath,
                 statemachine, AconData.table_position);
             AconData.table_statemachine.Add(stateMachineRecord); return true;
@@ -218,7 +220,7 @@ namespace StellaQL
             return true;
         }
 
-        public override bool OnStatemachine( string fullnameEndWithDot, string statemachinePath, AnimatorStateMachine statemachine, int lNum, int smNum)
+        public override bool OnStatemachine(string fullnameEndWithDot, string statemachinePath, AnimatorStateMachine statemachine, int lNum, int smNum)
         {
             FullpathSet.Add(fullnameEndWithDot); return true;
         }

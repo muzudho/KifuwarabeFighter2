@@ -205,17 +205,6 @@ namespace StellaQL
 
     public abstract class Operation_Layer
     {
-        //#region 解析
-        //public static bool Parse_LayerName(string query, ref int ref_caret, out string justLayerName_EndsWithoutDot)
-        //{
-        //    int caret = ref_caret;
-        //    FullpathTokens ft = new FullpathTokens();
-
-        //    if (!FullpathSyntaxP.Fixed_LayerName(query, ref caret, ref ft)) { throw new UnityException("パースしたらレイヤー名が出てこなかったぜ☆（＞＿＜） query=[" + query + "]"); }
-        //    justLayerName_EndsWithoutDot = ft.LayerNameEndsWithoutDot; ref_caret = caret; return true;
-        //}
-        //#endregion
-
         #region 取得
         /// <summary>
         /// パスを指定すると レイヤーを返す。
@@ -228,20 +217,6 @@ namespace StellaQL
             throw new UnityException("レイヤーが見つからないぜ☆（＾～＾）justLayerName_EndsWithoutDot=[" + justLayerName_EndsWithoutDot + "]");
             //return null;
         }
-        ///// <summary>
-        ///// パスを指定すると レイヤーを返す。
-        ///// </summary>
-        ///// <param name="path">"Base Layer" といった文字列。</param>
-        //public static AnimatorControllerLayer Fetch(AnimatorController ac, string path)
-        //{
-        //    string[] nodes = path.Split('.'); // 最初の[0]ノードは、レイヤー
-        //    if (nodes.Length < 1) { throw new UnityException("ノード数が１つ未満だったぜ☆（＾～＾） ステートマシン名は無いのかだぜ☆？"); }
-
-        //    // 最初の名前のノード[0]は、レイヤーを検索する。
-        //    foreach (AnimatorControllerLayer layer in ac.layers) { if (nodes[0] == layer.name) { return layer; } }
-        //    throw new UnityException("レイヤーが見つからないぜ☆（＾～＾）nodes=[" + string.Join("][", nodes) + "]");
-        //    //return null;
-        //}
         #endregion
 
         #region 検索
