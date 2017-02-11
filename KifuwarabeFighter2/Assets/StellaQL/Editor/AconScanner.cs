@@ -20,6 +20,7 @@ namespace StellaQL
 
             foreach (ChildAnimatorStateMachine caStateMachine in stateMachine.stateMachines)
             {
+                if (null == caStateMachine.stateMachine) { throw new UnityException("子ステートマシンがヌルだぜ☆（＞＿＜）！ 親stateMachine.name=[" + stateMachine.name+"]"); }
                 ScanRecursive(path, caStateMachine.stateMachine, statemachineList_flat);
             }
         }
@@ -45,7 +46,11 @@ namespace StellaQL
                 if(OnLayer( layer, lNum))
                 {
                     Dictionary<string, AnimatorStateMachine> statemachineList_flat = new Dictionary<string, AnimatorStateMachine>(); // フルパス, ステートマシン
+
+                    // レイヤーは、ステートマシンを持っていないことがあるぜ☆（＾～＾） 他のレイヤーのステートマシンを参照してるのだろう☆（＾～＾）
+                    if (null == layer.stateMachine) { continue; } // 次のレイヤーへ
                     ScanRecursive("", layer.stateMachine, statemachineList_flat);// 再帰をスキャンして、フラットにする。
+
                     int smNum = 0;
                     foreach (KeyValuePair<string, AnimatorStateMachine> statemachine_pair in statemachineList_flat)
                     { // ステート・マシン

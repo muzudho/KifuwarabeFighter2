@@ -98,11 +98,13 @@ namespace StellaQL
             contents.AppendLine(@"    # There are four escape sequences of supported literal strings \\ \"" \r \n.");
             contents.AppendLine(@"");
             contents.AppendLine(@"        # Sample");
-            contents.AppendLine(@"        STATE SELECT WHERE "".*Dog"" THE Zoo001 ;");
-            contents.AppendLine(@"        STATE SELECT WHERE "".*Cat"" THE Zoo002");
+            contents.AppendLine(@"        LAYER INSERT WORDS NewLayer0 ""New Layer1"" ""\""New Layer2\"""" ""New\\Layer3"" ""New\rLayer4"" ""New\nLayer5"" ""New\r\nLayer6""");
             contents.AppendLine(@"");
             contents.AppendLine(@"    # リテラル文字列は検索時は正規表現だぜ☆（＾▽＾） \ を検索したいときは \\ としてくれだぜ☆（＾～＾）");
             contents.AppendLine(@"    # Literal strings are used as regular expressions when searching. If you want to search \, please set it to \\.");
+            contents.AppendLine(@"");
+            contents.AppendLine(@"        # Sample");
+            contents.AppendLine(@"        LAYER DELETE WORDS ""New\\\\Layer3""");
             contents.AppendLine(@"");
             contents.AppendLine(@"    =================");
             contents.AppendLine(@"");

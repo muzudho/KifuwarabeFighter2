@@ -249,11 +249,13 @@ public class StateCmdline : EditorWindow
                 // 現状のデータ
                 AconScanner aconScanner = new AconScanner();
                 aconScanner.ScanAnimatorController(m_ac, info_message);
-                AconData aconData = aconScanner.AconData;
+                AconData aconData_scanned = aconScanner.AconData;
 
                 HashSet<DataManipulationRecord> updateRequest;
                 StellaQLReader.ReadUpdateRequestCsv(out updateRequest, info_message); // CSVファイル読取
-                Operation_Something.ManipulateData(m_ac, aconData, updateRequest, info_message); // 更新を実行
+                AnimatorControllerWrapper acWrapper = new AnimatorControllerWrapper(m_ac);
+                Operation_Something.ManipulateData(acWrapper, aconData_scanned, updateRequest, info_message); // 更新を実行
+                Operation_Layer.RefreshAllLayers(acWrapper); // 編集したレイヤーのプロパティーを反映させる。
                 StellaQLReader.DeleteUpdateRequestCsv(info_message);
 
                 Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。

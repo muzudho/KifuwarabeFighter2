@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
 
 /// <summary>
@@ -11,6 +12,41 @@ using UnityEngine;
 /// </summary>
 public class SM : MonoBehaviour
 {
+    [MenuItem("MyMenu/SetAvatarMask")]
+    static void SetAvatarMask()
+    {
+        // アニメーター・コントローラーを取得。
+        AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/StellaQL/AnimatorControllers/Demo_Zoo.controller");
+        AvatarMask value = AssetDatabase.LoadAssetAtPath<AvatarMask>("Assets/Resources/AvatarMasks/Head.mask");
+
+        //ac.layers[1].avatarMask = value; // アバターマスクが変わらない
+        //ac.layers[1].blendingMode = AnimatorLayerBlendingMode.Override;
+        //ac.layers[1].iKPass = true;
+        //ac.layers[1].defaultWeight = 59.63f;
+        //Debug.Log("アバターマスクのプロパティーをセットしようぜ☆（＾～＾）？");
+
+        //AnimatorControllerLayer layer = new AnimatorControllerLayer();
+        //layer.avatarMask = value;
+        //layer.blendingMode = AnimatorLayerBlendingMode.Override;
+        //layer.iKPass = true;
+        //layer.defaultWeight = 59.63f;
+        //ac.layers[1] = layer; // 変わりなし？上書きされない？ layers配列が読取専用、またはコピーの可能性は？
+        //Debug.Log("新しいレイヤーで上書きしようぜ☆（＾～＾）？");
+
+        // レイヤーを複製できるだろうか？
+        int layerIndex = 1;
+        AnimatorControllerLayer layer = ac.layers[layerIndex]; // 既存レイヤーを取得
+        layer.avatarMask = value;
+        layer.blendingMode = AnimatorLayerBlendingMode.Override;
+        layer.iKPass = true;
+        layer.defaultWeight = 59.63f;
+        ac.RemoveLayer(layerIndex); // 既存のレイヤーを削除（TODO:配列の後ろから）
+        ac.AddLayer(layer); // プロパティーを変更した既存レイヤーを再追加。
+        Debug.Log("プロパティーを変更したレイヤーを再追加してどうか☆（＾～＾）？");
+
+        //ac.AddLayer(layer); // いける。
+        //Debug.Log("レイヤーを作り直してどうか☆（＾～＾）？");
+    }
     /*
     /// <summary>
     /// 

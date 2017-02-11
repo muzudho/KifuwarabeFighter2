@@ -5,9 +5,29 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEditor.Animations;
 using UnityEngine;
+using UnityEditor;
 
 namespace StellaQL
 {
+    public class AnimatorControllerWrapper
+    {
+        public AnimatorControllerWrapper(AnimatorController ac)
+        {
+            SourceAc = ac;
+
+            // レイヤーのコピー
+            CopiedLayers = new List<AnimatorControllerLayer>();
+            foreach (AnimatorControllerLayer actualLayer in ac.layers) // オリジナルのレイヤーは、セッターが死んでる？
+            {
+                AnimatorControllerLayer copiedLayer = Operation_Layer.DeepCopy(actualLayer);
+                CopiedLayers.Add(copiedLayer);
+            }
+        }
+
+        public AnimatorController SourceAc { get; private set; }
+        public List<AnimatorControllerLayer> CopiedLayers { get; private set; }
+    }
+
     /// <summary>
     /// 列定義レコード
     /// </summary>
@@ -157,7 +177,7 @@ namespace StellaQL
 
         public bool EqualsOld(object actualOld, object requestOld)
         {
-            switch (this.Type)
+            switch (Type)
             {
                 case FieldType.Bool:    if ((bool)actualOld != (bool)requestOld) { throw new UnityException("Old値が異なる bool型 actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
                 case FieldType.Float:   if ((float)actualOld != (float)requestOld) { throw new UnityException("Old値が異なる float型 actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
@@ -172,14 +192,13 @@ namespace StellaQL
         /// <summary>
         /// 既存のオブジェクトのプロパティー更新の場合、これを使う。
         /// </summary>
-        /// <param name="instance"></param>
+        /// <param name="instance">ステートマシン、チャイルド・ステート、コンディション・ラッパー、ポジション・ラッパー等</param>
         /// <param name="record"></param>
         /// <param name="message"></param>
         public void Update(object instance, DataManipulationRecord record, StringBuilder message)
         {
             if (null == instance) { throw new UnityException("instanceがヌルだったぜ☆（／＿＼）"); }
 
-            string propertyName = Name;
             switch (Type)
             {
                 case FieldType.Bool:
@@ -208,6 +227,7 @@ namespace StellaQL
                     break;
                 case FieldType.String:
                     {
+                        Debug.Log("string型の更新要求だぜ☆（＾～＾）Name=["+Name+ "] record.IsDelete=["+ record.IsDelete + "] record.New=["+ record.New + "]");
                         if (null == m_getterString) { throw new UnityException("m_getterStringがヌルだったぜ☆（／＿＼）"); }
                         string actual = m_getterString(instance);
                         if (EqualsOld(actual, record.Old)) {
@@ -284,19 +304,88 @@ namespace StellaQL
     /// </summary>
     public class LayerRecord
     {
+        /// <summary>
+        /// レイヤーのコピーを渡されても更新できないので、アニメーション・コントローラーも一緒に渡そうというもの。
+        /// </summary>
+        public class LayerWrapper
+        {
+            public LayerWrapper(AnimatorControllerWrapper sourceAcWrapper, int layerIndex)
+            {
+                SourceAcWrapper = sourceAcWrapper;
+                LayerIndex = layerIndex;
+            }
+
+            public AnimatorControllerWrapper SourceAcWrapper { get; private set; }
+            public int LayerIndex { get; private set; }
+        }
+
         static LayerRecord()
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
                 // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
-                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int, RecordDefinition.KeyType.TemporaryNumbering, false),
-                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identifiable,false),
-                new RecordDefinition("avatarMask",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("blendingMode",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("defaultWeight",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None             ,(object i)=>{ return ((AnimatorControllerLayer)i).defaultWeight; }             ,(object i,float v)=>{ ((AnimatorControllerLayer)i).defaultWeight = v; }),
-                new RecordDefinition("iKPass",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                     ,(object i)=>{ return ((AnimatorControllerLayer)i).iKPass; }                    ,(object i,bool v)=>{ ((AnimatorControllerLayer)i).iKPass = v; }),
-                new RecordDefinition("syncedLayerAffectsTiming",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None   ,(object i)=>{ return ((AnimatorControllerLayer)i).syncedLayerAffectsTiming; }  ,(object i,bool v)=>{ ((AnimatorControllerLayer)i).syncedLayerAffectsTiming = v; }),
-                new RecordDefinition("syncedLayerIndex",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None            ,(object i)=>{ return ((AnimatorControllerLayer)i).syncedLayerIndex; }          ,(object i,int v)=>{ ((AnimatorControllerLayer)i).syncedLayerIndex = v; }),
+                new RecordDefinition("#layerNum#"               ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("name"                     ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false),
+                new RecordDefinition("#avatarMask_assetPath#"   ,RecordDefinition.FieldType.Other   ,RecordDefinition.KeyType.None                  ,false),
+                new RecordDefinition("#avatarMask_assetPath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None
+                    ,(object i)=>{
+                        if(null==((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].avatarMask) { Debug.Log("アバターマスク無し☆（＞＿＜）"); return ""; }
+                        return AssetDatabase.GetAssetPath(((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].avatarMask.GetInstanceID());
+                    }
+                    ,(object i,string v)=>{
+                        AvatarMask value = AssetDatabase.LoadAssetAtPath<AvatarMask>(v);
+                        if(null==value) { throw new UnityException("["+v+"]というアセット・パスのアバターマスクは見つからなかったぜ☆（＞＿＜）！"); }
+                        ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].avatarMask = value;
+                        Debug.Log("アバターマスクアセットパス（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
+                        Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
+                        // TODO: Delete にも対応したい。
+                    }),
+                new RecordDefinition("#blendingMode_string#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None
+                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].blendingMode.ToString(); }
+                    ,(object i,string v)=>{
+                        HashSet<AnimatorLayerBlendingMode> hits = Operation_AnimatorLayerBlendingMode.Lookup(v);
+                        if(0==hits.Count) { throw new UnityException("正規表現に該当する列挙型の要素が無いぜ☆（＞＿＜）！ v=["+v+"] hits.Count=["+hits.Count+"]"); }
+                        else if(1<hits.Count)
+                        {
+                            StringBuilder sb = new StringBuilder(); foreach(AnimatorLayerBlendingMode enumItem in hits) { sb.Append(enumItem.ToString()); sb.Append(" "); }
+                            throw new UnityException("正規表現に該当する列挙型の要素はどれか１つにしろだぜ☆（＞＿＜）！ v=["+v+"] hits.Count=["+hits.Count+"] sb="+sb.ToString());
+                        }
+                        AnimatorLayerBlendingMode value = 0; bool found =false;
+                        foreach(AnimatorLayerBlendingMode enumItem in hits) { value = enumItem; found=true; break; }
+                        if(found) {
+                            ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].blendingMode = value;
+                            Debug.Log("ブレンドモードストリング（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
+                            Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
+                        }
+                    }),
+                new RecordDefinition("defaultWeight"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None
+                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].defaultWeight;           }
+                    ,(object i,float v)=>{
+                        ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].defaultWeight = v;
+                        Debug.Log("デフォルトウェイト（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
+                        Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
+                    }),
+                new RecordDefinition("iKPass"                   ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None
+                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].iKPass;                  }
+                    ,(object i,bool v)=>{
+                        ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].iKPass = v;
+                        Debug.Log("アイケーパス（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
+                        Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
+                    }),
+                new RecordDefinition("syncedLayerAffectsTiming" ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None
+                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].syncedLayerAffectsTiming;}
+                    ,(object i,bool v)=>{
+                        ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].syncedLayerAffectsTiming = v;
+                        Debug.Log("シンクレイヤーアフェクトタイミング（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
+                        Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
+                    }),
+                new RecordDefinition("syncedLayerIndex"         ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.None
+                    ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].syncedLayerIndex;        }
+                    ,(object i,int v)=>{
+                        ((LayerWrapper)i).SourceAcWrapper.CopiedLayers[((LayerWrapper)i).LayerIndex].syncedLayerIndex = v;
+                        Debug.Log("シンクレイヤーインデックス（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
+                        Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
+                    }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -310,13 +399,13 @@ namespace StellaQL
             this.Fields = new Dictionary<string, object>()
             {
                 { "#layerNum#",num },//レイヤー行番号
-                { "name", layer.name},//レイヤー名
-                { "avatarMask",layer.avatarMask == null ? "" : layer.avatarMask.ToString() },
-                { "blendingMode", layer.blendingMode.ToString()},
-                { "defaultWeight", layer.defaultWeight},
-                { "iKPass", layer.iKPass},
-                { "syncedLayerAffectsTiming", layer.syncedLayerAffectsTiming},
-                { "syncedLayerIndex", layer.syncedLayerIndex},
+                { "name"                        ,layer.name},//レイヤー名
+                { "#avatarMask_assetPath#"      ,layer.avatarMask == null ? "" : AssetDatabase.GetAssetPath(layer.avatarMask.GetInstanceID()) },
+                { "#blendingMode_string#"       ,layer.blendingMode.ToString()},
+                { "defaultWeight"               ,layer.defaultWeight},
+                { "iKPass"                      ,layer.iKPass},
+                { "syncedLayerAffectsTiming"    ,layer.syncedLayerAffectsTiming},
+                { "syncedLayerIndex"            ,layer.syncedLayerIndex},
             };
         }
         public Dictionary<string,object> Fields { get; set; }
@@ -329,14 +418,14 @@ namespace StellaQL
         /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum#"].AppendCsv(Fields, c, n, d); // レイヤー行番号
-            Definitions["name"].AppendCsv(Fields, c, n, d); // レイヤー名
-            Definitions["avatarMask"].AppendCsv(Fields, c, n, d);
-            Definitions["blendingMode"].AppendCsv(Fields, c, n, d);
-            Definitions["defaultWeight"].AppendCsv(Fields, c, n, d);
-            Definitions["iKPass"].AppendCsv(Fields, c, n, d);
-            Definitions["syncedLayerAffectsTiming"].AppendCsv(Fields, c, n, d);
-            Definitions["syncedLayerIndex"].AppendCsv(Fields, c, n, d);
+            Definitions["#layerNum#"                ].AppendCsv(Fields, c, n, d); // レイヤー行番号
+            Definitions["name"                      ].AppendCsv(Fields, c, n, d); // レイヤー名
+            Definitions["#avatarMask_assetPath#"    ].AppendCsv(Fields, c, n, d);
+            Definitions["#blendingMode_string#"     ].AppendCsv(Fields, c, n, d);
+            Definitions["defaultWeight"             ].AppendCsv(Fields, c, n, d);
+            Definitions["iKPass"                    ].AppendCsv(Fields, c, n, d);
+            Definitions["syncedLayerAffectsTiming"  ].AppendCsv(Fields, c, n, d);
+            Definitions["syncedLayerIndex"          ].AppendCsv(Fields, c, n, d);
             if (n) { c.Append("[EOL],"); }
             if (!d) { c.AppendLine(); }
         }

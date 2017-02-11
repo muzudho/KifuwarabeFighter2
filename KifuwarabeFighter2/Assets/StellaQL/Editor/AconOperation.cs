@@ -1,12 +1,12 @@
 ﻿//
 // Animation Controller Operation
 //
-using UnityEditor.Animations;
-using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using System;
 using System.Text.RegularExpressions;
+using UnityEditor.Animations;
+using UnityEngine;
 
 namespace StellaQL
 {
@@ -15,7 +15,7 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_Something
     {
-        public static void ManipulateData(AnimatorController ac, AconData aconData_old, HashSet<DataManipulationRecord> request_packets, StringBuilder info_message)
+        public static void ManipulateData(AnimatorControllerWrapper acWrapper, AconData aconData_old, HashSet<DataManipulationRecord> request_packets, StringBuilder info_message)
         {
             // テスト出力
             {
@@ -32,6 +32,8 @@ namespace StellaQL
             }
 
             // 更新要求を、届け先別に仕分ける。コレクションを入れ子にし、フルパスで更新要求を仕分ける。
+            // レイヤー
+            List<DataManipulationRecord> list_layer = new List<DataManipulationRecord>();
             // 二重構造 [ステート・フルパス、トランジション番号]
             Dictionary<string, Dictionary<int, DataManipulationRecord>> largeDic_transition = new Dictionary<string, Dictionary<int, DataManipulationRecord>>();
             // 三重構造 [ステート・フルパス、トランジション番号、コンディション番号]
@@ -40,10 +42,14 @@ namespace StellaQL
             {
                 switch (request_packet.Category)
                 {
-                    case "parameters":      Operation_Parameter     .ManipulateData(ac, request_packet, info_message); break;
-                    case "layers":          Operation_Layer         .Update(ac, request_packet, info_message); break;
-                    case "stateMachines":   Operation_Statemachine  .Update(ac, request_packet, info_message); break;
-                    case "states":          Operation_State         .Update(ac, request_packet, info_message); break;
+                    case "parameters":      Operation_Parameter     .ManipulateData(acWrapper.SourceAc, request_packet, info_message); break;
+                    case "layers":
+                        {
+                            list_layer.Add(request_packet);
+                        }
+                        break;
+                    case "stateMachines":   Operation_Statemachine  .Update(acWrapper.SourceAc, request_packet, info_message); break;
+                    case "states":          Operation_State         .Update(acWrapper.SourceAc, request_packet, info_message); break;
                     case "transitions":
                         {
                             // 二重構造
@@ -82,7 +88,7 @@ namespace StellaQL
                             }
                         }
                         break;
-                    case "positinos": Operation_Position.Update(ac, request_packet, info_message); break;
+                    case "positinos": Operation_Position.Update(acWrapper.SourceAc, request_packet, info_message); break;
                     default: throw new UnityException("未対応のカテゴリー=["+ request_packet.Category + "]");
                 }
             }
@@ -93,13 +99,13 @@ namespace StellaQL
                 List<DataManipulationRecord> insertsSet = new List<DataManipulationRecord>();
                 List<DataManipulationRecord> deletesSet = new List<DataManipulationRecord>();
                 List<DataManipulationRecord> updatesSet = new List<DataManipulationRecord>();
-                Debug.Log("largeDic_transition.Count=" + largeDic_transition.Count);// [ステート・フルパス,トランジション番号]
+                //Debug.Log("largeDic_transition.Count=" + largeDic_transition.Count);// [ステート・フルパス,トランジション番号]
                 foreach (KeyValuePair<string, Dictionary<int, DataManipulationRecord>> request_2wrap in largeDic_transition)
                 {
                     Debug.Log("request_2wrap.Value.Count=" + request_2wrap.Value.Count);// [,トランジション番号]
                     foreach (KeyValuePair<int, DataManipulationRecord> request_1wrap in request_2wrap.Value)
                     {
-                        AnimatorStateTransition transition = Operation_Transition.Lookup(ac, request_1wrap.Value);// トランジション
+                        AnimatorStateTransition transition = Operation_Transition.Lookup(acWrapper.SourceAc, request_1wrap.Value);// トランジション
 
                         if ("#DestinationFullpath#" == request_1wrap.Value.Name)
                         {
@@ -115,7 +121,7 @@ namespace StellaQL
                     }
                 }
 
-                foreach (DataManipulationRecord request in insertsSet) { Operation_Transition.Insert(ac, request, info_message); }// 更新を処理
+                foreach (DataManipulationRecord request in insertsSet) { Operation_Transition.Insert(acWrapper.SourceAc, request, info_message); }// 更新を処理
                 deletesSet.Sort((DataManipulationRecord a, DataManipulationRecord b) =>
                 { // 削除要求を、連番の逆順にする
                     int stringCompareOrder = string.CompareOrdinal(a.Fullpath, b.Fullpath);
@@ -124,8 +130,8 @@ namespace StellaQL
                     else if (int.Parse(b.TransitionNum_ofFullpath) < int.Parse(a.TransitionNum_ofFullpath)) { return 1; }
                     return 0;
                 });
-                foreach (DataManipulationRecord request in deletesSet) { Operation_Transition.Delete(ac, request, info_message); }// 削除を処理
-                foreach (DataManipulationRecord request in updatesSet) { Operation_Transition.Update(ac, request, info_message); }// 挿入を処理
+                foreach (DataManipulationRecord request in deletesSet) { Operation_Transition.Delete(acWrapper.SourceAc, request, info_message); }// 削除を処理
+                foreach (DataManipulationRecord request in updatesSet) { Operation_Transition.Update(acWrapper.SourceAc, request, info_message); }// 挿入を処理
             }
             // コンディションを消化
             {
@@ -133,7 +139,7 @@ namespace StellaQL
                 List<Operation_Condition.DataManipulatRecordSet> insertsSet = new List<Operation_Condition.DataManipulatRecordSet>();
                 List<Operation_Condition.DataManipulatRecordSet> deletesSet = new List<Operation_Condition.DataManipulatRecordSet>();
                 List<Operation_Condition.DataManipulatRecordSet> updatesSet = new List<Operation_Condition.DataManipulatRecordSet>();
-                Debug.Log("conditionRecordSet.Count=" + largeDic_condition.Count);// [ステート・フルパス,トランジション番号,コンディション番号]
+                //Debug.Log("conditionRecordSet.Count=" + largeDic_condition.Count);// [ステート・フルパス,トランジション番号,コンディション番号]
                 foreach (KeyValuePair<string, Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>> conditionRecordSetPair in largeDic_condition)
                 {
                     Debug.Log("conditionRecordSetPair.Value.Count=" + conditionRecordSetPair.Value.Count);// [,トランジション番号,コンディション番号]
@@ -144,8 +150,8 @@ namespace StellaQL
                         {
                             if (Operation_Something.HasProperty(conditionRecordSet2Pair.Value.RepresentativeName, ConditionRecord.Definitions, "コンディション操作"))
                             {
-                                AnimatorStateTransition transition = Operation_Transition.Lookup(ac, conditionRecordSet2Pair.Value.RepresentativeRecord);// トランジション
-                                ConditionRecord.AnimatorConditionWrapper wapper = Operation_Condition.Lookup(ac, transition, conditionRecordSet2Pair.Value.RepresentativeRecord);// コンディション
+                                AnimatorStateTransition transition = Operation_Transition.Lookup(acWrapper.SourceAc, conditionRecordSet2Pair.Value.RepresentativeRecord);// トランジション
+                                ConditionRecord.AnimatorConditionWrapper wapper = Operation_Condition.Lookup(acWrapper.SourceAc, transition, conditionRecordSet2Pair.Value.RepresentativeRecord);// コンディション
 
                                 if (wapper.IsNull) { insertsSet.Add(conditionRecordSet2Pair.Value); }// 存在しないコンディション番号だった場合、 挿入 に振り分ける。
                                 else if (null != conditionRecordSet2Pair.Value.Parameter && conditionRecordSet2Pair.Value.Parameter.IsDelete) { deletesSet.Add(conditionRecordSet2Pair.Value); }// 削除要求の場合、削除 に振り分ける。
@@ -155,7 +161,7 @@ namespace StellaQL
                     }
                 }
 
-                foreach (Operation_Condition.DataManipulatRecordSet requestSet in insertsSet) { Operation_Condition.Insert(ac, requestSet, info_message); }// 更新を処理
+                foreach (Operation_Condition.DataManipulatRecordSet requestSet in insertsSet) { Operation_Condition.Insert(acWrapper.SourceAc, requestSet, info_message); }// 更新を処理
                 deletesSet.Sort((Operation_Condition.DataManipulatRecordSet a, Operation_Condition.DataManipulatRecordSet b) =>
                 { // 削除要求を、連番の逆順にする
                     int stringCompareOrder = string.CompareOrdinal(a.RepresentativeFullpath, b.RepresentativeFullpath);
@@ -166,8 +172,15 @@ namespace StellaQL
                     else if (b.RepresentativeFullpathCondition < a.RepresentativeFullpathCondition) { return 1; }
                     return 0;
                 });
-                foreach (Operation_Condition.DataManipulatRecordSet requestSet in deletesSet) { Operation_Condition.Delete(ac, requestSet, info_message); }// 削除を処理
-                foreach (Operation_Condition.DataManipulatRecordSet requestSet in updatesSet) { Operation_Condition.Update(ac, requestSet, info_message); }// 挿入を処理
+                foreach (Operation_Condition.DataManipulatRecordSet requestSet in deletesSet) { Operation_Condition.Delete(acWrapper.SourceAc, requestSet, info_message); }// 削除を処理
+                foreach (Operation_Condition.DataManipulatRecordSet requestSet in updatesSet) { Operation_Condition.Update(acWrapper.SourceAc, requestSet, info_message); }// 挿入を処理
+            }
+            // レイヤーを消化（レイヤーを反映する際に、オブジェクトの全破棄の処理が入って参照リンクが切れることから、最後にやること）
+            {
+                foreach (DataManipulationRecord request_packet in list_layer)
+                {
+                    Operation_Layer.Update(acWrapper, request_packet, info_message);
+                }
             }
         }
 
@@ -176,7 +189,7 @@ namespace StellaQL
             if (definitions.ContainsKey(name)) { return true; }
             else
             {
-                StringBuilder sb = new StringBuilder(); int i = 0; foreach (string name2 in StateRecord.Definitions.Keys) { sb.Append("[");sb.Append(i);sb.Append("]"); sb.AppendLine(name2); i++; }
+                StringBuilder sb = new StringBuilder(); int i = 0; foreach (string name2 in definitions.Keys) { sb.Append("[");sb.Append(i);sb.Append("]"); sb.AppendLine(name2); i++; }
                 throw new UnityException(calling + " : 更新できないプロパティ名が指定されたぜ☆（＾～＾） name=[" + name + "] 対応しているのは次の名前だぜ☆ : " + Environment.NewLine + sb.ToString() + " ここまで");
             }
         }
@@ -194,9 +207,9 @@ namespace StellaQL
     {
         #region 検索
         /// <summary>
-        /// パスを指定すると ステートマシンを返す。
+        /// パスを指定すると レイヤーを返す。
         /// </summary>
-        /// <param name="path">"Base Layer.JMove" といった文字列。</param>
+        /// <param name="path">"Base Layer" といった文字列。</param>
         public static AnimatorControllerLayer Lookup(AnimatorController ac, string path)
         {
             string[] nodes = path.Split('.');
@@ -212,16 +225,166 @@ namespace StellaQL
             throw new UnityException("レイヤーが見つからないぜ☆（＾～＾）nodes=[" + string.Join("][", nodes) + "]");
             //return null;
         }
+
+        /// <summary>
+        /// レイヤー名（正規表現ではない）を指定すると レイヤー配列のインデックスを返す。
+        /// - レイヤー名にドット(.)が含まれていると StellaQL は様々なところで正常に動作しないかもしれない。
+        /// </summary>
+        /// <param name="path">"Base Layer" といった文字列。</param>
+        public static int IndexOf_ByJustLayerName(AnimatorController ac, string justLayerName)
+        {
+            for (int lNum=0; lNum< ac.layers.Length; lNum++)
+            {
+                AnimatorControllerLayer layer = ac.layers[lNum];
+                if (justLayerName == layer.name) { return lNum; }
+            }
+
+            {
+                StringBuilder sb = new StringBuilder(); foreach (AnimatorControllerLayer layer in ac.layers) { sb.Append(layer.name); sb.Append(" "); }
+                throw new UnityException("レイヤーが見つからないぜ☆（＾～＾）justLayerName=[" + justLayerName + "] sb:"+sb.ToString());
+            }
+        }
         #endregion
 
-        public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
+        public static AnimatorControllerLayer DeepCopy(AnimatorControllerLayer old)
         {
-            AnimatorControllerLayer layer = Lookup(ac, request.Fullpath);
-            if (null == layer) { throw new UnityException("[" + request.Fullpath + "]レイヤーは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+            AnimatorControllerLayer relive = new AnimatorControllerLayer();
+            relive.avatarMask = old.avatarMask;
+            relive.blendingMode = old.blendingMode;
+            relive.defaultWeight = old.defaultWeight;
+            relive.iKPass = old.iKPass;
+            relive.name = old.name;
+            relive.stateMachine = Operation_Statemachine.DeepCopy(old.stateMachine);
+            relive.syncedLayerAffectsTiming = old.syncedLayerAffectsTiming;
+            relive.syncedLayerIndex = old.syncedLayerIndex;
+            return relive;
+        }
+
+        public static void DumpLog(AnimatorControllerWrapper acWrapper)
+        {
+            {
+                int lNum = 0;
+                foreach (AnimatorControllerLayer layer in acWrapper.SourceAc.layers)
+                {
+                    Debug.Log("（＾～＾）オリジナルレイヤーの中身◆ lNum=[" + lNum + "] blendingMode=[" + layer.blendingMode + "] defaultWeight=[" + layer.defaultWeight + "] iKPass=[" + layer.iKPass + "] name=[" + layer.name + "] syncedLayerAffectsTiming=[" + layer.syncedLayerAffectsTiming + "] syncedLayerIndex=[" + layer.syncedLayerIndex + "]");
+                    lNum++;
+                }
+            }
+            {
+                int lNum = 0;
+                foreach (AnimatorControllerLayer layer in acWrapper.CopiedLayers)
+                {
+                    Debug.Log("（＾～＾）コピーレイヤーの中身◆ lNum=[" + lNum + "] blendingMode=[" + layer.blendingMode + "] defaultWeight=[" + layer.defaultWeight + "] iKPass=[" + layer.iKPass + "] name=[" + layer.name + "] syncedLayerAffectsTiming=[" + layer.syncedLayerAffectsTiming + "] syncedLayerIndex=[" + layer.syncedLayerIndex + "]");
+                    lNum++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 元からある全てのレイヤーを削除します。ただし、レイヤーの数を１個未満にすることはできないため、最後にダミーを１個残します。
+        /// 工夫：シンク（参照）関係があるため、子関係のレイヤーから消していきます。
+        /// </summary>
+        /// <param name="acWrapper"></param>
+        public static void DeleteAllLayers_AndPutDammy(AnimatorControllerWrapper acWrapper)
+        {
+            acWrapper.SourceAc.AddLayer(new AnimatorControllerLayer()); // ダミーを末尾に追加。
+            const int dammy = 1;
+
+            while (dammy < acWrapper.SourceAc.layers.Length) // ダミー以外、全部消す
+            {
+                // どこかから参照されていたら真。
+                bool[] parentFlags = new bool[acWrapper.SourceAc.layers.Length];
+                foreach (AnimatorControllerLayer layer in acWrapper.SourceAc.layers)
+                {
+                    if (-1<layer.syncedLayerIndex)
+                    {
+                        parentFlags[layer.syncedLayerIndex] = true;
+                    }
+                }
+
+                // うしろから、どこからも参照されていないレイヤーを削除する。
+                for (int lNum = acWrapper.SourceAc.layers.Length - 1 - dammy; -1 < lNum; lNum--) // 末尾のダミーを除く
+                {
+                    if (parentFlags[lNum])
+                    {
+                        acWrapper.SourceAc.RemoveLayer(lNum);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 全レイヤーを一旦退避して　アニメーション・コントローラーから全部削除し、再び全レイヤーを再追加します。
+        /// ・レイヤー・インデックスでリンクを貼ってきている部分に考慮しています。順番の変更が起こらないように全削除、全再追加します。
+        /// なんでUnityがこういう設計にしたのか推測すると、AddLayerのタイミングでプロパティ変更の適用を掛けているんじゃないだろうか。
+        /// 
+        /// 工夫で解消する点: 全部のレイヤーを削除することはできない。（最低１つのレイヤーを残しておく必要がある）
+        /// </summary>
+        /// <param name="i"></param>
+        public static void RefreshAllLayers(AnimatorControllerWrapper acWrapper)
+        {
+            // 中身を確認してみよう。
+            DumpLog(acWrapper);
+
+            //{
+            //    int lLen = acWrapper.CopiedLayers.Count;
+            //    for (int lNum = 0; lNum < lLen; lNum++)
+            //    {
+            //        acWrapper.SourceAc.AddLayer(acWrapper.CopiedLayers[lNum]); // 追加し直す。
+            //    }
+            //}
+
+            //List<AnimatorControllerLayer> reliveLayers = new List<AnimatorControllerLayer>(); // 退避先
+            //foreach (AnimatorControllerLayer copiedLayer in ac.layers)
+            //{
+            //    // 全てのオブジェクトは破棄されてしまうので、移しておく。
+            //    AnimatorControllerLayer reliveLayer = copiedLayer;
+            //    //AnimatorControllerLayer reliveLayer = DeepCopy(actualLayer);
+            //    reliveLayers.Add(copiedLayer); // 全退避！
+            //}
+
+            //{
+            //    for (int lNum = acWrapper.SourceAc.layers.Length - 1; 0 < lNum; lNum--) // [0]の要素は消さない
+            //    {
+            //        acWrapper.SourceAc.RemoveLayer(lNum); // [0]の要素以外を全削除！
+            //    }
+            //    acWrapper.SourceAc.AddLayer(new AnimatorControllerLayer()); // ダミーを[1]に追加。
+            //    acWrapper.SourceAc.RemoveLayer(0); // [0]の要素を消せるようになったので消す。ダミーは[0]に繰り上がる。
+            //}
+
+            //DeleteAllLayers_AndPutDammy(acWrapper);
+            foreach (AnimatorControllerLayer copiedLayer in acWrapper.CopiedLayers)
+            {
+                acWrapper.SourceAc.AddLayer(copiedLayer); // 全再追加！ このときプロパティーの設定がUnityに反映されるはず。
+            }
+            //{
+            //    acWrapper.SourceAc.RemoveLayer(0); // 先頭の[0]にあるダミーを消す。
+            //}
+
+            //// 同じ名前のレイヤーは存在しない前提のアルゴリズム。（スクリプトでAddLayer( )すると同名のレイヤーも追加できてしまう）
+            //int oldLayerIndex = IndexOf_ByJustLayerName(i.SourceAc, i.SourceCopiedLayer.name); // 変更前のレイヤーの配列インデックスを覚えておく。
+            //i.SourceAc.AddLayer(i.SourceCopiedLayer); // レイヤーを追加する。（同名のレイヤーが２つできている）
+            //i.SourceAc.RemoveLayer(oldLayerIndex); // 変更前のレイヤーを削除する。
+
+            //string newLayerName = i.SourceAc.layers[(i).SourceAc.layers.Length - 1].name; // 新しいレイヤー名を覚えておく。
+            //i.SourceAc.RemoveLayer(IndexOf_ByJustLayerName(i.SourceAc, i.SourceCopiedLayer.name)); // 変更前のレイヤーを削除する。
+            //i.SourceAc.AddLayer(i.SourceCopiedLayer); // 古い名前のレイヤーをもう１回追加。今度はレイヤー名はそのままのはず。
+            //i.SourceAc.RemoveLayer(IndexOf_ByJustLayerName(i.SourceAc, newLayerName)); // 新しいレイヤー名のレイヤーを削除する。
+        }
+
+        public static void Update(AnimatorControllerWrapper acWrapper, DataManipulationRecord request, StringBuilder message)
+        {
+            //Debug.Log("レイヤーの更新要求☆（＾～＾） request.Fullpath=["+ request.Fullpath + "]");
+            AnimatorControllerLayer layer = Lookup(acWrapper.SourceAc, request.Fullpath);
+            int layerIndex = IndexOf_ByJustLayerName(acWrapper.SourceAc, request.Fullpath);
+            //if (null == layer) { throw new UnityException("[" + request.Fullpath + "]レイヤーは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+            if (layerIndex<0) { throw new UnityException("[" + request.Fullpath + "]レイヤーは見つからなかったぜ☆（＾～＾） ac=[" + acWrapper.SourceAc.name + "]"); }
 
             if (Operation_Something.HasProperty(request.Name, LayerRecord.Definitions, "レイヤー操作"))
             {
-                StateRecord.Definitions[request.Name].Update(layer, request, message);
+                //StringBuilder sb = new StringBuilder(); int i = 0; foreach (string name2 in LayerRecord.Definitions.Keys) { sb.Append("["); sb.Append(i); sb.Append("]"); sb.AppendLine(name2); i++; }
+                //Debug.Log("レイヤーのプロパティーの更新要求☆（＾～＾） request.Fullpath=[" + request.Fullpath + "] request.Name=[" + request.Name + "] sb:"+sb.ToString());
+                LayerRecord.Definitions[request.Name].Update(new LayerRecord.LayerWrapper(acWrapper, layerIndex), request, message);
             }
         }
 
@@ -253,6 +416,29 @@ namespace StellaQL
                     }
                 }
             }
+        }
+    }
+
+    public abstract class Operation_ChildStatemachine
+    {
+        public static ChildAnimatorStateMachine[] DeepCopy(ChildAnimatorStateMachine[] oldItems)
+        {
+            ChildAnimatorStateMachine[] reliveItems = new ChildAnimatorStateMachine[oldItems.Length];
+            int i = 0;
+            foreach (ChildAnimatorStateMachine old in oldItems)
+            {
+                reliveItems[i] = DeepCopy(old);
+                i++;
+            }
+            return reliveItems;
+        }
+
+        public static ChildAnimatorStateMachine DeepCopy(ChildAnimatorStateMachine old)
+        {
+            ChildAnimatorStateMachine relive = new ChildAnimatorStateMachine();
+            relive.position = old.position;
+            relive.stateMachine = Operation_Statemachine.DeepCopy(old.stateMachine);
+            return relive;
         }
     }
 
@@ -313,6 +499,24 @@ namespace StellaQL
         }
         #endregion
 
+        public static AnimatorStateMachine DeepCopy(AnimatorStateMachine old)
+        {
+            AnimatorStateMachine relive = new AnimatorStateMachine();
+            relive.anyStatePosition = old.anyStatePosition;
+            relive.anyStateTransitions = old.anyStateTransitions;
+            relive.behaviours = old.behaviours;
+            relive.defaultState = old.defaultState;
+            relive.entryPosition = old.entryPosition;
+            relive.entryTransitions = old.entryTransitions;
+            relive.exitPosition = old.exitPosition;
+            relive.hideFlags = old.hideFlags;
+            relive.name = old.name;
+            relive.parentStateMachinePosition = old.parentStateMachinePosition;
+            relive.stateMachines = Operation_ChildStatemachine.DeepCopy(old.stateMachines);
+            relive.states = old.states;
+            return relive;
+        }
+
         public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
             AnimatorStateMachine statemachine = Lookup(ac, request.Fullpath);
@@ -320,7 +524,7 @@ namespace StellaQL
 
             if (Operation_Something.HasProperty(request.Name, StatemachineRecord.Definitions, "ステートマシン操作"))
             {
-                StateRecord.Definitions[request.Name].Update(statemachine, request, message);
+                StatemachineRecord.Definitions[request.Name].Update(statemachine, request, message);
             }
         }
     }
@@ -349,6 +553,80 @@ namespace StellaQL
                 }
             }
         }
+    }
+
+    public abstract class Operation_ChildState
+    {
+        #region 検索
+        /// <summary>
+        /// パスを指定すると ステートを返す。
+        /// </summary>
+        /// <param name="path">"Base Layer.JMove.JMove0" といった文字列。</param>
+        public static ChildAnimatorState Lookup(AnimatorController ac, string path)
+        {
+            string[] nodes = path.Split('.');
+            // [0～length-2] ステートマシン名
+            // [length-1] ステート名
+
+            if (nodes.Length < 2) { throw new UnityException("ノード数が２つ未満だったぜ☆（＾～＾） ステートマシン名か、ステート名は無いのかだぜ☆？ path=[" + path + "]"); }
+
+            // 最初の名前[0]は、レイヤーを検索する。
+            AnimatorStateMachine currentMachine = null;
+            foreach (AnimatorControllerLayer layer in ac.layers)
+            {
+                if (nodes[0] == layer.name) { currentMachine = layer.stateMachine; break; }
+            }
+            if (null == currentMachine) { throw new UnityException("見つからないぜ☆（＾～＾）nodes=[" + string.Join("][", nodes) + "]"); }
+
+            if (2 < nodes.Length) // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
+            {
+                currentMachine = GetLeafMachine(currentMachine, nodes);
+                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", nodes) + "]"); }
+            }
+
+            return GetChildState(currentMachine, nodes[nodes.Length - 1]); // レイヤーと葉だけの場合
+        }
+
+        /// <summary>
+        /// 分かりづらいが、ノードの[1]～[length-1]を辿って、最後のステートマシンを返す。
+        /// </summary>
+        private static AnimatorStateMachine GetLeafMachine(AnimatorStateMachine currentMachine, string[] nodes)
+        {
+            for (int i = Operation_Common.ROOT_NODE_IS_LAYER; i < nodes.Length + Operation_Common.LEAF_NODE_IS_STATE; i++)
+            {
+                currentMachine = GetChildMachine(currentMachine, nodes[i]);
+                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）10 i=[" + i + "] node=[" + nodes[i] + "]"); }
+            }
+            return currentMachine;
+        }
+
+        private static AnimatorStateMachine GetChildMachine(AnimatorStateMachine machine, string childName)
+        {
+            foreach (ChildAnimatorStateMachine wrapper in machine.stateMachines)
+            {
+                if (wrapper.stateMachine.name == childName) { return wrapper.stateMachine; }
+            }
+            return null;
+        }
+
+        private static ChildAnimatorState GetChildState(AnimatorStateMachine machine, string stateName)
+        {
+            foreach (ChildAnimatorState wrapper in machine.states)
+            {
+                if (wrapper.state.name == stateName) { return wrapper; }
+            }
+            throw new UnityException("チャイルド・A・ステートが見つからないぜ☆（＾～＾） stateName=[" + stateName + "]");
+        }
+        #endregion
+
+        public static ChildAnimatorState DeepCopy(ChildAnimatorState old)
+        {
+            ChildAnimatorState relive = new ChildAnimatorState();
+            relive.position = old.position;
+            relive.state = Operation_State.DeepCopy( old.state);
+            return relive;
+        }
+
     }
 
     /// <summary>
@@ -417,6 +695,32 @@ namespace StellaQL
             return null;
         }
         #endregion
+
+        public static AnimatorState DeepCopy(AnimatorState old)
+        {
+            AnimatorState relive = new AnimatorState();
+            relive.behaviours = old.behaviours;
+            relive.cycleOffset = relive.cycleOffset;
+            relive.cycleOffsetParameter = relive.cycleOffsetParameter;
+            relive.cycleOffsetParameterActive = relive.cycleOffsetParameterActive;
+            relive.hideFlags = relive.hideFlags;
+            relive.iKOnFeet = relive.iKOnFeet;
+            relive.mirror = relive.mirror;
+            relive.mirrorParameter = relive.mirrorParameter;
+            relive.mirrorParameterActive = relive.mirrorParameterActive;
+            relive.motion = relive.motion;
+            relive.name = relive.name;
+            // relive.nameHash = relive.nameHash;
+            relive.speed = relive.speed;
+            relive.speedParameter = relive.speedParameter;
+            relive.speedParameterActive = relive.speedParameterActive;
+            relive.tag = relive.tag;
+            relive.transitions = relive.transitions;
+            // relive.uniqueName = relive.uniqueName;
+            // relive.uniqueNameHash = relive.uniqueNameHash;
+            relive.writeDefaultValues = relive.writeDefaultValues;
+            return relive;
+        }
 
         public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
@@ -512,71 +816,6 @@ namespace StellaQL
             }
             message.Append("result: "); message.Append(recordSet.Count); message.AppendLine(" records.");
         }
-    }
-
-    public abstract class Operation_ChildState
-    {
-        #region 検索
-        /// <summary>
-        /// パスを指定すると ステートを返す。
-        /// </summary>
-        /// <param name="path">"Base Layer.JMove.JMove0" といった文字列。</param>
-        public static ChildAnimatorState Lookup(AnimatorController ac, string path)
-        {
-            string[] nodes = path.Split('.');
-            // [0～length-2] ステートマシン名
-            // [length-1] ステート名
-
-            if (nodes.Length < 2) { throw new UnityException("ノード数が２つ未満だったぜ☆（＾～＾） ステートマシン名か、ステート名は無いのかだぜ☆？ path=[" + path + "]"); }
-
-            // 最初の名前[0]は、レイヤーを検索する。
-            AnimatorStateMachine currentMachine = null;
-            foreach (AnimatorControllerLayer layer in ac.layers)
-            {
-                if (nodes[0] == layer.name) { currentMachine = layer.stateMachine; break; }
-            }
-            if (null == currentMachine) { throw new UnityException("見つからないぜ☆（＾～＾）nodes=[" + string.Join("][", nodes) + "]"); }
-
-            if (2 < nodes.Length) // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
-            {
-                currentMachine = GetLeafMachine(currentMachine, nodes);
-                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", nodes) + "]"); }
-            }
-
-            return GetChildState(currentMachine, nodes[nodes.Length - 1]); // レイヤーと葉だけの場合
-        }
-
-        /// <summary>
-        /// 分かりづらいが、ノードの[1]～[length-1]を辿って、最後のステートマシンを返す。
-        /// </summary>
-        private static AnimatorStateMachine GetLeafMachine(AnimatorStateMachine currentMachine, string[] nodes)
-        {
-            for (int i = Operation_Common.ROOT_NODE_IS_LAYER; i < nodes.Length + Operation_Common.LEAF_NODE_IS_STATE; i++)
-            {
-                currentMachine = GetChildMachine(currentMachine, nodes[i]);
-                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）10 i=[" + i + "] node=[" + nodes[i] + "]"); }
-            }
-            return currentMachine;
-        }
-
-        private static AnimatorStateMachine GetChildMachine(AnimatorStateMachine machine, string childName)
-        {
-            foreach (ChildAnimatorStateMachine wrapper in machine.stateMachines)
-            {
-                if (wrapper.stateMachine.name == childName) { return wrapper.stateMachine; }
-            }
-            return null;
-        }
-
-        private static ChildAnimatorState GetChildState(AnimatorStateMachine machine, string stateName)
-        {
-            foreach (ChildAnimatorState wrapper in machine.states)
-            {
-                if (wrapper.state.name == stateName) { return wrapper; }
-            }
-            throw new UnityException("チャイルド・A・ステートが見つからないぜ☆（＾～＾） stateName=["+ stateName + "]");
-        }
-        #endregion
     }
 
     /// <summary>
@@ -1006,7 +1245,7 @@ namespace StellaQL
                 AnimatorStateMachine statemachine = Operation_Statemachine.Lookup(ac, request.Fullpath);
                 if (null == statemachine) { throw new UnityException("[" + request.Fullpath + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-                if (Operation_Something.HasProperty(request.Name, TransitionRecord.Definitions, "ステートマシンのポジション操作"))
+                if (Operation_Something.HasProperty(request.Name, PositionRecord.Definitions, "ステートマシンのポジション操作"))
                 {
                     PositionRecord.Definitions[request.Name].Update(new PositionRecord.PositionWrapper(statemachine, request.Propertyname_ofFullpath), request, message);
                 }
@@ -1017,7 +1256,7 @@ namespace StellaQL
 
                 if ("states" == request.Foreignkeycategory)
                 {
-                    if (Operation_Something.HasProperty(request.Name, TransitionRecord.Definitions, "ステートのポジション操作"))
+                    if (Operation_Something.HasProperty(request.Name, PositionRecord.Definitions, "ステートのポジション操作"))
                     {
                         PositionRecord.Definitions[request.Name].Update(new PositionRecord.PositionWrapper(caState, request.Propertyname_ofFullpath), request, message);
                     }
@@ -1029,6 +1268,43 @@ namespace StellaQL
                 }
             }
         }
+    }
+
+    public abstract class Operation_AvatarMask
+    {
+        #region 検索
+        public static AvatarMask Lookup_incomplete(string name)
+        {
+            //AnimatorController ac,
+            return null;
+            //AssetDatabase.get
+            //ac.layers[0].avatarMask
+        }
+        #endregion
+    }
+
+    public abstract class Operation_AnimatorLayerBlendingMode
+    {
+        #region 検索
+        /// <summary>
+        /// 参照:「列挙体のメンバの値や名前を列挙する」http://dobon.net/vb/dotnet/programing/enumgetvalues.html
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static HashSet<AnimatorLayerBlendingMode> Lookup(string blendingModeName_regex)
+        {
+            HashSet<AnimatorLayerBlendingMode> hits = new HashSet<AnimatorLayerBlendingMode>();
+            foreach (string enumItemName in Enum.GetNames(typeof(AnimatorLayerBlendingMode)))
+            {
+                Regex regex = new Regex(blendingModeName_regex);
+                if (regex.IsMatch(enumItemName))
+                {
+                    hits.Add((AnimatorLayerBlendingMode)Enum.Parse(typeof(AnimatorLayerBlendingMode),enumItemName));
+                }
+            }
+            return hits;
+        }
+        #endregion
     }
 
     public abstract class Operation_Common
