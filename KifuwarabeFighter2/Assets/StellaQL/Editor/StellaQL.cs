@@ -394,7 +394,13 @@ namespace StellaQL
             HashSet<AnimatorControllerLayer> layers = new HashSet<AnimatorControllerLayer>();
             foreach (int targetHash in targetHashes)
             {
-                layers.Add(Operation_Layer.Lookup(ac, universe[targetHash].Fullpath));
+                int caret = 0;
+                FullpathTokens ft = new FullpathTokens();
+                FullpathSyntaxP.Fixed_LayerName(universe[targetHash].Fullpath, ref caret, ref ft);
+
+                AnimatorControllerLayer layer = Operation_Layer.Fetch_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
+                layers.Add(layer);
+                //layers.Add(Operation_Layer.Fetch(ac, universe[targetHash].Fullpath));
             }
             return layers;
         }
@@ -404,7 +410,13 @@ namespace StellaQL
             HashSet<AnimatorStateMachine> statemachines = new HashSet<AnimatorStateMachine>();
             foreach (int targetHash in targetHashes)
             {
-                statemachines.Add(Operation_Statemachine.Lookup(ac, universe[targetHash].Fullpath));
+                int caret = 0;
+                FullpathTokens ft = new FullpathTokens();
+                if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("[" + universe[targetHash].Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+                AnimatorControllerLayer layer = Operation_Layer.Fetch_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
+                AnimatorStateMachine statemachine = Operation_Statemachine.Fetch(ac, ft, layer);
+                statemachines.Add(statemachine);
             }
             return statemachines;
         }
@@ -421,11 +433,17 @@ namespace StellaQL
             HashSet<AnimatorState> states = new HashSet<AnimatorState>();
             foreach (int targetHash in targetHashes)
             {
-                AnimatorState state = Operation_State.Lookup(ac, universe[targetHash].Fullpath);
+                AnimatorState state = Operation_State.Fetch(ac, universe[targetHash].Fullpath);
                 if (null== state)
                 {
                     // ステートマシンかもしれない。
-                    AnimatorStateMachine stateMachine = Operation_Statemachine.Lookup(ac, universe[targetHash].Fullpath);
+                    int caret = 0;
+                    FullpathTokens ft = new FullpathTokens();
+                    if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("[" + universe[targetHash].Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+                    AnimatorControllerLayer layer = Operation_Layer.Fetch_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
+                    AnimatorStateMachine stateMachine = Operation_Statemachine.Fetch(ac, ft, layer);
+
                     if(null!= stateMachine)
                     {
                         // ステートマシンだったのなら、ヌルで合っている☆（＾～＾）

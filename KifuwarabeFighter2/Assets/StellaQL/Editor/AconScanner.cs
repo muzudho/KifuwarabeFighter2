@@ -136,7 +136,7 @@ namespace StellaQL
 
         public override void OnParameter( int num, AnimatorControllerParameter acp)
         {
-            ParameterRecord record = new ParameterRecord(num, acp.name, acp.defaultBool, acp.defaultFloat, acp.defaultInt, acp.nameHash);
+            ParameterRecord record = new ParameterRecord(num, acp.name, acp.defaultBool, acp.defaultFloat, acp.defaultInt, acp.nameHash, acp.type);
             AconData.table_parameter.Add(record);
         }
 

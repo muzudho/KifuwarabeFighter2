@@ -6,6 +6,7 @@ using System.Text;
 using UnityEditor.Animations;
 using UnityEngine;
 using UnityEditor;
+using System;
 
 namespace StellaQL
 {
@@ -56,6 +57,10 @@ namespace StellaQL
             Float,
             Bool,
             String,
+            /// <summary>
+            /// 特殊実装なもの。
+            /// </summary>
+            SpecialString,
             Other,//対応外
         }
 
@@ -128,7 +133,7 @@ namespace StellaQL
                 else
                 {
                     contents.Append(Name); contents.Append(",");
-                    contents.Append(Type.ToString().Substring(0, 1).ToLower()); // 型名の先頭を小文字にする
+                    contents.Append(Type.ToString().Substring(0, 1).ToLower()); // 列挙型の要素名の先頭を小文字にして、型名とする。
                     contents.Append(Type.ToString().Substring(1));
                     contents.Append(",");
                     contents.Append(KeyField); contents.Append(",");
@@ -255,30 +260,52 @@ namespace StellaQL
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
                 // FIXME: パラメーターの編集は他とパターンが異なる☆
-                new RecordDefinition("num", RecordDefinition.FieldType.Int, RecordDefinition.KeyType.TemporaryNumbering, false),
-                new RecordDefinition("name", RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identifiable,false),
-                new RecordDefinition("numberBool", RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("numberFloat", RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("numberInt", RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("nameHash", RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("num"          , RecordDefinition.FieldType.Int            ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#name_ID#"    , RecordDefinition.FieldType.String         ,RecordDefinition.KeyType.Identifiable          ,false),
+                new RecordDefinition("name"         , RecordDefinition.FieldType.String         ,RecordDefinition.KeyType.None
+                    ,(object i)=>{          return ((AnimatorControllerParameter)i).name; }
+                    ,(object i,string v)=>{ ((AnimatorControllerParameter)i).name = v; }
+                ),
+                new RecordDefinition("#type_String#", RecordDefinition.FieldType.String         ,RecordDefinition.KeyType.None
+                    ,(object i)=>{          return ((AnimatorControllerParameter)i).type.ToString(); }
+                    ,(object i,string v)=>{ ((AnimatorControllerParameter)i).type = (AnimatorControllerParameterType)Enum.Parse(typeof(AnimatorControllerParameterType),v); }
+                ),
+                new RecordDefinition("defaultBool"  , RecordDefinition.FieldType.Bool           ,RecordDefinition.KeyType.None
+                    ,(object i)=>{        return ((AnimatorControllerParameter)i).defaultBool; }
+                    ,(object i,bool v)=>{ ((AnimatorControllerParameter)i).defaultBool = v; }
+                ),
+                new RecordDefinition("defaultFloat" , RecordDefinition.FieldType.Float          ,RecordDefinition.KeyType.None
+                    ,(object i)=>{         return ((AnimatorControllerParameter)i).defaultFloat; }
+                    ,(object i,float v)=>{ ((AnimatorControllerParameter)i).defaultFloat = v; }
+                ),
+                new RecordDefinition("defaultInt"   , RecordDefinition.FieldType.Int            ,RecordDefinition.KeyType.None
+                    ,(object i)=>{       return ((AnimatorControllerParameter)i).defaultInt; }
+                    ,(object i,int v)=>{ ((AnimatorControllerParameter)i).defaultInt = v; }
+                ),
+                new RecordDefinition("nameHash"     , RecordDefinition.FieldType.Int            ,RecordDefinition.KeyType.ReadOnly
+                    ,(object i)=>{       return ((AnimatorControllerParameter)i).nameHash; }
+                    ,(object i,int v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                ),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
-            Empty = new ParameterRecord(-1, "", false, 0.0f, -1, 0);
+            Empty = new ParameterRecord(-1, "", false, 0.0f, -1, 0, (AnimatorControllerParameterType)0);
         }
         public static Dictionary<string, RecordDefinition> Definitions { get; private set; }
         public static ParameterRecord Empty { get; private set; }
 
-        public ParameterRecord(int num, string name, bool numberBool, float numberFloat, int numberInt, int nameHash)
+        public ParameterRecord(int num, string name, bool numberBool, float numberFloat, int numberInt, int nameHash, AnimatorControllerParameterType type)
         {
             this.Fields = new Dictionary<string, object>()
             {
-                { "num",num },
-                { "name", name},
-                { "numberBool", numberBool },
-                { "numberFloat", numberFloat},
-                { "numberInt", numberInt},
-                { "nameHash", nameHash},
+                { "num"             ,num                },
+                { "#name_ID#"       ,name               }, // ID用
+                { "name"            ,name               }, // 編集用
+                { "#type_String#"   ,type.ToString()    },
+                { "defaultBool"     ,numberBool         },
+                { "defaultFloat"    ,numberFloat        },
+                { "defaultInt"      ,numberInt          },
+                { "nameHash"        ,nameHash           },
             };
         }
         public Dictionary<string, object> Fields { get; set; }
@@ -291,16 +318,17 @@ namespace StellaQL
         /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["num"].AppendCsv(Fields, c, n, d);
-            Definitions["name"].AppendCsv(Fields, c, n, d);
-            Definitions["numberBool"].AppendCsv(Fields, c, n, d);
-            Definitions["numberFloat"].AppendCsv(Fields, c, n, d);
-            Definitions["numberInt"].AppendCsv(Fields, c, n, d);
-            Definitions["nameHash"].AppendCsv(Fields, c, n, d);
+            Definitions["num"           ].AppendCsv(Fields, c, n, d);
+            Definitions["#name_ID#"     ].AppendCsv(Fields, c, n, d);
+            Definitions["name"          ].AppendCsv(Fields, c, n, d);
+            Definitions["#type_String#" ].AppendCsv(Fields, c, n, d);
+            Definitions["defaultBool"   ].AppendCsv(Fields, c, n, d);
+            Definitions["defaultFloat"  ].AppendCsv(Fields, c, n, d);
+            Definitions["defaultInt"    ].AppendCsv(Fields, c, n, d);
+            Definitions["nameHash"      ].AppendCsv(Fields, c, n, d);
             if (n) { c.Append("[EOL],"); }
             if (!d) { c.AppendLine(); }
         }
-
     }
 
     /// <summary>
@@ -346,7 +374,7 @@ namespace StellaQL
                 new RecordDefinition("#blendingMode_string#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].blendingMode.ToString(); }
                     ,(object i,string v)=>{
-                        HashSet<AnimatorLayerBlendingMode> hits = Operation_AnimatorLayerBlendingMode.Lookup(v);
+                        HashSet<AnimatorLayerBlendingMode> hits = Operation_AnimatorLayerBlendingMode.Fetch(v);
                         if(0==hits.Count) { throw new UnityException("正規表現に該当する列挙型の要素が無いぜ☆（＞＿＜）！ v=["+v+"] hits.Count=["+hits.Count+"]"); }
                         else if(1<hits.Count)
                         {
