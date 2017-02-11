@@ -444,15 +444,33 @@ namespace StellaQL
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
                 // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
-                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#fullnameEndsWithDot#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identifiable,false), // 表示用フィールド（フルネーム）はこれで十分。後ろにドットが付いているが……。
-                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),// 「#fullnameEndsWithDot#」フィールドで十分なので、これは表示用フィールドにしない方が一貫性がある。
-                new RecordDefinition("anyStateTransitions",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("behaviours",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("defaultState",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("entryTransitions",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
+                new RecordDefinition("#layerNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#machineStateNum#"            ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#fullnameEndsWithDot#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false), // 表示用フィールド（フルネーム）はこれで十分。後ろにドットが付いているが……。
+                new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None              // 「#fullnameEndsWithDot#」フィールドで十分なので、これはIDにしない方が一貫性がある。
+                    ,(object i)=>{          return ((AnimatorStateMachine)i).name; }
+                    ,(object i,string v)=>{ ((AnimatorStateMachine)i).name = v;}
+                ),
+                new RecordDefinition("#anyStateTransitions_Length#" ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
+                    ,(object i)=>{          return ((AnimatorStateMachine)i).anyStateTransitions.Length.ToString(); }
+                    ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                ),
+                new RecordDefinition("#behaviours_Length#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
+                    ,(object i)=>{          return ((AnimatorStateMachine)i).behaviours.Length.ToString(); }
+                    ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                ),
+                new RecordDefinition("#defaultState_String#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
+                    ,(object i)=>{          return (((AnimatorStateMachine)i).defaultState==null) ? "" : ((AnimatorStateMachine)i).defaultState.ToString(); }
+                    ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                ),
+                new RecordDefinition("#entryTransitions_Length#"    ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
+                    ,(object i)=>{          return ((AnimatorStateMachine)i).entryTransitions.Length.ToString(); }
+                    ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                ),
+                new RecordDefinition("hideFlags"                    ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None
+                    ,(object i)=>{          return ((AnimatorStateMachine)i).hideFlags.ToString(); }
+                    ,(object i,string v)=>{ ((AnimatorStateMachine)i).hideFlags = (HideFlags)System.Enum.Parse(typeof(HideFlags), v);}
+                ),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -469,21 +487,24 @@ namespace StellaQL
 
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum#",layerNum },//レイヤー行番号
-                { "#machineStateNum#", machineStateNum},
-                { "#fullnameEndsWithDot#",fullnameEndsWithDot },// FIXME: これはフルパスになるのでは？
-                { "name", stateMachine.name},// これは葉の名前
-                { "anyStateTransitions", stateMachine.anyStateTransitions == null ? "" : stateMachine.anyStateTransitions.ToString()},
-                { "behaviours", stateMachine.behaviours == null ? "" : stateMachine.behaviours.ToString()},
-                { "defaultState", stateMachine.defaultState == null ? "" : stateMachine.defaultState.ToString()},
-                { "entryTransitions", stateMachine.entryTransitions == null ? "" : stateMachine.entryTransitions.ToString()},
-                { "hideFlags", stateMachine.hideFlags.ToString()},
+                { "#layerNum#"                      ,layerNum                                                                                           },//レイヤー行番号
+                { "#machineStateNum#"               ,machineStateNum                                                                                    },
+                { "#fullnameEndsWithDot#"           ,fullnameEndsWithDot                                                                                },
+                { "name"                            ,stateMachine.name                                                                                  },
+                //{ "anyStateTransitions"         ,stateMachine.anyStateTransitions   == null ? "" : stateMachine.anyStateTransitions.ToString()      },
+                { "#anyStateTransitions_Length#"    ,stateMachine.anyStateTransitions.Length.ToString()                                                 },
+                //{ "#behaviours_Length#"         ,stateMachine.behaviours            == null ? "" : stateMachine.behaviours.ToString()               },
+                { "#behaviours_Length#"             ,stateMachine.behaviours.Length.ToString()                                                          },
+                { "#defaultState_String#"           ,stateMachine.defaultState          == null ? "" : stateMachine.defaultState.ToString()             },
+                //{ "#entryTransitions_Length#"   ,stateMachine.entryTransitions      == null ? "" : stateMachine.entryTransitions.Length.ToString()  },
+                { "#entryTransitions_Length#"       ,stateMachine.entryTransitions.Length.ToString()                                                    },
+                { "hideFlags"                       ,stateMachine.hideFlags.ToString()                                                                  },
             };
 
-            if (stateMachine.anyStatePosition != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "anyStatePosition", stateMachine.anyStatePosition)); }
-            if (stateMachine.entryPosition != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "entryPosition", stateMachine.entryPosition)); }
-            if (stateMachine.exitPosition != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "exitPosition", stateMachine.exitPosition)); }
-            if (stateMachine.parentStateMachinePosition != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "parentStateMachinePosition", stateMachine.parentStateMachinePosition)); }
+            if (stateMachine.anyStatePosition           != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "anyStatePosition"              ,stateMachine.anyStatePosition          )); }
+            if (stateMachine.entryPosition              != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "entryPosition"                 ,stateMachine.entryPosition             )); }
+            if (stateMachine.exitPosition               != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "exitPosition"                  ,stateMachine.exitPosition              )); }
+            if (stateMachine.parentStateMachinePosition != null) { positionsTable.Add(new PositionRecord(layerNum, machineStateNum, -1, -1, -1, "parentStateMachinePosition"    ,stateMachine.parentStateMachinePosition)); }
         }
         public Dictionary<string, object> Fields { get; set; }
 
@@ -495,15 +516,15 @@ namespace StellaQL
         /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum#"].AppendCsv(Fields, c, n, d); // レイヤー行番号
-            Definitions["#machineStateNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#fullnameEndsWithDot#"].AppendCsv(Fields, c, n, d);
-            Definitions["name"].AppendCsv(Fields, c, n, d);
-            Definitions["anyStateTransitions"].AppendCsv(Fields, c, n, d);
-            Definitions["behaviours"].AppendCsv(Fields, c, n, d);
-            Definitions["defaultState"].AppendCsv(Fields, c, n, d);
-            Definitions["entryTransitions"].AppendCsv(Fields, c, n, d);
-            Definitions["hideFlags"].AppendCsv(Fields, c, n, d);
+            Definitions["#layerNum#"                    ].AppendCsv(Fields, c, n, d); // レイヤー行番号
+            Definitions["#machineStateNum#"             ].AppendCsv(Fields, c, n, d);
+            Definitions["#fullnameEndsWithDot#"         ].AppendCsv(Fields, c, n, d);
+            Definitions["name"                          ].AppendCsv(Fields, c, n, d);
+            Definitions["#anyStateTransitions_Length#"  ].AppendCsv(Fields, c, n, d);
+            Definitions["#behaviours_Length#"           ].AppendCsv(Fields, c, n, d);
+            Definitions["#defaultState_String#"         ].AppendCsv(Fields, c, n, d);
+            Definitions["#entryTransitions_Length#"     ].AppendCsv(Fields, c, n, d);
+            Definitions["hideFlags"                     ].AppendCsv(Fields, c, n, d);
             if (n) { c.Append("[EOL],"); }
             if (!d) { c.AppendLine(); }
         }

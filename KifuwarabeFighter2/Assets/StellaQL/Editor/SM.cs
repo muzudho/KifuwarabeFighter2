@@ -12,6 +12,7 @@ using UnityEngine;
 /// </summary>
 public class SM : MonoBehaviour
 {
+    /*
     [MenuItem("MyMenu/SetAvatarMask")]
     static void SetAvatarMask()
     {
@@ -47,6 +48,8 @@ public class SM : MonoBehaviour
         //ac.AddLayer(layer); // いける。
         //Debug.Log("レイヤーを作り直してどうか☆（＾～＾）？");
     }
+    */
+
     /*
     /// <summary>
     /// 
