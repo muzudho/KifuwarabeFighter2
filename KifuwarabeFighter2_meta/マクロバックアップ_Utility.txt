@@ -1,0 +1,151 @@
+REM  *****  BASIC  *****
+
+'--------------------------------------------------------------------------------
+' CSV解析
+Sub CsvLineParser(source As String, row As Integer, sht_xx as Object)
+
+	Dim caret	As Integer
+	Dim column	As Integer
+	Dim cell	As String
+
+	If Len(source) < 1 Then
+		Exit Sub
+	End If ' 空文字列なら終わり
+
+	caret	= 1 ' 文字列の文字目は1スタート
+	column	= 0 ' テーブルの列は0スタート
+
+	cell = "" ' １セル分の文字列
+	Do While caret-1 < Len(source) ' このループで１行分に対応
+		Select Case Mid(source,caret,1)
+			Case ",": ' トークンを出力して次へ。
+				caret = caret + 1
+				sht_xx.getCellByPosition( column, row ).String = cell
+				column = column + 1
+				cell = ""
+			Case """":
+				' ここからリテラル文字列処理へ
+				caret = caret + 1
+
+				' エスケープしながら、単独「"」が出てくるまでそのまま出力。
+				Do While caret-1 < Len(source)
+					If """"=Mid(source,caret,1) Then
+						' これが単独の「"」なら終わり、２連続の「"」ならまだ終わらない。
+
+						If caret + 1 - 1 = Len(source) Then
+							caret = caret + 1
+							Exit Do ' 「"」が最後の文字だったのなら、無視してループ抜け。
+						ElseIf """" = Mid(source,caret+1,1) Then
+							caret = caret + 2
+							cell = cell & """" ' 2文字目も「"」なら、２つの「""」すっとばして代わりに「"」を入れてループ続行。
+						Else ' 2連続でない「"」なら、次の「,」の次までの空白等をスキップ。//【改変/】2012年10月30日変更。旧： index++;//【改変/】2017年02月01日変更。次のカンマの次まで飛ばした。旧： index+=2;
+							caret = InStr( caret, source, "," )
+							caret = caret + 1
+							Exit Do
+						End If
+					Else
+						cell = cell & Mid(source,caret,1)
+						caret = caret + 1 ' 通常文字なのでループ続行。
+					End If
+				Loop
+				sht_xx.getCellByPosition( column, row ).String = Trim(cell) ' 前後の空白はカット
+				column = column + 1
+				cell = ""
+			Case Else: ' ダブルクォートされていない文字列か、ダブルクォートの前のスペースだ。
+				cell = cell & Mid(source,caret,1)
+				caret = caret + 1
+		End Select
+	Loop
+End Sub
+
+' カンマや、ダブルクオーテーションを含む文字列を、ダブルクォーテーションで挟む。
+' この際、ダブルクォーテーション１つは ２つ に変換する。
+Sub EscapeCsv(source As String) As String
+
+	Dim isEscape As Boolean
+	isEscape = false ' エスケープが必要なら真
+
+	Dim str As String
+	str = ""
+
+	Dim caret As Integer
+	For caret = 1 To Len(source) ' 文字列は 1 スタート
+		If ","= Mid( source, caret, 1 ) Or Chr$(10) = Mid( source, caret, 1 ) Or Chr$(13) = Mid( source, caret, 1 ) Then ' カンマが含まれていたので、エスケープが必要になった。(2017-02-09 追加 LF改行コード10、CR復帰コード13 に対応)
+			isEscape = true
+			str = str & Mid( source, caret, 1 )
+		ElseIf """" = Mid( source, caret, 1 ) Then ' ダブルクォーテーションが含まれていたので、エスケープが必要になった
+			isEscape = true
+			str = str & """""" ' ダブルクォーテーションを、１つの代わりに２つ追加
+		Else
+			str = str & Mid( source, caret, 1 )
+		End If
+	Next
+
+	If isEscape Then
+		str = """" & str & """" ' ダブルクォーテーションで挟む
+	End If
+
+	EscapeCsv = str
+
+End Sub
+
+' シートを検索する。
+' expected				探して一致したい行値
+' oSheet_target		探すシート
+' column_target		探す列
+' firstRow				探し始める行
+' lastRowOver			最終行の次
+Sub RowOf( expected As String, oSheet_target As Object, column_target As Integer, firstRow As Integer, lastRowOver As Integer ) As Integer
+	
+	Dim row As Integer
+	For row = firstRow To lastRowOver - 1
+		If expected = oSheet_target.getCellByPosition( column_target, row ).String Then
+			RowOf = row
+			Exit Sub
+		End If
+	Next
+
+	RowOf = -1
+End Sub
+
+
+' シートを検索する。
+' expected				探して一致したい列値
+' oSheet_target		探すシート
+' row_target			探す行
+' firstColumn			探し始める列
+' lastColumnOver	最終列の次
+Sub ColumnOf( expected As String, oSheet_target As Object, row_target As Integer, firstColumn As Integer, lastColumnOver As Integer ) As Integer
+	
+	Dim column As Integer
+	For column = firstColumn To lastColumnOver - 1
+		If expected = oSheet_target.getCellByPosition( column, row_target ).String Then
+			ColumnOf = column
+			Exit Sub
+		End If
+	Next
+
+	ColumnOf = -1
+End Sub
+
+
+' シートを検索する。
+' foreignKey		探して一致したい値
+' oSheet_target	探すシート
+' keyColumn		探す列
+' valueColumn		取得したい値が入っている列
+Sub VLookup( foreignKey As String, oSheet_target As Object, keyColumn As Integer, valueColumn As Integer ) As String
+	Dim row_foreignSheet As Integer
+	row_foreignSheet = 0
+	
+	Do While "[EOF]" <> oSheet_target.getCellByPosition( 0, row_foreignSheet ).String
+		If foreignKey = oSheet_target.getCellByPosition( keyColumn, row_foreignSheet ).String Then
+			VLookup = oSheet_target.getCellByPosition( valueColumn, row_foreignSheet ).String
+			Exit Sub
+		End If
+		row_foreignSheet = row_foreignSheet + 1
+	Loop
+
+	VLookup = "#NotFound#"
+End Sub
+

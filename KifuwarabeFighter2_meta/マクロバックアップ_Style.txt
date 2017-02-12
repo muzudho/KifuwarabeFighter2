@@ -1,0 +1,38 @@
+REM  *****  BASIC  *****
+
+' 列頭のセル配色にします。 column header
+Sub ColHed( cell_xx As Object )
+	cell_xx.CellBackColor	= RGB( 64,  64,  64) ' 背景 濃いグレー
+	cell_xx.CharColor		= RGB(192, 192, 192) ' 文字色 薄グレー
+End Sub
+
+' サブ列頭のセル配色にします。 sub column header
+Sub SubColHed( cell_xx As Object )
+	cell_xx.CellBackColor	= RGB(128, 128, 128) ' 背景 灰色
+	cell_xx.CharColor		= RGB(255, 255, 255) ' 文字色 白
+End Sub
+
+
+' 行頭のセル配色にします。 row header
+Sub RowHed( cell_xx As Object )
+	cell_xx.CellBackColor	= RGB(128, 128, 128) ' 背景 灰色
+	cell_xx.CharColor		= RGB(255, 255, 255) ' 文字色 白
+End Sub
+
+' 読取専用 列ヘッダー readonly column header
+Sub RoColHed( cell_xx As Object )
+	cell_xx.CellBackColor	= RGB(192, 192, 192) ' 背景 薄グレー
+	cell_xx.CharColor		= RGB( 64,  64,  64) ' 文字色 濃いグレー
+End Sub
+
+' 読取専用 サブ列ヘッダー readonly column header
+Sub RoSubColHed( cell_xx As Object )
+	cell_xx.CellBackColor	= RGB(192, 192, 192) ' 背景 薄グレー
+	cell_xx.CharColor		= RGB( 64,  64,  64) ' 文字色 濃いグレー
+End Sub
+
+' 読取専用データ・セル
+Sub RoData( cell_xx As Object )
+	cell_xx.CellBackColor	= RGB(192, 192, 192) ' 背景 薄グレー
+	cell_xx.CharColor		= RGB( 64,  64,  64) ' 文字色 濃いグレー
+End Sub

@@ -709,27 +709,30 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identifiable,false),
-                new RecordDefinition("#stellaQLComment#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("canTransitionToSelf",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                    ,(object i)=>{ return ((AnimatorStateTransition)i).canTransitionToSelf; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).canTransitionToSelf = v; }),
-                new RecordDefinition("#destinationState_name#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("#destinationState_nameHash#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("#destinationStateMachine_name#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("duration",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                              ,(object i)=>{ return ((AnimatorStateTransition)i).duration; }              ,(object i,float v)=>{ ((AnimatorStateTransition)i).duration = v; }),
-                new RecordDefinition("exitTime",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                              ,(object i)=>{ return ((AnimatorStateTransition)i).exitTime; }              ,(object i,float v)=>{ ((AnimatorStateTransition)i).exitTime = v; }),
-                new RecordDefinition("hasExitTime",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                            ,(object i)=>{ return ((AnimatorStateTransition)i).hasExitTime; }           ,(object i,bool v)=>{ ((AnimatorStateTransition)i).hasExitTime = v; }),
-                new RecordDefinition("hasFixedDuration",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                       ,(object i)=>{ return ((AnimatorStateTransition)i).hasFixedDuration; }      ,(object i,bool v)=>{ ((AnimatorStateTransition)i).hasFixedDuration = v; }),
-                new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("interruptionSource",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("isExit",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                                 ,(object i)=>{ return ((AnimatorStateTransition)i).isExit; }                ,(object i,bool v)=>{ ((AnimatorStateTransition)i).isExit = v; }),
-                new RecordDefinition("mute",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                                   ,(object i)=>{ return ((AnimatorStateTransition)i).mute; }                  ,(object i,bool v)=>{ ((AnimatorStateTransition)i).mute = v; }),
-                new RecordDefinition("offset",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                                ,(object i)=>{ return ((AnimatorStateTransition)i).offset; }                ,(object i,float v)=>{ ((AnimatorStateTransition)i).offset = v; }),
-                new RecordDefinition("orderedInterruption",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                    ,(object i)=>{ return ((AnimatorStateTransition)i).orderedInterruption; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).orderedInterruption = v; }),
-                new RecordDefinition("solo",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                                   ,(object i)=>{ return ((AnimatorStateTransition)i).solo; }                  ,(object i,bool v)=>{ ((AnimatorStateTransition)i).solo = v; }),
+                new RecordDefinition("#layerNum#"                       ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#machineStateNum#"                ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#stateNum#"                       ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#transitionNum#"                  ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#layerName#"                      ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false),
+                new RecordDefinition("#statemachinePath#"               ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false),
+                new RecordDefinition("#stateName#"                      ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false),
+                new RecordDefinition("name"                             ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false),
+                new RecordDefinition("#stellaQLComment#"                ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None              ,false),
+                new RecordDefinition("canTransitionToSelf"              ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).canTransitionToSelf; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).canTransitionToSelf = v; }),
+                new RecordDefinition("#destinationState_name#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None              ,false),
+                new RecordDefinition("#destinationState_nameHash#"      ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.None              ,false),
+                new RecordDefinition("#destinationStateMachine_name#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None              ,false),
+                new RecordDefinition("duration"                         ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).duration; }              ,(object i,float v)=>{ ((AnimatorStateTransition)i).duration = v; }),
+                new RecordDefinition("exitTime"                         ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).exitTime; }              ,(object i,float v)=>{ ((AnimatorStateTransition)i).exitTime = v; }),
+                new RecordDefinition("hasExitTime"                      ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).hasExitTime; }           ,(object i,bool v)=>{ ((AnimatorStateTransition)i).hasExitTime = v; }),
+                new RecordDefinition("hasFixedDuration"                 ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).hasFixedDuration; }      ,(object i,bool v)=>{ ((AnimatorStateTransition)i).hasFixedDuration = v; }),
+                new RecordDefinition("hideFlags"                        ,RecordDefinition.FieldType.Other   ,RecordDefinition.KeyType.None              ,false),
+                new RecordDefinition("interruptionSource"               ,RecordDefinition.FieldType.Other   ,RecordDefinition.KeyType.None              ,false),
+                new RecordDefinition("isExit"                           ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).isExit; }                ,(object i,bool v)=>{ ((AnimatorStateTransition)i).isExit = v; }),
+                new RecordDefinition("mute"                             ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).mute; }                  ,(object i,bool v)=>{ ((AnimatorStateTransition)i).mute = v; }),
+                new RecordDefinition("offset"                           ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).offset; }                ,(object i,float v)=>{ ((AnimatorStateTransition)i).offset = v; }),
+                new RecordDefinition("orderedInterruption"              ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).orderedInterruption; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).orderedInterruption = v; }),
+                new RecordDefinition("solo"                             ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).solo; }                  ,(object i,bool v)=>{ ((AnimatorStateTransition)i).solo = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -743,27 +746,30 @@ namespace StellaQL
         {
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum#", layerNum},
-                { "#machineStateNum#", machineStateNum},
-                { "#stateNum#", stateNum},
-                { "#transitionNum#", transitionNum},
-                { "name", transition.name},
-                { "#stellaQLComment#", stellaQLComment}, // どこからどこへ繋いでるのか、動作確認するために見る開発時用の欄を追加。
-                { "canTransitionToSelf", transition.canTransitionToSelf},
-                { "#destinationState_name#", transition.destinationState == null ? "" : transition.destinationState.name},// 名前のみ取得
-                { "#destinationState_nameHash#", transition.destinationState == null ? 0 : transition.destinationState.nameHash},
-                { "#destinationStateMachine_name#", transition.destinationStateMachine == null ? "" : transition.destinationStateMachine.name},// 名前のみ取得
-                { "duration", transition.duration},
-                { "exitTime", transition.exitTime},
-                { "hasExitTime", transition.hasExitTime},
-                { "hasFixedDuration", transition.hasFixedDuration},
-                { "hideFlags", transition.hideFlags.ToString()},
-                { "interruptionSource", transition.interruptionSource.ToString()},
-                { "isExit", transition.isExit},
-                { "mute", transition.mute},
-                { "offset", transition.offset},
-                { "orderedInterruption", transition.orderedInterruption},
-                { "solo", transition.solo},
+                { "#layerNum#"                      , layerNum                                      },
+                { "#machineStateNum#"               , machineStateNum                               },
+                { "#stateNum#"                      , stateNum                                      },
+                { "#transitionNum#"                 , transitionNum                                 },
+                { "#layerName#"                     , ""                                            },
+                { "#statemachinePath#"              , ""                                            },
+                { "#stateName#"                     , ""                                            },
+                { "name"                            , transition.name                               },
+                { "#stellaQLComment#"               , stellaQLComment                               }, // どこからどこへ繋いでるのか、動作確認するために見る開発時用の欄を追加。
+                { "canTransitionToSelf"             , transition.canTransitionToSelf                },
+                { "#destinationState_name#"         , transition.destinationState == null ? "" : transition.destinationState.name},// 名前のみ取得
+                { "#destinationState_nameHash#"     , transition.destinationState == null ? 0 : transition.destinationState.nameHash},
+                { "#destinationStateMachine_name#"  , transition.destinationStateMachine == null ? "" : transition.destinationStateMachine.name},// 名前のみ取得
+                { "duration"                        , transition.duration                           },
+                { "exitTime"                        , transition.exitTime                           },
+                { "hasExitTime"                     , transition.hasExitTime                        },
+                { "hasFixedDuration"                , transition.hasFixedDuration                   },
+                { "hideFlags"                       , transition.hideFlags.ToString()               },
+                { "interruptionSource"              , transition.interruptionSource.ToString()      },
+                { "isExit"                          , transition.isExit                             },
+                { "mute"                            , transition.mute                               },
+                { "offset"                          , transition.offset                             },
+                { "orderedInterruption"             , transition.orderedInterruption                },
+                { "solo"                            , transition.solo                               },
             };
         }
         public Dictionary<string, object> Fields { get; set; }
@@ -776,27 +782,30 @@ namespace StellaQL
         /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#machineStateNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#stateNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#transitionNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["name"].AppendCsv(Fields, c, n, d);
-            Definitions["#stellaQLComment#"].AppendCsv(Fields, c, n, d);
-            Definitions["canTransitionToSelf"].AppendCsv(Fields, c, n, d);
-            Definitions["#destinationState_name#"].AppendCsv(Fields, c, n, d);
-            Definitions["#destinationState_nameHash#"].AppendCsv(Fields, c, n, d);
-            Definitions["#destinationStateMachine_name#"].AppendCsv(Fields, c, n, d);
-            Definitions["duration"].AppendCsv(Fields, c, n, d);
-            Definitions["exitTime"].AppendCsv(Fields, c, n, d);
-            Definitions["hasExitTime"].AppendCsv(Fields, c, n, d);
-            Definitions["hasFixedDuration"].AppendCsv(Fields, c, n, d);
-            Definitions["hideFlags"].AppendCsv(Fields, c, n, d);
-            Definitions["interruptionSource"].AppendCsv(Fields, c, n, d);
-            Definitions["isExit"].AppendCsv(Fields, c, n, d);
-            Definitions["mute"].AppendCsv(Fields, c, n, d);
-            Definitions["offset"].AppendCsv(Fields, c, n, d);
-            Definitions["orderedInterruption"].AppendCsv(Fields, c, n, d);
-            Definitions["solo"].AppendCsv(Fields, c, n, d);
+            Definitions["#layerNum#"                        ].AppendCsv(Fields, c, n, d);
+            Definitions["#machineStateNum#"                 ].AppendCsv(Fields, c, n, d);
+            Definitions["#stateNum#"                        ].AppendCsv(Fields, c, n, d);
+            Definitions["#transitionNum#"                   ].AppendCsv(Fields, c, n, d);
+            Definitions["#layerName#"                       ].AppendCsv(Fields, c, n, d);
+            Definitions["#statemachinePath#"                ].AppendCsv(Fields, c, n, d);
+            Definitions["#stateName#"                       ].AppendCsv(Fields, c, n, d);
+            Definitions["name"                              ].AppendCsv(Fields, c, n, d);
+            Definitions["#stellaQLComment#"                 ].AppendCsv(Fields, c, n, d);
+            Definitions["canTransitionToSelf"               ].AppendCsv(Fields, c, n, d);
+            Definitions["#destinationState_name#"           ].AppendCsv(Fields, c, n, d);
+            Definitions["#destinationState_nameHash#"       ].AppendCsv(Fields, c, n, d);
+            Definitions["#destinationStateMachine_name#"    ].AppendCsv(Fields, c, n, d);
+            Definitions["duration"                          ].AppendCsv(Fields, c, n, d);
+            Definitions["exitTime"                          ].AppendCsv(Fields, c, n, d);
+            Definitions["hasExitTime"                       ].AppendCsv(Fields, c, n, d);
+            Definitions["hasFixedDuration"                  ].AppendCsv(Fields, c, n, d);
+            Definitions["hideFlags"                         ].AppendCsv(Fields, c, n, d);
+            Definitions["interruptionSource"                ].AppendCsv(Fields, c, n, d);
+            Definitions["isExit"                            ].AppendCsv(Fields, c, n, d);
+            Definitions["mute"                              ].AppendCsv(Fields, c, n, d);
+            Definitions["offset"                            ].AppendCsv(Fields, c, n, d);
+            Definitions["orderedInterruption"               ].AppendCsv(Fields, c, n, d);
+            Definitions["solo"                              ].AppendCsv(Fields, c, n, d);
             if (n) { c.Append("[EOL],"); }
             if (!d) { c.AppendLine(); }
         }

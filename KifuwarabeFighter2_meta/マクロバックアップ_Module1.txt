@@ -1,0 +1,182 @@
+REM  *****  BASIC  *****
+
+	' オブジェクト略称
+	' doc  ... document
+	' sht  ... sheet
+	' col  ... column
+	' row  ... row
+	' hed  ... header
+	' val  ... value
+	' cell ... cell
+
+	' ドキュメント略称  (と短縮系)
+	' cnfg		  ... config
+	' cdob (coXX) ... conbine def object (_dfObj)
+	' cnbn (cnXX) ... conbine
+	' vdob (voXX) ... view def object (_dfObj)
+	' view (vwXX) ... view
+	' reob (roXX) ... update request object (_upObj)
+	' requ (rqXX) ... update request
+
+	' シート略称
+	' Pm ... parameters
+	' Ly ... layers
+	' Sm ... statemachines
+	' St ... states
+	' Tr ... transitions
+	' Cd ... conditions
+	' Ps ... positions
+
+Option Explicit
+
+Sub Main
+	'msgbox "Hello World!!"
+	
+	Dim sht_cnfg		As Object ' シート
+	Dim shtName			As String ' シートの名前
+	Dim Dummy()			' 使わない引数に
+	Dim filePaths		(14) As String
+	Dim shtNames		(14) As String
+	Dim newFileName		As String
+	
+	' アクティブ・シートを取得
+	sht_cnfg = ThisComponent.GetCurrentController.ActiveSheet
+
+	Dim row_cnfg_header1		As Integer ' ヘッダー1 の行番号
+	Const COLUMN0 = 0
+	row_cnfg_header1			= Utility.RowOf( "#Header1#", sht_cnfg, COLUMN0, 0, 1000 )
+
+	' ヘッダー1 の列番号
+	Dim col_cnfg_key As Integer
+	Dim col_cnfg_folderpath		As Integer
+	Dim col_cnfg_filename1		As Integer
+	Dim col_cnfg_filename2		As Integer
+	Dim col_cnfg_filename3		As Integer
+	Dim col_cnfg_filename4		As Integer
+	Dim col_cnfg_filename5		As Integer
+	col_cnfg_key		= Utility.ColumnOf( "#Key#"			,sht_cnfg	,row_cnfg_header1	,0	,1000	)
+	col_cnfg_folderpath	= Utility.ColumnOf( "#FolderPath#"	,sht_cnfg	,row_cnfg_header1	,0	,1000	)
+	col_cnfg_filename1	= Utility.ColumnOf( "#Filename1#"	,sht_cnfg	,row_cnfg_header1	,0	,1000	)
+	col_cnfg_filename2	= Utility.ColumnOf( "#Filename2#"	,sht_cnfg	,row_cnfg_header1	,0	,1000	)
+	col_cnfg_filename3	= Utility.ColumnOf( "#Filename3#"	,sht_cnfg	,row_cnfg_header1	,0	,1000	)
+	col_cnfg_filename4	= Utility.ColumnOf( "#Filename4#"	,sht_cnfg	,row_cnfg_header1	,0	,1000	)
+	col_cnfg_filename5	= Utility.ColumnOf( "#Filename5#"	,sht_cnfg	,row_cnfg_header1	,0	,1000	)
+
+	' フォルダーパス（ 末尾は \ ）
+	Dim folder As String ' 信頼のおけるディレクトリ
+	folder = Utility.VLookup( "folder"	,sht_cnfg	,col_cnfg_key	,col_cnfg_folderpath	)
+
+	' シート名	
+	shtNames( 0) = Utility.VLookup( "parameters"			,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	) ' parameters
+	shtNames( 1) = Utility.VLookup( "parameters_def"		,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	) ' parameters_def
+	shtNames( 2) = Utility.VLookup( "layers"				,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	) ' 以下略
+	shtNames( 3) = Utility.VLookup( "layers_def"			,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	)
+	shtNames( 4) = Utility.VLookup( "stateMachines"			,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	)
+	shtNames( 5) = Utility.VLookup( "stateMachines_def"		,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	)
+	shtNames( 6) = Utility.VLookup( "states"				,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	)
+	shtNames( 7) = Utility.VLookup( "states_def"			,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	)
+	shtNames( 8) = Utility.VLookup( "transitions"			,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	)
+	shtNames( 9) = Utility.VLookup( "transitions_def"		,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	)
+	shtNames(10) = Utility.VLookup( "conditions"			,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	)
+	shtNames(11) = Utility.VLookup( "conditions_def"		,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	)
+	shtNames(12) = Utility.VLookup( "positions"				,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	)
+	shtNames(13) = Utility.VLookup( "positions_def"			,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4	)
+
+	Dim val_cnfg_filename123 As String
+	val_cnfg_filename123 = 						  Utility.VLookup( "COMMON2"	,sht_cnfg	,col_cnfg_key	,col_cnfg_filename1 )
+	val_cnfg_filename123 = val_cnfg_filename123 & Utility.VLookup( "COMMON1"	,sht_cnfg	,col_cnfg_key	,col_cnfg_filename2 )
+	val_cnfg_filename123 = val_cnfg_filename123 & Utility.VLookup( "COMMON2"	,sht_cnfg	,col_cnfg_key	,col_cnfg_filename3 )
+	Dim val_cnfg_filename5 As String
+	val_cnfg_filename5 = 						  Utility.VLookup( "COMMON2"	,sht_cnfg	,col_cnfg_key	,col_cnfg_filename5 )
+
+	' ファイルパスを読取
+	Dim loopCounter As Integer
+	For loopCounter = 0 To 13
+		filePaths( loopCounter ) = folder & val_cnfg_filename123 & Utility.VLookup( shtNames(loopCounter)	,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4 ) & val_cnfg_filename5
+	Next
+
+	' 出力ファイル名を読取
+	newFileName = Utility.VLookup( "output_file"	,sht_cnfg	,col_cnfg_key	,col_cnfg_filename4 ) ' "AnimationControllerData.ods"
+	
+	Dim doc_cnbn As Object ' 新しいブック
+	doc_cnbn = StarDesktop.loadComponentFromURL("private:factory/scalc", "_blank", 0, Dummy()) ' ブックを新規作成
+	
+	'--------------------------------------------------------------------------------
+	' 最初からあるシートを名前変更
+	
+	Dim sht_cnbn as Object ' シート
+	sht_cnbn		=	doc_cnbn.Sheets(0)
+	sht_cnbn.Name	=	shtNames(0)
+	
+	'作成したシートへの書込
+	ReadCsv( doc_cnbn	,filePaths(0)	,sht_cnbn	) ' CSV読込
+	
+	'--------------------------------------------------------------------------------
+	' ２つ目のシートを作成
+	
+	shtName = shtNames(1)
+	
+	' シートを追加
+	if doc_cnbn.getSheets().hasByName(shtName) = false then
+		doc_cnbn.getSheets().insertNewByName(shtName,1)
+	end if
+	sht_cnbn = doc_cnbn.getSheets().getByName(shtName)
+	
+	'作成したシートへの書込
+	ReadCsv( doc_cnbn, filePaths(1), sht_cnbn ) ' CSV読込
+	
+	'--------------------------------------------------------------------------------
+	' ３つ目以降のシートを作成
+	
+	Dim index As Integer
+	
+	For index = 2 To 13
+	
+		shtName = shtNames(index)
+		
+		' シートを追加
+		if doc_cnbn.getSheets().hasByName(shtName) = false then
+			doc_cnbn.getSheets().insertNewByName(shtName,index)
+		end if
+		sht_cnbn = doc_cnbn.getSheets().getByName(shtName)
+		
+		'作成したシートへの書込
+		ReadCsv( doc_cnbn, filePaths(index), sht_cnbn ) ' CSV読込
+	
+	Next
+	
+	'--------------------------------------------------------------------------------
+	'C:test.odsとして保存
+	doc_cnbn.storeAsURL(ConvertToUrl( folder & newFileName), Dummy())
+	
+	'ファイルを閉じる
+	doc_cnbn.dispose
+	
+End Sub
+	
+'--------------------------------------------------------------------------------
+' CSV読取
+Sub ReadCsv( doc_xx As Object, filename As String, sht_xx as Object)
+	
+	doc_xx.getCurrentController().setActiveSheet( sht_xx ) ' 更新要求中間シートをアクティブにする
+	
+	Dim fileHandle As Integer ' ファイルハンドル番号
+	
+	fileHandle = Freefile
+	Open filename For Input As fileHandle ' 外部ファイルの内容をシートに読込む
+	
+	Dim row		As Integer
+	Dim source	As String
+	row = 0
+	Do While not eof(fileHandle)
+		Line Input #fileHandle, source
+	
+		Utility.CsvLineParser( source, row, sht_xx )
+			
+		row = row + 1
+	Loop
+	
+	Close #fileHandle
+
+End Sub
+
