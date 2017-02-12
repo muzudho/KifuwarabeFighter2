@@ -54,6 +54,29 @@ namespace StellaQL
             Assert.AreEqual("Bear", ft.StatemachineNamesEndsWithoutDot[1]);
             Assert.AreEqual("Cat", ft.StateName);
         }
+
+        [Test]
+        public void N80_Syntax_Continued_Fixed_LayerName_And_StatemachineNames_And_StateName()
+        {
+            string query = "Base Layer.Alpaca.Bear.Cat";
+            int caret = 0;
+            FullpathTokens ft = new FullpathTokens();
+
+            // "～Bear." まで読取。
+            bool successful1 = FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(query, ref caret, ref ft);
+            Assert.IsTrue(successful1);
+
+            // 続きから "Cat"まで読込み。
+            bool successful2 = FullpathSyntaxP.Continued_Fixed_StateName(query, ref caret, ft, ref ft);
+
+            Assert.IsTrue(successful2);
+            Assert.AreEqual(26, caret);
+            Assert.AreEqual("Base Layer", ft.LayerNameEndsWithoutDot);
+            Assert.AreEqual(2, ft.StatemachineNamesEndsWithoutDot.Count);
+            Assert.AreEqual("Alpaca", ft.StatemachineNamesEndsWithoutDot[0]);
+            Assert.AreEqual("Bear", ft.StatemachineNamesEndsWithoutDot[1]);
+            Assert.AreEqual("Cat", ft.StateName);
+        }
         #endregion
 
 

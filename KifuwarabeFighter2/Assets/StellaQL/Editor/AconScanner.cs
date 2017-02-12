@@ -55,20 +55,25 @@ namespace StellaQL
                     foreach (KeyValuePair<string, AnimatorStateMachine> statemachine_pair in statemachineList_flat)
                     { // ステート・マシン
 
-                        FullpathTokens ft = new FullpathTokens();
-                        int caret = 0;
-                        if(!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(statemachine_pair.Key, ref caret, ref ft)) {
+                        FullpathTokens ft1 = new FullpathTokens();
+                        int caret1 = 0;
+                        if(!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(statemachine_pair.Key, ref caret1, ref ft1)) {
                             throw new UnityException("[" + statemachine_pair.Key + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
                         if(OnStatemachine(
                             statemachine_pair.Key,
-                            string.Join(".",ft.StatemachineNamesEndsWithoutDot.ToArray()),// 例えばフルパスが "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
+                            ft1.StatemachinePath,// 例えばフルパスが "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
                             statemachine_pair.Value, lNum, smNum))
                         {
                             int sNum = 0;
                             foreach (ChildAnimatorState caState in statemachine_pair.Value.states)
                             { //ステート（ラッパー）
-                                if(OnState( statemachine_pair.Key, caState, lNum, smNum, sNum))
+
+                                //FullpathTokens ft2 = new FullpathTokens(ft1);
+                                //int caret2 = caret1;
+                                //FullpathSyntaxP.Continued_Fixed_StateName(statemachine_pair.Key, ref caret2, ft2, ref ft2);
+
+                                if (OnState( statemachine_pair.Key, caState, lNum, smNum, sNum))//, ft2.StatemachinePath
                                 {
                                     int tNum = 0; // トランジション番号
                                     foreach (AnimatorStateTransition transition in caState.state.transitions)
@@ -119,6 +124,7 @@ namespace StellaQL
         /// <param name="caState"></param>
         /// <returns>下位を検索するなら真</returns>
         public virtual bool OnState(string parentPath, ChildAnimatorState caState, int lNum, int smNum, int sNum) { return false; }
+        //, string statemachinePath
         /// <summary>
         /// 
         /// </summary>
@@ -171,11 +177,13 @@ namespace StellaQL
 
         public override bool OnState( string parentPath, ChildAnimatorState caState, int lNum, int smNum, int sNum)
         {
+            //, string statemachinePath
             StateRecord stateRecord = StateRecord.CreateInstance(
                 lNum,
                 smNum,
                 sNum,
                 parentPath,
+                //statemachinePath,
                 caState, AconData.table_position);
             AconData.table_state.Add(stateRecord); return true;
         }
@@ -227,6 +235,7 @@ namespace StellaQL
 
         public override bool OnState( string parentPath, ChildAnimatorState caState, int lNum, int smNum, int sNum)
         {
+            //, string statemachinePath
             FullpathSet.Add(parentPath + caState.state.name); return false;
         }
 

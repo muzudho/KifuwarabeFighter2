@@ -22,12 +22,24 @@ namespace StellaQL
             StatemachineNamesEndsWithoutDot = new List<string>();
             StateName = "";
         }
+        public FullpathTokens(FullpathTokens source) // クローン
+        {
+            LayerNameEndsWithoutDot = source.LayerNameEndsWithoutDot;
+            MatchedSyntaxCaret = source.MatchedSyntaxCaret;
+            MatchedSyntaxName = source.MatchedSyntaxName;
+            StatemachineNamesEndsWithoutDot = new List<string>(source.StatemachineNamesEndsWithoutDot);
+            StateName = source.StateName;
+        }
 
         /// <summary>
         /// "Base Layer." にヒットしても、末尾のドットを除いて "Base Layer" を保持する。
         /// </summary>
         public string LayerNameEndsWithoutDot { get; set; }
         public List<string> StatemachineNamesEndsWithoutDot { get; set; }
+        /// <summary>
+        /// 例えば "Alpaca" "Bear" "Cat" を、"Alpaca.Bear.Cat" に連結して返す。
+        /// </summary>
+        public string StatemachinePath { get { return string.Join(".", StatemachineNamesEndsWithoutDot.ToArray()); } }
         public string StateName { get; set; }
 
         /// <summary>
@@ -112,6 +124,25 @@ namespace StellaQL
 
             // ステートマシン名はオプション。
             if (FullpathLexcalP.VarStatemachineNames(query, ref caret, out statemachineNamesEndsWithoutDot)) { ft.StatemachineNamesEndsWithoutDot = statemachineNamesEndsWithoutDot; }
+
+            if (!FullpathLexcalP.VarStateName(query, ref caret, out stateName)) { return NotMatched(maxFt, caret, ref maxFt); }
+            ft.StateName = stateName;
+
+            maxFt = ft; ref_caret = caret; return true;
+        }
+
+        /// <summary>
+        /// "Base Layer.Alpaca" や、"Base Layer.Alpaca.Bear" などがＯＫ。ステートマシン名は無いこともある。
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="ref_caret"></param>
+        /// <param name="maxFt"></param>
+        /// <returns></returns>
+        public static bool Continued_Fixed_StateName(string query, ref int ref_caret, FullpathTokens baseFt, ref FullpathTokens maxFt)
+        {
+            FullpathTokens ft = new FullpathTokens(baseFt); // クローンし、追加していく。
+            int caret = ref_caret;
+            string stateName;
 
             if (!FullpathLexcalP.VarStateName(query, ref caret, out stateName)) { return NotMatched(maxFt, caret, ref maxFt); }
             ft.StateName = stateName;

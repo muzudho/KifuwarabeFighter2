@@ -59,8 +59,8 @@
      <Compile Include="Assets\StellaQL\Editor\SM.cs" />
      <Compile Include="Assets\StellaQL\Editor\StateCmdline.cs" />
      <Compile Include="Assets\StellaQL\Editor\StellaQL.cs" />
-     <Compile Include="Assets\StellaQL\Editor\StellaQLDemoTest.cs" />
      <Compile Include="Assets\StellaQL\Editor\TestFullpathParser.cs" />
+     <Compile Include="Assets\StellaQL\Editor\TestStellaQLDemo.cs" />
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>
  </Reference>

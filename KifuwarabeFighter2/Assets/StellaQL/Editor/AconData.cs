@@ -542,14 +542,10 @@ namespace StellaQL
                 { "#machineStateNum#"               ,machineStateNum                                                                                    },
                 { "#layerName#"                     ,""                                                                                                 },//空っぽ
                 { "#statemachinePath#"              ,statemachinePath                                                                                   },
-                // { "#fullnameEndsWithDot#"           ,fullnameEndsWithDot                                                                                },
                 { "name"                            ,stateMachine.name                                                                                  },
-                //{ "anyStateTransitions"         ,stateMachine.anyStateTransitions   == null ? "" : stateMachine.anyStateTransitions.ToString()      },
                 { "#anyStateTransitions_Length#"    ,stateMachine.anyStateTransitions.Length.ToString()                                                 },
-                //{ "#behaviours_Length#"         ,stateMachine.behaviours            == null ? "" : stateMachine.behaviours.ToString()               },
                 { "#behaviours_Length#"             ,stateMachine.behaviours.Length.ToString()                                                          },
                 { "#defaultState_String#"           ,stateMachine.defaultState          == null ? "" : stateMachine.defaultState.ToString()             },
-                //{ "#entryTransitions_Length#"   ,stateMachine.entryTransitions      == null ? "" : stateMachine.entryTransitions.Length.ToString()  },
                 { "#entryTransitions_Length#"       ,stateMachine.entryTransitions.Length.ToString()                                                    },
                 { "hideFlags"                       ,stateMachine.hideFlags.ToString()                                                                  },
             };
@@ -573,7 +569,6 @@ namespace StellaQL
             Definitions["#machineStateNum#"             ].AppendCsv(Fields, c, n, d);
             Definitions["#layerName#"                   ].AppendCsv(Fields, c, n, d);
             Definitions["#statemachinePath#"            ].AppendCsv(Fields, c, n, d);
-            // Definitions["#fullnameEndsWithDot#"         ].AppendCsv(Fields, c, n, d);
             Definitions["name"                          ].AppendCsv(Fields, c, n, d);
             Definitions["#anyStateTransitions_Length#"  ].AppendCsv(Fields, c, n, d);
             Definitions["#behaviours_Length#"           ].AppendCsv(Fields, c, n, d);
@@ -590,51 +585,68 @@ namespace StellaQL
     /// </summary>
     public class StateRecord
     {
+        public class Wrapper
+        {
+            public Wrapper(AnimatorState source)//, string statemachinePath
+            {
+                Source = source;
+                //StatemachinePath = statemachinePath;
+            }
+
+            public AnimatorState Source { get; private set; }
+            //public string StatemachinePath { get; private set; }
+        }
+
         static StateRecord()
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#parentPath#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identifiable,false),
-                new RecordDefinition("name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.Identifiable,false),
-                new RecordDefinition("cycleOffset",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None               ,(object i)=>{ return ((AnimatorState)i).cycleOffset; }         ,(object i,float v)=>{ ((AnimatorState)i).cycleOffset = v; }),
-                new RecordDefinition("cycleOffsetParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None     ,(object i)=>{ return ((AnimatorState)i).cycleOffsetParameter; },(object i,string v)=>{ ((AnimatorState)i).cycleOffsetParameter = v; }),
-                new RecordDefinition("hideFlags",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("iKOnFeet",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                   ,(object i)=>{ return ((AnimatorState)i).iKOnFeet; }            ,(object i,bool v)=>{ ((AnimatorState)i).iKOnFeet = v; }),
-                new RecordDefinition("mirror",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None                     ,(object i)=>{ return ((AnimatorState)i).mirror; }              ,(object i,bool v)=>{ ((AnimatorState)i).mirror = v; }),
-                new RecordDefinition("mirrorParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None          ,(object i)=>{ return ((AnimatorState)i).mirrorParameter; }     ,(object i,string v)=>{ ((AnimatorState)i).mirrorParameter = v; }),
-                new RecordDefinition("mirrorParameterActive",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None      ,(object i)=>{ return ((AnimatorState)i).mirrorParameterActive;},(object i,bool v)=>{ ((AnimatorState)i).mirrorParameterActive = v; }),
-                new RecordDefinition("motion_name",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("nameHash",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("speed",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                     ,(object i)=>{ return ((AnimatorState)i).speed; }               ,(object i,float v)=>{ ((AnimatorState)i).speed = v; }),
-                new RecordDefinition("speedParameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None           ,(object i)=>{ return ((AnimatorState)i).speedParameter; }      ,(object i,string v)=>{ ((AnimatorState)i).speedParameter = v; }),
-                new RecordDefinition("speedParameterActive",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None       ,(object i)=>{ return ((AnimatorState)i).speedParameterActive; },(object i,bool v)=>{ ((AnimatorState)i).speedParameterActive = v; }),
-                new RecordDefinition("tag",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None                      ,(object i)=>{ return ((AnimatorState)i).tag; }                 ,(object i,string v)=>{ ((AnimatorState)i).tag = v; }),
-                new RecordDefinition("writeDefaultValues",RecordDefinition.FieldType.Bool,RecordDefinition.KeyType.None         ,(object i)=>{ return ((AnimatorState)i).writeDefaultValues; }  ,(object i,bool v)=>{ ((AnimatorState)i).writeDefaultValues = v; }),
+                new RecordDefinition("#layerNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#machineStateNum#"            ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#stateNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#layerName#"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false), // 内容は空。 LibreOffice Basic に探させる
+                new RecordDefinition("#statemachinePath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false), // 内容は空。 LibreOffice Basic に探させる
+                new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable  ,false) ,
+                new RecordDefinition("cycleOffset"                  ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.cycleOffset; }         ,(object i,float v)=>{ ((Wrapper)i).Source.cycleOffset = v; }),
+                new RecordDefinition("cycleOffsetParameter"         ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.cycleOffsetParameter; },(object i,string v)=>{ ((Wrapper)i).Source.cycleOffsetParameter = v; }),
+                new RecordDefinition("hideFlags"                    ,RecordDefinition.FieldType.Other   ,RecordDefinition.KeyType.None          ,false),
+                new RecordDefinition("iKOnFeet"                     ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.iKOnFeet; }            ,(object i,bool v)=>{ ((Wrapper)i).Source.iKOnFeet = v; }),
+                new RecordDefinition("mirror"                       ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.mirror; }              ,(object i,bool v)=>{ ((Wrapper)i).Source.mirror = v; }),
+                new RecordDefinition("mirrorParameter"              ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.mirrorParameter; }     ,(object i,string v)=>{ ((Wrapper)i).Source.mirrorParameter = v; }),
+                new RecordDefinition("mirrorParameterActive"        ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.mirrorParameterActive;},(object i,bool v)=>{ ((Wrapper)i).Source.mirrorParameterActive = v; }),
+                new RecordDefinition("motion_name"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None          ,false),
+                new RecordDefinition("nameHash"                     ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.None          ,false),
+                new RecordDefinition("speed"                        ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.speed; }               ,(object i,float v)=>{ ((Wrapper)i).Source.speed = v; }),
+                new RecordDefinition("speedParameter"               ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.speedParameter; }      ,(object i,string v)=>{ ((Wrapper)i).Source.speedParameter = v; }),
+                new RecordDefinition("speedParameterActive"         ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.speedParameterActive; },(object i,bool v)=>{ ((Wrapper)i).Source.speedParameterActive = v; }),
+                new RecordDefinition("tag"                          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.tag; }                 ,(object i,string v)=>{ ((Wrapper)i).Source.tag = v; }),
+                new RecordDefinition("writeDefaultValues"           ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.writeDefaultValues; }  ,(object i,bool v)=>{ ((Wrapper)i).Source.writeDefaultValues = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
 
-            Empty = new StateRecord(-1,-1,-1,"",new AnimatorState());
+            Empty = new StateRecord(-1,-1,-1,new AnimatorState());
         }
         public static Dictionary<string, RecordDefinition> Definitions { get; private set; }
         public static StateRecord Empty { get; private set; }
 
         public static StateRecord CreateInstance(int layerNum, int machineStateNum, int stateNum, string parentPath, ChildAnimatorState caState, List<PositionRecord> positionsTable)
         {
+            //, string statemachinePath
             positionsTable.Add(new PositionRecord(layerNum, machineStateNum, stateNum, -1, -1, "position", caState.position));
-            return new StateRecord(layerNum, machineStateNum, stateNum, parentPath, caState.state);
+            return new StateRecord(layerNum, machineStateNum, stateNum, caState.state);
+            //, statemachinePath
         }
-        public StateRecord(int layerNum, int machineStateNum, int stateNum, string parentPath, AnimatorState state)
+        public StateRecord(int layerNum, int machineStateNum, int stateNum, AnimatorState state)
         {
+            //, string statemachinePath
             this.Fields = new Dictionary<string, object>()
             {
                 { "#layerNum#",layerNum },//レイヤー行番号
                 { "#machineStateNum#", machineStateNum},
                 { "#stateNum#",stateNum },
-                { "#parentPath#", parentPath},
+                { "#layerName#", ""},//空っぽ
+                { "#statemachinePath#", ""},//空っぽ
                 { "name", state.name},
                 { "cycleOffset", state.cycleOffset},
                 { "cycleOffsetParameter", state.cycleOffsetParameter},
@@ -665,7 +677,8 @@ namespace StellaQL
             Definitions["#layerNum#"].AppendCsv(Fields, c, n, d); // レイヤー行番号
             Definitions["#machineStateNum#"].AppendCsv(Fields, c, n, d);
             Definitions["#stateNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#parentPath#"].AppendCsv(Fields, c, n, d); // パス（名前抜き）
+            Definitions["#layerName#"].AppendCsv(Fields, c, n, d);
+            Definitions["#statemachinePath#"].AppendCsv(Fields, c, n, d);
             Definitions["name"].AppendCsv(Fields, c, n, d);
             Definitions["cycleOffset"].AppendCsv(Fields, c, n, d);
             Definitions["cycleOffsetParameter"].AppendCsv(Fields, c, n, d);

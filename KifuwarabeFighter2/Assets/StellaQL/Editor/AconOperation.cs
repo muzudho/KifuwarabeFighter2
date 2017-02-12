@@ -521,7 +521,7 @@ namespace StellaQL
             if (Operation_Something.HasProperty(request.Name, StatemachineRecord.Definitions, "ステートマシン操作"))
             {
                 StatemachineRecord.Definitions[request.Name].Update(new StatemachineRecord.Wrapper(statemachine,
-                    string.Join(".",ft.StatemachineNamesEndsWithoutDot.ToArray()) // 例えばフルパスが "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
+                    ft.StatemachinePath // 例えばフルパスが "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
                     ), request, message);
             }
         }
@@ -628,24 +628,19 @@ namespace StellaQL
     {
         #region 取得
         /// <summary>
-        /// パスを指定すると ステートを返す。
+        /// パス・トークンを指定すると ステートを返す。
         /// </summary>
-        /// <param name="path">"Base Layer.JMove.JMove0" といった文字列。</param>
-        public static AnimatorState Fetch(AnimatorController ac, FullpathTokens ft)//string path
+        public static AnimatorState Fetch(AnimatorController ac, FullpathTokens ft)
         {
-            //int caret = 0;
-            //FullpathTokens ft = new FullpathTokens();
-            //if(!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(path, ref caret, ref ft)) { throw new UnityException("[" + path + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
-
             // 最初の名前[0]は、レイヤーを検索する。
             AnimatorControllerLayer layer = Operation_Layer.Fetch_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
             AnimatorStateMachine currentMachine = layer.stateMachine;
-            if (null == currentMachine) { throw new UnityException("見つからないぜ☆（＾～＾）nodes=[" + string.Join("][", ft.StatemachineNamesEndsWithoutDot.ToArray()) + "]"); }
+            if (null == currentMachine) { throw new UnityException("見つからないぜ☆（＾～＾）nodes=[" + ft.StatemachinePath + "]"); }
 
             if (0 < ft.StatemachineNamesEndsWithoutDot.Count) // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
             {
                 currentMachine = FetchLeafMachine(currentMachine, ft.StatemachineNamesEndsWithoutDot);
-                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", ft.StatemachineNamesEndsWithoutDot.ToArray()) + "]"); }
+                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + ft.StatemachinePath + "]"); }
             }
 
             return FetchChildState(currentMachine, ft.StateName); // 葉
@@ -721,7 +716,8 @@ namespace StellaQL
 
             if (Operation_Something.HasProperty(request.Name, StateRecord.Definitions, "ステート操作"))
             {
-                StateRecord.Definitions[request.Name].Update(state, request, message);
+                StateRecord.Definitions[request.Name].Update(new StateRecord.Wrapper(state), request, message);
+                //,ft.StatemachinePath
             }
         }
 
@@ -804,7 +800,8 @@ namespace StellaQL
             foreach (AnimatorState state in states) // 指定されたステート全て対象
             {
                 if (null == state) { throw new UnityException("検索結果にヌル・ステートが含まれていたぜ☆（＞＿＜） states.Count=[" + states.Count + "]"); }
-                recordSet.Add(new StateRecord(0,0,0,"#NoData",state));
+                recordSet.Add(new StateRecord(0,0,0, state));
+                //,"#NoData"
             }
             message.Append("result: "); message.Append(recordSet.Count); message.AppendLine(" records.");
         }
