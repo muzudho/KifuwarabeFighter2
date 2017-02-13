@@ -884,20 +884,24 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#conditionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#layerNum#"           ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
+                new RecordDefinition("#machineStateNum#"    ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
+                new RecordDefinition("#stateNum#"           ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
+                new RecordDefinition("#transitionNum#"      ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
+                new RecordDefinition("#conditionNum#"       ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
+                new RecordDefinition("#layerName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false  ),
+                new RecordDefinition("#statemachinePath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false  ),
+                new RecordDefinition("#stateName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false  ),
 
                 // parameter, mode, threshold の順に並べた方が、理解しやすい。
-                new RecordDefinition("parameter",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None                ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.parameter; } ,(object i,string v)=>{ ((AnimatorConditionWrapper)i).m_source.parameter = v; }),
+                new RecordDefinition("parameter"            ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.parameter; } ,(object i,string v)=>{ ((AnimatorConditionWrapper)i).m_source.parameter = v; }),
                 // 演算子。本来はイニューム型だが、文字列型にする。
                 // 値は本来は Greater,less,Equals,NotEqual,If,IfNot の６つだが、分かりづらいので >, <, =, <>, TRUE, FALSE の６つにする。
-                new RecordDefinition("mode",RecordDefinition.FieldType.String,RecordDefinition.KeyType.None                     ,
-                    (object i)=>{ return Mode_to_string(((AnimatorConditionWrapper)i).m_source.mode);},
-                    (object i,string v)=>{((AnimatorConditionWrapper)i).m_source.mode = String_to_mode(v);}),
-                new RecordDefinition("threshold",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None                 ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.threshold; } ,(object i,float v)=>{ ((AnimatorConditionWrapper)i).m_source.threshold = v; }),
+                new RecordDefinition("mode"                 ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None
+                    ,(object i)=>{ return Mode_to_string(((AnimatorConditionWrapper)i).m_source.mode);}
+                    ,(object i,string v)=>{((AnimatorConditionWrapper)i).m_source.mode = String_to_mode(v);}
+                ),
+                new RecordDefinition("threshold"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.threshold; } ,(object i,float v)=>{ ((AnimatorConditionWrapper)i).m_source.threshold = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -911,14 +915,17 @@ namespace StellaQL
         {
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum#", layerNum},
-                { "#machineStateNum#", machineStateNum},
-                { "#stateNum#", stateNum},
-                { "#transitionNum#", transitionNum},
-                { "#conditionNum#", conditionNum},
-                { "mode", Mode_to_string( condition.mode)}, // 内容を変えて入れる。
-                { "parameter", condition.parameter},
-                { "threshold", condition.threshold},
+                { "#layerNum#"          , layerNum},
+                { "#machineStateNum#"   , machineStateNum},
+                { "#stateNum#"          , stateNum},
+                { "#transitionNum#"     , transitionNum},
+                { "#conditionNum#"      , conditionNum},
+                { "#layerName#"         , ""                                            },
+                { "#statemachinePath#"  , ""                                            },
+                { "#stateName#"         , ""                                            },
+                { "mode"                , Mode_to_string( condition.mode)}, // 内容を変えて入れる。
+                { "parameter"           , condition.parameter},
+                { "threshold"           , condition.threshold},
             };
         }
         public Dictionary<string, object> Fields { get; set; }
@@ -931,14 +938,17 @@ namespace StellaQL
         /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#machineStateNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#stateNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#transitionNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#conditionNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["mode"].AppendCsv(Fields, c, n, d);
-            Definitions["parameter"].AppendCsv(Fields, c, n, d);
-            Definitions["threshold"].AppendCsv(Fields, c, n, d);
+            Definitions["#layerNum#"            ].AppendCsv(Fields, c, n, d);
+            Definitions["#machineStateNum#"     ].AppendCsv(Fields, c, n, d);
+            Definitions["#stateNum#"            ].AppendCsv(Fields, c, n, d);
+            Definitions["#transitionNum#"       ].AppendCsv(Fields, c, n, d);
+            Definitions["#conditionNum#"        ].AppendCsv(Fields, c, n, d);
+            Definitions["#layerName#"           ].AppendCsv(Fields, c, n, d);
+            Definitions["#statemachinePath#"    ].AppendCsv(Fields, c, n, d);
+            Definitions["#stateName#"           ].AppendCsv(Fields, c, n, d);
+            Definitions["mode"                  ].AppendCsv(Fields, c, n, d);
+            Definitions["parameter"             ].AppendCsv(Fields, c, n, d);
+            Definitions["threshold"             ].AppendCsv(Fields, c, n, d);
             if (n) { c.Append("[EOL],"); }
             if (!d) { c.AppendLine(); }
         }
@@ -1076,21 +1086,24 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#machineStateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#stateNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#transitionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#conditionNum#",RecordDefinition.FieldType.Int,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#proertyName#",RecordDefinition.FieldType.String,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("magnitude",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None, false),// リード・オンリー型
-                new RecordDefinition("#normalized#",RecordDefinition.FieldType.Other,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("#normalizedX#",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("#normalizedY#",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("#normalizedZ#",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false),
-                new RecordDefinition("sqrMagnitude",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,false), // リード・オンリー型
-                new RecordDefinition("x",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).X; }             ,(object i,float v)=>{ ((PositionWrapper)i).X = v; }),
-                new RecordDefinition("y",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).Y; }             ,(object i,float v)=>{ ((PositionWrapper)i).Y = v; }),
-                new RecordDefinition("z",RecordDefinition.FieldType.Float,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).Z; }             ,(object i,float v)=>{ ((PositionWrapper)i).Z = v; }),
+                new RecordDefinition("#layerNum#"           ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#machineStateNum#"    ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#stateNum#"           ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#transitionNum#"      ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#conditionNum#"       ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#proertyName#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#layerName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false),
+                new RecordDefinition("#statemachinePath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false),
+                new RecordDefinition("#stateName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false),
+                new RecordDefinition("magnitude"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,false),// リード・オンリー型
+                new RecordDefinition("#normalized#"         ,RecordDefinition.FieldType.Other   ,RecordDefinition.KeyType.None                  ,false),
+                new RecordDefinition("#normalizedX#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,false),
+                new RecordDefinition("#normalizedY#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,false),
+                new RecordDefinition("#normalizedZ#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,false),
+                new RecordDefinition("sqrMagnitude"         ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,false), // リード・オンリー型
+                new RecordDefinition("x"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).X; }             ,(object i,float v)=>{ ((PositionWrapper)i).X = v; }),
+                new RecordDefinition("y"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).Y; }             ,(object i,float v)=>{ ((PositionWrapper)i).Y = v; }),
+                new RecordDefinition("z"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).Z; }             ,(object i,float v)=>{ ((PositionWrapper)i).Z = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -1104,21 +1117,24 @@ namespace StellaQL
         {
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum#", layerNum},
-                { "#machineStateNum#", machineStateNum},
-                { "#stateNum#", stateNum},
-                { "#transitionNum#", transitionNum},
-                { "#conditionNum#", conditionNum},
-                { "#proertyName#", proertyName},
-                { "magnitude", position.magnitude},
-                { "#normalized#", position.normalized == null ? "" : position.normalized.ToString()},
-                { "#normalizedX#", position.normalized == null ? "" : position.normalized.x.ToString()},
-                { "#normalizedY#", position.normalized == null ? "" : position.normalized.y.ToString()},
-                { "#normalizedZ#", position.normalized == null ? "" : position.normalized.z.ToString()},
-                { "sqrMagnitude", position.sqrMagnitude},
-                { "x", position.x},
-                { "y", position.y},
-                { "z", position.z},
+                { "#layerNum#"          ,layerNum           },
+                { "#machineStateNum#"   ,machineStateNum    },
+                { "#stateNum#"          ,stateNum           },
+                { "#transitionNum#"     ,transitionNum      },
+                { "#conditionNum#"      ,conditionNum       },
+                { "#proertyName#"       ,proertyName        },
+                { "#layerName#"         ,""                                            },
+                { "#statemachinePath#"  ,""                                            },
+                { "#stateName#"         ,""                                            },
+                { "magnitude"           ,position.magnitude },
+                { "#normalized#"        ,position.normalized == null ? "" : position.normalized.ToString()      },
+                { "#normalizedX#"       ,position.normalized == null ? "" : position.normalized.x.ToString()    },
+                { "#normalizedY#"       ,position.normalized == null ? "" : position.normalized.y.ToString()    },
+                { "#normalizedZ#"       ,position.normalized == null ? "" : position.normalized.z.ToString()    },
+                { "sqrMagnitude"        ,position.sqrMagnitude  },
+                { "x"                   ,position.x     },
+                { "y"                   ,position.y     },
+                { "z"                   ,position.z     },
             };
         }
         public Dictionary<string, object> Fields { get; set; }
@@ -1131,21 +1147,24 @@ namespace StellaQL
         /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#machineStateNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#stateNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#transitionNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#conditionNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#proertyName#"].AppendCsv(Fields, c, n, d);
-            Definitions["magnitude"].AppendCsv(Fields, c, n, d);
-            Definitions["#normalized#"].AppendCsv(Fields, c, n, d);
-            Definitions["#normalizedX#"].AppendCsv(Fields, c, n, d);
-            Definitions["#normalizedY#"].AppendCsv(Fields, c, n, d);
-            Definitions["#normalizedZ#"].AppendCsv(Fields, c, n, d);
-            Definitions["sqrMagnitude"].AppendCsv(Fields, c, n, d);
-            Definitions["x"].AppendCsv(Fields, c, n, d);
-            Definitions["y"].AppendCsv(Fields, c, n, d);
-            Definitions["z"].AppendCsv(Fields, c, n, d);
+            Definitions["#layerNum#"        ].AppendCsv(Fields, c, n, d);
+            Definitions["#machineStateNum#" ].AppendCsv(Fields, c, n, d);
+            Definitions["#stateNum#"        ].AppendCsv(Fields, c, n, d);
+            Definitions["#transitionNum#"   ].AppendCsv(Fields, c, n, d);
+            Definitions["#conditionNum#"    ].AppendCsv(Fields, c, n, d);
+            Definitions["#proertyName#"     ].AppendCsv(Fields, c, n, d);
+            Definitions["#layerName#"       ].AppendCsv(Fields, c, n, d);
+            Definitions["#statemachinePath#"].AppendCsv(Fields, c, n, d);
+            Definitions["#stateName#"       ].AppendCsv(Fields, c, n, d);
+            Definitions["magnitude"         ].AppendCsv(Fields, c, n, d);
+            Definitions["#normalized#"      ].AppendCsv(Fields, c, n, d);
+            Definitions["#normalizedX#"     ].AppendCsv(Fields, c, n, d);
+            Definitions["#normalizedY#"     ].AppendCsv(Fields, c, n, d);
+            Definitions["#normalizedZ#"     ].AppendCsv(Fields, c, n, d);
+            Definitions["sqrMagnitude"      ].AppendCsv(Fields, c, n, d);
+            Definitions["x"                 ].AppendCsv(Fields, c, n, d);
+            Definitions["y"                 ].AppendCsv(Fields, c, n, d);
+            Definitions["z"                 ].AppendCsv(Fields, c, n, d);
             if (n) { c.Append("[EOL],"); }
             if (!d) { c.AppendLine(); }
         }
