@@ -110,7 +110,7 @@ namespace StellaQL
                         if ("#DestinationFullpath#" == request_1wrap.Value.Name)
                         {
                             if ("" != request_1wrap.Value.New) { insertsSet.Add(request_1wrap.Value); }// Newに指定があれば、 挿入 に振り分ける。
-                            else if (request_1wrap.Value.IsDelete) { deletesSet.Add(request_1wrap.Value); }// 削除要求の場合、削除 に振り分ける。
+                            else if (request_1wrap.Value.IsClear) { deletesSet.Add(request_1wrap.Value); }// 削除要求の場合、削除 に振り分ける。
                             else {
                                 if (HasProperty(request_1wrap.Value.Name, TransitionRecord.Definitions, "トランジション操作"))
                                 {
@@ -154,7 +154,7 @@ namespace StellaQL
                                 ConditionRecord.AnimatorConditionWrapper wapper = Operation_Condition.Fetch(acWrapper.SourceAc, transition, conditionRecordSet2Pair.Value.RepresentativeRecord);// コンディション
 
                                 if (wapper.IsNull) { insertsSet.Add(conditionRecordSet2Pair.Value); }// 存在しないコンディション番号だった場合、 挿入 に振り分ける。
-                                else if (null != conditionRecordSet2Pair.Value.Parameter && conditionRecordSet2Pair.Value.Parameter.IsDelete) { deletesSet.Add(conditionRecordSet2Pair.Value); }// 削除要求の場合、削除 に振り分ける。
+                                else if (null != conditionRecordSet2Pair.Value.Parameter && conditionRecordSet2Pair.Value.Parameter.IsClear) { deletesSet.Add(conditionRecordSet2Pair.Value); }// 削除要求の場合、削除 に振り分ける。
                                 else { updatesSet.Add(conditionRecordSet2Pair.Value); }// それ以外の場合は、更新 に振り分ける。
                             }
                         }

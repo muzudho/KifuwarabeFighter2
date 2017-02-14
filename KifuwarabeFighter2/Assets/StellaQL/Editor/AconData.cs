@@ -34,6 +34,29 @@ namespace StellaQL
     /// </summary>
     public class RecordDefinition
     {
+        public enum FieldType
+        {
+            Int,
+            Float,
+            Bool,
+            String,
+            /// <summary>
+            /// 特殊実装なもの。
+            /// </summary>
+            SpecialString,
+            Other,//対応外
+        }
+
+        public enum SubFieldType
+        {
+            /// <summary>
+            /// スプレッドシートで、文字列型のClear欄を非表示にする。
+            /// TODO: 用意はしてみたものの、使う場面がない……☆（＞＿＜）
+            /// </summary>
+            Required,
+            None,
+        }
+
         public enum KeyType
         {
             /// <summary>
@@ -62,23 +85,11 @@ namespace StellaQL
             None,
         }
 
-        public enum FieldType
-        {
-            Int,
-            Float,
-            Bool,
-            String,
-            /// <summary>
-            /// 特殊実装なもの。
-            /// </summary>
-            SpecialString,
-            Other,//対応外
-        }
-
-        public RecordDefinition(string name, FieldType type, KeyType keyField, bool input)
+        public RecordDefinition(string name, FieldType type, SubFieldType subType, KeyType keyField, bool input)
         {
             this.Name = name;
             this.Type = type;
+            this.SubType = subType;
             this.KeyField = keyField;
             this.Input = input;
             this.m_getterBool = null;
@@ -90,19 +101,19 @@ namespace StellaQL
             this.m_getterString = null;
             this.m_setterString = null;
         }
-        public RecordDefinition(string name, FieldType type, KeyType keyField, GettterBool getter, SetterBool setter)       : this(name, type, keyField, true)
+        public RecordDefinition(string name, FieldType type, SubFieldType subType, KeyType keyField, GettterBool getter, SetterBool setter)       : this(name, type, subType, keyField, true)
         {
             this.m_getterBool = getter;     this.m_setterBool = setter;
         }
-        public RecordDefinition(string name, FieldType type, KeyType keyField, GettterFloat getter, SetterFloat setter)     : this(name,type,keyField, true)
+        public RecordDefinition(string name, FieldType type, SubFieldType subType, KeyType keyField, GettterFloat getter, SetterFloat setter)     : this(name,type, subType, keyField, true)
         {
             this.m_getterFloat = getter;    this.m_setterFloat = setter;
         }
-        public RecordDefinition(string name, FieldType type, KeyType keyField, GettterInt getter, SetterInt setter)         : this(name, type, keyField, true)
+        public RecordDefinition(string name, FieldType type, SubFieldType subType, KeyType keyField, GettterInt getter, SetterInt setter)         : this(name, type, subType, keyField, true)
         {
             this.m_getterInt = getter;      this.m_setterInt = setter;
         }
-        public RecordDefinition(string name, FieldType type, KeyType keyField, GettterString getter, SetterString setter)   : this(name, type, keyField, true)
+        public RecordDefinition(string name, FieldType type, SubFieldType subType, KeyType keyField, GettterString getter, SetterString setter)   : this(name, type, subType, keyField, true)
         {
             this.m_getterString = getter;   this.m_setterString = setter;
         }
@@ -116,6 +127,7 @@ namespace StellaQL
         /// 型
         /// </summary>
         public FieldType Type { get; private set; }
+        public SubFieldType SubType { get; private set; }
 
         /// <summary>
         /// キーとして利用できるフィールドか
@@ -144,11 +156,12 @@ namespace StellaQL
                 else
                 {
                     contents.Append(Name); contents.Append(",");
-                    contents.Append(Type.ToString().Substring(0, 1).ToLower()); // 列挙型の要素名の先頭を小文字にして、型名とする。
-                    contents.Append(Type.ToString().Substring(1));
+                    contents.Append(Type.ToString().Substring(0, 1).ToLower()); // １文字目。列挙型の要素名の先頭を小文字にして、型名とする。
+                    contents.Append(Type.ToString().Substring(1));              // ２文字目以降。
                     contents.Append(",");
                     contents.Append(KeyField); contents.Append(",");
                     contents.Append(Input); contents.Append(",");
+                    contents.Append(SubType); contents.Append(",");             // 2017-02-14 追加
                     contents.AppendLine();
                 }
             }
@@ -180,10 +193,9 @@ namespace StellaQL
                 }
             }
         }
-
         public static void AppendDefinitionHeader(StringBuilder contents)
         {
-            contents.AppendLine("Name,Type,KeyField,Input,[EOL],"); // 列定義ヘッダー出力
+            contents.AppendLine("Name,Type,KeyField,Input,SubType,[EOL],"); // 列定義ヘッダー出力
         }
 
         public delegate bool   GettterBool  (object instance);                  GettterBool m_getterBool;
@@ -236,11 +248,11 @@ namespace StellaQL
                     } break;
                 case FieldType.Other: break; // 未対応は、この型にしてあるんだぜ☆（＾▽＾）
                 case FieldType.String: {
-                        Debug.Log("string型の更新要求だぜ☆（＾～＾）Name=["+Name+ "] record.IsDelete=["+ record.IsDelete + "] record.New=["+ record.New + "]");
+                        Debug.Log("string型の更新要求だぜ☆（＾～＾）Name=["+Name+ "] record.IsDelete=["+ record.IsClear + "] record.New=["+ record.New + "]");
                         if (null == m_getterString) { throw new UnityException("m_getterStringがヌルだったぜ☆（／＿＼）"); }
                         string actual = m_getterString(instance);
                         if (EqualsOld(actual, record.Old)) {
-                            if (record.IsDelete) { m_setterString(instance, ""); } // 空文字列にセットする
+                            if (record.IsClear) { m_setterString(instance, ""); } // 空文字列にセットする
                             else { m_setterString(instance, record.New); }
                         }
                     } break;
@@ -259,29 +271,29 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("num"          , RecordDefinition.FieldType.Int            ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
-                new RecordDefinition("#name_ID#"    , RecordDefinition.FieldType.String         ,RecordDefinition.KeyType.Identifiable          ,false),
-                new RecordDefinition("name"         , RecordDefinition.FieldType.String         ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                new RecordDefinition("num"          , RecordDefinition.FieldType.Int        ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#name_ID#"    , RecordDefinition.FieldType.String     ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.Identifiable          ,false),
+                new RecordDefinition("name"         , RecordDefinition.FieldType.String     ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{          return ((AnimatorControllerParameter)i).name; }
                     ,(object i,string v)=>{ ((AnimatorControllerParameter)i).name = v; }
                 ),
-                new RecordDefinition("#type_String#", RecordDefinition.FieldType.String         ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                new RecordDefinition("#type_String#", RecordDefinition.FieldType.String     ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{          return ((AnimatorControllerParameter)i).type.ToString(); }
                     ,(object i,string v)=>{ ((AnimatorControllerParameter)i).type = (AnimatorControllerParameterType)Enum.Parse(typeof(AnimatorControllerParameterType),v); }
                 ),
-                new RecordDefinition("defaultBool"  , RecordDefinition.FieldType.Bool           ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                new RecordDefinition("defaultBool"  , RecordDefinition.FieldType.Bool       ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{        return ((AnimatorControllerParameter)i).defaultBool; }
                     ,(object i,bool v)=>{ ((AnimatorControllerParameter)i).defaultBool = v; }
                 ),
-                new RecordDefinition("defaultFloat" , RecordDefinition.FieldType.Float          ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                new RecordDefinition("defaultFloat" , RecordDefinition.FieldType.Float      ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{         return ((AnimatorControllerParameter)i).defaultFloat; }
                     ,(object i,float v)=>{ ((AnimatorControllerParameter)i).defaultFloat = v; }
                 ),
-                new RecordDefinition("defaultInt"   , RecordDefinition.FieldType.Int            ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                new RecordDefinition("defaultInt"   , RecordDefinition.FieldType.Int        ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{       return ((AnimatorControllerParameter)i).defaultInt; }
                     ,(object i,int v)=>{ ((AnimatorControllerParameter)i).defaultInt = v; }
                 ),
-                new RecordDefinition("nameHash"     , RecordDefinition.FieldType.Int            ,RecordDefinition.KeyType.ReadOnly
+                new RecordDefinition("nameHash"     , RecordDefinition.FieldType.Int        ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.ReadOnly
                     ,(object i)=>{       return ((AnimatorControllerParameter)i).nameHash; }
                     ,(object i,int v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
@@ -355,9 +367,9 @@ namespace StellaQL
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
                 // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
-                new RecordDefinition("#layerNum#"               ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
-                new RecordDefinition("name"                     ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false),
-                new RecordDefinition("#avatarMask_assetPath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                new RecordDefinition("#layerNum#"               ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("name"                     ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false),
+                new RecordDefinition("#avatarMask_assetPath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{
                         if(null==((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].avatarMask) { Debug.Log("アバターマスク無し☆（＞＿＜）"); return ""; }
                         return AssetDatabase.GetAssetPath(((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].avatarMask.GetInstanceID());
@@ -370,7 +382,7 @@ namespace StellaQL
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                         // TODO: Delete にも対応したい。
                     }),
-                new RecordDefinition("#blendingMode_string#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                new RecordDefinition("#blendingMode_string#"    ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].blendingMode.ToString(); }
                     ,(object i,string v)=>{
                         HashSet<AnimatorLayerBlendingMode> hits = Operation_AnimatorLayerBlendingMode.Fetch(v);
@@ -388,28 +400,28 @@ namespace StellaQL
                             Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                         }
                     }),
-                new RecordDefinition("defaultWeight"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                new RecordDefinition("defaultWeight"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].defaultWeight;           }
                     ,(object i,float v)=>{
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].defaultWeight = v;
                         Debug.Log("デフォルトウェイト（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
-                new RecordDefinition("iKPass"                   ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                new RecordDefinition("iKPass"                   ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].iKPass;                  }
                     ,(object i,bool v)=>{
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].iKPass = v;
                         Debug.Log("アイケーパス（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
-                new RecordDefinition("syncedLayerAffectsTiming" ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                new RecordDefinition("syncedLayerAffectsTiming" ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerAffectsTiming;}
                     ,(object i,bool v)=>{
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerAffectsTiming = v;
                         Debug.Log("シンクレイヤーアフェクトタイミング（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
-                new RecordDefinition("syncedLayerIndex"         ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                new RecordDefinition("syncedLayerIndex"         ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerIndex;        }
                     ,(object i,int v)=>{
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerIndex = v;
@@ -487,34 +499,34 @@ namespace StellaQL
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
                 // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
-                new RecordDefinition("#layerNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#machineStateNum#"            ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#layerName#"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false), // 内容は空。 LibreOffice Basic に探させる
-                new RecordDefinition("#statemachinePath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      // "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
+                new RecordDefinition("#layerNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#machineStateNum#"            ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#layerName#"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false), // 内容は空。 LibreOffice Basic に探させる
+                new RecordDefinition("#statemachinePath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      // "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
                     ,(object i)=>{          return ((Wrapper)i).StatemachinePath; }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
+                new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.name; }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                new RecordDefinition("#anyStateTransitions_Length#" ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
+                new RecordDefinition("#anyStateTransitions_Length#" ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.anyStateTransitions.Length.ToString(); }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                new RecordDefinition("#behaviours_Length#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
+                new RecordDefinition("#behaviours_Length#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.behaviours.Length.ToString(); }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                new RecordDefinition("#defaultState_String#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
+                new RecordDefinition("#defaultState_String#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return (((Wrapper)i).Source.defaultState==null) ? "" : ((Wrapper)i).Source.defaultState.ToString(); }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                new RecordDefinition("#entryTransitions_Length#"    ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
+                new RecordDefinition("#entryTransitions_Length#"    ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.entryTransitions.Length.ToString(); }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                new RecordDefinition("hideFlags"                    ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
+                new RecordDefinition("hideFlags"                    ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.hideFlags.ToString(); }
                     ,(object i,string v)=>{ ((Wrapper)i).Source.hideFlags = (HideFlags)System.Enum.Parse(typeof(HideFlags), v);}
                 ),
@@ -599,26 +611,26 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#machineStateNum#"            ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#stateNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#layerName#"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false), // 内容は空。 LibreOffice Basic に探させる
-                new RecordDefinition("#statemachinePath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false), // 内容は空。 LibreOffice Basic に探させる
-                new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable  ,false) ,
-                new RecordDefinition("cycleOffset"                  ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.cycleOffset; }         ,(object i,float v)=>{ ((Wrapper)i).Source.cycleOffset = v; }),
-                new RecordDefinition("cycleOffsetParameter"         ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.cycleOffsetParameter; },(object i,string v)=>{ ((Wrapper)i).Source.cycleOffsetParameter = v; }),
-                new RecordDefinition("hideFlags"                    ,RecordDefinition.FieldType.Other   ,RecordDefinition.KeyType.None          ,false),
-                new RecordDefinition("iKOnFeet"                     ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.iKOnFeet; }            ,(object i,bool v)=>{ ((Wrapper)i).Source.iKOnFeet = v; }),
-                new RecordDefinition("mirror"                       ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.mirror; }              ,(object i,bool v)=>{ ((Wrapper)i).Source.mirror = v; }),
-                new RecordDefinition("mirrorParameter"              ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.mirrorParameter; }     ,(object i,string v)=>{ ((Wrapper)i).Source.mirrorParameter = v; }),
-                new RecordDefinition("mirrorParameterActive"        ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.mirrorParameterActive;},(object i,bool v)=>{ ((Wrapper)i).Source.mirrorParameterActive = v; }),
-                new RecordDefinition("motion_name"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None          ,false),
-                new RecordDefinition("nameHash"                     ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.None          ,false),
-                new RecordDefinition("speed"                        ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.speed; }               ,(object i,float v)=>{ ((Wrapper)i).Source.speed = v; }),
-                new RecordDefinition("speedParameter"               ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.speedParameter; }      ,(object i,string v)=>{ ((Wrapper)i).Source.speedParameter = v; }),
-                new RecordDefinition("speedParameterActive"         ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.speedParameterActive; },(object i,bool v)=>{ ((Wrapper)i).Source.speedParameterActive = v; }),
-                new RecordDefinition("tag"                          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.tag; }                 ,(object i,string v)=>{ ((Wrapper)i).Source.tag = v; }),
-                new RecordDefinition("writeDefaultValues"           ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.writeDefaultValues; }  ,(object i,bool v)=>{ ((Wrapper)i).Source.writeDefaultValues = v; }),
+                new RecordDefinition("#layerNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#machineStateNum#"            ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#stateNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#layerName#"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false), // 内容は空。 LibreOffice Basic に探させる
+                new RecordDefinition("#statemachinePath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false), // 内容は空。 LibreOffice Basic に探させる
+                new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable  ,false) ,
+                new RecordDefinition("cycleOffset"                  ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.cycleOffset; }         ,(object i,float v)=>{ ((Wrapper)i).Source.cycleOffset = v; }),
+                new RecordDefinition("cycleOffsetParameter"         ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.cycleOffsetParameter; },(object i,string v)=>{ ((Wrapper)i).Source.cycleOffsetParameter = v; }),
+                new RecordDefinition("hideFlags"                    ,RecordDefinition.FieldType.Other   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None          ,false),
+                new RecordDefinition("iKOnFeet"                     ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.iKOnFeet; }            ,(object i,bool v)=>{ ((Wrapper)i).Source.iKOnFeet = v; }),
+                new RecordDefinition("mirror"                       ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.mirror; }              ,(object i,bool v)=>{ ((Wrapper)i).Source.mirror = v; }),
+                new RecordDefinition("mirrorParameter"              ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.mirrorParameter; }     ,(object i,string v)=>{ ((Wrapper)i).Source.mirrorParameter = v; }),
+                new RecordDefinition("mirrorParameterActive"        ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.mirrorParameterActive;},(object i,bool v)=>{ ((Wrapper)i).Source.mirrorParameterActive = v; }),
+                new RecordDefinition("motion_name"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None          ,false),
+                new RecordDefinition("nameHash"                     ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None          ,false),
+                new RecordDefinition("speed"                        ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.speed; }               ,(object i,float v)=>{ ((Wrapper)i).Source.speed = v; }),
+                new RecordDefinition("speedParameter"               ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.speedParameter; }      ,(object i,string v)=>{ ((Wrapper)i).Source.speedParameter = v; }),
+                new RecordDefinition("speedParameterActive"         ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.speedParameterActive; },(object i,bool v)=>{ ((Wrapper)i).Source.speedParameterActive = v; }),
+                new RecordDefinition("tag"                          ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.tag; }                 ,(object i,string v)=>{ ((Wrapper)i).Source.tag = v; }),
+                new RecordDefinition("writeDefaultValues"           ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.writeDefaultValues; }  ,(object i,bool v)=>{ ((Wrapper)i).Source.writeDefaultValues = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -707,30 +719,30 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum#"                       ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#machineStateNum#"                ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#stateNum#"                       ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#transitionNum#"                  ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#layerName#"                      ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false),
-                new RecordDefinition("#statemachinePath#"               ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false),
-                new RecordDefinition("#stateName#"                      ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false),
-                new RecordDefinition("name"                             ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false),
-                new RecordDefinition("#stellaQLComment#"                ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None              ,false),
-                new RecordDefinition("canTransitionToSelf"              ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).canTransitionToSelf; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).canTransitionToSelf = v; }),
-                new RecordDefinition("#destinationState_name#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None              ,false),
-                new RecordDefinition("#destinationState_nameHash#"      ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.None              ,false),
-                new RecordDefinition("#destinationStateMachine_name#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None              ,false),
-                new RecordDefinition("duration"                         ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).duration; }              ,(object i,float v)=>{ ((AnimatorStateTransition)i).duration = v; }),
-                new RecordDefinition("exitTime"                         ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).exitTime; }              ,(object i,float v)=>{ ((AnimatorStateTransition)i).exitTime = v; }),
-                new RecordDefinition("hasExitTime"                      ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).hasExitTime; }           ,(object i,bool v)=>{ ((AnimatorStateTransition)i).hasExitTime = v; }),
-                new RecordDefinition("hasFixedDuration"                 ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).hasFixedDuration; }      ,(object i,bool v)=>{ ((AnimatorStateTransition)i).hasFixedDuration = v; }),
-                new RecordDefinition("hideFlags"                        ,RecordDefinition.FieldType.Other   ,RecordDefinition.KeyType.None              ,false),
-                new RecordDefinition("interruptionSource"               ,RecordDefinition.FieldType.Other   ,RecordDefinition.KeyType.None              ,false),
-                new RecordDefinition("isExit"                           ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).isExit; }                ,(object i,bool v)=>{ ((AnimatorStateTransition)i).isExit = v; }),
-                new RecordDefinition("mute"                             ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).mute; }                  ,(object i,bool v)=>{ ((AnimatorStateTransition)i).mute = v; }),
-                new RecordDefinition("offset"                           ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).offset; }                ,(object i,float v)=>{ ((AnimatorStateTransition)i).offset = v; }),
-                new RecordDefinition("orderedInterruption"              ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).orderedInterruption; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).orderedInterruption = v; }),
-                new RecordDefinition("solo"                             ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).solo; }                  ,(object i,bool v)=>{ ((AnimatorStateTransition)i).solo = v; }),
+                new RecordDefinition("#layerNum#"                       ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#machineStateNum#"                ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#stateNum#"                       ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#transitionNum#"                  ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
+                new RecordDefinition("#layerName#"                      ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false),
+                new RecordDefinition("#statemachinePath#"               ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false),
+                new RecordDefinition("#stateName#"                      ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false),
+                new RecordDefinition("name"                             ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false),
+                new RecordDefinition("#stellaQLComment#"                ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,false),
+                new RecordDefinition("canTransitionToSelf"              ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).canTransitionToSelf; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).canTransitionToSelf = v; }),
+                new RecordDefinition("#destinationState_name#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,false),
+                new RecordDefinition("#destinationState_nameHash#"      ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,false),
+                new RecordDefinition("#destinationStateMachine_name#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,false),
+                new RecordDefinition("duration"                         ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).duration; }              ,(object i,float v)=>{ ((AnimatorStateTransition)i).duration = v; }),
+                new RecordDefinition("exitTime"                         ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).exitTime; }              ,(object i,float v)=>{ ((AnimatorStateTransition)i).exitTime = v; }),
+                new RecordDefinition("hasExitTime"                      ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).hasExitTime; }           ,(object i,bool v)=>{ ((AnimatorStateTransition)i).hasExitTime = v; }),
+                new RecordDefinition("hasFixedDuration"                 ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).hasFixedDuration; }      ,(object i,bool v)=>{ ((AnimatorStateTransition)i).hasFixedDuration = v; }),
+                new RecordDefinition("hideFlags"                        ,RecordDefinition.FieldType.Other   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,false),
+                new RecordDefinition("interruptionSource"               ,RecordDefinition.FieldType.Other   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,false),
+                new RecordDefinition("isExit"                           ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).isExit; }                ,(object i,bool v)=>{ ((AnimatorStateTransition)i).isExit = v; }),
+                new RecordDefinition("mute"                             ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).mute; }                  ,(object i,bool v)=>{ ((AnimatorStateTransition)i).mute = v; }),
+                new RecordDefinition("offset"                           ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).offset; }                ,(object i,float v)=>{ ((AnimatorStateTransition)i).offset = v; }),
+                new RecordDefinition("orderedInterruption"              ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).orderedInterruption; }   ,(object i,bool v)=>{ ((AnimatorStateTransition)i).orderedInterruption = v; }),
+                new RecordDefinition("solo"                             ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None              ,(object i)=>{ return ((AnimatorStateTransition)i).solo; }                  ,(object i,bool v)=>{ ((AnimatorStateTransition)i).solo = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -882,24 +894,24 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum#"           ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
-                new RecordDefinition("#machineStateNum#"    ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
-                new RecordDefinition("#stateNum#"           ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
-                new RecordDefinition("#transitionNum#"      ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
-                new RecordDefinition("#conditionNum#"       ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
-                new RecordDefinition("#layerName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false  ),
-                new RecordDefinition("#statemachinePath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false  ),
-                new RecordDefinition("#stateName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false  ),
+                new RecordDefinition("#layerNum#"           ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
+                new RecordDefinition("#machineStateNum#"    ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
+                new RecordDefinition("#stateNum#"           ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
+                new RecordDefinition("#transitionNum#"      ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
+                new RecordDefinition("#conditionNum#"       ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false  ),
+                new RecordDefinition("#layerName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false  ),
+                new RecordDefinition("#statemachinePath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false  ),
+                new RecordDefinition("#stateName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false  ),
 
                 // parameter, mode, threshold の順に並べた方が、理解しやすい。
-                new RecordDefinition("parameter"            ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.parameter; } ,(object i,string v)=>{ ((AnimatorConditionWrapper)i).m_source.parameter = v; }),
+                new RecordDefinition("parameter"            ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.parameter; } ,(object i,string v)=>{ ((AnimatorConditionWrapper)i).m_source.parameter = v; }),
                 // 演算子。本来はイニューム型だが、文字列型にする。
                 // 値は本来は Greater,less,Equals,NotEqual,If,IfNot の６つだが、分かりづらいので >, <, =, <>, TRUE, FALSE の６つにする。
-                new RecordDefinition("mode"                 ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None
+                new RecordDefinition("mode"                 ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None
                     ,(object i)=>{ return Mode_to_string(((AnimatorConditionWrapper)i).m_source.mode);}
                     ,(object i,string v)=>{((AnimatorConditionWrapper)i).m_source.mode = String_to_mode(v);}
                 ),
-                new RecordDefinition("threshold"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.threshold; } ,(object i,float v)=>{ ((AnimatorConditionWrapper)i).m_source.threshold = v; }),
+                new RecordDefinition("threshold"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.threshold; } ,(object i,float v)=>{ ((AnimatorConditionWrapper)i).m_source.threshold = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
@@ -1084,24 +1096,24 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#layerNum#"           ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
-                new RecordDefinition("#machineStateNum#"    ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
-                new RecordDefinition("#stateNum#"           ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
-                new RecordDefinition("#transitionNum#"      ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
-                new RecordDefinition("#conditionNum#"       ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
-                new RecordDefinition("#proertyName#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
-                new RecordDefinition("#layerName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false),
-                new RecordDefinition("#statemachinePath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false),
-                new RecordDefinition("#stateName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false),
-                new RecordDefinition("magnitude"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,false),// リード・オンリー型
-                new RecordDefinition("#normalized#"         ,RecordDefinition.FieldType.Other   ,RecordDefinition.KeyType.None                  ,false),
-                new RecordDefinition("#normalizedX#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,false),
-                new RecordDefinition("#normalizedY#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,false),
-                new RecordDefinition("#normalizedZ#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,false),
-                new RecordDefinition("sqrMagnitude"         ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None                  ,false), // リード・オンリー型
-                new RecordDefinition("x"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).X; }             ,(object i,float v)=>{ ((PositionWrapper)i).X = v; }),
-                new RecordDefinition("y"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).Y; }             ,(object i,float v)=>{ ((PositionWrapper)i).Y = v; }),
-                new RecordDefinition("z"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).Z; }             ,(object i,float v)=>{ ((PositionWrapper)i).Z = v; }),
+                new RecordDefinition("#layerNum#"           ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#machineStateNum#"    ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#stateNum#"           ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#transitionNum#"      ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#conditionNum#"       ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#proertyName#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
+                new RecordDefinition("#layerName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false),
+                new RecordDefinition("#statemachinePath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false),
+                new RecordDefinition("#stateName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false),
+                new RecordDefinition("magnitude"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),// リード・オンリー型
+                new RecordDefinition("#normalized#"         ,RecordDefinition.FieldType.Other   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),
+                new RecordDefinition("#normalizedX#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),
+                new RecordDefinition("#normalizedY#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),
+                new RecordDefinition("#normalizedZ#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),
+                new RecordDefinition("sqrMagnitude"         ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false), // リード・オンリー型
+                new RecordDefinition("x"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).X; }             ,(object i,float v)=>{ ((PositionWrapper)i).X = v; }),
+                new RecordDefinition("y"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).Y; }             ,(object i,float v)=>{ ((PositionWrapper)i).Y = v; }),
+                new RecordDefinition("z"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).Z; }             ,(object i,float v)=>{ ((PositionWrapper)i).Z = v; }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }

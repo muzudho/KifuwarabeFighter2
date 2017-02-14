@@ -19,8 +19,8 @@ namespace StellaQL
         /// <param name="name"></param>
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
-        /// <param name="delete"></param>
-        public DataManipulationRecord(string category, string foreignkeycategory, string fullpath, string fullpathTransition, string fullpathCondition, string fullpathPropertyname, string name, string oldValue, string newValue, string delete)
+        /// <param name="flagOf_clear"></param>
+        public DataManipulationRecord(string category, string foreignkeycategory, string fullpath, string fullpathTransition, string fullpathCondition, string fullpathPropertyname, string name, string oldValue, string newValue, string flagOf_clear)
         {
             this.Category = category;
             this.Foreignkeycategory = foreignkeycategory;
@@ -31,7 +31,7 @@ namespace StellaQL
             this.Name = name;
             this.Old = oldValue;
             this.New = newValue;
-            this.Delete = delete;
+            this.FlagOf_Clear = flagOf_clear;
         }
 
         public string Category { get; private set; }
@@ -52,8 +52,8 @@ namespace StellaQL
         public float NewFloat { get { return float.Parse(New); } }
         public int NewInt { get { return int.Parse(New); } }
 
-        public string Delete { get; private set; }
-        public bool IsDelete { get { bool val; if (!bool.TryParse(Delete, out val)) { val = false; } return val; } }
+        public string FlagOf_Clear { get; private set; }
+        public bool IsClear { get { bool val; if (!bool.TryParse(FlagOf_Clear, out val)) { val = false; } return val; } }
 
         /// <summary>
         /// 中身を確認するのに使う（＾～＾）
@@ -77,7 +77,7 @@ namespace StellaQL
             contents.Append(",");
             contents.Append(CsvParser.EscapeCell(New));
             contents.Append(",");
-            contents.Append(CsvParser.EscapeCell(Delete));
+            contents.Append(CsvParser.EscapeCell(FlagOf_Clear));
             contents.Append(",");
             contents.AppendLine();
         }
