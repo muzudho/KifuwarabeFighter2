@@ -398,7 +398,7 @@ namespace StellaQL
                 FullpathTokens ft = new FullpathTokens();
                 FullpathSyntaxP.Fixed_LayerName(universe[targetHash].Fullpath, ref caret, ref ft);
 
-                AnimatorControllerLayer layer = Operation_Layer.Fetch_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
+                AnimatorControllerLayer layer = AconFetcher.FetchLayer_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
                 layers.Add(layer);
                 //layers.Add(Operation_Layer.Fetch(ac, universe[targetHash].Fullpath));
             }
@@ -414,8 +414,8 @@ namespace StellaQL
                 FullpathTokens ft = new FullpathTokens();
                 if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("[" + universe[targetHash].Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-                AnimatorControllerLayer layer = Operation_Layer.Fetch_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
-                AnimatorStateMachine statemachine = Operation_Statemachine.Fetch(ac, ft, layer);
+                AnimatorControllerLayer layer = AconFetcher.FetchLayer_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
+                AnimatorStateMachine statemachine = AconFetcher.FetchStatemachine(ac, ft, layer);
                 statemachines.Add(statemachine);
             }
             return statemachines;
@@ -438,7 +438,7 @@ namespace StellaQL
                     int caret = 0;
                     FullpathTokens ft = new FullpathTokens();
                     if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("[" + universe[targetHash].Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
-                    state = Operation_State.Fetch(ac, ft);
+                    state = AconFetcher.FetchState(ac, ft);
                 }
 
                 if (null== state)
@@ -448,8 +448,8 @@ namespace StellaQL
                     FullpathTokens ft = new FullpathTokens();
                     if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("[" + universe[targetHash].Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-                    AnimatorControllerLayer layer = Operation_Layer.Fetch_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
-                    AnimatorStateMachine stateMachine = Operation_Statemachine.Fetch(ac, ft, layer);
+                    AnimatorControllerLayer layer = AconFetcher.FetchLayer_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
+                    AnimatorStateMachine stateMachine = AconFetcher.FetchStatemachine(ac, ft, layer);
 
                     if(null!= stateMachine)
                     {

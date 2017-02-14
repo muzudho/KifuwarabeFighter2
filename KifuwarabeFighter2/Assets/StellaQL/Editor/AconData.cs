@@ -822,6 +822,23 @@ namespace StellaQL
     }
 
     /// <summary>
+    /// UnityEditor の AnimatorCondition のmodeプロパティーのセッターが機能していないと推測を立て、別途用意。
+    /// </summary>
+    public class AconConditionBuilder
+    {
+        public AconConditionBuilder(AnimatorCondition old)
+        {
+            mode = old.mode;
+            threshold = old.threshold;
+            parameter = old.parameter;
+        }
+        public AnimatorConditionMode mode { get; set; }
+        public float threshold { get; set; }
+        public string parameter { get; set; }
+    }
+
+
+    /// <summary>
     /// コンディション
     /// </summary>
     public class ConditionRecord
@@ -839,13 +856,25 @@ namespace StellaQL
                 this.IsNull = true;
             }
 
-            public AnimatorConditionWrapper(AnimatorCondition source)
+            /// <summary>
+            /// コンディションはプロパティの入れ物で、それ自体にはフルパスとしての働きがない？
+            /// </summary>
+            /// <param name="sourceParentTransition"></param>
+            /// <param name="source"></param>
+            public AnimatorConditionWrapper(int conditionNum, AnimatorStateTransition sourceParentTransition, AnimatorCondition source)
             {
+                ConditionNum = conditionNum;
+                m_sourceParentTransition = sourceParentTransition;
                 this.m_source = source;
                 this.IsNull = false;
             }
 
             public bool IsNull { get; private set; }
+            public int ConditionNum { get; private set; }
+            /// <summary>
+            /// コンディションへの更新を反映するためには、親トランジションの AddCondition( ) メソッドが必要なようだ。
+            /// </summary>
+            public AnimatorStateTransition m_sourceParentTransition;
             public AnimatorCondition m_source;
         }
 
@@ -903,15 +932,52 @@ namespace StellaQL
                 new RecordDefinition("#statemachinePath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false  ),
                 new RecordDefinition("#stateName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false  ),
 
+                // FIXME:
+                // トランジションの持っているコンディションは、全削除、全追加しないと、プロパティ１つ変えられないようだ。（セッターが機能していない）
+                // また、コンディションの変更を反映するためには、親トランジションが必要。
+                // プロパティを１つずつ変えるのは　処理時間の無駄が膨大だが、　今バージョンはこれでいくものとする。
+
                 // parameter, mode, threshold の順に並べた方が、理解しやすい。
-                new RecordDefinition("parameter"            ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.parameter; } ,(object i,string v)=>{ ((AnimatorConditionWrapper)i).m_source.parameter = v; }),
+                new RecordDefinition("parameter"            ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None
+                    ,(object i)=>{
+                        return ((AnimatorConditionWrapper)i).m_source.parameter;
+                    }
+                    ,(object i,string v)=>{
+                        Operation_Condition.UpdateProperty_AndRebuild(
+                            ((AnimatorConditionWrapper)i).m_sourceParentTransition,
+                            ((AnimatorConditionWrapper)i).ConditionNum,
+                            "parameter",
+                            v
+                            );
+                        //((AnimatorConditionWrapper)i).m_source.parameter = v;
+                    }
+                ),
                 // 演算子。本来はイニューム型だが、文字列型にする。
                 // 値は本来は Greater,less,Equals,NotEqual,If,IfNot の６つだが、分かりづらいので >, <, =, <>, TRUE, FALSE の６つにする。
                 new RecordDefinition("mode"                 ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None
                     ,(object i)=>{ return Mode_to_string(((AnimatorConditionWrapper)i).m_source.mode);}
-                    ,(object i,string v)=>{((AnimatorConditionWrapper)i).m_source.mode = String_to_mode(v);}
+                    ,(object i,string v)=>{
+                        Operation_Condition.UpdateProperty_AndRebuild(
+                            ((AnimatorConditionWrapper)i).m_sourceParentTransition,
+                            ((AnimatorConditionWrapper)i).ConditionNum,
+                            "mode",
+                            String_to_mode(v)
+                            );
+                        //((AnimatorConditionWrapper)i).m_source.mode = String_to_mode(v);
+                    }
                 ),
-                new RecordDefinition("threshold"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.threshold; } ,(object i,float v)=>{ ((AnimatorConditionWrapper)i).m_source.threshold = v; }),
+                new RecordDefinition("threshold"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None
+                    ,(object i)=>{ return ((AnimatorConditionWrapper)i).m_source.threshold; }
+                    ,(object i,float v)=>{
+                         Operation_Condition.UpdateProperty_AndRebuild(
+                            ((AnimatorConditionWrapper)i).m_sourceParentTransition,
+                            ((AnimatorConditionWrapper)i).ConditionNum,
+                            "threshold",
+                            v
+                            );
+                       //((AnimatorConditionWrapper)i).m_source.threshold = v;
+                    }
+                ),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }
