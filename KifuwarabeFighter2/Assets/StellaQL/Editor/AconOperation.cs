@@ -34,9 +34,9 @@ namespace StellaQL
             // 更新要求を、届け先別に仕分ける。コレクションを入れ子にし、フルパスで更新要求を仕分ける。
             // レイヤー
             List<DataManipulationRecord> list_layer = new List<DataManipulationRecord>();
-            // 二重構造 [ステート・フルパス、トランジション番号]
-            Dictionary<string, Dictionary<int, DataManipulationRecord>> largeDic_transition = new Dictionary<string, Dictionary<int, DataManipulationRecord>>();
-            // 三重構造 [ステート・フルパス、トランジション番号、コンディション番号]
+            // 二重構造 [ステート・フルパス、トランジション番号,命令リスト] ※1つのトランジションに複数の命令が飛んでくることはある。
+            Dictionary<string, Dictionary<int, List<DataManipulationRecord>>> wrap3Dic_transition = new Dictionary<string, Dictionary<int, List<DataManipulationRecord>>>();
+            // 三重構造 [ステート・フルパス、トランジション番号、コンディション番号] FIXME: １つのコンディションに複数の命令が飛んでくることはないのかだぜ☆？（＾～＾）
             Dictionary<string,Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>> largeDic_condition = new Dictionary<string, Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>>();
             foreach (DataManipulationRecord request_packet in request_packets)
             {
@@ -53,12 +53,21 @@ namespace StellaQL
                     case "transitions":
                         {
                             // 二重構造
-                            Dictionary<int, DataManipulationRecord> middleDic; // [ステートフルパス,]
-                            if (largeDic_transition.ContainsKey(request_packet.Fullpath)) { middleDic = largeDic_transition[request_packet.Fullpath]; } // 既存
-                            else { middleDic = new Dictionary<int, DataManipulationRecord>(); largeDic_transition[request_packet.Fullpath] = middleDic; } // 新規追加
+                            Dictionary<int, List<DataManipulationRecord>> wrap2Dic; // [ステートフルパス,]
+                            if (wrap3Dic_transition.ContainsKey(request_packet.Fullpath)) { wrap2Dic = wrap3Dic_transition[request_packet.Fullpath]; } // 既存
+                            else { wrap2Dic = new Dictionary<int, List<DataManipulationRecord>>(); wrap3Dic_transition[request_packet.Fullpath] = wrap2Dic; } // 新規追加
 
                             int tNum = int.Parse(request_packet.TransitionNum_ofFullpath); // トランジション番号
-                            middleDic.Add(tNum, request_packet);
+                            if (!wrap2Dic.ContainsKey(tNum))
+                            {
+                                //ebug.Log("トランジションの新しい要求: tNum=[" + tNum + "]");
+                                wrap2Dic.Add(tNum, new List<DataManipulationRecord>());
+                            }// １つのトランジションに複数の命令がくることもある。
+                            else
+                            {
+                                //ebug.Log("トランジションの既存の要求: tNum=[" + tNum + "]");
+                            }
+                            wrap2Dic[tNum].Add(request_packet);
                         }
                         break;
                     case "conditions":
@@ -100,27 +109,58 @@ namespace StellaQL
                 List<DataManipulationRecord> insertsChangeDestination_Set = new List<DataManipulationRecord>();
                 List<DataManipulationRecord> deletesSet = new List<DataManipulationRecord>();
                 List<DataManipulationRecord> updatesSet = new List<DataManipulationRecord>();
-                //Debug.Log("largeDic_transition.Count=" + largeDic_transition.Count);// [ステート・フルパス,トランジション番号]
-                foreach (KeyValuePair<string, Dictionary<int, DataManipulationRecord>> request_2wrap in largeDic_transition)
+                //ebug.Log("largeDic_transition.Count=" + largeDic_transition.Count);// [ステート・フルパス,トランジション番号]
+                foreach (KeyValuePair<string, Dictionary<int, List<DataManipulationRecord>>> wrap3_request in wrap3Dic_transition)
                 {
-                    Debug.Log("request_2wrap.Value.Count=" + request_2wrap.Value.Count);// [,トランジション番号]
-                    foreach (KeyValuePair<int, DataManipulationRecord> request_1wrap in request_2wrap.Value)
+                    //ebug.Log("wrap3_request.Value.Count=" + wrap3_request.Value.Count);// [,トランジション番号]
+                    foreach (KeyValuePair<int, List<DataManipulationRecord>> wrap2_request in wrap3_request.Value)
                     {
-                        AnimatorStateTransition transition = Operation_Transition.Fetch(acWrapper.SourceAc, request_1wrap.Value);// トランジション
-
-                        if ("#DestinationFullpath#" == request_1wrap.Value.Name)
+                        //ebug.Log("wrap2_request.Value.Count=" + wrap2_request.Value.Count);
+                        if (0<wrap2_request.Value.Count) // 同じトランジションに複数の命令がある☆（＾▽＾）
                         {
-                            if ("" != request_1wrap.Value.New) {// New に指定があり
-                                if ("" == request_1wrap.Value.Old) { insertsNew_Set.Add(request_1wrap.Value); }// Old に指定がなければ新規挿入
-                                else { insertsChangeDestination_Set.Add(request_1wrap.Value); }// Old に指定があれば接続先変更
-                            }
-                            else if (request_1wrap.Value.IsClear) { deletesSet.Add(request_1wrap.Value); }// 削除要求の場合、削除 に振り分ける。
-                            else {
-                                if (HasProperty(request_1wrap.Value.Name, TransitionRecord.Definitions, "トランジション操作"))
+                            AnimatorStateTransition transition = Operation_Transition.Fetch(acWrapper.SourceAc, wrap2_request.Value[0]);// 先頭要素だけ見れば十分☆
+
+                            foreach (DataManipulationRecord request in wrap2_request.Value)
+                            {
+                                //ebug.Log("request.Name=" + request.Name);
+
+                                if ("#DestinationFullpath#" == request.Name) // トランジションの遷移先へのデータ操作命令
                                 {
-                                    updatesSet.Add(request_1wrap.Value);
+                                    if ("" != request.New)
+                                    {// New に指定があり
+                                        if ("" == request.Old) {
+                                            //ebug.Log("insertsNew_Set request.Name=" + request.Name);
+                                            insertsNew_Set.Add(request); }// Old に指定がなければ新規挿入
+                                        else {
+                                            //ebug.Log("insertsChangeDestination_Set request.Name=" + request.Name);
+                                            insertsChangeDestination_Set.Add(request);
+                                        }// Old に指定があれば接続先変更
+                                    }
+                                    else if(request.IsClear) {
+                                        //ebug.Log("deletesSet request.Name=" + request.Name);
+
+                                        deletesSet.Add(request); }// 削除要求の場合、削除 に振り分ける。
+                                    else {
+                                        throw new UnityException("トランジションの遷移先に対して未対応の更新要求だぜ☆（＾～＾） request.Name=["+ request.Name + "] request.Old=["+ request.Old + "] request.New=["+ request.New + "]");
+                                    }
                                 }
-                            }// それ以外の場合は、更新 に振り分ける。
+                                else
+                                {
+                                    if (request.IsClear)
+                                    {
+                                        //ebug.Log("deletesSet request.Name=" + request.Name);
+
+                                        deletesSet.Add(request);
+                                    }// 削除要求の場合、削除 に振り分ける。
+                                    else {
+                                        if (HasProperty(request.Name, TransitionRecord.Definitions, "トランジション操作"))
+                                        {
+                                            //ebug.Log("updatesSet request.Name=" + request.Name);
+                                            updatesSet.Add(request);
+                                        }
+                                    }// それ以外の場合は、更新 に振り分ける。
+                                }
+                            }
                         }
                     }
                 }
@@ -144,13 +184,13 @@ namespace StellaQL
                 List<Operation_Condition.DataManipulatRecordSet> insertsSet = new List<Operation_Condition.DataManipulatRecordSet>();
                 List<Operation_Condition.DataManipulatRecordSet> deletesSet = new List<Operation_Condition.DataManipulatRecordSet>();
                 List<Operation_Condition.DataManipulatRecordSet> updatesSet = new List<Operation_Condition.DataManipulatRecordSet>();
-                //Debug.Log("conditionRecordSet.Count=" + largeDic_condition.Count);// [ステート・フルパス,トランジション番号,コンディション番号]
+                //ebug.Log("conditionRecordSet.Count=" + largeDic_condition.Count);// [ステート・フルパス,トランジション番号,コンディション番号]
                 foreach (KeyValuePair<string, Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>> conditionRecordSetPair in largeDic_condition)
                 {
-                    Debug.Log("conditionRecordSetPair.Value.Count=" + conditionRecordSetPair.Value.Count);// [,トランジション番号,コンディション番号]
+                    //ebug.Log("conditionRecordSetPair.Value.Count=" + conditionRecordSetPair.Value.Count);// [,トランジション番号,コンディション番号]
                     foreach (KeyValuePair<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>> conditionRecordSet1Pair in conditionRecordSetPair.Value)
                     {
-                        Debug.Log("conditionRecordSet1Pair.Value.Count=" + conditionRecordSet1Pair.Value.Count);// [,,コンディション番号]
+                        //ebug.Log("conditionRecordSet1Pair.Value.Count=" + conditionRecordSet1Pair.Value.Count);// [,,コンディション番号]
                         foreach (KeyValuePair<int, Operation_Condition.DataManipulatRecordSet> conditionRecordSet2Pair in conditionRecordSet1Pair.Value)
                         {
                             if (Operation_Something.HasProperty(conditionRecordSet2Pair.Value.RepresentativeName, ConditionRecord.Definitions, "コンディション操作"))
@@ -398,7 +438,7 @@ namespace StellaQL
 
         public static void Update(AnimatorControllerWrapper acWrapper, DataManipulationRecord request, StringBuilder message)
         {
-            //Debug.Log("レイヤーの更新要求☆（＾～＾） request.Fullpath=["+ request.Fullpath + "]");
+            //ebug.Log("レイヤーの更新要求☆（＾～＾） request.Fullpath=["+ request.Fullpath + "]");
             int caret = 0;
             FullpathTokens ft = new FullpathTokens();
             FullpathSyntaxP.Fixed_LayerName(request.Fullpath, ref caret, ref ft);
@@ -410,7 +450,7 @@ namespace StellaQL
             if (Operation_Something.HasProperty(request.Name, LayerRecord.Definitions, "レイヤー操作"))
             {
                 //StringBuilder sb = new StringBuilder(); int i = 0; foreach (string name2 in LayerRecord.Definitions.Keys) { sb.Append("["); sb.Append(i); sb.Append("]"); sb.AppendLine(name2); i++; }
-                //Debug.Log("レイヤーのプロパティーの更新要求☆（＾～＾） request.Fullpath=[" + request.Fullpath + "] request.Name=[" + request.Name + "] sb:"+sb.ToString());
+                //ebug.Log("レイヤーのプロパティーの更新要求☆（＾～＾） request.Fullpath=[" + request.Fullpath + "] request.Name=[" + request.Name + "] sb:"+sb.ToString());
                 LayerRecord.Definitions[request.Name].Update(new LayerRecord.LayerWrapper(acWrapper, layerIndex), request, message);
             }
         }
@@ -889,18 +929,18 @@ namespace StellaQL
                 state_dst = Operation_State.Fetch(ac, ft);
             }
 
-            // Debug.Log("Fetch state_src.transitions.Length = [" + state_src.transitions.Length + "]");
+            // ebug.Log("Fetch state_src.transitions.Length = [" + state_src.transitions.Length + "]");
             foreach (AnimatorStateTransition transition in state_src.transitions)
             {
                 //〇if (transition.destinationState.nameHash == state_dst.nameHash)//if (transition.destinationState.name == state_dst.name)
                 if (transition.destinationState == state_dst)////× 
                 {
-                    // Debug.Log("Fetch 〇 ["+ transition.destinationState.name + "]==["+ state_dst.name + "]");
+                    // ebug.Log("Fetch 〇 ["+ transition.destinationState.name + "]==["+ state_dst.name + "]");
                     hit.Add(transition);//                    return  transition;
                 }
                 //else
                 //{
-                //    Debug.Log("Fetch × [" + transition.destinationState.name + "]==[" + state_dst.name + "]");
+                //    ebug.Log("Fetch × [" + transition.destinationState.name + "]==[" + state_dst.name + "]");
                 //}
             }
             return hit;// return null;
@@ -960,7 +1000,7 @@ namespace StellaQL
         /// </summary>
         public static void Insert_ChangeDestination(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
-            // Debug.Log("Insert_ChangeDestination: 開始");
+            // ebug.Log("Insert_ChangeDestination: 開始");
             AnimatorState srcState; // 遷移元のステート
             {
                 int caret = 0;
@@ -968,7 +1008,7 @@ namespace StellaQL
                 if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(request.Fullpath, ref caret, ref ft)) { throw new UnityException("[" + request.Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
                 srcState = Operation_State.Fetch(ac, ft);
             }
-            // Debug.Log("Insert_ChangeDestination: srcState.name=[" + srcState.name +"]" );
+            // ebug.Log("Insert_ChangeDestination: srcState.name=[" + srcState.name +"]" );
 
             AnimatorState dstOldState; // 古い遷移先のステート
             {
@@ -977,7 +1017,7 @@ namespace StellaQL
                 if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(request.Old, ref caret, ref ft)) { throw new UnityException("[" + request.Old + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
                 dstOldState = Operation_State.Fetch(ac, ft);
             }
-            // Debug.Log("Insert_ChangeDestination: dstOldState.name=[" + dstOldState.name + "]");
+            // ebug.Log("Insert_ChangeDestination: dstOldState.name=[" + dstOldState.name + "]");
 
             AnimatorState dstNewState; // 新しい遷移先のステート
             {
@@ -986,52 +1026,52 @@ namespace StellaQL
                 if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(request.New, ref caret, ref ft)) { throw new UnityException("[" + request.New + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
                 dstNewState = Operation_State.Fetch(ac, ft);
             }
-            // Debug.Log("Insert_ChangeDestination: dstNewState.name=[" + dstNewState.name + "]");
+            // ebug.Log("Insert_ChangeDestination: dstNewState.name=[" + dstNewState.name + "]");
 
             List<AnimatorStateTransition> removeList = new List<AnimatorStateTransition>();
             // FIXME: ほんとは トランジション番号も指定されているのでは？
             List<AnimatorStateTransition> oldTransitions = Fetch(ac, request.Fullpath, request.Old); // 削除するトランジションを全て取得
-            // Debug.Log("Insert_ChangeDestination: oldTransitions.Count=[" + oldTransitions.Count + "]");
+            // ebug.Log("Insert_ChangeDestination: oldTransitions.Count=[" + oldTransitions.Count + "]");
             foreach (AnimatorStateTransition oldTransition in oldTransitions)
             {
                 srcState.AddTransition(dstNewState);    // トランジションを追加する。
-                // Debug.Log("Insert_ChangeDestination: トランジション追加☆ [" + srcState.name + "]->["+ dstNewState.name + "]");
+                // ebug.Log("Insert_ChangeDestination: トランジション追加☆ [" + srcState.name + "]->["+ dstNewState.name + "]");
                 ShallowCopy_ExceptDestinaionState(srcState.transitions[srcState.transitions.Length - 1], oldTransition);   // 遷移先ステート以外の中身を写しておく。
                 removeList.Add(oldTransition);
             }
-            // Debug.Log("Insert_ChangeDestination: removeList.Count=[" + removeList.Count + "]");
+            // ebug.Log("Insert_ChangeDestination: removeList.Count=[" + removeList.Count + "]");
 
             foreach (AnimatorStateTransition removeeTransition in removeList)
             {
-                // Debug.Log("Insert_ChangeDestination: トランジション削除☆ ->[" + removeeTransition.destinationState.name + "]"); // 削除する前にアクセスすること。
+                // ebug.Log("Insert_ChangeDestination: トランジション削除☆ ->[" + removeeTransition.destinationState.name + "]"); // 削除する前にアクセスすること。
                 srcState.RemoveTransition(removeeTransition);   // トランジションを削除する。
             }
         }
         public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
-            if (Operation_Something.HasProperty(request.Name, TransitionRecord.Definitions, "トランジション操作"))
+            //ebug.Log("Operation_Transition Update 開始 request.Name=" + request.Name);
+            AnimatorState srcState; // 遷移元ステート
             {
-                AnimatorState srcState; // 遷移元ステート
-                {
-                    int caret = 0;
-                    FullpathTokens ft = new FullpathTokens();
-                    if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(request.Fullpath, ref caret, ref ft)) { throw new UnityException("[" + request.Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
-                    srcState = Operation_State.Fetch(ac, ft);
-                }
-                if (null == srcState) { throw new UnityException("[" + request.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                int caret = 0;
+                FullpathTokens ft = new FullpathTokens();
+                if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(request.Fullpath, ref caret, ref ft)) { throw new UnityException("[" + request.Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                srcState = Operation_State.Fetch(ac, ft);
+            }
+            if (null == srcState) { throw new UnityException("[" + request.Fullpath + "]ステートは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
-                int transitionNum = int.Parse(request.TransitionNum_ofFullpath); // トランジション番号
+            int transitionNum = int.Parse(request.TransitionNum_ofFullpath); // トランジション番号
+            //ebug.Log("Operation_Transition Update 開始 transitionNum=" + transitionNum);
 
-                int num = 0;
-                foreach( AnimatorStateTransition transition in srcState.transitions)
+            int tNum = 0;
+            foreach( AnimatorStateTransition transition in srcState.transitions)
+            {
+                if (transitionNum==tNum)
                 {
-                    if (transitionNum==num)
-                    {
-                        TransitionRecord.Definitions[request.Name].Update(transition, request, message);
-                        break;
-                    }
-                    num++;
+                    //ebug.Log("Operation_Transition Update 実行前 tNum=[" + tNum + "] request.Name=["+ request.Name + "]");
+                    TransitionRecord.Definitions[request.Name].Update(transition, request, message);
+                    break;
                 }
+                tNum++;
             }
         }
         /// <summary>
