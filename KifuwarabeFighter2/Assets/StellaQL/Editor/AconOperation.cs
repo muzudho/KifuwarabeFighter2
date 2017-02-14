@@ -42,7 +42,7 @@ namespace StellaQL
             {
                 switch (request_packet.Category)
                 {
-                    case "parameters":      Operation_Parameter     .ManipulateData(acWrapper.SourceAc, request_packet, info_message); break;
+                    case "parameters":      Operation_Parameter     .Update(acWrapper.SourceAc, request_packet, info_message); break;
                     case "layers":
                         {
                             list_layer.Add(request_packet);
@@ -197,9 +197,32 @@ namespace StellaQL
 
     public abstract class Operation_Parameter
     {
-        public static void ManipulateData(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
+        #region 取得
+        /// <summary>
+        /// パスを指定すると パラメーターを返す。
+        /// </summary>
+        /// <param name="parameterName">"Average body length" といった文字列。</param>
+        public static AnimatorControllerParameter Fetch(AnimatorController ac, string parameterName)
         {
-            throw new UnityException("[" + request.Fullpath + "]パラメーターには未対応だぜ☆（＾～＾） ac=[" + ac.name + "]");
+            foreach (AnimatorControllerParameter parameter in ac.parameters) { if (parameterName == parameter.name) { return parameter; } }
+            throw new UnityException("レイヤーが見つからないぜ☆（＾～＾）parameterName=[" + parameterName + "]");
+            //return null;
+        }
+        #endregion
+
+        /// <summary>
+        /// UPDATE 要求
+        /// </summary>
+        public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
+        {
+            if (Operation_Something.HasProperty(request.Name, ParameterRecord.Definitions, "パラメーター操作"))
+            {
+                AnimatorControllerParameter parameter = Fetch(ac, request.Fullpath);
+
+                // 各プロパティーに UPDATE要求を 振り分ける
+                ParameterRecord.Definitions[request.Name].Update(parameter, request, message);
+                // throw new UnityException("[" + request.Fullpath + "]パラメーターには未対応だぜ☆（＾～＾） ac=[" + ac.name + "]");
+            }
         }
     }
 

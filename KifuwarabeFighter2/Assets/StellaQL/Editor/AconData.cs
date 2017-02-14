@@ -48,6 +48,10 @@ namespace StellaQL
             /// スプレッドシートで読取専用フィールドにしたい場合これ。
             /// </summary>
             ReadOnly,
+            /// <summary>
+            /// ユニティ・エディターが書込みに対応していない場合はこれ。
+            /// </summary>
+            UnityEditorDoesNotSupportWriting,
             None,
         }
 
@@ -207,35 +211,24 @@ namespace StellaQL
         public void Update(object instance, DataManipulationRecord record, StringBuilder message)
         {
             if (null == instance) { throw new UnityException("instanceがヌルだったぜ☆（／＿＼）"); }
-
-            switch (Type)
-            {
-                case FieldType.Bool:
-                    {
+            switch (Type) {
+                case FieldType.Bool: {
                         if (null == m_getterBool) { throw new UnityException("m_getterBoolがヌルだったぜ☆（／＿＼）"); }
                         bool actual = m_getterBool(instance);
                         if (EqualsOld(actual, record.OldBool)) { m_setterBool(instance, record.NewBool); }
-                    }
-                    break;
-                case FieldType.Float:
-                    {
+                    } break;
+                case FieldType.Float: {
                         if (null == m_getterFloat) { throw new UnityException("m_getterFloatがヌルだったぜ☆（／＿＼）"); }
                         float actual = m_getterFloat(instance);
                         if (EqualsOld(actual, record.OldFloat)) { m_setterFloat(instance, record.NewFloat); }
-                    }
-                    break;
-                case FieldType.Int:
-                    {
+                    } break;
+                case FieldType.Int: {
                         if (null == m_getterInt) { throw new UnityException("m_getterIntがヌルだったぜ☆（／＿＼）"); }
                         int actual = m_getterInt(instance);
                         if (EqualsOld(actual, record.OldInt)) { m_setterInt(instance, record.NewInt); }
-                    }
-                    break;
-                case FieldType.Other:
-                    // 未対応は、この型にしてあるんだぜ☆（＾▽＾）
-                    break;
-                case FieldType.String:
-                    {
+                    } break;
+                case FieldType.Other: break; // 未対応は、この型にしてあるんだぜ☆（＾▽＾）
+                case FieldType.String: {
                         Debug.Log("string型の更新要求だぜ☆（＾～＾）Name=["+Name+ "] record.IsDelete=["+ record.IsDelete + "] record.New=["+ record.New + "]");
                         if (null == m_getterString) { throw new UnityException("m_getterStringがヌルだったぜ☆（／＿＼）"); }
                         string actual = m_getterString(instance);
@@ -243,8 +236,7 @@ namespace StellaQL
                             if (record.IsDelete) { m_setterString(instance, ""); } // 空文字列にセットする
                             else { m_setterString(instance, record.New); }
                         }
-                    }
-                    break;
+                    } break;
                 default: throw new UnityException("未定義の型だぜ☆（＾～＾） FieldType=["+Type.ToString()+"]");
             }
         }
@@ -252,6 +244,7 @@ namespace StellaQL
 
     /// <summary>
     /// パラメーター
+    /// FIXME: UnityEditorからはプロパティーの更新が反映されない？
     /// </summary>
     public class ParameterRecord
     {
@@ -259,26 +252,25 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                // FIXME: パラメーターの編集は他とパターンが異なる☆
                 new RecordDefinition("num"          , RecordDefinition.FieldType.Int            ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
                 new RecordDefinition("#name_ID#"    , RecordDefinition.FieldType.String         ,RecordDefinition.KeyType.Identifiable          ,false),
-                new RecordDefinition("name"         , RecordDefinition.FieldType.String         ,RecordDefinition.KeyType.None
+                new RecordDefinition("name"         , RecordDefinition.FieldType.String         ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{          return ((AnimatorControllerParameter)i).name; }
                     ,(object i,string v)=>{ ((AnimatorControllerParameter)i).name = v; }
                 ),
-                new RecordDefinition("#type_String#", RecordDefinition.FieldType.String         ,RecordDefinition.KeyType.None
+                new RecordDefinition("#type_String#", RecordDefinition.FieldType.String         ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{          return ((AnimatorControllerParameter)i).type.ToString(); }
                     ,(object i,string v)=>{ ((AnimatorControllerParameter)i).type = (AnimatorControllerParameterType)Enum.Parse(typeof(AnimatorControllerParameterType),v); }
                 ),
-                new RecordDefinition("defaultBool"  , RecordDefinition.FieldType.Bool           ,RecordDefinition.KeyType.None
+                new RecordDefinition("defaultBool"  , RecordDefinition.FieldType.Bool           ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{        return ((AnimatorControllerParameter)i).defaultBool; }
                     ,(object i,bool v)=>{ ((AnimatorControllerParameter)i).defaultBool = v; }
                 ),
-                new RecordDefinition("defaultFloat" , RecordDefinition.FieldType.Float          ,RecordDefinition.KeyType.None
+                new RecordDefinition("defaultFloat" , RecordDefinition.FieldType.Float          ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{         return ((AnimatorControllerParameter)i).defaultFloat; }
                     ,(object i,float v)=>{ ((AnimatorControllerParameter)i).defaultFloat = v; }
                 ),
-                new RecordDefinition("defaultInt"   , RecordDefinition.FieldType.Int            ,RecordDefinition.KeyType.None
+                new RecordDefinition("defaultInt"   , RecordDefinition.FieldType.Int            ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{       return ((AnimatorControllerParameter)i).defaultInt; }
                     ,(object i,int v)=>{ ((AnimatorControllerParameter)i).defaultInt = v; }
                 ),
@@ -358,7 +350,7 @@ namespace StellaQL
                 // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
                 new RecordDefinition("#layerNum#"               ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
                 new RecordDefinition("name"                     ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable          ,false),
-                new RecordDefinition("#avatarMask_assetPath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
+                new RecordDefinition("#avatarMask_assetPath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{
                         if(null==((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].avatarMask) { Debug.Log("アバターマスク無し☆（＞＿＜）"); return ""; }
                         return AssetDatabase.GetAssetPath(((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].avatarMask.GetInstanceID());
@@ -371,7 +363,7 @@ namespace StellaQL
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                         // TODO: Delete にも対応したい。
                     }),
-                new RecordDefinition("#blendingMode_string#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
+                new RecordDefinition("#blendingMode_string#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].blendingMode.ToString(); }
                     ,(object i,string v)=>{
                         HashSet<AnimatorLayerBlendingMode> hits = Operation_AnimatorLayerBlendingMode.Fetch(v);
@@ -389,28 +381,28 @@ namespace StellaQL
                             Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                         }
                     }),
-                new RecordDefinition("defaultWeight"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.ReadOnly
+                new RecordDefinition("defaultWeight"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].defaultWeight;           }
                     ,(object i,float v)=>{
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].defaultWeight = v;
                         Debug.Log("デフォルトウェイト（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
-                new RecordDefinition("iKPass"                   ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.ReadOnly
+                new RecordDefinition("iKPass"                   ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].iKPass;                  }
                     ,(object i,bool v)=>{
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].iKPass = v;
                         Debug.Log("アイケーパス（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
-                new RecordDefinition("syncedLayerAffectsTiming" ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.ReadOnly
+                new RecordDefinition("syncedLayerAffectsTiming" ,RecordDefinition.FieldType.Bool    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerAffectsTiming;}
                     ,(object i,bool v)=>{
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerAffectsTiming = v;
                         Debug.Log("シンクレイヤーアフェクトタイミング（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
                         Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
-                new RecordDefinition("syncedLayerIndex"         ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.ReadOnly
+                new RecordDefinition("syncedLayerIndex"         ,RecordDefinition.FieldType.Int     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerIndex;        }
                     ,(object i,int v)=>{
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerIndex = v;

@@ -1,6 +1,7 @@
 ﻿using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+using StellaQL;
 
 /// <summary>
 /// 新しいコントローラーと　ステートマシンを作成させる [MyMenu] - [Create Controller] メニューを　メニューバーに追加するぜ☆
@@ -12,12 +13,49 @@ using UnityEngine;
 /// </summary>
 public class SM : MonoBehaviour
 {
+    [MenuItem("MyMenu/SetParameterName")]
+    static void SetAvatarMask()
+    {
+        AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST);
+        AnimatorControllerParameter oldP = ac.parameters[0];
+        AnimatorControllerParameter newP = new AnimatorControllerParameter();
+
+        // ディープ・コピー
+        newP.defaultBool = oldP.defaultBool;
+        newP.defaultFloat = oldP.defaultFloat;
+        newP.defaultInt = oldP.defaultInt;
+        newP.name = oldP.name;
+        //newP.nameHash = oldP.nameHash;
+        newP.type = oldP.type;
+
+        // プロパティー更新
+        newP.name = "Average body length";
+
+        ac.RemoveParameter(oldP);
+        ac.AddParameter(newP);
+        Debug.Log("プロパティー名は変更されただろうか☆（＾～＾）？");
+
+
+
+
+        //AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST);
+        //AnimatorControllerParameter p = new AnimatorControllerParameter();
+        //p.name = "Average body length";
+        //ac.parameters[0] = p;
+        //Debug.Log("プロパティー名は変更されただろうか☆（＾～＾）？");
+
+        //// アニメーター・コントローラーを取得。
+        //AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST);
+        //ac.parameters[0].name = "Average body length"; // 反映されない。
+        //Debug.Log("プロパティー名は変更されただろうか☆（＾～＾）？");
+    }
+
     /*
     [MenuItem("MyMenu/SetAvatarMask")]
     static void SetAvatarMask()
     {
         // アニメーター・コントローラーを取得。
-        AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/StellaQL/AnimatorControllers/Demo_Zoo.controller");
+        AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST);
         AvatarMask value = AssetDatabase.LoadAssetAtPath<AvatarMask>("Assets/Resources/AvatarMasks/Head.mask");
 
         //ac.layers[1].avatarMask = value; // アバターマスクが変わらない
