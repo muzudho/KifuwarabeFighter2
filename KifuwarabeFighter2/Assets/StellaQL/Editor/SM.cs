@@ -13,6 +13,7 @@ using StellaQL;
 /// </summary>
 public class SM : MonoBehaviour
 {
+    /*
     [MenuItem("MyMenu/SetParameterName")]
     static void SetAvatarMask()
     {
@@ -49,6 +50,7 @@ public class SM : MonoBehaviour
         //ac.parameters[0].name = "Average body length"; // 反映されない。
         //Debug.Log("プロパティー名は変更されただろうか☆（＾～＾）？");
     }
+    */
 
     /*
     [MenuItem("MyMenu/SetAvatarMask")]

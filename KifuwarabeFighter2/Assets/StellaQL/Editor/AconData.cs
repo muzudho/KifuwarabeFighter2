@@ -52,6 +52,13 @@ namespace StellaQL
             /// ユニティ・エディターが書込みに対応していない場合はこれ。
             /// </summary>
             UnityEditorDoesNotSupportWriting,
+            /// <summary>
+            /// StellaQL側で書き込みに対応していない場合はこれ。
+            /// </summary>
+            StellaQLSpreadsheetDoesNotSupportWriting,
+            /// <summary>
+            /// それ以外
+            /// </summary>
             None,
         }
 
@@ -487,28 +494,27 @@ namespace StellaQL
                     ,(object i)=>{          return ((Wrapper)i).StatemachinePath; }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                // new RecordDefinition("#fullnameEndsWithDot#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.Identifiable      ,false), // 表示用フィールド（フルネーム）はこれで十分。後ろにドットが付いているが……。
-                new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly          // 「#fullnameEndsWithDot#」フィールドで十分なので、これはIDにしない方が一貫性がある。
+                new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.name; }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                new RecordDefinition("#anyStateTransitions_Length#" ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
+                new RecordDefinition("#anyStateTransitions_Length#" ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.anyStateTransitions.Length.ToString(); }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                new RecordDefinition("#behaviours_Length#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
+                new RecordDefinition("#behaviours_Length#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.behaviours.Length.ToString(); }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                new RecordDefinition("#defaultState_String#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
+                new RecordDefinition("#defaultState_String#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return (((Wrapper)i).Source.defaultState==null) ? "" : ((Wrapper)i).Source.defaultState.ToString(); }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                new RecordDefinition("#entryTransitions_Length#"    ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.ReadOnly
+                new RecordDefinition("#entryTransitions_Length#"    ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.entryTransitions.Length.ToString(); }
                     ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
                 ),
-                new RecordDefinition("hideFlags"                    ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.None
+                new RecordDefinition("hideFlags"                    ,RecordDefinition.FieldType.String  ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.hideFlags.ToString(); }
                     ,(object i,string v)=>{ ((Wrapper)i).Source.hideFlags = (HideFlags)System.Enum.Parse(typeof(HideFlags), v);}
                 ),
