@@ -20,7 +20,7 @@ namespace StellaQL
             CopiedLayers = new List<AnimatorControllerLayer>();
             foreach (AnimatorControllerLayer actualLayer in ac.layers) // オリジナルのレイヤーは、セッターが死んでる？
             {
-                AnimatorControllerLayer copiedLayer = Operation_Layer.DeepCopy(actualLayer);
+                AnimatorControllerLayer copiedLayer = AconDeepcopy.DeepcopyLayer(actualLayer);
                 CopiedLayers.Add(copiedLayer);
             }
         }
@@ -837,7 +837,6 @@ namespace StellaQL
         public string parameter { get; set; }
     }
 
-
     /// <summary>
     /// コンディション
     /// </summary>
@@ -1037,21 +1036,25 @@ namespace StellaQL
     {
         /// <summary>
         /// struct を object に渡したいときに使うラッパーだぜ☆（＾～＾）
+        /// 
+        /// ステートマシンと、ステートでは処理が異なるぜ☆（＾～＾）
         /// </summary>
         public class PositionWrapper
         {
             public PositionWrapper(AnimatorStateMachine statemachine, string propertyName)
             {
-                this.m_statemachine = statemachine;
-                this.PropertyName = propertyName;
+                m_statemachine = statemachine;
+                PropertyName = propertyName;
             }
-            public PositionWrapper(ChildAnimatorState caState, string propertyName)
+            public PositionWrapper(AnimatorStateMachine parentStatemachine_ofCaState, ChildAnimatorState caState, string propertyName)
             {
-                this.m_caState = caState;
-                this.PropertyName = propertyName;
+                m_parentStatemachine_ofCaState = parentStatemachine_ofCaState;
+                m_caState = caState;
+                PropertyName = propertyName;
             }
 
             public AnimatorStateMachine m_statemachine;
+            public AnimatorStateMachine m_parentStatemachine_ofCaState;
             public ChildAnimatorState m_caState;
             public string PropertyName { get; private set; }
 
@@ -1076,16 +1079,28 @@ namespace StellaQL
                 {
                     if (null != this.m_statemachine)
                     {
+                        Debug.Log("X更新 this.PropertyName=[" + this.PropertyName + "] value=[" + value + "] this.m_statemachine.name=[" + this.m_statemachine.name + "]");
                         switch (this.PropertyName)
                         {
-                            case "anyStatePosition": this.m_statemachine.anyStatePosition = new Vector3(value, this.m_statemachine.anyStatePosition.y, this.m_statemachine.anyStatePosition.z); break;
-                            case "entryPosition": this.m_statemachine.entryPosition = new Vector3(value, this.m_statemachine.entryPosition.y, this.m_statemachine.entryPosition.z); break;
-                            case "exitPosition": this.m_statemachine.exitPosition = new Vector3(value, this.m_statemachine.exitPosition.y, this.m_statemachine.exitPosition.z); break;
-                            case "parentStateMachinePosition": this.m_statemachine.parentStateMachinePosition = new Vector3(value, this.m_statemachine.parentStateMachinePosition.y, this.m_statemachine.parentStateMachinePosition.z); break;
+                            case "anyStatePosition":
+                                this.m_statemachine.anyStatePosition = new Vector3(value, this.m_statemachine.anyStatePosition.y, this.m_statemachine.anyStatePosition.z);
+                                break;
+                            case "entryPosition":
+                                this.m_statemachine.entryPosition = new Vector3(value, this.m_statemachine.entryPosition.y, this.m_statemachine.entryPosition.z);
+                                break;
+                            case "exitPosition":
+                                this.m_statemachine.exitPosition = new Vector3(value, this.m_statemachine.exitPosition.y, this.m_statemachine.exitPosition.z);
+                                break;
+                            case "parentStateMachinePosition":
+                                this.m_statemachine.parentStateMachinePosition = new Vector3(value, this.m_statemachine.parentStateMachinePosition.y, this.m_statemachine.parentStateMachinePosition.z);
+                                break;
                             default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
                         }
                     }
-                    else { this.m_caState.position = new Vector3(value, this.m_caState.position.y, this.m_caState.position.z); }
+                    else {
+                        Debug.Log("X更新 this.PropertyName=[" + this.PropertyName + "] value=[" + value + "] this.m_statemachine なし");
+                        this.m_caState.position = new Vector3(value, this.m_caState.position.y, this.m_caState.position.z);
+                    }
                 }
             }
 
@@ -1177,9 +1192,18 @@ namespace StellaQL
                 new RecordDefinition("#normalizedY#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),
                 new RecordDefinition("#normalizedZ#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),
                 new RecordDefinition("sqrMagnitude"         ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false), // リード・オンリー型
-                new RecordDefinition("x"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).X; }             ,(object i,float v)=>{ ((PositionWrapper)i).X = v; }),
-                new RecordDefinition("y"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).Y; }             ,(object i,float v)=>{ ((PositionWrapper)i).Y = v; }),
-                new RecordDefinition("z"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None,(object i)=>{ return ((PositionWrapper)i).Z; }             ,(object i,float v)=>{ ((PositionWrapper)i).Z = v; }),
+                new RecordDefinition("x"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                    ,(object i)=>{ return ((PositionWrapper)i).X; }
+                    ,(object i,float v)=>{ ((PositionWrapper)i).X = v; }
+                ),
+                new RecordDefinition("y"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                    ,(object i)=>{ return ((PositionWrapper)i).Y; }
+                    ,(object i,float v)=>{ ((PositionWrapper)i).Y = v; }
+                ),
+                new RecordDefinition("z"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
+                    ,(object i)=>{ return ((PositionWrapper)i).Z; }
+                    ,(object i,float v)=>{ ((PositionWrapper)i).Z = v; }
+                ),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
             foreach (RecordDefinition def in temp) { Definitions.Add(def.Name, def); }

@@ -98,7 +98,7 @@ namespace StellaQL
                             }
                         }
                         break;
-                    case "positinos": Operation_Position.Update(acWrapper.SourceAc, request_packet, info_message); break;
+                    case "positions": Operation_Position.Update(acWrapper.SourceAc, request_packet, info_message); break;
                     default: throw new UnityException("未対応のカテゴリー=["+ request_packet.Category + "]");
                 }
             }
@@ -180,19 +180,19 @@ namespace StellaQL
                 foreach (DataManipulationRecord request in updatesSet) { Operation_Transition.Update(acWrapper.SourceAc, request, info_message); }// 更新
             }
             #endregion
-            // コンディションを消化
+            #region コンディションを消化
             {
                 // 挿入、更新、削除に振り分けたい。
                 List<Operation_Condition.DataManipulatRecordSet> insertsSet = new List<Operation_Condition.DataManipulatRecordSet>();
                 List<Operation_Condition.DataManipulatRecordSet> deletesSet = new List<Operation_Condition.DataManipulatRecordSet>();
                 List<Operation_Condition.DataManipulatRecordSet> updatesSet = new List<Operation_Condition.DataManipulatRecordSet>();
-                Debug.Log("conditionRecordSet.Count=" + largeDic_condition.Count);// [ステート・フルパス,トランジション番号,コンディション番号]
+                //ebug.Log("conditionRecordSet.Count=" + largeDic_condition.Count);// [ステート・フルパス,トランジション番号,コンディション番号]
                 foreach (KeyValuePair<string, Dictionary<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>>> conditionRecordSetPair in largeDic_condition)
                 {
-                    Debug.Log("conditionRecordSetPair.Value.Count=" + conditionRecordSetPair.Value.Count);// [,トランジション番号,コンディション番号]
+                    //ebug.Log("conditionRecordSetPair.Value.Count=" + conditionRecordSetPair.Value.Count);// [,トランジション番号,コンディション番号]
                     foreach (KeyValuePair<int, Dictionary<int, Operation_Condition.DataManipulatRecordSet>> conditionRecordSet1Pair in conditionRecordSetPair.Value)
                     {
-                        Debug.Log("conditionRecordSet1Pair.Value.Count=" + conditionRecordSet1Pair.Value.Count);// [,,コンディション番号]
+                        //ebug.Log("conditionRecordSet1Pair.Value.Count=" + conditionRecordSet1Pair.Value.Count);// [,,コンディション番号]
                         foreach (KeyValuePair<int, Operation_Condition.DataManipulatRecordSet> conditionRecordSet2Pair in conditionRecordSet1Pair.Value)
                         {
                             if (Operation_Something.HasProperty(conditionRecordSet2Pair.Value.RepresentativeName, ConditionRecord.Definitions, "コンディション操作"))
@@ -238,6 +238,7 @@ namespace StellaQL
                     Operation_Condition.Update(acWrapper.SourceAc, requestSet, info_message);
                 }// 挿入を処理
             }
+            #endregion
             // レイヤーを消化（レイヤーを反映する際に、オブジェクトの全破棄の処理が入って参照リンクが切れることから、最後にやること）
             {
                 foreach (DataManipulationRecord request_packet in list_layer)
@@ -278,22 +279,6 @@ namespace StellaQL
 
     public abstract class Operation_Layer
     {
-        #region 複製
-        public static AnimatorControllerLayer DeepCopy(AnimatorControllerLayer old)
-        {
-            AnimatorControllerLayer relive = new AnimatorControllerLayer();
-            relive.avatarMask = old.avatarMask;
-            relive.blendingMode = old.blendingMode;
-            relive.defaultWeight = old.defaultWeight;
-            relive.iKPass = old.iKPass;
-            relive.name = old.name;
-            relive.stateMachine = Operation_Statemachine.DeepCopy(old.stateMachine);
-            relive.syncedLayerAffectsTiming = old.syncedLayerAffectsTiming;
-            relive.syncedLayerIndex = old.syncedLayerIndex;
-            return relive;
-        }
-        #endregion
-
         #region 検索
         /// <summary>
         /// レイヤー名（正規表現ではない）を指定すると レイヤー配列のインデックスを返す。
@@ -478,54 +463,11 @@ namespace StellaQL
         }
     }
 
-    public abstract class Operation_ChildStatemachine
-    {
-        public static ChildAnimatorStateMachine[] DeepCopy(ChildAnimatorStateMachine[] oldItems)
-        {
-            ChildAnimatorStateMachine[] reliveItems = new ChildAnimatorStateMachine[oldItems.Length];
-            int i = 0;
-            foreach (ChildAnimatorStateMachine old in oldItems)
-            {
-                reliveItems[i] = DeepCopy(old);
-                i++;
-            }
-            return reliveItems;
-        }
-
-        public static ChildAnimatorStateMachine DeepCopy(ChildAnimatorStateMachine old)
-        {
-            ChildAnimatorStateMachine relive = new ChildAnimatorStateMachine();
-            relive.position = old.position;
-            relive.stateMachine = Operation_Statemachine.DeepCopy(old.stateMachine);
-            return relive;
-        }
-    }
-
     /// <summary>
     /// ステートマシン関連
     /// </summary>
     public abstract class Operation_Statemachine
     {
-        #region 複製
-        public static AnimatorStateMachine DeepCopy(AnimatorStateMachine old)
-        {
-            AnimatorStateMachine relive = new AnimatorStateMachine();
-            relive.anyStatePosition = old.anyStatePosition;
-            relive.anyStateTransitions = old.anyStateTransitions;
-            relive.behaviours = old.behaviours;
-            relive.defaultState = old.defaultState;
-            relive.entryPosition = old.entryPosition;
-            relive.entryTransitions = old.entryTransitions;
-            relive.exitPosition = old.exitPosition;
-            relive.hideFlags = old.hideFlags;
-            relive.name = old.name;
-            relive.parentStateMachinePosition = old.parentStateMachinePosition;
-            relive.stateMachines = Operation_ChildStatemachine.DeepCopy(old.stateMachines);
-            relive.states = old.states;
-            return relive;
-        }
-        #endregion
-
         public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
             int caret = 0;
@@ -534,7 +476,7 @@ namespace StellaQL
 
             AnimatorControllerLayer layer = AconFetcher.FetchLayer_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
 
-            AnimatorStateMachine statemachine = AconFetcher.FetchStatemachine(ac, ft, layer);
+            AnimatorStateMachine statemachine = AconFetcher.FetchStatemachine(ac, ft.StatemachineNamesEndsWithoutDot, layer);
             if (null == statemachine) { throw new UnityException("[" + request.Fullpath + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
             if (Operation_Something.HasProperty(request.Name, StatemachineRecord.Definitions, "ステートマシン操作"))
@@ -572,52 +514,11 @@ namespace StellaQL
         }
     }
 
-    public abstract class Operation_ChildState
-    {
-        #region 複製
-        public static ChildAnimatorState DeepCopy(ChildAnimatorState old)
-        {
-            ChildAnimatorState relive = new ChildAnimatorState();
-            relive.position = old.position;
-            relive.state = Operation_State.DeepCopy(old.state);
-            return relive;
-        }
-        #endregion
-    }
-
     /// <summary>
     /// ステート関連
     /// </summary>
     public abstract class Operation_State
     {
-        #region 複製
-        public static AnimatorState DeepCopy(AnimatorState old)
-        {
-            AnimatorState relive = new AnimatorState();
-            relive.behaviours = old.behaviours;
-            relive.cycleOffset = relive.cycleOffset;
-            relive.cycleOffsetParameter = relive.cycleOffsetParameter;
-            relive.cycleOffsetParameterActive = relive.cycleOffsetParameterActive;
-            relive.hideFlags = relive.hideFlags;
-            relive.iKOnFeet = relive.iKOnFeet;
-            relive.mirror = relive.mirror;
-            relive.mirrorParameter = relive.mirrorParameter;
-            relive.mirrorParameterActive = relive.mirrorParameterActive;
-            relive.motion = relive.motion;
-            relive.name = relive.name;
-            // relive.nameHash = relive.nameHash;
-            relive.speed = relive.speed;
-            relive.speedParameter = relive.speedParameter;
-            relive.speedParameterActive = relive.speedParameterActive;
-            relive.tag = relive.tag;
-            relive.transitions = relive.transitions;
-            // relive.uniqueName = relive.uniqueName;
-            // relive.uniqueNameHash = relive.uniqueNameHash;
-            relive.writeDefaultValues = relive.writeDefaultValues;
-            return relive;
-        }
-        #endregion
-
         public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
             int caret = 0;
@@ -725,34 +626,6 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_Transition
     {
-        #region 取得
-        #endregion
-        #region 複製
-        /// <summary>
-        /// 容れ物を変える程度に使う。
-        /// </summary>
-        public static AnimatorStateTransition ShallowCopy_ExceptDestinaionState(AnimatorStateTransition dst, AnimatorStateTransition src)
-        {
-            dst.canTransitionToSelf = src.canTransitionToSelf;
-            dst.conditions = src.conditions;
-            // 遷移先は除く dst.destinationState = src.destinationState;
-            dst.destinationStateMachine = src.destinationStateMachine; // これはコピーする☆
-            dst.duration = src.duration;
-            dst.exitTime = src.exitTime;
-            dst.hasExitTime = src.hasExitTime;
-            dst.hasFixedDuration = src.hasFixedDuration;
-            dst.hideFlags = src.hideFlags;
-            dst.interruptionSource = src.interruptionSource;
-            dst.isExit = src.isExit;
-            dst.mute = src.mute;
-            dst.name = src.name;
-            dst.offset = src.offset;
-            dst.orderedInterruption = src.orderedInterruption;
-            dst.solo = src.solo;
-            return dst;
-        }
-        #endregion
-
         /// <summary>
         /// 新規挿入
         /// </summary>
@@ -817,7 +690,7 @@ namespace StellaQL
             {
                 srcState.AddTransition(dstNewState);    // トランジションを追加する。
                 // ebug.Log("Insert_ChangeDestination: トランジション追加☆ [" + srcState.name + "]->["+ dstNewState.name + "]");
-                ShallowCopy_ExceptDestinaionState(srcState.transitions[srcState.transitions.Length - 1], oldTransition);   // 遷移先ステート以外の中身を写しておく。
+                AconShallowcopy.ShallowcopyTransition_ExceptDestinaionState(srcState.transitions[srcState.transitions.Length - 1], oldTransition);   // 遷移先ステート以外の中身を写しておく。
                 removeList.Add(oldTransition);
             }
             // ebug.Log("Insert_ChangeDestination: removeList.Count=[" + removeList.Count + "]");
@@ -1204,40 +1077,32 @@ namespace StellaQL
     /// </summary>
     public abstract class Operation_Position
     {
+
         public static void Update(AnimatorController ac, DataManipulationRecord request, StringBuilder message)
         {
-            if ("stateMachines" == request.Foreignkeycategory)
+            if (Operation_Something.HasProperty(request.Name, PositionRecord.Definitions, "ポジション操作"))
             {
-                // ステートマシンのポジション
-                int caret = 0;
-                FullpathTokens ft = new FullpathTokens();
-                if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(request.Fullpath, ref caret, ref ft)) { throw new UnityException("[" + request.Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
-
-                AnimatorControllerLayer layer = AconFetcher.FetchLayer_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
-                AnimatorStateMachine statemachine = AconFetcher.FetchStatemachine(ac, ft, layer);
-
-                if (null == statemachine) { throw new UnityException("[" + request.Fullpath + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]"); }
-
-                if (Operation_Something.HasProperty(request.Name, PositionRecord.Definitions, "ステートマシンのポジション操作"))
+                if ("stateMachines" == request.Foreignkeycategory)
                 {
-                    PositionRecord.Definitions[request.Name].Update(new PositionRecord.PositionWrapper(statemachine, request.Propertyname_ofFullpath), request, message);
+                    // ステートマシンのポジション
+                    int caret = 0;
+                    FullpathTokens ft = new FullpathTokens();
+                    if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(request.Fullpath, ref caret, ref ft)) { throw new UnityException("[" + request.Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+
+                    PositionRecord.Definitions[request.Name].Update(AconFetcher.FetchPosition(ac, ft.LayerNameEndsWithoutDot, ft.StatemachineNamesEndsWithoutDot, request.Propertyname_ofFullpath), request, message);
                 }
-            }
-            else // ステートのポジション
-            {
-                ChildAnimatorState caState = AconFetcher.FetchChildstate(ac, request.Fullpath); // 構造体☆
-
-                if ("states" == request.Foreignkeycategory)
+                else // ステートのポジション
                 {
-                    if (Operation_Something.HasProperty(request.Name, PositionRecord.Definitions, "ステートのポジション操作"))
+
+                    if ("states" == request.Foreignkeycategory)
                     {
-                        PositionRecord.Definitions[request.Name].Update(new PositionRecord.PositionWrapper(caState, request.Propertyname_ofFullpath), request, message);
+                        PositionRecord.Definitions[request.Name].Update(AconFetcher.FetchPosition_OfState(ac, request.Fullpath, request.Propertyname_ofFullpath), request, message);
                     }
-                }
-                else
-                {
-                    // ステートマシン、ステート以外のポジション
-                    throw new UnityException("ステートマシン、ステート以外のポジションは未対応だぜ☆（＾～＾） fullpath=[" + request.Fullpath + "] ac=[" + ac.name + "]");
+                    else
+                    {
+                        // ステートマシン、ステート以外のポジション
+                        throw new UnityException("ステートマシン、ステート以外のポジションは未対応だぜ☆（＾～＾） fullpath=[" + request.Fullpath + "] ac=[" + ac.name + "]");
+                    }
                 }
             }
         }

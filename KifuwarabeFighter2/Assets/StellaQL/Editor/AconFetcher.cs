@@ -37,14 +37,14 @@ namespace StellaQL
         /// パスを指定すると ステートマシンを返す。
         /// </summary>
         /// <param name="query">"Base Layer.JMove" といった文字列。</param>
-        public static AnimatorStateMachine FetchStatemachine(AnimatorController ac, FullpathTokens ft, AnimatorControllerLayer layer)
+        public static AnimatorStateMachine FetchStatemachine(AnimatorController ac, List<string> statemachineNamesEndsWithoutDot, AnimatorControllerLayer layer)
         {
             AnimatorStateMachine currentMachine = layer.stateMachine;
 
-            if (0 < ft.StatemachineNamesEndsWithoutDot.Count) // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
+            if (0 < statemachineNamesEndsWithoutDot.Count) // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
             {
-                currentMachine = GetLeafMachine_ofStatemachine(ac, currentMachine, ft.StatemachineNamesEndsWithoutDot);
-                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", ft.StatemachineNamesEndsWithoutDot.ToArray()) + "] ac.name=[" + ac.name + "]"); }
+                currentMachine = GetLeafMachine_ofStatemachine(ac, currentMachine, statemachineNamesEndsWithoutDot);
+                if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", statemachineNamesEndsWithoutDot.ToArray()) + "] ac.name=[" + ac.name + "]"); }
             }
 
             return currentMachine;
@@ -80,7 +80,7 @@ namespace StellaQL
         /// パスを指定すると ステートを返す。
         /// </summary>
         /// <param name="path">"Base Layer.JMove.JMove0" といった文字列。</param>
-        public static ChildAnimatorState FetchChildstate(AnimatorController ac, string path)
+        public static ChildAnimatorState FetchChildstate(AnimatorController ac, string path, out AnimatorStateMachine parentStatemachine)
         {
             string[] nodes = path.Split('.'); // [0～length-2] ステートマシン名、[length-1] ステート名　（[0]はレイヤー名かも）
             if (nodes.Length < 2) { throw new UnityException("ノード数が２つ未満だったぜ☆（＾～＾） ステートマシン名か、ステート名は無いのかだぜ☆？ path=[" + path + "]"); }
@@ -96,6 +96,7 @@ namespace StellaQL
                 if (null == currentMachine) { throw new UnityException("無いノードが指定されたぜ☆（＾～＾）9 currentMachine.name=[" + currentMachine.name + "] nodes=[" + string.Join("][", nodes) + "]"); }
             }
 
+            parentStatemachine = currentMachine;
             return FetchChildState_ofChilestate(currentMachine, nodes[nodes.Length - 1]); // レイヤーと葉だけの場合
         }
 
@@ -121,11 +122,11 @@ namespace StellaQL
             return null;
         }
 
-        private static ChildAnimatorState FetchChildState_ofChilestate(AnimatorStateMachine machine, string stateName)
+        private static ChildAnimatorState FetchChildState_ofChilestate(AnimatorStateMachine parentStatemachine, string stateName)
         {
-            foreach (ChildAnimatorState wrapper in machine.states)
+            foreach (ChildAnimatorState caState in parentStatemachine.states)
             {
-                if (wrapper.state.name == stateName) { return wrapper; }
+                if (caState.state.name == stateName) { return caState; }
             }
             throw new UnityException("チャイルド・A・ステートが見つからないぜ☆（＾～＾） stateName=[" + stateName + "]");
         }
@@ -266,6 +267,37 @@ namespace StellaQL
             }
 
             return new ConditionRecord.AnimatorConditionWrapper(); // 空コンストラクタで生成した場合、.IsNull( ) メソッドでヌルを返す。
+        }
+
+        public static PositionRecord.PositionWrapper FetchPosition(AnimatorController ac, string layerNameEndsWithoutDot, List<string> statemachineNamesEndsWithoutDot, string propertyname_ofFullpath)
+        {
+            AnimatorControllerLayer layer = AconFetcher.FetchLayer_JustLayerName(ac, layerNameEndsWithoutDot);
+
+            return FetchPosition(ac, layer, statemachineNamesEndsWithoutDot, propertyname_ofFullpath);
+        }
+        public static PositionRecord.PositionWrapper FetchPosition(AnimatorController ac, AnimatorControllerLayer layer, List<string> statemachineNamesEndsWithoutDot, string propertyname_ofFullpath)
+        {
+            AnimatorStateMachine statemachine = AconFetcher.FetchStatemachine(ac, statemachineNamesEndsWithoutDot, layer);
+            if (null == statemachine)
+            {
+                throw new UnityException("[" + string.Join("][", statemachineNamesEndsWithoutDot.ToArray()) + "]ステートマシンは見つからなかったぜ☆（＾～＾） ac=[" + ac.name + "]");
+            }
+            return AconFetcher.FetchPosition(statemachine, propertyname_ofFullpath);
+        }
+        public static PositionRecord.PositionWrapper FetchPosition(AnimatorStateMachine statemachine, string propertyname_ofFullpath)
+        {
+            return new PositionRecord.PositionWrapper(statemachine, propertyname_ofFullpath);
+        }
+
+        public static PositionRecord.PositionWrapper FetchPosition_OfState(AnimatorController ac, string fullpath, string propertyname_ofFullpath)
+        {
+            AnimatorStateMachine parentStatemachine;
+            ChildAnimatorState caState = AconFetcher.FetchChildstate(ac, fullpath, out parentStatemachine); // 構造体☆
+            return AconFetcher.FetchPosition_OfState(parentStatemachine, caState, propertyname_ofFullpath);
+        }
+        public static PositionRecord.PositionWrapper FetchPosition_OfState(AnimatorStateMachine parentStatemachine, ChildAnimatorState caState, string propertyname_ofFullpath)
+        {
+            return new PositionRecord.PositionWrapper(parentStatemachine, caState, propertyname_ofFullpath);
         }
     }
 }

@@ -415,7 +415,7 @@ namespace StellaQL
                 if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("[" + universe[targetHash].Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
                 AnimatorControllerLayer layer = AconFetcher.FetchLayer_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
-                AnimatorStateMachine statemachine = AconFetcher.FetchStatemachine(ac, ft, layer);
+                AnimatorStateMachine statemachine = AconFetcher.FetchStatemachine(ac, ft.StatemachineNamesEndsWithoutDot, layer);
                 statemachines.Add(statemachine);
             }
             return statemachines;
@@ -449,7 +449,7 @@ namespace StellaQL
                     if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("[" + universe[targetHash].Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
 
                     AnimatorControllerLayer layer = AconFetcher.FetchLayer_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
-                    AnimatorStateMachine stateMachine = AconFetcher.FetchStatemachine(ac, ft, layer);
+                    AnimatorStateMachine stateMachine = AconFetcher.FetchStatemachine(ac, ft.StatemachineNamesEndsWithoutDot, layer);
 
                     if(null!= stateMachine)
                     {

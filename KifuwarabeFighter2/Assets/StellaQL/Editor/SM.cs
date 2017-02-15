@@ -14,6 +14,37 @@ using System.Collections.Generic;
 /// </summary>
 public class SM : MonoBehaviour
 {
+    /*
+    [MenuItem("MyMenu/SetPosition15")]
+    static void SetPosition()
+    {
+        AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST);
+        PositionRecord.PositionWrapper pw = AconFetcher.FetchPosition_OfState(ac, "Base Layer.Japan.Saitama.Niiza", "position");
+
+        // OK
+        // Debug.Log("pw.m_parentStatemachine_ofCaState.name=[" + pw.m_parentStatemachine_ofCaState.name+"]");
+        // pw.m_parentStatemachine_ofCaState.AddState("Urawa", new Vector3(490, pw.m_caState.position.y));
+
+
+        //AnimatorState copiedState = AconDeepcopy.DeepcopyState(pw.m_caState.state); // コピーして別インスタンスを作っておきます。
+        AnimatorState copiedState = AconShallowcopy.ShallowcopyState(pw.m_caState.state); // コピーして別インスタンスを作っておきます。
+
+        // 先にコピーを追加しておきます。トランジションもコピーしているので付いてくる。
+        pw.m_parentStatemachine_ofCaState.AddState(copiedState, new Vector3(490, pw.m_caState.position.y));
+
+        AconRemoveLink.RemoveLinkState(pw.m_caState.state); // 紐づいているオブジェクトまで消してしまわないように、リンクを切る☆（＾～＾）
+        //pw.m_parentStatemachine_ofCaState.RemoveState(pw.m_caState.state); // ステートを削除する。トランジションは切れる☆（＾～＾）
+
+        // FIXME: デフォルト・ステートは？
+
+        //pw.m_caState.position = new Vector3(500, pw.m_caState.position.y);
+        //pw.X = 500;
+
+        Debug.Log("positionはセットできるのかだぜ☆？（＾～＾）");
+    }
+    */
+
+    /*
     [MenuItem("MyMenu/SetCondition")]
     static void SetCondition()
     {
@@ -80,6 +111,7 @@ public class SM : MonoBehaviour
             ////Debug.Log("tItem.conditions.SyncRoot=[" + tItem.conditions.SyncRoot + "]");        }
         }
     }
+    */
 
         /*
         [MenuItem("MyMenu/SetParameterName")]
