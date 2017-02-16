@@ -1,18 +1,18 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
+using UnityEngine;
 
 namespace StellaQL
 {
     /// <summary>
-    /// ユニティー・エディター関連での、読込み関連のファイルパスをまとめる。
+    /// Collect read related file paths related to unity editor.
     /// </summary>
     public abstract class StellaQLReader
     {
-        #region 固定のファイル名
+        #region Fixed file name
         public static string Filepath_UpdateRequestCsv() { return "./UpdateRequest.csv"; }
         #endregion
 
@@ -26,41 +26,45 @@ namespace StellaQL
             foreach (string line in lines)
             {
                 Debug.Log("lines["+row+"]="+line);
-                if (row == 0) { row++; continue; } // [0]行目はヘッダー行なので飛ばす
+                if (row == 0) { row++; continue; } // Because the [0] line is a header line, skip it
                 List<string> cells = CsvParser.CsvLine_to_cellList(line);
-                if ("[EOF]" == cells[0]) { break; } // [EOF]を見つけたら終わり。
+                if ("[EOF]" == cells[0]) { break; } // Finding [EOF] is over.
                 updateRequestRecords.Add(new DataManipulationRecord(cells[0], cells[1], cells[2], cells[3], cells[4], cells[5], cells[6], cells[7], cells[8], cells[9]));
                 row++;
             }
 
-            message.AppendLine("Read☆（＾▽＾） " + lines.Length + " rows to " + updateRequestRecords.Count + " records. " + Path.GetFullPath(filepath));
+            message.AppendLine("Read. " + lines.Length + " rows to " + updateRequestRecords.Count + " records. " + Path.GetFullPath(filepath));
         }
 
         public static void DeleteUpdateRequestCsv( StringBuilder message)
         {
             string filepath = Filepath_UpdateRequestCsv();
             File.Delete(Path.GetFullPath(filepath));
-            message.AppendLine("Deleted file☆（＾▽＾） " + Path.GetFullPath(filepath));
+            message.AppendLine("Deleted file. " + Path.GetFullPath(filepath));
         }
     }
 
     /// <summary>
-    /// ユニティー・エディター関連での、書込み関連のファイルパスをまとめる。
+    /// Write related file paths related to the unity editor.
     /// </summary>
     public abstract class StellaQLWriter
     {
-        #region 固定のファイル名
+        #region Fixed file name
         public static string Filepath_StellaQLMacroApplicationOds() { return Path.GetFullPath( "./StellaQL_MacroApplication.ods"); }
         #endregion
 
-        #region 可変のファイル名
+        #region Variable filename
         public static string Filepath_GenerateFullpathConstCs(AnimatorController ac)
         {
             string fullpath = System.IO.Path.GetFullPath(AssetDatabase.GetAssetPath(ac.GetInstanceID()));
 
+            // ファイル名はネーム・スペースに合わせたいので同じ処理をします。
+            // Since we want to match the file name to the namespace we will do the same thing.
+            string filename = FullpathConstantGenerator.String_to36_pascalCase(Path.GetFileNameWithoutExtension(fullpath), "_", "_");
+
             return Path.Combine(
                 Directory.GetParent(fullpath).FullName,
-                Path.GetFileNameWithoutExtension(fullpath) + "_Abstract.cs"
+                filename + "_Abstract.cs"
                 );
         }
         public static string Filepath_LogStateSelect(string aconName, string theName)
@@ -130,7 +134,7 @@ namespace StellaQL
         public static void Write(string filepath, StringBuilder contents, StringBuilder message)
         {
             File.WriteAllText(filepath, contents.ToString());
-            message.AppendLine("Writed☆（＾▽＾） " + Path.GetFullPath(filepath));
+            message.AppendLine("Writed. " + Path.GetFullPath(filepath));
         }
     }
 }

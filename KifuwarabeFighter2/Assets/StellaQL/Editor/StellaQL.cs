@@ -4,63 +4,62 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor.Animations;
 using UnityEngine;
+using StellaQL.Acons.Demo_Zoo;
 
 /// <summary>
-/// StellaQL のセットアップ手順は Assets/StellaQL/Demo_Zoo.cs の Step 1. から読んでください。
-/// 
-/// 解説: 「UnityEditorを使って2D格闘(2D Fighting game)作るときのモーション遷移図作成の半自動化に挑戦しよう＜その４＞」 http://qiita.com/muzudho1/items/baf4b06cdcda96ca9a11
-/// 解説: 「Unityの上で動く、自作スクリプト言語の構文の実装の仕方」http://qiita.com/muzudho1/items/05ffb53fb4e9d4252b28
+/// Explain : http://qiita.com/muzudho1/items/baf4b06cdcda96ca9a11
+/// Explain : http://qiita.com/muzudho1/items/05ffb53fb4e9d4252b28
 /// </summary>
 namespace StellaQL
 {
     /// <summary>
-    /// セミコロンでつなげられたクエリーを先頭から順次、実行していく。
+    /// The queries connected by semicolons are executed sequentially from the beginning.
     /// </summary>
     public abstract class SequenceQuerier
     {
         public static bool Execute(AnimatorController ac, string query, AControllable userDefinedAControl, StringBuilder info_message)
         {
-            LexcalP.DeleteLineCommentAndBlankLine(ref query);// コメントと空行を全削除する。
+            LexcalP.DeleteLineCommentAndBlankLine(ref query);// Delete all comments and blank lines.
             int caret = 0;
-            LexcalP.VarSpaces(query, ref caret); // 最初の空白を削除。
+            LexcalP.VarSpaces(query, ref caret); // Remove the first blank.
 
             // phase
-            // 0: 次はクエリーか、セミコロンのどちらか。（読込み初期時や、セミコロンを読込んだ直後など）
-            // 1: 次にセミコロンがくることが必要。（クエリーを読込んだ直後など）
+            // 0: Next is either a query or a semicolon. (For example, at the beginning of reading, immediately after reading a semicolon, etc.)
+            // 1: Next, it is necessary to have a semicolon. (For example, immediately after loading the query)
             int phase = 0; 
-            QueryTokens qt = new QueryTokens("クエリー構文該当なし");
+            QueryTokens qt = new QueryTokens("Query syntax Not applicable");
             while (caret<query.Length)
             {
                 switch (phase)
                 {
                     case 1:
-                        if (LexcalP.FixedWord(";", query, ref caret)) { phase = 0; break; }// セミコロンが有った。次はクエリーか、セミコロンのどちらか。
-                        else { throw new UnityException("セミコロンが無かったぜ☆（＾▽＾）！ 残り:" + query.Substring(caret)); }
+                        if (LexcalP.FixedWord(";", query, ref caret)) { phase = 0; break; }// There was a semicolon. Next is either a query or a semicolon.
+                        else { throw new UnityException("There was no semicolon. Remaining:" + query.Substring(caret)); }
                     default:
                         {
                             SyntaxP.Pattern syntaxPattern = SyntaxP.FixedQuery(query, ref caret, ref qt);
-                            if (SyntaxP.Pattern.NotMatch == syntaxPattern) // 正常動作
+                            if (SyntaxP.Pattern.NotMatch == syntaxPattern) // Normal operation
                             {
-                                qt.Clear("クエリー構文該当なし"); // 次に使うためにクリアーしておく。
-                                if (LexcalP.FixedWord(";", query, ref caret)) { phase = 0; return true; }// セミコロンが有った。次はクエリーか、セミコロンのどちらか。
-                                else { throw new UnityException("クエリーも、セミコロンも無いぜ☆（＾▽＾）！ 残り:" + query.Substring(caret)); }// クエリーもセミコロンも無いときは異常終了。
+                                qt.Clear("Query syntax Not applicable"); // Clear it for next use.
+                                if (LexcalP.FixedWord(";", query, ref caret)) { phase = 0; return true; }// There was a semicolon. Next is either a query or a semicolon.
+                                else { throw new UnityException("There is neither a query nor a semicolon. Remaining:" + query.Substring(caret)); }// Abnormal termination when there is neither query nor semicolon.
                             }
                             else
                             {
-                                Querier.Execute(ac, qt, syntaxPattern, userDefinedAControl, info_message);//実行
-                                qt.Clear("クエリー構文該当なし"); // 次に使うためにクリアーしておく。
+                                Querier.Execute(ac, qt, syntaxPattern, userDefinedAControl, info_message);//Execution
+                                qt.Clear("Query syntax Not applicable"); // Clear it for next use.
                                 phase = 1;
-                            }// クエリーが有った。次は必ずセミコロンが必要。
+                            }// There was a query. Next semicolon is necessary.
                         }
                         break;
                 }
             }
-            return true;//正常終了
+            return true;//Successful completion
         }
     }
 
     /// <summary>
-    /// 構文解析したトークンをここに入れる。
+    /// Put the parsed token here.
     /// </summary>
     public class QueryTokens
     {
@@ -113,67 +112,67 @@ namespace StellaQL
             THE = "THE";
 
         /// <summary>
-        /// STATEMACHINE, STATE, TRANSITION のいずれか。
+        /// STATEMACHINE, STATE, TRANSITION either.
         /// </summary>
         public string Target { get; set; }
         /// <summary>
-        /// ANYSTATE, ENTRY, EXIT のいずれか。
+        /// ANYSTATE, ENTRY, EXIT either.
         /// </summary>
         public string Target2 { get; set; }
         /// <summary>
-        /// INSERT, UPDATE, DELETE, SELECT のいずれか。
+        /// INSERT, UPDATE, DELETE, SELECT either.
         /// </summary>
         public string Manipulation { get; set; }
         /// <summary>
-        /// WORDS部。大文字小文字は区別したい。
+        /// WORDS phrase. I want to distinguish upper case letters and lower case letters.
         /// </summary>
         public List<string> Words { get; set; }
         /// <summary>
-        /// SET部。大文字小文字は区別したい。
+        /// SET phrase. I want to distinguish upper case letters and lower case letters.
         /// </summary>
         public Dictionary<string, string> Set { get; set; }
         /// <summary>
-        /// ステート・フルネーム が入る。
+        /// State full name enters.
         /// </summary>
         public string From_FullnameRegex { get; set; }
         /// <summary>
-        /// 括弧を使った式 が入る。
+        /// An expression using parentheses is entered.
         /// </summary>
         public string From_Tag { get; set; }
         /// <summary>
-        /// ステート・フルネーム が入る。
+        /// State full name enters.
         /// </summary>
         public string To_FullnameRegex { get; set; }
         /// <summary>
-        /// 括弧を使った式 が入る。
+        /// An expression using parentheses is entered.
         /// </summary>
         public string To_Tag { get; set; }
         /// <summary>
-        /// ステート・フルネーム が入る。
+        /// State full name enters.
         /// </summary>
         public string Where_FullnameRegex { get; set; }
         /// <summary>
-        /// 括弧を使った式 が入る。
+        /// An expression using parentheses is entered.
         /// </summary>
         public string Where_Tag { get; set; }
         /// <summary>
-        /// 出力ファイル名の重複を防ぐための文字列 が入る。
+        /// A character string for preventing duplication of output file names is entered.
         /// </summary>
         public string The { get; set; }
 
         /// <summary>
-        /// 構文該当なしのとき、どの構文に一番多くの文字数が　該当したかを調べるための名前。
+        /// Syntax When not applicable, a name for checking which syntax has the most number of characters.
         /// </summary>
         public string MatchedSyntaxName { get; set; }
         /// <summary>
-        /// 構文該当なしのとき、どの構文の何文字目まで　該当したかを調べるための数字。
+        /// Syntax A number for checking which character of which syntax was applicable when not applicable.
         /// </summary>
         public int MatchedSyntaxCaret { get; set; }
     }
 
     /// <summary>
-    /// Execute Query (分解後のクエリー・トークンを与えて、レコード・ハッシュを取ってきて、フェッチャーがオブジェクトを取ってくる)
-    /// FIXME: クエリー文字列ソースや、キャレットは与えない方がいい。パーサーとは切り分けたい。
+    /// Execute Query (Given the decomposed query token, fetch the record hash, and the fetcher retrieves the object)
+    /// FIXME: You should not give the query string source or caret. I want to separate from the parser.
     /// </summary>
     public abstract class Querier
     {
@@ -236,7 +235,7 @@ namespace StellaQL
                     }
                 case SyntaxP.Pattern.TransitionUpdate:
                     {
-                        foreach (KeyValuePair<string, string> pair in qt.Set) { info_message.AppendLine(pair.Key + "=" + pair.Value); }
+                        //foreach (KeyValuePair<string, string> pair in qt.Set) { info_message.AppendLine(pair.Key + "=" + pair.Value); }
                         Operation_Transition.Update(ac,
                             Fetcher.States(ac, RecordsFilter.Qt_From(qt, universe, info_message), universe),
                             Fetcher.States(ac, RecordsFilter.Qt_To(qt, universe, info_message), universe),
@@ -282,7 +281,7 @@ namespace StellaQL
                 case SyntaxP.Pattern.NotMatch: // thru
                 default:
                     {
-                        throw new UnityException("未定義の指示 syntaxPattern=[" + syntaxPattern + "]");
+                        throw new UnityException("Not supported. syntaxPattern=[" + syntaxPattern + "]");
                     }
             }
         }
@@ -296,7 +295,7 @@ namespace StellaQL
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
             int caret = 0;
-            LexcalP.VarSpaces(query, ref caret); // 最初の空白を削除。
+            LexcalP.VarSpaces(query, ref caret); // Remove the first blank.
 
             recordHashes = null;
             QueryTokens qt = new QueryTokens();
@@ -315,7 +314,7 @@ namespace StellaQL
         {
             LexcalP.DeleteLineCommentAndBlankLine(ref query);
             int caret = 0;
-            LexcalP.VarSpaces(query, ref caret); // 最初の空白を削除。
+            LexcalP.VarSpaces(query, ref caret); // Remove the first blank.
 
             recordHashesSrc = null;
             recordHashesDst = null;
@@ -329,8 +328,7 @@ namespace StellaQL
 
         /// <summary>
         /// 「(」「[」「(」「Alpaca」「Bear」「)」「(」「Cat」「Dog」「)」「]」「{」「Elephant」「}」「)」
-        /// ※読み取り順 ) Bear Alpaca ( ) Dog Cat ( ] [ } Elephant { ) (
-        /// を、
+        /// Reading order ) Bear Alpaca ( ) Dog Cat ( ] [ } Elephant { ) (
         /// 
         /// 0: () Bear Alpaca
         /// 1: () Dog Cat
@@ -338,43 +336,43 @@ namespace StellaQL
         /// 3: {} Elephant
         /// 4: () 3 2
         /// 
-        /// というロッカーに並べ替える。
+        /// Sort this into lockers.
         /// </summary>
         public static void Tokens_to_lockers(List<string> tokens, out List<List<string>> lockers, out List<string> lockersOperation)
         {
-            string openParen = ""; // 閉じ括弧に対応する、「開きカッコ」
+            string openParen = ""; // "Open parenthesis" corresponding to closing parenthesis
             int iCursor = 0;
 
-            lockers = new List<List<string>>(); // 部室のロッカー。スタートは 0 番から。
+            lockers = new List<List<string>>(); // Locker. Start from number 0.
             lockersOperation = new List<string>();
-            List<string> bufferTokens = new List<string>(); // スキャン中のトークン。
+            List<string> bufferTokens = new List<string>(); // The token being scanned.
             while (iCursor < tokens.Count)
             {
                 string token = tokens[iCursor];
                 if ("" == openParen)
-                { //StringBuilder sb1 = new StringBuilder(); sb1.Append("go["); sb1.Append(iCursor); sb1.Append("]: "); sb1.Append(token); sb1.AppendLine(); Debug.Log(sb1.ToString());
+                {
                     switch (token)
                     {
                         case ")": openParen = "("; tokens[iCursor] = ""; break;
                         case "]": openParen = "["; tokens[iCursor] = ""; break;
                         case "}": openParen = "{"; tokens[iCursor] = ""; break;
-                        default: break; // 無視して進む
+                        default: break; // Ignore and proceed
                     }
                 }
-                else // 後ろに進む☆　括弧内のメンバーの文字を削除し、開きカッコをロッカー番号に置き換える。
-                { //StringBuilder sb2 = new StringBuilder(); sb2.Append("back["); sb2.Append(iCursor); sb2.Append("]: "); sb2.Append(token); sb2.AppendLine(); Debug.Log(sb2.ToString());
+                else // Go behind. Deletes the characters of the members in parentheses, and replaces the parenthesis with the locker number.
+                {
                     switch (token)
                     {
-                        case "": break; // 無視
+                        case "": break; // ignore
                         case "(":
                         case "[":
                         case "{":
                             if (openParen == token)
                             {
-                                tokens[iCursor] = lockers.Count.ToString(); // ロッカー番号に置換
+                                tokens[iCursor] = lockers.Count.ToString(); // Replace with locker number
                                 openParen = ""; lockersOperation.Add(token); lockers.Add(bufferTokens); bufferTokens = new List<string>();
                             }
-                            else { throw new UnityException("Tokens_to_lockers パース・エラー？"); }
+                            else { throw new UnityException("Tokens_to_lockers parse error?"); }
                             break;
                         default: bufferTokens.Add(token); tokens[iCursor] = ""; break;
                     }
@@ -385,7 +383,7 @@ namespace StellaQL
     }
 
     /// <summary>
-    /// Fetch (オブジェクトを取ってくる)
+    /// Fetch (Fetch objects)
     /// </summary>
     public abstract class Fetcher
     {
@@ -400,7 +398,6 @@ namespace StellaQL
 
                 AnimatorControllerLayer layer = AconFetcher.FetchLayer_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
                 layers.Add(layer);
-                //layers.Add(Operation_Layer.Fetch(ac, universe[targetHash].Fullpath));
             }
             return layers;
         }
@@ -412,7 +409,7 @@ namespace StellaQL
             {
                 int caret = 0;
                 FullpathTokens ft = new FullpathTokens();
-                if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("[" + universe[targetHash].Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("Parse failure. [" + universe[targetHash].Fullpath + "] ac=[" + ac.name + "]"); }
 
                 AnimatorControllerLayer layer = AconFetcher.FetchLayer_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
                 AnimatorStateMachine statemachine = AconFetcher.FetchStatemachine(ac, ft.StatemachineNamesEndsWithoutDot, layer);
@@ -422,7 +419,7 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 検索結果に含まれるステートマシンは無視する。
+        /// Ignore the state machine included in the search result.
         /// </summary>
         /// <param name="ac"></param>
         /// <param name="targetHashes"></param>
@@ -437,28 +434,28 @@ namespace StellaQL
                 {
                     int caret = 0;
                     FullpathTokens ft = new FullpathTokens();
-                    if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("[" + universe[targetHash].Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                    if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames_And_StateName(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("Parse failure: [" + universe[targetHash].Fullpath + "] ac=[" + ac.name + "]"); }
                     state = AconFetcher.FetchState(ac, ft);
                 }
 
                 if (null== state)
                 {
-                    // ステートマシンかもしれない。
+                    // It may be a state machine.
                     int caret = 0;
                     FullpathTokens ft = new FullpathTokens();
-                    if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("[" + universe[targetHash].Fullpath + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                    if (!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(universe[targetHash].Fullpath, ref caret, ref ft)) { throw new UnityException("Parse failure: [" + universe[targetHash].Fullpath + "] ac=[" + ac.name + "]"); }
 
                     AnimatorControllerLayer layer = AconFetcher.FetchLayer_JustLayerName(ac, ft.LayerNameEndsWithoutDot);
                     AnimatorStateMachine stateMachine = AconFetcher.FetchStatemachine(ac, ft.StatemachineNamesEndsWithoutDot, layer);
 
                     if(null!= stateMachine)
                     {
-                        // ステートマシンだったのなら、ヌルで合っている☆（＾～＾）
-                        continue; // このレコードは飛ばして次へ☆
+                        // If it was a state machine, it is null matched.
+                        continue; // Skip this record and go next.
                     }
                     else
                     {
-                        throw new UnityException("フルパス[" + universe[targetHash].Fullpath + "]に対応するステートは無いぜ☆（＞＿＜）フルパス一覧を確かめろだぜ☆！ universe.Count=[" + universe.Count + "]");
+                        throw new UnityException("Not supported. [" + universe[targetHash].Fullpath + "] universe.Count=[" + universe.Count + "]");
                     }
                 }
 
@@ -469,12 +466,12 @@ namespace StellaQL
     }
 
     /// <summary>
-    /// Record Filter (レコード・ハッシュを取ってくる)
+    /// Record Filter (Fetch record hashes)
     /// </summary>
     public abstract class RecordsFilter
     {
         /// <summary>
-        /// トークン・ロッカーを元に、ロッカー別の検索結果を返す。
+        /// Based on token locker, return search result by locker.
         /// </summary>
         /// <param name="tokens"></param>
         public static void TokenLockers_to_recordHashesLockers(List<List<string>> lockerNumber_to_tokens, List<string> lockerNumber_to_operation,
@@ -482,28 +479,29 @@ namespace StellaQL
         {
             lockerNumber_to_recordHashes = new List<HashSet<int>>();
 
-            for (int iLockerNumber = 0; iLockerNumber < lockerNumber_to_tokens.Count; iLockerNumber++)// 部室のロッカー番号。スタートは 0 番から。
+            for (int iLockerNumber = 0; iLockerNumber < lockerNumber_to_tokens.Count; iLockerNumber++)// Locker number. Start from number 0.
             {
                 List<string> index_to_token = lockerNumber_to_tokens[iLockerNumber];
-                string operation = lockerNumber_to_operation[iLockerNumber];// 「(」「[」「{」 がある。
+                string operation = lockerNumber_to_operation[iLockerNumber];// 「(」「[」「{」 
 
                 int firstItem_temp;
                 if (int.TryParse(index_to_token[0], out firstItem_temp))
-                { // 数字だったら、ロッカー番号だ。
+                { // If it's a number, it's a locker number.
                     HashSet<int> lockerNumbers = TagSetOpe.NumberToken_to_int(index_to_token);
-                    switch (operation) // ロッカー同士を演算して、まとめた答えを出す
+                    switch (operation) // Compute the lockers and put together the answers summarized
                     {
                         case "(": lockerNumber_to_recordHashes.Add(RecordsFilter.Records_And(lockerNumbers, lockerNumber_to_recordHashes)); break;
                         case "[": lockerNumber_to_recordHashes.Add(RecordsFilter.Records_Or(lockerNumbers, lockerNumber_to_recordHashes)); break;
                         case "{":
                             lockerNumber_to_recordHashes.Add(RecordsFilter.Records_NotAndNot(
                       lockerNumbers, lockerNumber_to_recordHashes, universe)); break;
-                        default: throw new UnityException("未対応1のtokenOperation=[" + operation + "]");
+                        default: throw new UnityException("Not supported. tokenOperation=[" + operation + "]");
                     }
                 }
-                else { // 数字じゃなかったら、属性名のリストだ
+                else
+                { // If it's not a number, it's a list of tag names
                     HashSet<int> attrEnumSet_src = TagSetOpe.Name_to_hash(new HashSet<string>(index_to_token));
-                    switch (operation) // 属性結合（演算）を解消する
+                    switch (operation) // Resolving join (computation)
                     {
                         case "(":
                             lockerNumber_to_recordHashes.Add(RecordsFilter.Tags_And(attrEnumSet_src, universe)); break;
@@ -511,7 +509,7 @@ namespace StellaQL
                             lockerNumber_to_recordHashes.Add(RecordsFilter.Tags_Or(attrEnumSet_src, universe)); break;
                         case "{":
                             lockerNumber_to_recordHashes.Add(RecordsFilter.Tags_NotAndNot(attrEnumSet_src, universe)); break;
-                        default: throw new UnityException("未対応2のtokenOperation=[" + operation + "]");
+                        default: throw new UnityException("Not supported. tokenOperation=[" + operation + "]");
                     }
                 }
             }
@@ -589,18 +587,18 @@ namespace StellaQL
 
         public static HashSet<int> Records_And(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers)
         {
-            List<int> recordHashes = new List<int>();// レコード・インデックスを入れたり、削除したりする
+            List<int> recordHashes = new List<int>();// Include record index, delete
             int iLocker = 0;
             foreach (int lockerNumber in lockerNumbers)
             {
                 HashSet<int> locker = recordHasheslockers[lockerNumber];
-                if (0 == iLocker) // 最初のロッカーは丸ごと入れる。
+                if (0 == iLocker) // I put the whole locker whole.
                 {
                     foreach (int recordHash in locker) { recordHashes.Add(recordHash); }
                 }
-                else // ２つ目以降のロッカーは、全てのロッカーに共通する要素のみ残るようにする。
+                else // For the second and subsequent lockers, only elements common to all the lockers are left.
                 {
-                    for (int iElem = recordHashes.Count - 1; -1 < iElem; iElem--)// 後ろから指定の要素を削除する。
+                    for (int iElem = recordHashes.Count - 1; -1 < iElem; iElem--)// Delete the specified element from the back.
                     {
                         if (!locker.Contains(recordHashes[iElem])) { recordHashes.RemoveAt(iElem); }
                     }
@@ -608,7 +606,7 @@ namespace StellaQL
                 iLocker++;
             }
 
-            HashSet<int> distinctRecordHashes = new HashSet<int>();// 一応、重複を消しておく
+            HashSet<int> distinctRecordHashes = new HashSet<int>();// For once, eliminate duplicates
             foreach (int recordHash in recordHashes) { distinctRecordHashes.Add(recordHash); }
 
             return distinctRecordHashes;
@@ -616,24 +614,24 @@ namespace StellaQL
 
         public static HashSet<int> Records_Or(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers)
         {
-            HashSet<int> hitRecordHashes = new HashSet<int>();// どんどんレコード・インデックスを追加していく
+            HashSet<int> hitRecordHashes = new HashSet<int>();// We will continue to add more records and indexes
             foreach (int lockerNumber in lockerNumbers)
             {
                 HashSet<int> locker = recordHasheslockers[lockerNumber];
-                if (0 == locker.Count) { throw new UnityException("#RecordHashes_FilteringElementsOr: lockerNumber=[" + lockerNumber + "]のメンバーが空っぽ☆"); }
+                if (0 == locker.Count) { throw new UnityException("#RecordHashes_FilteringElementsOr: lockerNumber=[" + lockerNumber + "] member is empty."); }
                 foreach (int recordHash in locker)
                 {
                     hitRecordHashes.Add(recordHash);
                 }
             }
 
-            if (0 == hitRecordHashes.Count) { throw new UnityException("#RecordHashes_FilteringElementsOr: 結果が空っぽ☆"); }
+            if (0 == hitRecordHashes.Count) { throw new UnityException("#RecordHashes_FilteringElementsOr: result is empty."); }
             return hitRecordHashes;
         }
 
         public static HashSet<int> Records_NotAndNot(HashSet<int> lockerNumbers, List<HashSet<int>> recordHasheslockers, Dictionary<int, AcStateRecordable> universe)
         {
-            HashSet<int> recordHashesSet = new HashSet<int>();// どんどんレコード・インデックスを追加していく
+            HashSet<int> recordHashesSet = new HashSet<int>();// We will continue to add more records and indexes
             foreach (int lockerNumber in lockerNumbers)
             {
                 HashSet<int> locker = recordHasheslockers[lockerNumber];
@@ -643,11 +641,11 @@ namespace StellaQL
                 }
             }
 
-            List<int> complementRecordHashes = new List<int>(universe.Keys); // 補集合を取る（全集合から要素を除外していく）
+            List<int> complementRecordHashes = new List<int>(universe.Keys); // Take a complementary set (to exclude elements from the whole set)
             {
-                for (int iComp = complementRecordHashes.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
+                for (int iComp = complementRecordHashes.Count - 1; -1 < iComp; iComp--)// Delete the specified element from the back.
                 {
-                    if (recordHashesSet.Contains(complementRecordHashes[iComp])) // 集合にある要素を削除
+                    if (recordHashesSet.Contains(complementRecordHashes[iComp])) // Delete element in collection
                     {
                         complementRecordHashes.RemoveAt(iComp);
                     }
@@ -665,7 +663,7 @@ namespace StellaQL
                 HashSet<int> records_empty = new HashSet<int>();
                 foreach (int recordHash in hitRecordHashes)
                 {
-                    if (universe[recordHash].HasEverythingTags(new HashSet<int>() { attr })) { records_empty.Add(recordHash); }// 該当したもの
+                    if (universe[recordHash].HasEverythingTags(new HashSet<int>() { attr })) { records_empty.Add(recordHash); }// Applicable
                 }
                 hitRecordHashes = records_empty;
             }
@@ -674,7 +672,7 @@ namespace StellaQL
 
         public static HashSet<int> Tags_Or(HashSet<int> orAllTags, Dictionary<int, AcStateRecordable> universe)
         {
-            HashSet<int> hitRecordHashes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
+            HashSet<int> hitRecordHashes = new HashSet<int>();// Tag search (deduplication) for record indexes
             foreach (KeyValuePair<int, AcStateRecordable> pair in universe)
             {
                 foreach (int attr in orAllTags)
@@ -688,7 +686,7 @@ namespace StellaQL
 
         public static HashSet<int> Tags_NotAndNot(HashSet<int> requireAllTags, Dictionary<int, AcStateRecordable> recordUniverse)
         {
-            HashSet<int> hitRecordHashes = new HashSet<int>();// レコード・インデックスを属性検索（重複除外）
+            HashSet<int> hitRecordHashes = new HashSet<int>();// Tag search (deduplication) for record indexes
             foreach (KeyValuePair<int, AcStateRecordable> pair in recordUniverse)
             {
                 foreach (int attr in requireAllTags)
@@ -697,10 +695,10 @@ namespace StellaQL
                 }
             }
 
-            List<int> complementRecordHashes = new List<int>();// 補集合を取る
+            List<int> complementRecordHashes = new List<int>();// Take complementary set
             {
-                foreach (int recordHash in recordUniverse.Keys) { complementRecordHashes.Add(recordHash); }// 列挙型の中身をリストに移動。
-                for (int iComp = complementRecordHashes.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
+                foreach (int recordHash in recordUniverse.Keys) { complementRecordHashes.Add(recordHash); }// Move content of enumerated type to list.
+                for (int iComp = complementRecordHashes.Count - 1; -1 < iComp; iComp--)// Delete the specified element from the back.
                 {
                     if (hitRecordHashes.Contains(complementRecordHashes[iComp]))
                     {
@@ -714,20 +712,21 @@ namespace StellaQL
     }
 
     /// <summary>
-    /// Tag Set Operation (タグのハッシュ)
-    /// TODO: 列挙型の使用は止め、タグの総当たり検索にしたい。
-    /// 列挙型の扱い方：「文字列を列挙体に変換する」（DOBON.NET） http://dobon.net/vb/dotnet/programing/enumparse.html
+    /// Tag Set Operation (Tag hash)
+    /// TODO: I will stop using enumerated types, I want to make a full score search of tags.
+    /// 
+    /// enumration :（DOBON.NET） http://dobon.net/vb/dotnet/programing/enumparse.html
     /// </summary>
     public abstract class TagSetOpe
     {
         /// <summary>
-        /// 補集合
+        /// Complementary set
         /// </summary>
         public static HashSet<int> Complement(HashSet<int> bitfieldSet, HashSet<int> tagUniverse)
         {
             List<int> complement = new List<int>();
-            foreach (int elem in tagUniverse) { complement.Add(elem); }// 列挙型の中身をリストに移動。
-            for (int iComp = complement.Count - 1; -1 < iComp; iComp--)// 後ろから指定の要素を削除する。
+            foreach (int elem in tagUniverse) { complement.Add(elem); }// Move content of enumerated type to list.
+            for (int iComp = complement.Count - 1; -1 < iComp; iComp--)// Delete the specified element from the back.
             {
                 if (bitfieldSet.Contains(complement[iComp])) { complement.RemoveAt(iComp); }
             }
@@ -737,7 +736,7 @@ namespace StellaQL
         public static HashSet<int> NumberToken_to_int(List<string> numberTokens)
         {
             HashSet<int> intSet = new HashSet<int>();
-            foreach (string numberToken in numberTokens) { intSet.Add(int.Parse(numberToken)); }// 変換できなかったら例外を投げる
+            foreach (string numberToken in numberTokens) { intSet.Add(int.Parse(numberToken)); }// Throw an exception if it can not be converted
             return intSet;
         }
 
@@ -749,14 +748,14 @@ namespace StellaQL
         public static HashSet<int> Name_to_hash(HashSet<string> nameSet)
         {
             HashSet<int> hashSet = new HashSet<int>();
-            foreach (string name in nameSet) { hashSet.Add( Animator.StringToHash(name)); }// 変換できなかったら例外を投げる
+            foreach (string name in nameSet) { hashSet.Add( Animator.StringToHash(name)); }// Throw an exception if it can not be converted
             return hashSet;
         }
     }
 
     /// <summary>
-    /// Syntax parser (構文パーサー)
-    /// 正規表現の参考：http://smdn.jp/programming/netfx/regex/2_expressions/
+    /// Syntax parser
+    /// regex : http://smdn.jp/programming/netfx/regex/2_expressions/
     /// </summary>
     public abstract class SyntaxP
     {
@@ -780,7 +779,7 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// キャレットを進めることと、どの構文にパターンマッチしたかと、分解されたトークンを返すことをします。
+        /// We will proceed with the caret and return the decomposed token as to which syntax matched the pattern.
         /// </summary>
         public static Pattern FixedQuery(string query, ref int ref_caret, ref QueryTokens qt)
         {
@@ -799,7 +798,7 @@ namespace StellaQL
             else if (Fixed_CsharpscriptGenerateFullpath(query, ref caret, ref qt)) { ref_caret = caret; return Pattern.CsharpscriptGenerateFullpath; }
             else if (Fixed_LayerInsert(query, ref caret, ref qt)) { ref_caret = caret; return Pattern.LayerInsert; }
             else if (Fixed_LayerDelete(query, ref caret, ref qt)) { ref_caret = caret; return Pattern.LayerDelete; }
-            return Pattern.NotMatch;// 構文にはマッチしなかった。
+            return Pattern.NotMatch;// It did not match the syntax.
         }
 
         public static bool NotMatched(QueryTokens current, int caret, ref QueryTokens max)
@@ -808,23 +807,23 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// WORDS句だけ。
-        /// Example（代表例）: INSERT文のWORDS句。
+        /// WORDS phrase only.
+        /// ex: INSERT WORDS
         /// </summary>
         public static bool ParsePhrase_AfterWords(string query, ref int caret, string endsDelimiterWord, List<string> ref_words)
         {
             string word;
             while (caret < query.Length && !LexcalP.FixedWord(endsDelimiterWord, query, ref caret))
             {
-                if (LexcalP.VarStringliteral(query, ref caret, out word)) { } // 一致しなければelse～ifへ
+                if (LexcalP.VarStringliteral(query, ref caret, out word)) { } // If they do not match, else if
                 else if (!LexcalP.VarValue(query, ref caret, out word)) { return false; }
                 ref_words.Add(word);
             }
             return true;
         }
         /// <summary>
-        /// SET句だけ。
-        /// Example（代表例）: UPDATE文のSET句。
+        /// SET phrase only.
+        /// ex: UPDATE SET
         /// </summary>
         public static bool ParsePhrase_AfterSet(string query, ref int caret, string endsDelimiterWord, Dictionary<string,string> ref_properties)
         {
@@ -832,10 +831,10 @@ namespace StellaQL
             string propertyValue;
 
             while (caret < query.Length && !LexcalP.FixedWord(endsDelimiterWord, query, ref caret))
-            {   // 名前
+            {   // name
                 if (!LexcalP.VarWord(query, ref caret, out propertyName)) { return false; }
-                // 値
-                if (LexcalP.VarStringliteral(query, ref caret, out propertyValue)) { } // 一致しなければelse～ifへ
+                // value
+                if (LexcalP.VarStringliteral(query, ref caret, out propertyValue)) { } // If they do not match, else if
                 else if (!LexcalP.VarValue(query, ref caret, out propertyValue)) { return false; }
                 ref_properties.Add(propertyName, propertyValue);
             }
@@ -863,7 +862,7 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); }
 
-            // 正規表現か、タグ検索のどちらか。（マシンステート検索でもタグを使うことがあるだろうか）
+            // Either regular expression or tag search. (Do you use tags even in machine state search?)
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
                 qt.From_FullnameRegex = stringWithoutDoubleQuotation;
             }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
@@ -873,7 +872,7 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
                 qt.To_FullnameRegex = stringWithoutDoubleQuotation;
             }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
@@ -905,7 +904,7 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
                 qt.From_FullnameRegex = stringWithoutDoubleQuotation;
             }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
@@ -915,7 +914,7 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
                 qt.To_FullnameRegex = stringWithoutDoubleQuotation;
             }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
@@ -947,7 +946,7 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)){
                 qt.From_FullnameRegex = stringWithoutDoubleQuotation;
             }else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)){
@@ -975,18 +974,16 @@ namespace StellaQL
 
             if (LexcalP.FixedWord(QueryTokens.WORDS, query, ref caret))
             {
-                // 「値、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
+                // Repeat "value, space, value, space". It ends when the item name is WHERE.
                 if (!ParsePhrase_AfterWords(query, ref caret, QueryTokens.WHERE, qt.Words)) { return NotMatched(qt, caret, ref maxQt); }
             }
             else if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
             {
-                throw new UnityException("SET句は廃止したぜ☆（＾～＾） これからは WORDS句を使えだぜ☆（＾▽＾） WORDS Bear Cat Dog Elephant だぜ☆楽だろ☆（＾▽＾）");
-                //// 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
-                //if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qt.Set)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+                throw new UnityException("Deprecated SET phrase. Next, WORDS phrase. ex: WORDS Bear Cat Dog Elephant");
             }
             else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); } }
 
-            // 正規表現。
+            // regex.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qt.Where_FullnameRegex = stringWithoutDoubleQuotation;
@@ -1013,11 +1010,11 @@ namespace StellaQL
             qt.Manipulation = QueryTokens.UPDATE;
 
             if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret)) {
-                // 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
-                if(!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qt.Set)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+                // Repeat "item name, space, value, space". It ends when the item name is WHERE.
+                if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qt.Set)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             } else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); } }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)) {
                 qt.Where_FullnameRegex = stringWithoutDoubleQuotation;
             } else if (LexcalP.FixedWord(QueryTokens.TAG, query, ref caret)) {
@@ -1046,18 +1043,16 @@ namespace StellaQL
 
             if (LexcalP.FixedWord(QueryTokens.WORDS, query, ref caret))
             {
-                // 「値、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
+                // Repeat "value, space, value, space". It ends when the item name is WHERE.
                 if (!SyntaxP.ParsePhrase_AfterWords(query, ref caret, QueryTokens.WHERE, qt.Words)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             }
             else if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
             {
-                throw new UnityException("SET句は廃止したぜ☆（＾～＾） これからは WORDS句を使えだぜ☆（＾▽＾） WORDS Bear Cat Dog Elephant だぜ☆楽だろ☆（＾▽＾）");
-                //// 「項目名、スペース、値、スペース」の繰り返し。項目名が WHERE だった場合終わり。
-                //if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.WHERE, qt.Set)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
+                throw new UnityException("Deprecated SET phrase. Next, WORDS phrase. ex: WORDS Bear Cat Dog Elephant");
             }
             else { if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); } }
 
-            // 正規表現。
+            // regex.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qt.Where_FullnameRegex = stringWithoutDoubleQuotation;
@@ -1085,7 +1080,7 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.WHERE, query, ref caret)) { return NotMatched(qt, caret, ref maxQt); }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qt.Where_FullnameRegex = stringWithoutDoubleQuotation;
@@ -1097,7 +1092,7 @@ namespace StellaQL
             }
             else { return NotMatched(qt, caret, ref maxQt); }
 
-            if (LexcalP.FixedWord(QueryTokens.THE, query, ref caret))// オプション
+            if (LexcalP.FixedWord(QueryTokens.THE, query, ref caret)) // option
             {
                 if (LexcalP.VarWord(query, ref caret, out word)) { qt.The = word; }
                 else if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation)) { qt.The = stringWithoutDoubleQuotation; }
@@ -1126,14 +1121,14 @@ namespace StellaQL
 
             if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
             {
-                // 「項目名、スペース、値、スペース」の繰り返し。項目名が FROM だった場合終わり。
+                // Repeat "item name, space, value, space". It ends when the item name is FROM.
                 if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.FROM, qt.Set)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             }
             else {
                 if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qt.From_FullnameRegex = stringWithoutDoubleQuotation;
@@ -1147,7 +1142,7 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qt.To_FullnameRegex = stringWithoutDoubleQuotation;
@@ -1181,14 +1176,14 @@ namespace StellaQL
 
             if (LexcalP.FixedWord(QueryTokens.SET, query, ref caret))
             {
-                // 「項目名、スペース、値、スペース」の繰り返し。項目名が FROM だった場合終わり。
+                // Repeat "item name, space, value, space". It ends when the item name is FROM.
                 if (!SyntaxP.ParsePhrase_AfterSet(query, ref caret, QueryTokens.FROM, qt.Set)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             }
             else {
                 if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
             }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qt.From_FullnameRegex = stringWithoutDoubleQuotation;
@@ -1204,7 +1199,7 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qt.To_FullnameRegex = stringWithoutDoubleQuotation;
@@ -1238,7 +1233,7 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qt.From_FullnameRegex = stringWithoutDoubleQuotation;
@@ -1252,7 +1247,7 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qt.To_FullnameRegex = stringWithoutDoubleQuotation;
@@ -1286,7 +1281,7 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.FROM, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qt.From_FullnameRegex = stringWithoutDoubleQuotation;
@@ -1300,7 +1295,7 @@ namespace StellaQL
 
             if (!LexcalP.FixedWord(QueryTokens.TO, query, ref caret)) { return SyntaxP.NotMatched(qt, caret, ref maxQt); }
 
-            // 正規表現か、タグ検索のどちらか。
+            // Either regular expression or tag search.
             if (LexcalP.VarStringliteral(query, ref caret, out stringWithoutDoubleQuotation))
             {
                 qt.To_FullnameRegex = stringWithoutDoubleQuotation;
@@ -1357,7 +1352,7 @@ namespace StellaQL
 
             if (LexcalP.FixedWord(QueryTokens.WORDS, query, ref caret))
             {
-                // 「値、スペース、値、スペース」の繰り返し。項目名が セミコロン だった場合終わり。
+                // Repeat "value, space, value, space". It ends when the item name is a semicolon.
                 if (!ParsePhrase_AfterWords(query, ref caret, QueryTokens.SEMICOLON, qt.Words)) { return NotMatched(qt, caret, ref maxQt); }
             }
             else { return NotMatched(qt, caret, ref maxQt); }
@@ -1382,7 +1377,7 @@ namespace StellaQL
 
             if (LexcalP.FixedWord(QueryTokens.WORDS, query, ref caret))
             {
-                // 「値、スペース、値、スペース」の繰り返し。項目名が セミコロン だった場合終わり。
+                // Repeat "value, space, value, space". It ends when the item name is a semicolon.
                 if (!ParsePhrase_AfterWords(query, ref caret, QueryTokens.SEMICOLON, qt.Words)) { return NotMatched(qt, caret, ref maxQt); }
             }
             else { return NotMatched(qt, caret, ref maxQt); }
@@ -1394,12 +1389,12 @@ namespace StellaQL
     public abstract class SyntaxPOther
     {
         /// <summary>
-        /// スキャンに渡すトークンを作るのが仕事。
+        /// It is a job to create a token to pass to the scan.
         /// 
         /// ([(Alpaca Bear)(Cat Dog)]{Elephant})
-        /// を、
+        /// to
         /// 「(」「[」「(」「Alpaca」「Bear」「)」「(」「Cat」「Dog」「)」「]」「{」「Elephant」「}」「)」
-        /// に分解する。
+        /// 
         /// </summary>
         /// <param name="expression"></param>
         /// <param name="tokens"></param>
@@ -1412,8 +1407,7 @@ namespace StellaQL
             {
                 if (LexcalP.VarSpaces(expression, ref iCaret))
                 {
-                    if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; } // 空白を読み飛ばす。
-                    // Debug.Log("iCaret=[" + iCaret + "] 空白読み飛ばし word.ToString()=[" + bufferWord.ToString() + "]");
+                    if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; } // Skip whitespace.
                 }
                 else {
                     char ch = expression[iCaret];
@@ -1424,21 +1418,21 @@ namespace StellaQL
                         case '{':
                         case ')':
                         case ']':
-                        case '}': // Debug.Log("iCaret=[" + iCaret + "] tokens.Add(ch.ToString()) ch=[" + ch + "]");
+                        case '}':
                             if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; }
                             tokens.Add(ch.ToString()); break;
-                        default: // Debug.Log("iCaret=["+ iCaret + "] word.Append(ch) ch=[" + ch + "]");
+                        default:
                             bufferWord.Append(ch); break;
                     }
                     iCaret++;
                 }
             }
-            if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; } //構文エラー
+            if (0 < bufferWord.Length) { tokens.Add(bufferWord.ToString()); bufferWord.Length = 0; } // Syntax error
         }
     }
 
     /// <summary>
-    /// Lexcal parser (字句解析パーサー)
+    /// Lexcal parser
     /// </summary>
     public abstract class LexcalP
     {
@@ -1449,7 +1443,7 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 固定の単語がそこにあるか判定する。
+        /// Determine if a fixed word is there.
         /// </summary>
         /// <param name="word"></param>
         /// <param name="query"></param>
@@ -1465,7 +1459,7 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// "bear)" など後ろに半角スペースが付かないケースもあるので、スペースは 0 個も OK とする。
+        /// "Bear)" and there are cases in which half-width spaces are not attached at the back, so 0 spaces are OK.
         /// </summary>
         private static Regex regexWordAndSpaces = new Regex(@"^(\w+)(\s*)", RegexOptions.IgnoreCase);
         public static bool VarWord(string query, ref int caret, out string word) {
@@ -1475,7 +1469,7 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 浮動小数点の「.」もOKとする。
+        /// Floating point "." Is also OK.
         /// </summary>
         private static Regex regexValueAndSpaces = new Regex(@"^((?:\w|\.)+)(\s*)", RegexOptions.IgnoreCase);
         public static bool VarValue(string query, ref int caret, out string word) {
@@ -1485,7 +1479,7 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 「\"」「\n」「\r」「\\」をアンエスケープする。
+        /// Unescape "\"" "\n" "\r" "\\".
         /// </summary>
         /// <param name="stringWithoutDoubleQuotation"></param>
         /// <returns></returns>
@@ -1497,22 +1491,22 @@ namespace StellaQL
             {
                 switch (phase)
                 {
-                    case 1: // 「\」を読込んだ直後。
+                    case 1: // Immediately after reading "\". 
                         switch (stringWithoutDoubleQuotation[srcCaret])
                         {
-                            case '\\': //「"\\"」だった。
-                            case '\"': //「"\""」だった。
-                                dst.Append(stringWithoutDoubleQuotation[srcCaret]); break; // ２文字目だけを読込む。
-                            case 'n': dst.Append('\n'); break; //「"\r"」だった。改行記号ラインフィード(LF 10)を読込む。
-                            case 'r': dst.Append('\r'); break; //「"\n"」だった。改行記号キャリッジリターン(CR 13)を読込む。
-                            default: dst.Append('\\'); dst.Append(stringWithoutDoubleQuotation[srcCaret]); break; //「"\"」とその次の文字をそのまま読込む。
+                            case '\\': // "\\" was.
+                            case '\"': // "\" was.
+                                dst.Append(stringWithoutDoubleQuotation[srcCaret]); break; // Read only the second letter.
+                            case 'n': dst.Append('\n'); break; // It was "\r". Read line feed (LF 10).
+                            case 'r': dst.Append('\r'); break; // It was "\n". Read carriage return carriage return (CHR 13).
+                            default: dst.Append('\\'); dst.Append(stringWithoutDoubleQuotation[srcCaret]); break; // Read "\"" and the next character as it is.
                         }
                         phase = 0;
                         break;
                     default:
                         switch (stringWithoutDoubleQuotation[srcCaret])
                         {
-                            case '\\': phase = 1; break; //「￥」が出てきた。まだ「￥」は読込まない。
+                            case '\\': phase = 1; break; // "\" came out. We do not read "\" yet.
                             default: dst.Append(stringWithoutDoubleQuotation[srcCaret]); break;
                         }
                         break;
@@ -1525,9 +1519,9 @@ namespace StellaQL
             Match match = regexStringliteralAndSpaces.Match(query.Substring(caret));
             if (match.Success) {
                 stringWithoutDoubleQuotation = match.Groups[1].Value;
-                // ダブルクォーテーションの２文字分を足す
+                // Add two characters of double quotation
                 caret += stringWithoutDoubleQuotation.Length + 2 + match.Groups[2].Value.Length;
-                // 「￥”」を「”」にアンエスケープするなどの、いくつかの加工。
+                // Some processing such as unescape "\" to (").
                 stringWithoutDoubleQuotation = UnescapeEscapesequence(stringWithoutDoubleQuotation);
                 return true;
             }
@@ -1539,7 +1533,8 @@ namespace StellaQL
             string word;
             Stack<char> closeParen = new Stack<char>();
 
-            switch (query[caret]) { // 開始時
+            switch (query[caret])
+            { // When starting
                 case '(': closeParen.Push(')'); caret++; break;
                 case '[': closeParen.Push(']'); caret++; break;
                 case '{': closeParen.Push('}'); caret++; break;
@@ -1565,28 +1560,33 @@ namespace StellaQL
             else { parentesis = query.Substring(oldCaret, caret - oldCaret).TrimEnd(); }
             VarSpaces(query, ref caret); return true;
             gt_Failure:
-            parentesis = query.Substring(oldCaret, caret - oldCaret); // エラーだが、解析したところまでは返したい。
+            parentesis = query.Substring(oldCaret, caret - oldCaret); // Although it is an error, I want to return it until I analyzed it.
             return false;
         }
 
         /// <summary>
-        /// 「#」で始まる行はコメントだぜ☆（＾▽＾）
-        /// コメント行と、空行は削除するぜ☆（＾～＾）
+        /// A line beginning with "#" is a comment.
+        /// Delete comment line and blank line.
+        /// 
+        /// I reffered it.
+        /// \r to \r\n : http://www.madeinclinic.jp/c/20140201/
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
         public static void DeleteLineCommentAndBlankLine(ref string query) {
+            query = query.Replace("\n", "\r\n").Replace("\r\r", "\r"); // \r to \r\n
+
             string[] lines = query.Split(new [] { Environment.NewLine }, StringSplitOptions.None);
             int caret;
             for (int iLine = 0; iLine < lines.Length; iLine++) {
                 caret = 0;
                 VarSpaces(lines[iLine], ref caret);
-                if (FixedWord("#", lines[iLine], ref caret)) { lines[iLine] = ""; } // コメント行だ。 空行にしておけばいいだろう。
+                if (FixedWord("#", lines[iLine], ref caret)) { lines[iLine] = ""; } // It is a comment line. You should leave it blank.
             }
 
-            // 空行を消し飛ばして困ることはあるだろうか？
+            // Is there anything in trouble by erasing the blank line?
             StringBuilder sb = new StringBuilder();
-            foreach (string line in lines) { if ("" != line.Trim()) { sb.AppendLine(line); } } // 空行以外を残す
+            foreach (string line in lines) { if ("" != line.Trim()) { sb.AppendLine(line); } } // Leave something other than blank lines
             query = sb.ToString();
         }
     }

@@ -1,16 +1,16 @@
-ï»¿using UnityEditor;
+using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 using StellaQL;
 using System.Collections.Generic;
 
 /// <summary>
-/// æ–°ã—ã„ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã¨ã€€ã‚¹ãƒ†ãƒ¼ãƒˆãƒã‚·ãƒ³ã‚’ä½œæˆã•ã›ã‚‹ [MyMenu] - [Create Controller] ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ã€€ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ã«è¿½åŠ ã™ã‚‹ãœâ˜†
+/// V‚µ‚¢ƒRƒ“ƒgƒ[ƒ‰[‚Æ@ƒXƒe[ƒgƒ}ƒVƒ“‚ğì¬‚³‚¹‚é [MyMenu] - [Create Controller] ƒƒjƒ…[‚ğ@ƒƒjƒ…[ƒo[‚É’Ç‰Á‚·‚é‚º™
 /// 
-/// æ‰‹é †
-/// ï¼ˆï¼‘ï¼‰Assets ãƒ•ã‚©ãƒ«ãƒ€ãƒ¼ã®ä¸‹ã®ã©ã“ã‹ã« Editor ã¨ã„ã†ãƒ•ã‚©ãƒ«ãƒ€ãƒ¼ã‚’ä½œæˆã—ã€ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å…¥ã‚Œã‚‹â˜†
-/// ï¼ˆï¼’ï¼‰Assets/Mecanim ãƒ•ã‚©ãƒ«ãƒ€ãƒ¼ã‚’ä½œã£ã¦ãŠãã“ã¨ã€‚
-/// ï¼ˆï¼“ï¼‰[MyMenu] - [Create Controller] ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ã‚¯ãƒªãƒƒã‚¯ã™ã‚‹â˜†
+/// è‡
+/// i‚PjAssets ƒtƒHƒ‹ƒ_[‚Ì‰º‚Ì‚Ç‚±‚©‚É Editor ‚Æ‚¢‚¤ƒtƒHƒ‹ƒ_[‚ğì¬‚µA‚±‚ÌƒXƒNƒŠƒvƒgEƒtƒ@ƒCƒ‹‚ğ“ü‚ê‚é™
+/// i‚QjAssets/Mecanim ƒtƒHƒ‹ƒ_[‚ğì‚Á‚Ä‚¨‚­‚±‚ÆB
+/// i‚Rj[MyMenu] - [Create Controller] ƒƒjƒ…[‚ğƒNƒŠƒbƒN‚·‚é™
 /// </summary>
 public class SM : MonoBehaviour
 {
@@ -26,21 +26,21 @@ public class SM : MonoBehaviour
         // pw.m_parentStatemachine_ofCaState.AddState("Urawa", new Vector3(490, pw.m_caState.position.y));
 
 
-        //AnimatorState copiedState = AconDeepcopy.DeepcopyState(pw.m_caState.state); // ã‚³ãƒ”ãƒ¼ã—ã¦åˆ¥ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œã£ã¦ãŠãã¾ã™ã€‚
-        AnimatorState copiedState = AconShallowcopy.ShallowcopyState(pw.m_caState.state); // ã‚³ãƒ”ãƒ¼ã—ã¦åˆ¥ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œã£ã¦ãŠãã¾ã™ã€‚
+        //AnimatorState copiedState = AconDeepcopy.DeepcopyState(pw.m_caState.state); // ƒRƒs[‚µ‚Ä•ÊƒCƒ“ƒXƒ^ƒ“ƒX‚ğì‚Á‚Ä‚¨‚«‚Ü‚·B
+        AnimatorState copiedState = AconShallowcopy.ShallowcopyState(pw.m_caState.state); // ƒRƒs[‚µ‚Ä•ÊƒCƒ“ƒXƒ^ƒ“ƒX‚ğì‚Á‚Ä‚¨‚«‚Ü‚·B
 
-        // å…ˆã«ã‚³ãƒ”ãƒ¼ã‚’è¿½åŠ ã—ã¦ãŠãã¾ã™ã€‚ãƒˆãƒ©ãƒ³ã‚¸ã‚·ãƒ§ãƒ³ã‚‚ã‚³ãƒ”ãƒ¼ã—ã¦ã„ã‚‹ã®ã§ä»˜ã„ã¦ãã‚‹ã€‚
+        // æ‚ÉƒRƒs[‚ğ’Ç‰Á‚µ‚Ä‚¨‚«‚Ü‚·Bƒgƒ‰ƒ“ƒWƒVƒ‡ƒ“‚àƒRƒs[‚µ‚Ä‚¢‚é‚Ì‚Å•t‚¢‚Ä‚­‚éB
         pw.m_parentStatemachine_ofCaState.AddState(copiedState, new Vector3(490, pw.m_caState.position.y));
 
-        AconRemoveLink.RemoveLinkState(pw.m_caState.state); // ç´ã¥ã„ã¦ã„ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¾ã§æ¶ˆã—ã¦ã—ã¾ã‚ãªã„ã‚ˆã†ã«ã€ãƒªãƒ³ã‚¯ã‚’åˆ‡ã‚‹â˜†ï¼ˆï¼¾ï½ï¼¾ï¼‰
-        //pw.m_parentStatemachine_ofCaState.RemoveState(pw.m_caState.state); // ã‚¹ãƒ†ãƒ¼ãƒˆã‚’å‰Šé™¤ã™ã‚‹ã€‚ãƒˆãƒ©ãƒ³ã‚¸ã‚·ãƒ§ãƒ³ã¯åˆ‡ã‚Œã‚‹â˜†ï¼ˆï¼¾ï½ï¼¾ï¼‰
+        AconRemoveLink.RemoveLinkState(pw.m_caState.state); // •R‚Ã‚¢‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚Ü‚ÅÁ‚µ‚Ä‚µ‚Ü‚í‚È‚¢‚æ‚¤‚ÉAƒŠƒ“ƒN‚ğØ‚é™iO`Oj
+        //pw.m_parentStatemachine_ofCaState.RemoveState(pw.m_caState.state); // ƒXƒe[ƒg‚ğíœ‚·‚éBƒgƒ‰ƒ“ƒWƒVƒ‡ƒ“‚ÍØ‚ê‚é™iO`Oj
 
-        // FIXME: ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ»ã‚¹ãƒ†ãƒ¼ãƒˆã¯ï¼Ÿ
+        // FIXME: ƒfƒtƒHƒ‹ƒgEƒXƒe[ƒg‚ÍH
 
         //pw.m_caState.position = new Vector3(500, pw.m_caState.position.y);
         //pw.X = 500;
 
-        Debug.Log("positionã¯ã‚»ãƒƒãƒˆã§ãã‚‹ã®ã‹ã ãœâ˜†ï¼Ÿï¼ˆï¼¾ï½ï¼¾ï¼‰");
+        Debug.Log("position‚ÍƒZƒbƒg‚Å‚«‚é‚Ì‚©‚¾‚º™HiO`Oj");
     }
     */
 
@@ -53,32 +53,32 @@ public class SM : MonoBehaviour
         foreach (AnimatorStateTransition tItem in transitions)
         {
             Operation_Condition.UpdateProperty_AndRebuild(tItem, 0, "mode", AnimatorConditionMode.Less);
-            //// å…¨ã¦ã®ã‚³ãƒ³ãƒ‡ã‚£ã‚·ãƒ§ãƒ³ã®ã‚³ãƒ”ãƒ¼ã‚’æ–°è¦ä½œæˆã™ã‚‹ã€‚
+            //// ‘S‚Ä‚ÌƒRƒ“ƒfƒBƒVƒ‡ƒ“‚ÌƒRƒs[‚ğV‹Kì¬‚·‚éB
             //List<AconConditionBuilder> cs_new = new List<AconConditionBuilder>();
             //foreach (AnimatorCondition c_old in tItem.conditions)
             //{
             //    cs_new.Add(new AconConditionBuilder(c_old));
             //}
 
-            //// æ—¢å­˜ã®ã‚³ãƒ³ãƒ‡ã‚£ã‚·ãƒ§ãƒ³ã‚’å…¨ã¦æ¶ˆã™ã€‚
+            //// Šù‘¶‚ÌƒRƒ“ƒfƒBƒVƒ‡ƒ“‚ğ‘S‚ÄÁ‚·B
             //for (int cNum = tItem.conditions.Length - 1; 0 < tItem.conditions.Length; cNum--)
             //{
             //    tItem.RemoveCondition(tItem.conditions[cNum]);
             //}
 
-            //// æ–°è¦ä½œæˆã—ãŸã‚³ãƒ³ãƒ‡ã‚£ã‚·ãƒ§ãƒ³ã«æ›´æ–°ã‚’æ›ã‘ã‚‹
+            //// V‹Kì¬‚µ‚½ƒRƒ“ƒfƒBƒVƒ‡ƒ“‚ÉXV‚ğŠ|‚¯‚é
             //int target_cNum = 0;
             //for (int cNum_new = 0; cNum_new < cs_new.Count; cNum_new++)
             //{
             //    if (target_cNum == cNum_new)
             //    {
             //        AconConditionBuilder c_new = cs_new[cNum_new];
-            //        c_new.mode = AnimatorConditionMode.Less;// è¨­å®šã—ã¦ã¿ã‚‹
+            //        c_new.mode = AnimatorConditionMode.Less;// İ’è‚µ‚Ä‚İ‚é
             //    }
             //}
-            ////condition_w.mode = AnimatorConditionMode.Less; // ã‚»ãƒƒã‚¿ãƒ¼ã¯æ©Ÿèƒ½ã—ã¦ã„ãªã„ã®ã§ã¯ï¼Ÿ
+            ////condition_w.mode = AnimatorConditionMode.Less; // ƒZƒbƒ^[‚Í‹@”\‚µ‚Ä‚¢‚È‚¢‚Ì‚Å‚ÍH
 
-            //// æ–°è¦ä½œæˆã—ãŸã‚³ãƒ³ãƒ‡ã‚£ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ ã—ç›´ã™
+            //// V‹Kì¬‚µ‚½ƒRƒ“ƒfƒBƒVƒ‡ƒ“‚ğ’Ç‰Á‚µ’¼‚·
             //for (int cNum_w = 0; cNum_w < cs_new.Count; cNum_w++)
             //{
             //    AconConditionBuilder c_new = cs_new[cNum_w];
@@ -95,11 +95,11 @@ public class SM : MonoBehaviour
             ////        float oldThreshold = cItem.threshold;
             ////        string parameter = cItem.parameter;
 
-            ////        tItem.RemoveCondition(cItem); // é †åºãŒå¤‰ã‚ã£ã¦ã—ã¾ã†ãŒâ€¦â€¦â˜†ï¼ˆï¼¾ï½ï¼¾ï¼‰
+            ////        tItem.RemoveCondition(cItem); // ‡˜‚ª•Ï‚í‚Á‚Ä‚µ‚Ü‚¤‚ªcc™iO`Oj
             ////        tItem.AddCondition(AnimatorConditionMode.Less, oldThreshold, parameter);
 
             ////        //AnimatorCondition cItem = tItem.conditions[cNum];
-            ////        //cItem.mode = AnimatorConditionMode.Less; // foreachã ã¨æ›´æ–°ã§ããªã„â˜†ï¼ˆï¼¾ï½ï¼¾ï¼‰
+            ////        //cItem.mode = AnimatorConditionMode.Less; // foreach‚¾‚ÆXV‚Å‚«‚È‚¢™iO`Oj
             ////    }
             ////}
             ////Debug.Log("tItem.conditions.IsFixedSize=[" + tItem.conditions.IsFixedSize + "]");
@@ -121,7 +121,7 @@ public class SM : MonoBehaviour
             AnimatorControllerParameter oldP = ac.parameters[0];
             AnimatorControllerParameter newP = new AnimatorControllerParameter();
 
-            // ãƒ‡ã‚£ãƒ¼ãƒ—ãƒ»ã‚³ãƒ”ãƒ¼
+            // ƒfƒB[ƒvEƒRƒs[
             newP.defaultBool = oldP.defaultBool;
             newP.defaultFloat = oldP.defaultFloat;
             newP.defaultInt = oldP.defaultInt;
@@ -129,12 +129,12 @@ public class SM : MonoBehaviour
             //newP.nameHash = oldP.nameHash;
             newP.type = oldP.type;
 
-            // ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼æ›´æ–°
+            // ƒvƒƒpƒeƒB[XV
             newP.name = "Average body length";
 
             ac.RemoveParameter(oldP);
             ac.AddParameter(newP);
-            Debug.Log("ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼åã¯å¤‰æ›´ã•ã‚ŒãŸã ã‚ã†ã‹â˜†ï¼ˆï¼¾ï½ï¼¾ï¼‰ï¼Ÿ");
+            Debug.Log("ƒvƒƒpƒeƒB[–¼‚Í•ÏX‚³‚ê‚½‚¾‚ë‚¤‚©™iO`OjH");
 
 
 
@@ -143,12 +143,12 @@ public class SM : MonoBehaviour
             //AnimatorControllerParameter p = new AnimatorControllerParameter();
             //p.name = "Average body length";
             //ac.parameters[0] = p;
-            //Debug.Log("ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼åã¯å¤‰æ›´ã•ã‚ŒãŸã ã‚ã†ã‹â˜†ï¼ˆï¼¾ï½ï¼¾ï¼‰ï¼Ÿ");
+            //Debug.Log("ƒvƒƒpƒeƒB[–¼‚Í•ÏX‚³‚ê‚½‚¾‚ë‚¤‚©™iO`OjH");
 
-            //// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼ãƒ»ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã‚’å–å¾—ã€‚
+            //// ƒAƒjƒ[ƒ^[EƒRƒ“ƒgƒ[ƒ‰[‚ğæ“¾B
             //AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST);
-            //ac.parameters[0].name = "Average body length"; // åæ˜ ã•ã‚Œãªã„ã€‚
-            //Debug.Log("ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼åã¯å¤‰æ›´ã•ã‚ŒãŸã ã‚ã†ã‹â˜†ï¼ˆï¼¾ï½ï¼¾ï¼‰ï¼Ÿ");
+            //ac.parameters[0].name = "Average body length"; // ”½‰f‚³‚ê‚È‚¢B
+            //Debug.Log("ƒvƒƒpƒeƒB[–¼‚Í•ÏX‚³‚ê‚½‚¾‚ë‚¤‚©™iO`OjH");
         }
         */
 
@@ -156,37 +156,37 @@ public class SM : MonoBehaviour
         [MenuItem("MyMenu/SetAvatarMask")]
         static void SetAvatarMask()
         {
-            // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼ãƒ»ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã‚’å–å¾—ã€‚
+            // ƒAƒjƒ[ƒ^[EƒRƒ“ƒgƒ[ƒ‰[‚ğæ“¾B
             AnimatorController ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST);
             AvatarMask value = AssetDatabase.LoadAssetAtPath<AvatarMask>("Assets/Resources/AvatarMasks/Head.mask");
 
-            //ac.layers[1].avatarMask = value; // ã‚¢ãƒã‚¿ãƒ¼ãƒã‚¹ã‚¯ãŒå¤‰ã‚ã‚‰ãªã„
+            //ac.layers[1].avatarMask = value; // ƒAƒoƒ^[ƒ}ƒXƒN‚ª•Ï‚í‚ç‚È‚¢
             //ac.layers[1].blendingMode = AnimatorLayerBlendingMode.Override;
             //ac.layers[1].iKPass = true;
             //ac.layers[1].defaultWeight = 59.63f;
-            //Debug.Log("ã‚¢ãƒã‚¿ãƒ¼ãƒã‚¹ã‚¯ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼ã‚’ã‚»ãƒƒãƒˆã—ã‚ˆã†ãœâ˜†ï¼ˆï¼¾ï½ï¼¾ï¼‰ï¼Ÿ");
+            //Debug.Log("ƒAƒoƒ^[ƒ}ƒXƒN‚ÌƒvƒƒpƒeƒB[‚ğƒZƒbƒg‚µ‚æ‚¤‚º™iO`OjH");
 
             //AnimatorControllerLayer layer = new AnimatorControllerLayer();
             //layer.avatarMask = value;
             //layer.blendingMode = AnimatorLayerBlendingMode.Override;
             //layer.iKPass = true;
             //layer.defaultWeight = 59.63f;
-            //ac.layers[1] = layer; // å¤‰ã‚ã‚Šãªã—ï¼Ÿä¸Šæ›¸ãã•ã‚Œãªã„ï¼Ÿ layersé…åˆ—ãŒèª­å–å°‚ç”¨ã€ã¾ãŸã¯ã‚³ãƒ”ãƒ¼ã®å¯èƒ½æ€§ã¯ï¼Ÿ
-            //Debug.Log("æ–°ã—ã„ãƒ¬ã‚¤ãƒ¤ãƒ¼ã§ä¸Šæ›¸ãã—ã‚ˆã†ãœâ˜†ï¼ˆï¼¾ï½ï¼¾ï¼‰ï¼Ÿ");
+            //ac.layers[1] = layer; // •Ï‚í‚è‚È‚µHã‘‚«‚³‚ê‚È‚¢H layers”z—ñ‚ª“Çæê—pA‚Ü‚½‚ÍƒRƒs[‚Ì‰Â”\«‚ÍH
+            //Debug.Log("V‚µ‚¢ƒŒƒCƒ„[‚Åã‘‚«‚µ‚æ‚¤‚º™iO`OjH");
 
-            // ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’è¤‡è£½ã§ãã‚‹ã ã‚ã†ã‹ï¼Ÿ
+            // ƒŒƒCƒ„[‚ğ•¡»‚Å‚«‚é‚¾‚ë‚¤‚©H
             int layerIndex = 1;
-            AnimatorControllerLayer layer = ac.layers[layerIndex]; // æ—¢å­˜ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å–å¾—
+            AnimatorControllerLayer layer = ac.layers[layerIndex]; // Šù‘¶ƒŒƒCƒ„[‚ğæ“¾
             layer.avatarMask = value;
             layer.blendingMode = AnimatorLayerBlendingMode.Override;
             layer.iKPass = true;
             layer.defaultWeight = 59.63f;
-            ac.RemoveLayer(layerIndex); // æ—¢å­˜ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å‰Šé™¤ï¼ˆTODO:é…åˆ—ã®å¾Œã‚ã‹ã‚‰ï¼‰
-            ac.AddLayer(layer); // ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼ã‚’å¤‰æ›´ã—ãŸæ—¢å­˜ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å†è¿½åŠ ã€‚
-            Debug.Log("ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼ã‚’å¤‰æ›´ã—ãŸãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å†è¿½åŠ ã—ã¦ã©ã†ã‹â˜†ï¼ˆï¼¾ï½ï¼¾ï¼‰ï¼Ÿ");
+            ac.RemoveLayer(layerIndex); // Šù‘¶‚ÌƒŒƒCƒ„[‚ğíœiTODO:”z—ñ‚ÌŒã‚ë‚©‚çj
+            ac.AddLayer(layer); // ƒvƒƒpƒeƒB[‚ğ•ÏX‚µ‚½Šù‘¶ƒŒƒCƒ„[‚ğÄ’Ç‰ÁB
+            Debug.Log("ƒvƒƒpƒeƒB[‚ğ•ÏX‚µ‚½ƒŒƒCƒ„[‚ğÄ’Ç‰Á‚µ‚Ä‚Ç‚¤‚©™iO`OjH");
 
-            //ac.AddLayer(layer); // ã„ã‘ã‚‹ã€‚
-            //Debug.Log("ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ä½œã‚Šç›´ã—ã¦ã©ã†ã‹â˜†ï¼ˆï¼¾ï½ï¼¾ï¼‰ï¼Ÿ");
+            //ac.AddLayer(layer); // ‚¢‚¯‚éB
+            //Debug.Log("ƒŒƒCƒ„[‚ğì‚è’¼‚µ‚Ä‚Ç‚¤‚©™iO`OjH");
         }
         */
 
@@ -197,58 +197,58 @@ public class SM : MonoBehaviour
         [MenuItem("MyMenu/Create Controller")]
         static void CreateController()
         {
-            // ï¼ˆï¼‘ï¼‰ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ï¼ˆãƒ•ã‚¡ã‚¤ãƒ«ï¼‰ã‚’ä½œã‚‹â˜†
+            // i‚PjƒRƒ“ƒgƒ[ƒ‰[iƒtƒ@ƒCƒ‹j‚ğì‚é™
             var controller = UnityEditor.Animations.AnimatorController.CreateAnimatorControllerAtPath("Assets/Mecanim/StateMachineTransitions.controller");
 
-            // ï¼ˆï¼’ï¼‰[parameters] ã«ï¼”ã¤è¿½åŠ ã™ã‚‹ã€‚
+            // i‚Qj[parameters] ‚É‚S‚Â’Ç‰Á‚·‚éB
             controller.AddParameter("TransitionNow", AnimatorControllerParameterType.Trigger);
             controller.AddParameter("Reset", AnimatorControllerParameterType.Trigger);
             controller.AddParameter("GotoB1", AnimatorControllerParameterType.Trigger);
             controller.AddParameter("GotoC", AnimatorControllerParameterType.Trigger);
 
-            // ï¼ˆï¼“ï¼‰ã‚¹ãƒ†ãƒ¼ãƒˆãƒã‚·ãƒ³ï¼ˆå…­è§’å½¢ã®ã‚„ã¤ï¼‰ã‚’ï¼“ã¤è¿½åŠ ã™ã‚‹ã€‚
+            // i‚RjƒXƒe[ƒgƒ}ƒVƒ“i˜ZŠpŒ`‚Ì‚â‚Âj‚ğ‚R‚Â’Ç‰Á‚·‚éB
             var rootStateMachine = controller.layers[0].stateMachine;
             var smA = rootStateMachine.AddStateMachine("smA"); // stateMachineA
             var smB = rootStateMachine.AddStateMachine("smB"); // stateMachineB
             var smC = smB.AddStateMachine("smC"); // stateMachineC
 
-            // ï¼ˆï¼”ï¼‰ã‚¹ãƒ†ãƒ¼ãƒˆï¼ˆé•·æ–¹å½¢ã®ã‚„ã¤ï¼‰ã‚’ï¼•ã¤è¿½åŠ ã™ã‚‹ã€‚
+            // i‚SjƒXƒe[ƒgi’·•ûŒ`‚Ì‚â‚Âj‚ğ‚T‚Â’Ç‰Á‚·‚éB
             var stateA1 = smA.AddState("stateA1");
             var stateB1 = smB.AddState("stateB1");
             var stateB2 = smB.AddState("stateB2");
             smC.AddState("stateC1");
-            var stateC2 = smC.AddState("stateC2"); // donâ€™t add an entry transition, should entry to state by default
+            var stateC2 = smC.AddState("stateC2"); // donft add an entry transition, should entry to state by default
 
-            // ä»¥ä¸‹ã€ãƒˆãƒ©ãƒ³ã‚¸ã‚·ãƒ§ãƒ³ï¼ˆç™½ã„çŸ¢å°ã®ç·šï¼‰ã‚’è¿½åŠ ã™ã‚‹ã€‚
+            // ˆÈ‰ºAƒgƒ‰ƒ“ƒWƒVƒ‡ƒ“i”’‚¢–îˆó‚Ìüj‚ğ’Ç‰Á‚·‚éB
 
-            // ï¼ˆï¼•ï¼‰stateA1 ã‹ã‚‰ Exit ã¸ã®ãƒˆãƒ©ãƒ³ã‚¸ã‚·ãƒ§ãƒ³
-            var exitTransition = stateA1.AddExitTransition(); // stateA1 ã¯ Exit ã«ã¤ãªã’ã‚‹ã€‚
+            // i‚TjstateA1 ‚©‚ç Exit ‚Ö‚Ìƒgƒ‰ƒ“ƒWƒVƒ‡ƒ“
+            var exitTransition = stateA1.AddExitTransition(); // stateA1 ‚Í Exit ‚É‚Â‚È‚°‚éB
 
-            exitTransition.AddCondition(UnityEditor.Animations.AnimatorConditionMode.If, 0, "TransitionNow"); // æ¡ä»¶ã«ãƒˆãƒªã‚¬ãƒ¼ã‚’è¿½åŠ ã™ã‚‹
-            exitTransition.duration = 0; // duration ã¯ 0 ã«ã€‚
+            exitTransition.AddCondition(UnityEditor.Animations.AnimatorConditionMode.If, 0, "TransitionNow"); // ğŒ‚ÉƒgƒŠƒK[‚ğ’Ç‰Á‚·‚é
+            exitTransition.duration = 0; // duration ‚Í 0 ‚ÉB
 
-            // ï¼ˆï¼–ï¼‰ï¼ˆã“ã‚Œã¯åˆ†ã‹ã‚‰ãªã„ï¼‰ stateA1 ã¨ Any State ãŒã¤ãªãŒã£ã¦ã„ãªã„ã‚ˆã†ã ãŒï¼Ÿ
+            // i‚Uji‚±‚ê‚Í•ª‚©‚ç‚È‚¢j stateA1 ‚Æ Any State ‚ª‚Â‚È‚ª‚Á‚Ä‚¢‚È‚¢‚æ‚¤‚¾‚ªH
             var resetTransition = smA.AddAnyStateTransition(stateA1);
             resetTransition.AddCondition(UnityEditor.Animations.AnimatorConditionMode.If, 0, "Reset");
             resetTransition.duration = 0;
 
-            // ï¼ˆï¼—ï¼‰stateB1 ã¯ Entry ã«ã¤ãªã’ã‚‹ã€‚
+            // i‚VjstateB1 ‚Í Entry ‚É‚Â‚È‚°‚éB
             var transitionB1 = smB.AddEntryTransition(stateB1);
-            transitionB1.AddCondition(UnityEditor.Animations.AnimatorConditionMode.If, 0, "GotoB1"); // æ¡ä»¶ã«ãƒˆãƒªã‚¬ãƒ¼ã‚’è¿½åŠ ã™ã‚‹ã€‚
-            // ï¼ˆï¼˜ï¼‰stateB2 ã‚‚ Entry ã«ã¤ãªã’ã‚‹ã€‚
+            transitionB1.AddCondition(UnityEditor.Animations.AnimatorConditionMode.If, 0, "GotoB1"); // ğŒ‚ÉƒgƒŠƒK[‚ğ’Ç‰Á‚·‚éB
+            // i‚WjstateB2 ‚à Entry ‚É‚Â‚È‚°‚éB
             smB.AddEntryTransition(stateB2);
-            // ï¼ˆï¼™ï¼‰stateC2 ã¯ Entry ã«ã¤ãªã’ã‚‹æ–¹æ³•ã§ã¯ãªãã€ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¨ã—ã¦è¨­å®šã™ã‚‹ã€‚
+            // i‚XjstateC2 ‚Í Entry ‚É‚Â‚È‚°‚é•û–@‚Å‚Í‚È‚­AƒfƒtƒHƒ‹ƒg‚Æ‚µ‚Äİ’è‚·‚éB
             smC.defaultState = stateC2;
-            // ï¼ˆï¼‘ï¼ï¼‰stateC2 ã¯ Exit ã«ã¤ãªã’ã‚‹ã€‚
+            // i‚P‚OjstateC2 ‚Í Exit ‚É‚Â‚È‚°‚éB
             var exitTransitionC2 = stateC2.AddExitTransition();
-            exitTransitionC2.AddCondition(UnityEditor.Animations.AnimatorConditionMode.If, 0, "TransitionNow"); // æ¡ä»¶ã«ãƒˆãƒªã‚¬ãƒ¼ã‚’è¿½åŠ ã™ã‚‹ã€‚
+            exitTransitionC2.AddCondition(UnityEditor.Animations.AnimatorConditionMode.If, 0, "TransitionNow"); // ğŒ‚ÉƒgƒŠƒK[‚ğ’Ç‰Á‚·‚éB
             exitTransitionC2.duration = 0;
 
-            // ï¼ˆï¼‘ï¼‘ï¼‰smAï¼ˆå…­è§’å½¢ï¼‰ã‚’ smCï¼ˆå…­è§’å½¢ï¼‰ã«ã¤ãªã’ã‚‹ã€‚
+            // i‚P‚PjsmAi˜ZŠpŒ`j‚ğ smCi˜ZŠpŒ`j‚É‚Â‚È‚°‚éB
             var stateMachineTransition = rootStateMachine.AddStateMachineTransition(smA, smC);
             stateMachineTransition.AddCondition(UnityEditor.Animations.AnimatorConditionMode.If, 0, "GotoC");
 
-            // ï¼ˆï¼‘ï¼’ï¼‰smAï¼ˆå…­è§’å½¢ï¼‰ã‹ã‚‰ smBï¼ˆå…­è§’å½¢ï¼‰ã«ã¤ãªã’ã‚‹ã€‚
+            // i‚P‚QjsmAi˜ZŠpŒ`j‚©‚ç smBi˜ZŠpŒ`j‚É‚Â‚È‚°‚éB
             rootStateMachine.AddStateMachineTransition(smA, smB);
         }
         */

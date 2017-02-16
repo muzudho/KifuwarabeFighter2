@@ -1,21 +1,15 @@
-ï»¿using StellaQL;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEditor;
-using UnityEditor.Animations;
 using UnityEngine;
 
 //[ExecuteInEditMode]
 public class AnimatorControllerSample : MonoBehaviour {
     /*
     /// <summary>
-    /// ã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒ»ãƒ¢ãƒ¼ãƒ‰ã§ã¯ã€ãƒ«ãƒƒã‚¯ã‚¢ãƒƒãƒ—ã¯ã§ããªã•ãã†ã€‚
+    /// ƒGƒfƒBƒbƒgEƒ‚[ƒh‚Å‚ÍAƒ‹ƒbƒNƒAƒbƒv‚Í‚Å‚«‚È‚³‚»‚¤B
     /// </summary>
     [MenuItem("(^_^)Menu/Lookup")]
     static void Lookup()
     {
-        // å®Ÿè¡Œä¸­ãªã‚‰ animator.Play(ï½) ãŒåˆ©ãã€‚
+        // Às’†‚È‚ç animator.Play(`) ‚ª—˜‚­B
         Animator animator = GameObject.Find("Player0").GetComponent<Animator>();
         animator.Play("JMove0",0);
         Debug.Log("Play2!");
@@ -24,7 +18,7 @@ public class AnimatorControllerSample : MonoBehaviour {
     [MenuItem("(^_^)Menu/Set Tag15")]
     static void SetTag()
     {
-        // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼ãƒ»ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã‚’å–å¾—ã€‚
+        // ƒAƒjƒ[ƒ^[EƒRƒ“ƒgƒ[ƒ‰[‚ğæ“¾B
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/Main_Char3.controller");
 
         AnimatorState state = Operation_State.Lookup(ac, "Base Layer.JMove.JMove0");
@@ -44,7 +38,7 @@ public class AnimatorControllerSample : MonoBehaviour {
     [MenuItem("(^_^)Menu/Set Transition Name 1")]
     static void SetTransitionTag()
     {
-        // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼ãƒ»ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã‚’å–å¾—ã€‚
+        // ƒAƒjƒ[ƒ^[EƒRƒ“ƒgƒ[ƒ‰[‚ğæ“¾B
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/Main_Char3.controller");
 
         AnimatorStateTransition transition = Operation_Transition.Lookup(ac, "Base Layer.JMove.Tamesi1 1", "Base Layer.JMove.Tamesi1");
@@ -54,7 +48,7 @@ public class AnimatorControllerSample : MonoBehaviour {
     [MenuItem("(^_^)Menu/Add Transition 1")]
     static void AddTransition()
     {
-        // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼ãƒ»ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã‚’å–å¾—ã€‚
+        // ƒAƒjƒ[ƒ^[EƒRƒ“ƒgƒ[ƒ‰[‚ğæ“¾B
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/Main_Char3.controller");
 
         StringBuilder message = new StringBuilder();
@@ -67,7 +61,7 @@ public class AnimatorControllerSample : MonoBehaviour {
     [MenuItem("(^_^)Menu/Add 5x5 Transitions 1")]
     static void AddTransitions()
     {
-        // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚¿ãƒ¼ãƒ»ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã‚’å–å¾—ã€‚
+        // ƒAƒjƒ[ƒ^[EƒRƒ“ƒgƒ[ƒ‰[‚ğæ“¾B
         AnimatorController ac = (AnimatorController)AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/Resources/AnimatorControllers/Main_Char3.controller");
 
         HashSet<AnimatorState> states = new HashSet<AnimatorState>() {
@@ -92,22 +86,22 @@ public class AnimatorControllerSample : MonoBehaviour {
     }
 
     /// <summary>
-    /// å‚è€ƒï¼šHasFlag ã«ã¤ã„ã¦ã€‚ https://teratail.com/questions/46225
+    /// QlFHasFlag ‚É‚Â‚¢‚ÄB https://teratail.com/questions/46225
     /// </summary>
     [MenuItem("(^_^)Menu/HasFlag Test")]
     static void HasFlag()
     {
-        Debug.Log("çµæœï¼š Flag.A.HasFlag(Flag.A| Flag.B| Flag.C) = " + Flag.A.HasFlag(Flag.A| Flag.B| Flag.C));
-        Debug.Log("çµæœï¼š (Flag.A| Flag.B).HasFlag(Flag.A | Flag.B | Flag.C) = " + (Flag.A| Flag.B).HasFlag(Flag.A | Flag.B | Flag.C));
-        Debug.Log("çµæœï¼š (Flag.A| Flag.B).HasFlag(Flag.A) = " + (Flag.A| Flag.B).HasFlag(Flag.A));
-        Debug.Log("çµæœï¼š Flag.D.HasFlag(Flag.A | Flag.B | Flag.C) = " + Flag.D.HasFlag(Flag.A | Flag.B | Flag.C));
-        Debug.Log("çµæœï¼š Flag.D.HasFlag(Flag.A) = " + Flag.D.HasFlag(Flag.A));
-        Debug.Log("çµæœï¼š Flag.A.HasFlag(Flag.A| Flag.B) = " + Flag.A.HasFlag(Flag.A | Flag.B));
-        Debug.Log("çµæœï¼š Flag.A.HasFlag(Flag.A) = " + Flag.A.HasFlag(Flag.A));
-        Debug.Log("çµæœï¼š Flag.A.HasFlag(Flag.B) = " + Flag.A.HasFlag(Flag.B));
-        Debug.Log("çµæœï¼š (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B) = " + (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B));
-        Debug.Log("çµæœï¼š (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B | Flag.C) = " + (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B | Flag.C));
-        Debug.Log("çµæœï¼š (Flag.A | Flag.B).HasFlag(Flag.A | Flag.B | Flag.C) = " + (Flag.A | Flag.B).HasFlag(Flag.A | Flag.B | Flag.C));
+        Debug.Log("Œ‹‰ÊF Flag.A.HasFlag(Flag.A| Flag.B| Flag.C) = " + Flag.A.HasFlag(Flag.A| Flag.B| Flag.C));
+        Debug.Log("Œ‹‰ÊF (Flag.A| Flag.B).HasFlag(Flag.A | Flag.B | Flag.C) = " + (Flag.A| Flag.B).HasFlag(Flag.A | Flag.B | Flag.C));
+        Debug.Log("Œ‹‰ÊF (Flag.A| Flag.B).HasFlag(Flag.A) = " + (Flag.A| Flag.B).HasFlag(Flag.A));
+        Debug.Log("Œ‹‰ÊF Flag.D.HasFlag(Flag.A | Flag.B | Flag.C) = " + Flag.D.HasFlag(Flag.A | Flag.B | Flag.C));
+        Debug.Log("Œ‹‰ÊF Flag.D.HasFlag(Flag.A) = " + Flag.D.HasFlag(Flag.A));
+        Debug.Log("Œ‹‰ÊF Flag.A.HasFlag(Flag.A| Flag.B) = " + Flag.A.HasFlag(Flag.A | Flag.B));
+        Debug.Log("Œ‹‰ÊF Flag.A.HasFlag(Flag.A) = " + Flag.A.HasFlag(Flag.A));
+        Debug.Log("Œ‹‰ÊF Flag.A.HasFlag(Flag.B) = " + Flag.A.HasFlag(Flag.B));
+        Debug.Log("Œ‹‰ÊF (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B) = " + (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B));
+        Debug.Log("Œ‹‰ÊF (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B | Flag.C) = " + (Flag.A | Flag.B | Flag.C).HasFlag(Flag.A | Flag.B | Flag.C));
+        Debug.Log("Œ‹‰ÊF (Flag.A | Flag.B).HasFlag(Flag.A | Flag.B | Flag.C) = " + (Flag.A | Flag.B).HasFlag(Flag.A | Flag.B | Flag.C));
     }
     */
 }

@@ -21,12 +21,6 @@
 
         AControl()
         {
-            #region (Step 6.) Activate user defined tags. (ユーザー定義タグの有効化)
-            TagString_to_hash = Code.HashesDic(new []{
-                TAG_ZERO
-            });
-            #endregion
-
             #region (Step 7.) You can set user defined tags. (ユーザー定義タグを設定することができます)
             // 設定なし
             #endregion

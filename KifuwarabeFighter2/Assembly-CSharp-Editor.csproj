@@ -51,18 +51,17 @@
      <Compile Include="Assets\StellaQL\Editor\AconFetcher.cs" />
      <Compile Include="Assets\StellaQL\Editor\AconOperation.cs" />
      <Compile Include="Assets\StellaQL\Editor\AconScanner.cs" />
-     <Compile Include="Assets\StellaQL\Editor\AnimatorControllerSample.cs" />
      <Compile Include="Assets\StellaQL\Editor\CsvParser.cs" />
      <Compile Include="Assets\StellaQL\Editor\DataManipulationReqeust.cs" />
      <Compile Include="Assets\StellaQL\Editor\FileUtility_Editor.cs" />
      <Compile Include="Assets\StellaQL\Editor\FullpathConstantGenerator.cs" />
      <Compile Include="Assets\StellaQL\Editor\FullpathParser.cs" />
      <Compile Include="Assets\StellaQL\Editor\Reference.cs" />
-     <Compile Include="Assets\StellaQL\Editor\SM.cs" />
      <Compile Include="Assets\StellaQL\Editor\StateCmdline.cs" />
      <Compile Include="Assets\StellaQL\Editor\StellaQL.cs" />
      <Compile Include="Assets\StellaQL\Editor\TestFullpathParser.cs" />
      <Compile Include="Assets\StellaQL\Editor\TestStellaQLDemo.cs" />
+     <Compile Include="Assets\StellaQL\Editor\Tutorial.cs" />
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>
  </Reference>

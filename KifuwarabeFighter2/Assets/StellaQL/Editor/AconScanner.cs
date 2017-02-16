@@ -20,16 +20,16 @@ namespace StellaQL
 
             foreach (ChildAnimatorStateMachine caStateMachine in stateMachine.stateMachines)
             {
-                if (null == caStateMachine.stateMachine) { throw new UnityException("子ステートマシンがヌルだぜ☆（＞＿＜）！ 親stateMachine.name=[" + stateMachine.name+"]"); }
+                if (null == caStateMachine.stateMachine) { throw new UnityException("Child statemachine is null. parent stateMachine.name=[" + stateMachine.name+"]"); }
                 ScanRecursive(path, caStateMachine.stateMachine, statemachineList_flat);
             }
         }
 
         public void ScanAnimatorController(AnimatorController ac, StringBuilder message)
         {
-            message.AppendLine("Animator controller Scanning...☆（＾～＾）");
+            message.AppendLine("Animator controller Scanning...");
 
-            // パラメーター
+            // Parameter
             if(parameterScan){
                 AnimatorControllerParameter[] acpArray = ac.parameters;
                 int num = 0;
@@ -41,65 +41,61 @@ namespace StellaQL
             }
 
             int lNum = 0;
-            foreach (AnimatorControllerLayer layer in ac.layers)//レイヤー
+            foreach (AnimatorControllerLayer layer in ac.layers) // Layer
             {
                 if(OnLayer( layer, lNum))
                 {
                     Dictionary<string, AnimatorStateMachine> statemachineList_flat = new Dictionary<string, AnimatorStateMachine>(); // フルパス, ステートマシン
 
-                    // レイヤーは、ステートマシンを持っていないことがあるぜ☆（＾～＾） 他のレイヤーのステートマシンを参照してるのだろう☆（＾～＾）
-                    if (null == layer.stateMachine) { continue; } // 次のレイヤーへ
-                    ScanRecursive("", layer.stateMachine, statemachineList_flat);// 再帰をスキャンして、フラットにする。
+                    // Layers may not have a state machine. You are referring to the state machine of the other layer.
+                    if (null == layer.stateMachine) { continue; } // To the next layer.
+                    ScanRecursive("", layer.stateMachine, statemachineList_flat); // Scan recursion and make it flat.
 
                     int smNum = 0;
                     foreach (KeyValuePair<string, AnimatorStateMachine> statemachine_pair in statemachineList_flat)
-                    { // ステート・マシン
+                    { // Statemachine.
 
                         FullpathTokens ft1 = new FullpathTokens();
                         int caret1 = 0;
                         if(!FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(statemachine_pair.Key, ref caret1, ref ft1)) {
-                            throw new UnityException("[" + statemachine_pair.Key + "]パース失敗だぜ☆（＾～＾） ac=[" + ac.name + "]"); }
+                            throw new UnityException("Parse failure. [" + statemachine_pair.Key + "] ac=[" + ac.name + "]"); }
 
                         if(OnStatemachine(
                             statemachine_pair.Key,
-                            ft1.StatemachinePath,// 例えばフルパスが "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
+                            ft1.StatemachinePath, // If "Base Layer.Alpaca.Bear.Cat.Dog", It is "Alpaca.Bear.Cat".
                             statemachine_pair.Value, lNum, smNum))
                         {
                             int sNum = 0;
                             foreach (ChildAnimatorState caState in statemachine_pair.Value.states)
-                            { //ステート（ラッパー）
+                            { // State wrapper
 
-                                //FullpathTokens ft2 = new FullpathTokens(ft1);
-                                //int caret2 = caret1;
-                                //FullpathSyntaxP.Continued_Fixed_StateName(statemachine_pair.Key, ref caret2, ft2, ref ft2);
-
-                                if (OnState( statemachine_pair.Key, caState, lNum, smNum, sNum))//, ft2.StatemachinePath
+                                if (OnState( statemachine_pair.Key, caState, lNum, smNum, sNum))
                                 {
-                                    int tNum = 0; // トランジション番号
+                                    int tNum = 0; // Transition number
                                     foreach (AnimatorStateTransition transition in caState.state.transitions)
-                                    { // トランジション
+                                    {
                                         if(OnTransition( transition, lNum, smNum, sNum, tNum))
                                         {
-                                            int cNum = 0; // コンディション番号
+                                            int cNum = 0; // Condition number
                                             foreach (AnimatorCondition condition in transition.conditions)
-                                            { // コンディション
+                                            {
                                                 OnCondition( condition, lNum, smNum, sNum, tNum, cNum);
                                                 cNum++;
-                                            } // コンディション
+                                            }
                                         }
                                         tNum++;
-                                    }//トランジション
+                                    }//transition
                                 }
                                 sNum++;
-                            }//ステート（ラッパー）
+                            }//State wrapper
                         }
                         smNum++;
-                    }//ステートマシン
+                    }//Statemachine
                 }
                 lNum++;
-            }//レイヤー
+            }//Layer
 
-            message.AppendLine("Scanned☆（＾▽＾）");
+            message.AppendLine("Scanned.");
         }
 
         public virtual void OnParameter(int num, AnimatorControllerParameter acp) { }
@@ -107,14 +103,14 @@ namespace StellaQL
         /// 
         /// </summary>
         /// <param name="layer"></param>
-        /// <returns>下位を検索するなら真</returns>
+        /// <returns>True if you want to search the lower level</returns>
         public virtual bool OnLayer(AnimatorControllerLayer layer, int lNum) { return false; }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="fullnameEndWithDot"></param>
         /// <param name="statemachine"></param>
-        /// <returns>下位を検索するなら真</returns>
+        /// <returns>True if you want to search the lower level</returns>
         public virtual bool OnStatemachine(string fullnameEndWithDot, string statemachinePath, AnimatorStateMachine statemachine, int lNum, int smNum) { return false; }
 
         /// <summary>
@@ -122,25 +118,24 @@ namespace StellaQL
         /// </summary>
         /// <param name="parentPath"></param>
         /// <param name="caState"></param>
-        /// <returns>下位を検索するなら真</returns>
+        /// <returns>True if you want to search the lower level</returns>
         public virtual bool OnState(string parentPath, ChildAnimatorState caState, int lNum, int smNum, int sNum) { return false; }
-        //, string statemachinePath
         /// <summary>
         /// 
         /// </summary>
         /// <param name="transition"></param>
-        /// <returns>下位を検索するなら真</returns>
+        /// <returns>True if you want to search the lower level</returns>
         public virtual bool OnTransition(AnimatorStateTransition transition, int lNum, int smNum, int sNum, int tNum) { return false; }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="condition"></param>
-        /// <returns>下位を検索するなら真</returns>
+        /// <returns>True if you want to search the lower level</returns>
         public virtual bool OnCondition(AnimatorCondition condition, int lNum, int smNum, int sNum, int tNum, int cNum) { return false; }
     }
 
     /// <summary>
-    /// 全走査。
+    /// Full scan.
     /// </summary>
     public class AconScanner : AbstractAconScanner
     {
@@ -159,7 +154,7 @@ namespace StellaQL
         public override bool OnLayer( AnimatorControllerLayer layer, int lNum)
         {
             LayerRecord layerRecord = new LayerRecord(
-                lNum, //AconData.table_layer.Count,
+                lNum,
                 layer);
             AconData.table_layer.Add(layerRecord); return true;
         }
@@ -169,51 +164,67 @@ namespace StellaQL
             StatemachineRecord stateMachineRecord = new StatemachineRecord(
                 lNum,
                 smNum,
-                //fullnameEndWithDot,
                 statemachinePath,
                 statemachine, AconData.table_position);
             AconData.table_statemachine.Add(stateMachineRecord); return true;
         }
 
+        /// <param name="parentPath"></param>
+        /// <param name="caState"></param>
+        /// <param name="lNum">layer</param>
+        /// <param name="smNum">statemachine</param>
+        /// <param name="sNum">state</param>
+        /// <returns></returns>
         public override bool OnState( string parentPath, ChildAnimatorState caState, int lNum, int smNum, int sNum)
         {
-            //, string statemachinePath
             StateRecord stateRecord = StateRecord.CreateInstance(
                 lNum,
                 smNum,
                 sNum,
                 parentPath,
-                //statemachinePath,
                 caState, AconData.table_position);
             AconData.table_state.Add(stateRecord); return true;
         }
 
+        /// <param name="transition"></param>
+        /// <param name="lNum">layer</param>
+        /// <param name="smNum">statemachine</param>
+        /// <param name="sNum">state</param>
+        /// <param name="tNum">transition</param>
+        /// <returns></returns>
         public override bool OnTransition( AnimatorStateTransition transition, int lNum, int smNum, int sNum, int tNum)
         {
             TransitionRecord transitionRecord = new TransitionRecord(
-                lNum, //AconData.table_layer.Count,
-                smNum, //AconData.table_statemachine.Count,
-                sNum, //AconData.table_state.Count,
-                tNum,//AconData.table_transition.Count,
+                lNum,
+                smNum,
+                sNum,
+                tNum,
                 transition, "");
             AconData.table_transition.Add(transitionRecord); return true;
         }
 
+        /// <param name="condition"></param>
+        /// <param name="lNum">layer</param>
+        /// <param name="smNum">statemachine</param>
+        /// <param name="sNum">state</param>
+        /// <param name="tNum">transition</param>
+        /// <param name="cNum">condition</param>
+        /// <returns></returns>
         public override bool OnCondition( AnimatorCondition condition, int lNum, int smNum, int sNum, int tNum, int cNum)
         {
             ConditionRecord conditionRecord = new ConditionRecord(
-                lNum, //AconData.table_layer.Count,
-                smNum, //AconData.table_statemachine.Count,
-                sNum, //AconData.table_state.Count,
-                tNum, //AconData.table_transition.Count,
-                cNum, //AconData.table_condition.Count,
+                lNum,
+                smNum,
+                sNum,
+                tNum,
+                cNum,
                 condition);
             AconData.table_condition.Add(conditionRecord); return true;
         }
     }
 
     /// <summary>
-    /// ステートマシン、ステートを全部走査。
+    /// State machine, scan all states.
     /// </summary>
     public class AconStateNameScanner : AbstractAconScanner
     {
@@ -235,7 +246,6 @@ namespace StellaQL
 
         public override bool OnState( string parentPath, ChildAnimatorState caState, int lNum, int smNum, int sNum)
         {
-            //, string statemachinePath
             FullpathSet.Add(parentPath + caState.state.name); return false;
         }
 

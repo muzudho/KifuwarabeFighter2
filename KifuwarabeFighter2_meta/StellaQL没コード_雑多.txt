@@ -1,0 +1,49 @@
+        /// <summary>
+        /// FIXME: この関数は使うんだろうか☆（＾～＾）？
+        /// 完全一致タグ検索
+        /// </summary>
+        public HashSet<AcStateRecordable> FetchByEverythingTags(HashSet<int> requiredAllTags)
+        {
+            HashSet<AcStateRecordable> hit = new HashSet<AcStateRecordable>();
+
+            foreach (AcStateRecordable record in StateHash_to_record.Values)
+            {
+                if (record.HasEverythingTags(requiredAllTags))
+                {
+                    hit.Add(record);
+                }
+            }
+
+            return hit;
+        }
+
+        /// <summary>
+        /// FIXME: この関数は使うんだろうか☆（＾～＾）？
+        /// </summary>
+        [Test]
+        public void N90_Misc_FetchByEverythingTags()
+        {
+            HashSet<AcStateRecordable> recordset = AControl.Instance.FetchByEverythingTags(
+                Code.Hashes(new[] {AControl.TAG_ZERO}));
+
+            Assert.AreEqual(5, recordset.Count);
+            Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_)]));
+            Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_FOO)]));
+            Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_ANYSTATE)]));
+            Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_ENTRY)]));
+            Assert.IsTrue(recordset.Contains(AControl.Instance.StateHash_to_record[Animator.StringToHash(Demo_Zoo_AbstractAControl.BASELAYER_EXIT)]));
+        }
+
+
+            //if (isRefreshInspectorWindow)
+            //{
+            //    // リフレクションを利用して、インスペクター・ウィンドウを再描画できるだろうか？
+            //    // 出典 : unity 「Type of Inspector」 http://answers.unity3d.com/questions/948806/type-of-inspector.html
+            //    {
+            //        var editorAsm = typeof(Editor).Assembly; // リフレクションを利用する
+            //        var wndType = editorAsm.GetType("UnityEditor.InspectorWindow"); // インスペクター・ウィンドウの型
+            //        var targetWindow = EditorWindow.GetWindow<StateCmdline>(wndType);
+            //        targetWindow.Repaint();
+            //    }
+            //}
+

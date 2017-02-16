@@ -42,7 +42,7 @@ namespace SceneSelect
         void Update()
         {
             // 現在のアニメーター・ステートに紐づいたデータ
-            AcStateRecordable astateRecord = AControl.Instance.GetCurrentUserDefinedStateRecord(animator);
+            AcStateRecordable astateRecord = AControl.Instance.GetCurrentAcStateRecord(animator);
 
             #region 入力受付と途中参加
             CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);

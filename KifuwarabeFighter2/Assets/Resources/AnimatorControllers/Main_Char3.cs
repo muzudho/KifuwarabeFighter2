@@ -1,23 +1,12 @@
 ﻿using SceneMain;
 
-/// <summary>
-/// Main シーン
-/// </summary>
 namespace StellaQL.Acons.Main_Char3
 {
     /// <summary>
-    /// (Step 1.) Please, create record definition of statemachine or state. (ステートマシン、ステートのユーザー定義データ構造)
-    /// Extend AbstractUserDefinedStateRecord class. (AbstractUserDefinedStateRecordクラスを継承してください)
+    /// 独自拡張
     /// </summary>
     public class AcState : AbstractAcState
     {
-        /// <summary>
-        /// (Step 2.) Initialize record. (レコードの初期設定)
-        /// Use super class constructor. Required fullpath of statemachine or state.
-        /// empty string array is OK for userDefinedTags. new string[]{}; Other parameters is option.
-        /// (スーパークラスのコンストラクタを使います。必要なのはステートマシン名またはステート名のフルパスです。
-        /// ユーザー定義タグは空セットで構いません。 new string[]{};　その他の引数は任意)
-        /// </summary>
         /// <param name="fullpath">ステートマシン名、ステート名のフルパス</param>
         /// <param name="cliptype">アニメーションの種類</param>
         /// <param name="userDefinedTags_hash">StellaQL用のユーザー定義タグのハッシュ</param>
@@ -29,61 +18,53 @@ namespace StellaQL.Acons.Main_Char3
     }
 
     /// <summary>
-    /// (Step 3.) Click [Generate fullpath constant C#] button. and "using StellaQL.FullpathConst;". ([Generate fullpath constant C#]ボタンをクリックしてください)
+    /// アニメーター・コントローラー１つに対応するレコード。
+    /// This class corresponds to one animator controller.
     /// 
-    /// (Step 4.) Please, create table definition of statemachines or states. (ステートマシン、ステートのテーブル定義を作成してください)
-    /// Extend generated class. ([Generate fullpath constant C#]ボタンで作ったクラスを継承してください)
+    /// 自動生成した抽象クラスを継承してください。
+    /// Please inherit the automatically generated abstract class.
     /// </summary>
     public class AControl : Main_Char3_AbstractAControl
     {
         /// <summary>
-        /// (Step 8.) Please, make singleton. (シングルトンにしてください)
-        /// Use by Assets/StellaQL/UserDefinedDatabase.cs file. (Assets/StellaQL/UserDefinedDatabase.cs ファイルで使います)
+        /// シングルトン・デザインパターンとして作っています。
+        /// I am making this class as a singleton design pattern.
         /// </summary>
         static AControl() { Instance = new AControl(); }
         public static AControl Instance { get; private set; }
 
-        #region (Step 5.) Unfortunaly, Please, list user defined tags for StellaQL.  (残念ですが、StellaQL用のユーザー定義タグを定数にしてください)
-        public const string TAG_NONE = "None";
-        public const string TAG_BUSYX = "BusyX";
-        public const string TAG_BUSYY = "BusyY";
-        public const string TAG_STAND = "Stand";
-        public const string TAG_JUMP = "Jump";
-        public const string TAG_DASH = "Dash";
-        public const string TAG_CROUCH = "Crouch";
-        public const string TAG_OTHER = "Other";
-        public const string TAG_LIGHT = "Light";
-        public const string TAG_MEDIUM = "Medium";
-        public const string TAG_HARD = "Hard";
-        public const string TAG_PUNCH = "Punch";
-        public const string TAG_KICK = "Kick";
-        public const string TAG_BLOCK = "Block";
-        public const string TAG_DAMAGE = "Damage";
+        #region Tags for query
+        /// <summary>
+        /// StellaQLのコマンドライン用タグを作ることができます。
+        /// You can define tags for StellaQL query.
+        /// </summary>
+        public const string
+            TAG_NONE = "None",
+            TAG_BUSYX = "BusyX",
+            TAG_BUSYY = "BusyY",
+            TAG_STAND = "Stand",
+            TAG_JUMP = "Jump",
+            TAG_DASH = "Dash",
+            TAG_CROUCH = "Crouch",
+            TAG_OTHER = "Other",
+            TAG_LIGHT = "Light",
+            TAG_MEDIUM = "Medium",
+            TAG_HARD = "Hard",
+            TAG_PUNCH = "Punch",
+            TAG_KICK = "Kick",
+            TAG_BLOCK = "Block",
+            TAG_DAMAGE = "Damage",
+
+            // カンマで終わるリストを作るために最後に置いています。使わないでください。
+            // Don't use. Sentinel value for a list that ends with a comma.
+            TAG_ = "";
         #endregion
 
         AControl()
         {
-            #region (Step 6.) Activate user defined tags. (ユーザー定義タグの有効化)
-            TagString_to_hash = Code.HashesDic(new []{
-                TAG_NONE,
-                TAG_BUSYX,
-                TAG_BUSYY,
-                TAG_STAND,
-                TAG_JUMP,
-                TAG_DASH,
-                TAG_CROUCH,
-                TAG_OTHER,
-                TAG_LIGHT,
-                TAG_MEDIUM,
-                TAG_HARD,
-                TAG_PUNCH,
-                TAG_KICK,
-                TAG_BLOCK,
-                TAG_DAMAGE,
-            });
-            #endregion
-
-            #region (Step 7.) You can set user defined tags. (ユーザー定義タグを設定することができます)
+            #region Tags
+            // あなたの定義したタグをステートに関連付けることができます
+            // You can set your defined tags to state.
             Set(new AcState(BASELAYER_, (CliptypeIndex)0, new[] { TAG_NONE }));
             Set(new AcState(BASELAYER_SWAIT, CliptypeIndex.SWait, new[] { TAG_STAND }));
             Set(new AcState(BASELAYER_SMOVE, CliptypeIndex.SMove, new[] { TAG_STAND }));

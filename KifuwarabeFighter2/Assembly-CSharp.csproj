@@ -72,13 +72,13 @@
      <Compile Include="Assets\Scripts\TakoyakiParticleScript.cs" />
      <Compile Include="Assets\Scripts\TakoyakiTokenScript.cs" />
      <Compile Include="Assets\Scripts\TakoyakiUtilScript.cs" />
-     <Compile Include="Assets\StellaQL\AbstractAControll.cs" />
-     <Compile Include="Assets\StellaQL\AbstractUserDefinedDatabase.cs" />
      <Compile Include="Assets\StellaQL\AnimatorControllers\Demo_Zoo.cs" />
      <Compile Include="Assets\StellaQL\AnimatorControllers\Demo_Zoo_Abstract.cs" />
-     <Compile Include="Assets\StellaQL\CliptypeExtend.cs" />
-     <Compile Include="Assets\StellaQL\FileUtility_Engine.cs" />
-     <Compile Include="Assets\StellaQL\StellaQLCode.cs" />
+     <Compile Include="Assets\StellaQL\Engine\AbstractAControll.cs" />
+     <Compile Include="Assets\StellaQL\Engine\AbstractUserDefinedDatabase.cs" />
+     <Compile Include="Assets\StellaQL\Engine\CliptypeExtend.cs" />
+     <Compile Include="Assets\StellaQL\Engine\FileUtility_Engine.cs" />
+     <Compile Include="Assets\StellaQL\Engine\StellaQLCode.cs" />
      <Compile Include="Assets\StellaQL\UserDefinedDatabase.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

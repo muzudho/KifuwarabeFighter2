@@ -3,7 +3,13 @@
 namespace StellaQL
 {
     /// <summary>
-    /// データ操作を要求するレコード。ここでは　項目挿入、プロパティー更新、項目削除。項目選択を除く。
+    /// Record that requests data manipulation.
+    /// 
+    /// INSERT,
+    /// INSERT(Change Destination),
+    /// UPDATE,
+    /// DELETE,
+    /// SELECT
     /// </summary>
     public class DataManipulationRecord
     {
@@ -12,7 +18,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="category"></param>
         /// <param name="foreignkeycategory"></param>
-        /// <param name="fullpath">レイヤー、ステートマシン、ステートのいずれかのフルパス。</param>
+        /// <param name="fullpath">Full path of any of layer, state machine, state.</param>
         /// <param name="fullpathTransition"></param>
         /// <param name="fullpathCondition"></param>
         /// <param name="fullpathPropertyname"></param>
@@ -39,7 +45,7 @@ namespace StellaQL
         public string Fullpath { get; private set; }
         public string TransitionNum_ofFullpath { get; private set; }
         public string ConditionNum_ofFullpath { get; private set; }
-        public string Propertyname_ofFullpath { get; private set; } // position で使う
+        public string Propertyname_ofFullpath { get; private set; } // Use with position
         public string Name { get; private set; }
 
         public string Old { get; private set; }
@@ -56,7 +62,7 @@ namespace StellaQL
         public bool IsClear { get { bool val; if (!bool.TryParse(FlagOf_Clear, out val)) { val = false; } return val; } }
 
         /// <summary>
-        /// 中身を確認するのに使う（＾～＾）
+        /// Used to check the contents.
         /// </summary>
         /// <returns></returns>
         public void ToCsvLine(StringBuilder contents)

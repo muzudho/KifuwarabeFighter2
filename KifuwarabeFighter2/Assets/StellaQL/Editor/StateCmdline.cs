@@ -1,30 +1,31 @@
 ﻿using StellaQL;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
-using System.Collections.Generic;
 
 /// <summary>
-/// タブ名にクラスのフルパスが出てくるので、StellaQL ネームスペースに入れない。
+/// Since the full path of the class appears in the tab of the window, this class can not be put in the namespace.
 /// 
-/// 参考：「※Editorのみ　アニメーターコントローラーのステート名をぜんぶ取得する(Unity5.1)」 http://shigekix5.wp.xdomain.jp/?p=1153
-/// 参考：「【Unity】文字列をファイルに書き出す【Log出力】」 http://chroske.hatenablog.com/entry/2015/06/29/175830
-/// 参考：「文字コードを指定してテキストファイルに書き込む」 http://dobon.net/vb/dotnet/file/writefile.html
+/// I referred it.
+/// Get state names : http://shigekix5.wp.xdomain.jp/?p=1153
+/// Write log :  http://chroske.hatenablog.com/entry/2015/06/29/175830
+/// Write text : http://dobon.net/vb/dotnet/file/writefile.html
 /// </summary>
 public class StateCmdline : EditorWindow
 {
     public StateCmdline()
     {
-        info_message = new StringBuilder(); // 情報メッセージ
+        info_message = new StringBuilder(); // message.
     }
 
-    #region プロパティー
+    #region properties
     string oldPath_animatorController = FileUtility_Engine.PATH_ANIMATOR_CONTROLLER_FOR_DEMO_TEST;
     AnimatorController m_ac;
     /// <summary>
-    /// "\n" だけの改行は対応していないので、Environment.NewLine を使うこと。
+    /// Since only "\ n" newlines are not supported, use Environment.NewLine.
     /// </summary>
     string commandline = "# Sample" + Environment.NewLine+
         "STATE SELECT" + Environment.NewLine +
@@ -40,18 +41,18 @@ public class StateCmdline : EditorWindow
         @"    Zoo002" + Environment.NewLine +
         "";
     string info_message_ofTextbox = "Konnichiwa.";
-    static StringBuilder info_message; // 情報メッセージ
+    static StringBuilder info_message;
     Vector2 scroll_commandBox;
     Vector2 scroll_infoBox;
     #endregion
 
     /// <summary>
-    /// メニューからクリックしたとき。
+    /// When clicking from the menu.
     /// </summary>
     [MenuItem("Window/State Machine Command line (StellaQL)")]
     static void Init()
     {
-        // ウィンドウのインスタンスを取得して開くことだけする。
+        // Just get an instance of the window and open it.
         StateCmdline window = (StateCmdline)EditorWindow.GetWindow(typeof(StateCmdline));
         window.Show();
     }
@@ -60,53 +61,54 @@ public class StateCmdline : EditorWindow
 
     void OnGUI()
     {
+
         if (null== m_ac)
         {
-            m_ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(oldPath_animatorController);// アニメーター・コントローラーを再取得。
+            m_ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(oldPath_animatorController);// Re-acquire animator controller.
         }
         bool repaint_allWindow = false;
-        bool show_reference = false;
+        bool show_tutorial = false;
+        bool show_commandReference = false;
 
-        #region 使い方ボタン
-        if (GUILayout.Button("How to use (使い方)"))
+        #region Tutorial button
+        if (GUILayout.Button("Tutorial (チュートリアル)"))
         {
-            show_reference = true;
-            Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
+            show_tutorial = true;
+            Repaint(); // It seems that other windows do not refresh.
             repaint_allWindow = true;
         }
         GUILayout.Space(4.0f);
         #endregion
         GUILayout.Label("Animator controller", EditorStyles.boldLabel);
-        #region ドラッグ＆ドロップ エリア
+        #region Drag and drop area
         var dropArea = GUILayoutUtility.GetRect(0.0f, 20.0f, GUILayout.ExpandWidth(true));
-        GUI.Box(dropArea, "Animation Controller Drag & Drop");
+        GUI.Box(dropArea, "Animator Controller Drag & Drop");
         string droppedPath_animatorController = "";
-        //マウス位置が GUI の範囲内であれば
+        // If the mouse position is within the GUI range
         if (dropArea.Contains(Event.current.mousePosition))
         {
             switch (Event.current.type)
             {
-                case EventType.DragUpdated: // マウス・ホバー中☆
+                case EventType.DragUpdated: // Mouse hover
                     {
-                        // ドラッグしているのが参照可能なオブジェクトの場合
+                        // If the object being dragged is a referenceable object
                         if (0 < DragAndDrop.objectReferences.Length)
                         {
-                            //Debug.Log("DragAndDrop.objectReferences.Length=[" + DragAndDrop.objectReferences.Length + "]");
-                            //オブジェクトを受け入れる
+                            // Accept objects
                             DragAndDrop.AcceptDrag();
 
-                            // マウス・カーソルの形状を、このオブジェクトを受け入れられるという見た目にする
+                            // Make the shape of the mouse cursor look like it can accept this object
                             DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
                         }
                     }
                     break;
 
-                case EventType.DragPerform: // ドロップしたら☆
+                case EventType.DragPerform: // After dropping
                     {
-                        // ドラッグしているものを現在のコントロール ID と紐付ける
+                        // Link what you are dragging with the current control ID
                         DragAndDrop.activeControlID = DragAndDrop.objectReferences[0].GetInstanceID();
 
-                        //ドロップしているのが参照可能なオブジェクトの場合
+                        // If the object being dropped is a referenceable object
                         if (DragAndDrop.objectReferences.Length == 1)
                         {
                             foreach (var draggedObject in DragAndDrop.objectReferences)
@@ -115,30 +117,24 @@ public class StateCmdline : EditorWindow
                                 if (null != ac_temp)
                                 {
                                     droppedPath_animatorController = AssetDatabase.GetAssetPath(ac_temp.GetInstanceID());
-                                    Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
+                                    Repaint();
                                     repaint_allWindow = true;
                                 }
                             }
                         }
-                        //else
-                        //{
-                        //    Debug.Log("ドロップするものがないぜ☆！");
-                        //}
                     }
                     break;
 
-                    //case EventType.DragExited: // ドロップ？？
-                    //    Debug.Log("ドロップ抜け☆（＾～＾）");
-                    //    break;
+                    //case EventType.DragExited: // ?
             }
         }
         #endregion
 
         bool isChanged_animatorController = false;
-        #region アニメーター・コントローラー・パス
+        #region Animator controller path
         if (""!= droppedPath_animatorController && oldPath_animatorController != droppedPath_animatorController)
         {
-            Debug.Log("異なるアニメーター・コントローラーのパスがドロップされたぜ☆（＾～＾） old=[" + oldPath_animatorController + "] dropped=[" + droppedPath_animatorController + "]");
+            // Different animator controller path was dropped
             oldPath_animatorController = droppedPath_animatorController;
             isChanged_animatorController = true;
         }
@@ -148,77 +144,94 @@ public class StateCmdline : EditorWindow
 
         if (oldPath_animatorController != newPath_animatorController)
         {
-            Debug.Log("異なるアニメーター・コントローラーのパスが入力されたぜ☆（＾～＾） old=[" + oldPath_animatorController + "] new=[" + newPath_animatorController + "]");
+            // Different animator controller path was entered
             oldPath_animatorController = newPath_animatorController;
             isChanged_animatorController = true;
         }
         #endregion
 
-        bool isActivate_animatorController;
-        #region アニメーターコントローラー読込み可否判定
+        if (isChanged_animatorController)
+        {
+            // Re-fetch animator controller.
+            m_ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(oldPath_animatorController);
+        }
+
+        #region Create full path constant button
+        if (GUILayout.Button(BUTTON_LABEL_GENERATE_FULLPATH))
+        {
+            Debug.Log("ジェネレーターボタンを押したぜ☆（＾～＾）");
+            info_message.Append("Generate fullpath Start. filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
+            FullpathConstantGenerator.WriteCshapScript(m_ac, info_message);
+            info_message.Append("Generate fullpath End. filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
+            Debug.Log("ファイルを生成したぜ☆（＾～＾） info=[" + info_message.ToString() + "]");
+        }
+        GUILayout.Space(4.0f);
+        #endregion
+
+        bool isActivate_aconState;
+        #region Acon state readability judgment
         if (!UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table.ContainsKey(oldPath_animatorController))
         {
-            GUILayout.Label("Failure.", EditorStyles.boldLabel);
-            GUILayout.Label("Please, Animator controller", EditorStyles.boldLabel);
-            GUILayout.Label(" set path to ", EditorStyles.boldLabel);
-            GUILayout.Label(String.Concat("(", FileUtility_Engine.PATH_USER_DEFINED_DATABASE, ")"), EditorStyles.boldLabel);
+            int step = 1;
+            if (""== oldPath_animatorController)
+            {
+                GUILayout.Label("Failure.", EditorStyles.boldLabel);
+                GUILayout.Label(String.Concat("(", step, ") Please drag and drop"), EditorStyles.boldLabel);
+                GUILayout.Label("    your animator controller", EditorStyles.boldLabel);
+                GUILayout.Label("    to the box above.", EditorStyles.boldLabel);
+                step++;
+            }
+            GUILayout.Label(String.Concat("(",step,") Please add the"), EditorStyles.boldLabel);
+            GUILayout.Label("    path of your animator controller", EditorStyles.boldLabel);
+            GUILayout.Label(String.Concat("    to ",FileUtility_Engine.PATH_USER_DEFINED_DATABASE), EditorStyles.boldLabel);
+            step++;
 
             UserDefinedDatabase.Instance.Dump_Presentable(info_message);
-            isActivate_animatorController = false;
+            isActivate_aconState = false;
         }
         else
         {
-            isActivate_animatorController = true;
+            isActivate_aconState = true;
         }
         #endregion
-        if (isActivate_animatorController)
+        if (isActivate_aconState)
         {
-            if (isChanged_animatorController)
+            #region Query text area
             {
-                // アニメーター・コントローラーを再取得。
-                m_ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(oldPath_animatorController);
-            }
-
-            #region フルパス定数作成ボタン
-            if (GUILayout.Button(BUTTON_LABEL_GENERATE_FULLPATH))
-            {
-                info_message.Append("Generate fullpath Start☆（＾～＾）！ filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
-                FullpathConstantGenerator.WriteCshapScript(m_ac, info_message);
-                info_message.Append("Generate fullpath End☆（＾▽＾）！ filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
-            }
-            GUILayout.Space(4.0f);
-            #endregion
-            #region コマンド・テキストエリア
-            {
-                GUILayout.Label("Command line (StellaQL)");
+                GUILayout.Label("Query (StellaQL)");
                 scroll_commandBox = EditorGUILayout.BeginScrollView(scroll_commandBox);
                 commandline = EditorGUILayout.TextArea(commandline);//, GUILayout.Height(position.height - 30)
                 EditorGUILayout.EndScrollView();
             }
             #endregion
-            #region コマンド実行ボタン
+            #region Execution button
             {
                 if (GUILayout.Button("Execute"))
                 {
-                    info_message.Append("Executeボタンを押した☆（＾～＾）！ "); info_message.AppendLine();
+                    info_message.Append("I pressed the Execute button."); info_message.AppendLine();
                     AControllable userDefinedStateTable = UserDefinedDatabase.Instance.AnimationControllerFilePath_to_table[oldPath_animatorController];
                     SequenceQuerier.Execute(m_ac, commandline, userDefinedStateTable, info_message);
-                    //{
-                    //    int caret = 0;
-                    //    Querier.Execute(m_ac, commandline, ref caret, userDefinedStateTable, info_message);
-                    //}
-                    Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
+                    Repaint();
                     repaint_allWindow = true;
-                    info_message.Append("Execute終わり☆（＾▽＾）！ "); info_message.AppendLine();
+                    info_message.Append("Execute end."); info_message.AppendLine();
                 }
             }
             #endregion
-            #region スプレッドシート出力ボタン
-            // 実際は CSV形式ファイルを出力する
+            #region Command reference button
+            if (GUILayout.Button("Command reference (コマンド一覧)"))
+            {
+                show_commandReference = true;
+                Repaint();
+                repaint_allWindow = true;
+            }
+            GUILayout.Space(4.0f);
+            #endregion
+            #region Spreadsheet output button
+            // Actually output CSV format file
             GUILayout.Space(4.0f);
             if (GUILayout.Button("Export spread sheet")) // Export CSV
             {
-                info_message.Append("Export spread sheet Start☆（＾～＾）！ filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
+                info_message.Append("Export spread sheet Start. filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
                 info_message.Append("Please, Use Libre Office Calc."); info_message.AppendLine();
                 info_message.Append("And use macro application."); info_message.AppendLine();
                 info_message.Append("location: "); info_message.Append(StellaQLWriter.Filepath_StellaQLMacroApplicationOds()); info_message.AppendLine();
@@ -240,27 +253,27 @@ public class StateCmdline : EditorWindow
                 }
             }
             #endregion
-            #region スプレッドシート入力ボタン
-            // 実際はCSV形式ファイルを出力する
+            #region Spreadsheet input button
+            // Actually output CSV format file
             if (GUILayout.Button("Import spread sheet")) // Import CSV
             {
-                info_message.Append("Import spread sheet Start☆（＾～＾）！ filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
+                info_message.Append("Import spread sheet Start. filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
 
-                // 現状のデータ
+                // Current data
                 AconScanner aconScanner = new AconScanner();
                 aconScanner.ScanAnimatorController(m_ac, info_message);
                 AconData aconData_scanned = aconScanner.AconData;
 
                 HashSet<DataManipulationRecord> updateRequest;
-                StellaQLReader.ReadUpdateRequestCsv(out updateRequest, info_message); // CSVファイル読取
+                StellaQLReader.ReadUpdateRequestCsv(out updateRequest, info_message); // CSV file reading
                 AnimatorControllerWrapper acWrapper = new AnimatorControllerWrapper(m_ac);
-                Operation_Something.ManipulateData(acWrapper, aconData_scanned, updateRequest, info_message); // 更新を実行
-                //Operation_Layer.RefreshAllLayers(acWrapper); // 編集したレイヤーのプロパティーを反映させる。
+                Operation_Something.ManipulateData(acWrapper, aconData_scanned, updateRequest, info_message); // Perform update
+                //Operation_Layer.RefreshAllLayers(acWrapper); // Reflect the properties of the edited layer.
                 StellaQLReader.DeleteUpdateRequestCsv(info_message);
 
-                Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
+                Repaint(); // It seems that other windows do not refresh.
                 repaint_allWindow = true;
-                info_message.Append("Import spread sheet End☆（＾▽＾）！ filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
+                info_message.Append("Import spread sheet End. filename(without extension) = "); info_message.Append(m_ac.name); info_message.AppendLine();
                 //info_message.AppendLine("Please, Refresh Animator window.");
                 //info_message.AppendLine("  case 1: (1) mouse right button click on Animator window tab.");
                 //info_message.AppendLine("          (2) [Close Tab] click.");
@@ -270,22 +283,21 @@ public class StateCmdline : EditorWindow
             #endregion
         }
 
-        #region 各種リフレッシュ
+        #region Various Refresh
         {
             if (repaint_allWindow)
             {
 
-                UnityEditor.EditorApplication.isPlaying = true; // 再生する
-                info_message.AppendLine("失敬！ 再生ボタンを押し戻してくれだぜ☆（＾▽＾）");
+                UnityEditor.EditorApplication.isPlaying = true; // Play.
                 info_message.AppendLine("I'm sorry!");
                 info_message.AppendLine("    I clickeded the play button!");
                 info_message.AppendLine("Because, This is for");
                 info_message.AppendLine("    refreshing the animator window!");
                 info_message.AppendLine("Please, Push back the play button.");
 
-                // これ全部、アニメーター・ウィンドウには効かない
+                // Not all of this works for animator windows
                 //{
-                //    Repaint(); // 他のウィンドウはリフレッシュしてくれないみたいだ。
+                //    Repaint();
                 //    EditorApplication.RepaintAnimationWindow();
                 //    EditorApplication.RepaintHierarchyWindow();
                 //    EditorApplication.RepaintProjectWindow();
@@ -296,37 +308,33 @@ public class StateCmdline : EditorWindow
                 //}
             }
 
-            // 再生ボタンを押したという注意書きのあとで。
-            if (show_reference)
+            // After the notice that the play button was pressed.
+            if (show_tutorial)
             {
-                info_message.AppendLine(); // 注意書きとの間に、1行隙間を空けておく。
+                info_message.AppendLine(); // Leave one line between the note and the note.
+                Tutorial.ToContents(info_message);
+            }
+            if (show_commandReference)
+            {
+                info_message.AppendLine(); // Leave one line between the note and the note.
                 Reference.ToContents(info_message);
             }
 
-            //if (isRefreshInspectorWindow)
-            //{
-            //    // リフレクションを利用して、インスペクター・ウィンドウを再描画できるだろうか？
-            //    // 出典 : unity 「Type of Inspector」 http://answers.unity3d.com/questions/948806/type-of-inspector.html
-            //    {
-            //        var editorAsm = typeof(Editor).Assembly; // リフレクションを利用する
-            //        var wndType = editorAsm.GetType("UnityEditor.InspectorWindow"); // インスペクター・ウィンドウの型
-            //        var targetWindow = EditorWindow.GetWindow<StateCmdline>(wndType);
-            //        targetWindow.Repaint();
-            //    }
-            //}
         }
         #endregion
 
-        #region メッセージ出力欄
+        #region Message output field
         {
             GUILayout.Label("Info");
             if (0 < info_message.Length)
             {
-                info_message_ofTextbox = info_message.ToString(); // 更新
+                info_message_ofTextbox = info_message.ToString(); // update
                 info_message.Length = 0;
             }
+
             scroll_infoBox = EditorGUILayout.BeginScrollView(scroll_infoBox);
             info_message_ofTextbox = EditorGUILayout.TextArea(info_message_ofTextbox);//, GUILayout.Height(position.height - 30)
+                                                                                        // Repaint();
             EditorGUILayout.EndScrollView();
         }
         #endregion

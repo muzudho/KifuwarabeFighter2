@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using System;
 
 namespace StellaQL
 {
     /// <summary>
-    /// 手作りの CSVの１行分のパーサーだぜ☆（＾▽＾）
+    /// Parser for one line of homemade CSV.
     /// </summary>
     public abstract class CsvParser
     {
@@ -14,7 +13,7 @@ namespace StellaQL
             return CsvLine_to_cellList(source, ',');
         }
         /// <summary>
-        /// アン・エスケープするぜ☆（＾▽＾）
+        /// Unescape.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="delimiter"></param>
@@ -22,35 +21,36 @@ namespace StellaQL
         public static List<string> CsvLine_to_cellList(string source, char delimiter)
         {
             List<string> cells = new List<string>();
-            if (source.Length < 1) { return cells; } // 空文字列なら終わり
+            if (source.Length < 1) { return cells; } // End if empty string
 
-            //１セル分の文字列
+            // Character string for one cell
             StringBuilder cell = new StringBuilder();
             int caret = 0;
-            while (caret < source.Length) // このループで１行分に対応
+            while (caret < source.Length) // This loop corresponds to one line
             {
                 switch (source[caret])
                 {
-                    case ',': caret++; cells.Add(cell.ToString()); cell.Length = 0; break; // トークンを出力して次へ。
+                    case ',': caret++; cells.Add(cell.ToString()); cell.Length = 0; break; // Output the token and continue.
                     case '"':
-                        // ここからリテラル文字列処理へ
+                        // From here to literal string processing
                         caret++;
 
-                        // エスケープしながら、単独「"」が出てくるまでそのまま出力。
+                        // While escaping, output it as it is until alone (") comes out.
                         while (caret < source.Length)
                         {
                             if ('"'==source[caret])
                             {
-                                // これが単独の「"」なら終わり、２連続の「"」ならまだ終わらない。
+                                // If this is a single ("), it ends.
+                                // If it is two consecutive (") it will not end.
 
-                                if (caret + 1 == source.Length) { caret++; break; }// 「"」が最後の文字だったのなら、無視してループ抜け。
-                                else if ('"' == source[caret + 1]) { caret += 2; cell.Append('"'); } // 2文字目も「"」なら、２つの「""」すっとばして代わりに「"」を入れてループ続行。
-                                else { caret = source.IndexOf(',',caret)+1; break; } // 2連続でない「"」なら、次の「,」の次までの空白等をスキップ。//【改変/】2012年10月30日変更。旧： index++;//【改変/】2017年02月01日変更。次のカンマの次まで飛ばした。旧： index+=2;
+                                if (caret + 1 == source.Length) { caret++; break; }// If (") was the last character, ignore it and omit the loop.
+                                else if ('"' == source[caret + 1]) { caret += 2; cell.Append('"'); } // If the second letter is also ("), continue with the loop by inserting two (") suddenly and inserting (") instead.
+                                else { caret = source.IndexOf(',',caret)+1; break; } // If it is not two consecutive ("), skip whitespace etc. until the next (,). (Change)2012-10-30, 2017-02-01.
                             }
-                            else { cell.Append(source[caret]); caret++; }// 通常文字なのでループ続行。
+                            else { cell.Append(source[caret]); caret++; }// Since it is a normal character, I continue with a loop.
                         }
-                        cells.Add(cell.ToString().Trim()); cell.Length = 0; break; // 前後の空白はカット
-                    default: cell.Append(source[caret]); caret++; break;// ダブルクォートされていない文字列か、ダブルクォートの前のスペースだ。
+                        cells.Add(cell.ToString().Trim()); cell.Length = 0; break; // Cut the front and rear spaces
+                    default: cell.Append(source[caret]); caret++; break;// It is either a string that is not double quoted or a space before double quotes.
                 }
             }
 
@@ -75,24 +75,24 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// （１）もし「,」または「"」が含まれていれば、両端に「"」を付加します。
-        /// （２）含まれている「"」は、「""」に変換します。
+        /// (1) If "," or (") is included, add (") to both ends.
+        /// (2) Contains (") converted to ("").
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
         public static string EscapeCell(string source)
         {
-            bool isEscape = false;// エスケープが必要なら真。
+            bool isEscape = false; // True if you need escape.
 
             StringBuilder s = new StringBuilder();
 
             for (int caret = 0; caret < source.Length;) {
-                if (',' == source[caret] || '\r' == source[caret] || '\n' == source[caret]) { isEscape = true; s.Append(source[caret]); caret++; }// カンマが含まれていたので、エスケープが必要になった。(2017-02-09 追加 '\r'、'\n')
-                else if ('"' == source[caret]) { isEscape = true; s.Append("\"\""); caret++; }// ダブルクォーテーションが含まれていたので、エスケープが必要になった
+                if (',' == source[caret] || '\r' == source[caret] || '\n' == source[caret]) { isEscape = true; s.Append(source[caret]); caret++; }// Since commas were included, escaping became necessary. (2017-02-09 Add '\r', '\n')
+                else if ('"' == source[caret]) { isEscape = true; s.Append("\"\""); caret++; } // Since double quotes were included, escape was required.
                 else { s.Append(source[caret]); caret++; }
             }
 
-            if (isEscape) { s.Insert(0, '"'); s.Append('"'); } // ダブルクォーテーションで挟む
+            if (isEscape) { s.Insert(0, '"'); s.Append('"'); } // Put in double quotes.
 
             return s.ToString();
         }

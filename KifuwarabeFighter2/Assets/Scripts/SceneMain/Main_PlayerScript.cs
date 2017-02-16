@@ -77,7 +77,7 @@ namespace SceneMain
             //}
 
             // 現在のアニメーター・ステートに紐づいたデータ
-            AcState astateRecord = (AcState)AControl.Instance.GetCurrentUserDefinedStateRecord(animator);
+            AcState astateRecord = (AcState)AControl.Instance.GetCurrentAcStateRecord(animator);
 
             #region 入力受付
             CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
@@ -175,7 +175,7 @@ namespace SceneMain
 
             FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(input.leverX);
 
-            if (astateRecord.Tags.Contains((int)AControl.Instance.TagString_to_hash[AControl.TAG_BLOCK]))
+            if (astateRecord.Tags.Contains((int)Animator.StringToHash(AControl.TAG_BLOCK)))
             {
                 // ブロック中
                 if(FacingOpponentMoveFwBkSt.Back != facingOpponentMoveFwBkSt)
@@ -317,7 +317,7 @@ namespace SceneMain
             //{
             if (input.leverX != 0)//左か右を入力したら
             {
-                if (!astateRecord.Tags.Contains((int)AControl.Instance.TagString_to_hash[AControl.TAG_BUSYX]))
+                if (!astateRecord.Tags.Contains(Animator.StringToHash(AControl.TAG_BUSYX)))
                 {
                     //入力方向へ移動
                     Rigidbody2D.velocity = new Vector2(Mathf.Sign(input.leverX) * speedX, Rigidbody2D.velocity.y);
@@ -397,7 +397,7 @@ namespace SceneMain
 
             if (0 != input.leverY)// 上か下キーを入力していたら
             {
-                if (!astateRecord.Tags.Contains((int)AControl.Instance.TagString_to_hash[AControl.TAG_BUSYY]))
+                if (!astateRecord.Tags.Contains(Animator.StringToHash(AControl.TAG_BUSYY)))
                 {
                     if (0 < input.leverY)// 上キーを入力したら
                     {

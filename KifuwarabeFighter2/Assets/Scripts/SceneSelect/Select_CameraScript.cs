@@ -31,8 +31,8 @@ namespace SceneSelect
             ReadyingTime++;
 
             // 現在のアニメーター・ステートに紐づいたデータ
-            AcStateRecordable astateRecord0 = AControl.Instance.GetCurrentUserDefinedStateRecord(player_to_animator[(int)PlayerIndex.Player1]);
-            AcStateRecordable astateRecord1 = AControl.Instance.GetCurrentUserDefinedStateRecord(player_to_animator[(int)PlayerIndex.Player2]);
+            AcStateRecordable astateRecord0 = AControl.Instance.GetCurrentAcStateRecord(player_to_animator[(int)PlayerIndex.Player1]);
+            AcStateRecordable astateRecord1 = AControl.Instance.GetCurrentAcStateRecord(player_to_animator[(int)PlayerIndex.Player2]);
             if (
                 AControl.Instance.StateHash_to_record[Animator.StringToHash(Select_Cursor_AbstractAControl.BASELAYER_READY)].Name == astateRecord0.Name
                 &&

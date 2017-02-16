@@ -5,7 +5,7 @@ namespace StellaQL
 {
     public class TestFullpathParser
     {
-        #region N70 シンタックス・パーサー
+        #region N70 Syntax Parser
         [Test]
         public void N80_Syntax_Fixed_LayerName()
         {
@@ -62,11 +62,11 @@ namespace StellaQL
             int caret = 0;
             FullpathTokens ft = new FullpathTokens();
 
-            // "～Bear." まで読取。
+            // Read until "~ Bear."
             bool successful1 = FullpathSyntaxP.Fixed_LayerName_And_StatemachineNames(query, ref caret, ref ft);
             Assert.IsTrue(successful1);
 
-            // 続きから "Cat"まで読込み。
+            // Continue reading "Cat".
             bool successful2 = FullpathSyntaxP.Continued_Fixed_StateName(query, ref caret, ft, ref ft);
 
             Assert.IsTrue(successful2);
@@ -81,7 +81,7 @@ namespace StellaQL
 
 
 
-        #region N80 レキシカル・パーサー
+        #region N80 Lexical Parser
         [Test]
         public void N80_Lexical_VarLayerName()
         {
@@ -100,13 +100,13 @@ namespace StellaQL
         public void N80_Lexical_VarStatemachineNames()
         {
             string query = "Base Layer.Alpaca.Bear.Cat";
-            int caret = "Base Layer.".Length; // "Base Layer." まで走査した続きから。
+            int caret = "Base Layer.".Length; // From the continuation of scanning to "Base Layer."
             List<string> statemachinesNameEndsWithoutDot;
 
             bool successful = FullpathLexcalP.VarStatemachineNames(query, ref caret, out statemachinesNameEndsWithoutDot);
 
             Assert.IsTrue(successful);
-            Assert.AreEqual(23, caret); // "～Bear." の次。
+            Assert.AreEqual(23, caret); // Next to "~ Bear.".
             Assert.AreEqual(2, statemachinesNameEndsWithoutDot.Count);
             Assert.AreEqual("Alpaca", statemachinesNameEndsWithoutDot[0]);
             Assert.AreEqual("Bear", statemachinesNameEndsWithoutDot[1]);
@@ -116,13 +116,13 @@ namespace StellaQL
         public void N80_Lexical_VarStateName()
         {
             string query = "Base Layer.Alpaca.Bear.Cat";
-            int caret = "Base Layer.Alpaca.Bear.".Length; // "Base Layer.Alpaca.Bear." まで走査した続きから。
+            int caret = "Base Layer.Alpaca.Bear.".Length; // From the continuation of scanning to "Base Layer.Alpaca.Bear.".
             string stateName;
 
             bool successful = FullpathLexcalP.VarStateName(query, ref caret, out stateName);
 
             Assert.IsTrue(successful);
-            Assert.AreEqual(26, caret); // "Cat" の次。
+            Assert.AreEqual(26, caret); // Next to "Cat".
             Assert.AreEqual("Cat", stateName);
         }
         #endregion

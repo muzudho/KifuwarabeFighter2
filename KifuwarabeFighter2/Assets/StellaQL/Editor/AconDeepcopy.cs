@@ -4,12 +4,14 @@ using UnityEngine;
 namespace StellaQL
 {
     /// <summary>
-    /// 下の方に シャローコピーの AconShallowcopy もある。
-    /// リンクを切る AconRemoveLink というのもある。
+    /// There is also a shallow copy (incomplete) AconShallowcopy on the lower side.
+    /// There is also AconRemoveLink which cuts off the link on the lower side.
     /// </summary>
     public class AconDeepcopy
     {
-
+        /// <summary>
+        /// I want you to deep copy the layer.
+        /// </summary>
         public static AnimatorControllerLayer DeepcopyLayer(AnimatorControllerLayer old)
         {
             AnimatorControllerLayer n = new AnimatorControllerLayer();
@@ -24,6 +26,9 @@ namespace StellaQL
             return n;
         }
 
+        /// <summary>
+        /// I want you to deep copy the child statemachine.
+        /// </summary>
         public static ChildAnimatorStateMachine[] DeepcopyChildStatemachine(ChildAnimatorStateMachine[] oldItems)
         {
             ChildAnimatorStateMachine[] nItems = new ChildAnimatorStateMachine[oldItems.Length];
@@ -36,6 +41,9 @@ namespace StellaQL
             return nItems;
         }
 
+        /// <summary>
+        /// I want you to deep copy the child statemachine.
+        /// </summary>
         public static ChildAnimatorStateMachine DeepcopyChildStatemachine(ChildAnimatorStateMachine old)
         {
             ChildAnimatorStateMachine n = new ChildAnimatorStateMachine();
@@ -44,6 +52,9 @@ namespace StellaQL
             return n;
         }
 
+        /// <summary>
+        /// I want you to deep copy the statemachine.
+        /// </summary>
         public static AnimatorStateMachine DeepcopyStatemachine(AnimatorStateMachine old)
         {
             AnimatorStateMachine n = new AnimatorStateMachine();
@@ -62,6 +73,9 @@ namespace StellaQL
             return n;
         }
 
+        /// <summary>
+        /// I want you to deep copy the child state.
+        /// </summary>
         public static ChildAnimatorState DeepcopyChildstate(ChildAnimatorState old)
         {
             ChildAnimatorState n = new ChildAnimatorState();
@@ -70,6 +84,9 @@ namespace StellaQL
             return n;
         }
 
+        /// <summary>
+        /// I want you to deep copy the state.
+        /// </summary>
         public static AnimatorState DeepcopyState(AnimatorState old)
         {
             AnimatorState n = new AnimatorState();
@@ -96,6 +113,9 @@ namespace StellaQL
             return n;
         }
 
+        /// <summary>
+        /// I want you to deep copy the transitions.
+        /// </summary>
         public static AnimatorStateTransition[] DeepcopyTransitions(AnimatorStateTransition[] oldArray)
         {
             AnimatorStateTransition[] n = new AnimatorStateTransition[oldArray.Length];
@@ -108,6 +128,9 @@ namespace StellaQL
             return n;
         }
 
+        /// <summary>
+        /// I want you to deep copy the transition.
+        /// </summary>
         public static AnimatorStateTransition DeepcopyTransition(AnimatorStateTransition old)
         {
             AnimatorStateTransition n = new AnimatorStateTransition();
@@ -133,6 +156,9 @@ namespace StellaQL
 
     public class AconShallowcopy
     {
+        /// <summary>
+        /// I want you to shallow copy the state.
+        /// </summary>
         public static AnimatorState ShallowcopyState(AnimatorState old)
         {
             AnimatorState n = new AnimatorState();
@@ -160,7 +186,8 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 容れ物を変える程度に使う。
+        /// I want you to shallow copy the transitions.
+        /// Use it to the extent that it changes the contents.
         /// </summary>
         public static AnimatorStateTransition[] ShallowcopyTransitions(AnimatorStateTransition[] srcArray)
         {
@@ -175,7 +202,8 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 容れ物を変える程度に使う。
+        /// I want you to shallow copy the transition.
+        /// Use it to the extent that it changes the contents.
         /// </summary>
         public static AnimatorStateTransition ShallowcopyTransition(AnimatorStateTransition src)
         {
@@ -183,7 +211,8 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 容れ物を変える程度に使う。
+        /// I want you to shallow copy the transition.
+        /// Use it to the extent that it changes the contents.
         /// </summary>
         public static AnimatorStateTransition ShallowcopyTransition(AnimatorStateTransition dst, AnimatorStateTransition src)
         {
@@ -193,14 +222,15 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 容れ物を変える程度に使う。
+        /// I want you to shallow copy the transition except DestinationState.
+        /// Use it to the extent that it changes the contents.
         /// </summary>
         public static AnimatorStateTransition ShallowcopyTransition_ExceptDestinaionState(AnimatorStateTransition dst, AnimatorStateTransition src)
         {
             dst.canTransitionToSelf     = src.canTransitionToSelf;
             dst.conditions              = src.conditions;
             // 遷移先は除く dst.destinationState = src.destinationState;
-            dst.destinationStateMachine = src.destinationStateMachine; // これはコピーする☆
+            dst.destinationStateMachine = src.destinationStateMachine; // This is a copy.
             dst.duration                = src.duration;
             dst.exitTime                = src.exitTime;
             dst.hasExitTime             = src.hasExitTime;

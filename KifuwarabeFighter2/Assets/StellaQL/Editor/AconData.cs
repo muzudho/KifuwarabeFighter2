@@ -1,12 +1,12 @@
 ﻿//
-// Animation Controller Tables
+// This file is data.
 //
+using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
-using UnityEditor;
-using System;
 
 namespace StellaQL
 {
@@ -16,9 +16,11 @@ namespace StellaQL
         {
             SourceAc = ac;
 
-            // レイヤーのコピー
             CopiedLayers = new List<AnimatorControllerLayer>();
-            foreach (AnimatorControllerLayer actualLayer in ac.layers) // オリジナルのレイヤーは、セッターが死んでる？
+
+            // レイヤーのセッターは機能していない？　コピーを作って使うことにする。
+            // I guess, Layer's setter does not work. I use copy.
+            foreach (AnimatorControllerLayer actualLayer in ac.layers)
             {
                 AnimatorControllerLayer copiedLayer = AconDeepcopy.DeepcopyLayer(actualLayer);
                 CopiedLayers.Add(copiedLayer);
@@ -29,9 +31,6 @@ namespace StellaQL
         public List<AnimatorControllerLayer> CopiedLayers { get; private set; }
     }
 
-    /// <summary>
-    /// 列定義レコード
-    /// </summary>
     public class RecordDefinition
     {
         public enum FieldType
@@ -41,17 +40,22 @@ namespace StellaQL
             Bool,
             String,
             /// <summary>
-            /// 特殊実装なもの。
+            /// 実装がハードコーディングされている文字列。
+            /// For hard coding.
             /// </summary>
             SpecialString,
-            Other,//対応外
+            /// <summary>
+            /// 対応していないフィールド。
+            /// For not supported field.
+            /// </summary>
+            Other,
         }
 
         public enum SubFieldType
         {
             /// <summary>
-            /// スプレッドシートで、文字列型のClear欄を非表示にする。
-            /// TODO: 用意はしてみたものの、使う場面がない……☆（＞＿＜）
+            /// TODO: スプレッドシートで、文字列型のClear欄を非表示にする。用意はしてみたものの、使う場面がない……。
+            /// TODO: For invisible Clear field. (Spreadsheet) But, I do not use it.
             /// </summary>
             Required,
             None,
@@ -60,27 +64,33 @@ namespace StellaQL
         public enum KeyType
         {
             /// <summary>
-            /// StellaQLで使う、一時的なナンバリング
+            /// StellaQLスプレッドシートで使う、一時的なナンバリング
+            /// Temporary numbering to use with Spreadsheet.
             /// </summary>
             TemporaryNumbering,
             /// <summary>
             /// Unityで識別子に使えそうなもの
+            /// What Unity can use as an identifier.
             /// </summary>
             Identifiable,
             /// <summary>
             /// スプレッドシートで読取専用フィールドにしたい場合これ。
+            /// Make it a read-only field in a spreadsheet.
             /// </summary>
             ReadOnly,
             /// <summary>
             /// ユニティ・エディターが書込みに対応していない場合はこれ。
+            /// This is when unity editor does not support writing.
             /// </summary>
             UnityEditorDoesNotSupportWriting,
             /// <summary>
             /// StellaQL側で書き込みに対応していない場合はこれ。
+            /// This is when StellaQL side does not support writing.
             /// </summary>
             StellaQLSpreadsheetDoesNotSupportWriting,
             /// <summary>
             /// それ以外
+            /// other than that.
             /// </summary>
             None,
         }
@@ -119,64 +129,80 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// 列名
+        /// 列名。
+        /// Column name.
         /// </summary>
         public string Name { get; private set; }
 
         /// <summary>
-        /// 型
+        /// 型。
+        /// Value type.
         /// </summary>
         public FieldType Type { get; private set; }
         public SubFieldType SubType { get; private set; }
 
         /// <summary>
-        /// キーとして利用できるフィールドか
+        /// 列の種類。
+        /// Value type. attribute.
         /// </summary>
         public KeyType KeyField { get; private set; }
 
         /// <summary>
         /// スプレッド・シートから入力可能か
+        /// Columns visible in spreadsheets.
         /// </summary>
         public bool Input { get; private set; }
 
         /// <summary>
-        /// 列の記入漏れを防ぐためのものだぜ☆（＾～＾）
+        /// 列の記入漏れを防ぐために　ひとくくりにしています。
+        /// To prevent missing of the column.
         /// </summary>
-        /// <param name="fields"></param>
-        /// <param name="c">contents (コンテンツ)</param>
-        /// <param name="n">output column name (列名出力)</param>
-        /// <param name="d">output definition (列定義出力)</param>
         public void AppendCsv(Dictionary<string, object> fields, StringBuilder contents, bool outputColumnName, bool outputDefinition)
         {
-            if (outputDefinition) // 列定義一列分を出力するなら
+            // 列定義一列分を出力するなら
+            // Output one column definition column.
+            if (outputDefinition)
             {
-                if (outputColumnName) // 列名を出力するなら
+                // 列名を出力するなら
+                // Output column names.
+                if (outputColumnName)
                 {
                 }
                 else
                 {
                     contents.Append(Name); contents.Append(",");
-                    contents.Append(Type.ToString().Substring(0, 1).ToLower()); // １文字目。列挙型の要素名の先頭を小文字にして、型名とする。
-                    contents.Append(Type.ToString().Substring(1));              // ２文字目以降。
+
+                    // １文字目。列挙型の要素名の先頭を小文字にして、型名とする。
+                    // First letter. Make the beginning of element name of enumerated type lowercase, and make it type name.
+                    contents.Append(Type.ToString().Substring(0, 1).ToLower());
+
+                    // ２文字目以降。
+                    // After the second character.
+                    contents.Append(Type.ToString().Substring(1));
                     contents.Append(",");
+
                     contents.Append(KeyField); contents.Append(",");
                     contents.Append(Input); contents.Append(",");
-                    contents.Append(SubType); contents.Append(",");             // 2017-02-14 追加
+                    contents.Append(SubType); contents.Append(",");             // 2017-02-14 追加Add.
                     contents.AppendLine();
                 }
             }
-            else // 1フィールド分を出力するなら
+            // 1フィールド分を出力するなら
+            // If it outputs 1 field.
+            else
             {
-                if (outputColumnName) // 列名を出力するなら
+                // 列名を出力するなら
+                // Output column names.
+                if (outputColumnName)
                 {
                     switch (this.Type)
                     {
                         case FieldType.Int://thru
                         case FieldType.Float:
-                        case FieldType.Bool: contents.Append(this.Name); contents.Append(","); break;
+                        case FieldType.Bool: contents.Append(Name); contents.Append(","); break;
                         case FieldType.String://thru
                         case FieldType.Other:
-                        default: contents.Append(this.Name); contents.Append(","); break;
+                        default: contents.Append(Name); contents.Append(","); break;
                     }
                 }
                 else
@@ -195,7 +221,9 @@ namespace StellaQL
         }
         public static void AppendDefinitionHeader(StringBuilder contents)
         {
-            contents.AppendLine("Name,Type,KeyField,Input,SubType,[EOL],"); // 列定義ヘッダー出力
+            // 列定義ヘッダー出力
+            // Column definition header output
+            contents.AppendLine("Name,Type,KeyField,Input,SubType,[EOL],");
         }
 
         public delegate bool   GettterBool  (object instance);                  GettterBool m_getterBool;
@@ -211,59 +239,63 @@ namespace StellaQL
         {
             switch (Type)
             {
-                case FieldType.Bool:    if ((bool)actualOld != (bool)requestOld) { throw new UnityException("Old値が異なる bool型 actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
-                case FieldType.Float:   if ((float)actualOld != (float)requestOld) { throw new UnityException("Old値が異なる float型 actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
-                case FieldType.Int:     if ((int)actualOld != (int)requestOld) { throw new UnityException("Old値が異なる int型 actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
-                case FieldType.Other:   throw new UnityException("対応しないデータだぜ☆（＾～＾） FieldType=[" + Type.ToString() + "]"); // 未対応は、この型にしてあるんだぜ☆（＾▽＾）
-                case FieldType.String:  if ((string)actualOld != (string)requestOld) { throw new UnityException("Old値が異なる string型 actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
-                default: throw new UnityException("未定義の型だぜ☆（＾～＾） FieldType=[" + Type.ToString() + "]");
+                case FieldType.Bool:    if ((bool)actualOld != (bool)requestOld) { throw new UnityException("Old value is different. (bool type) actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
+                case FieldType.Float:   if ((float)actualOld != (float)requestOld) { throw new UnityException("Old value is different. (float type) actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
+                case FieldType.Int:     if ((int)actualOld != (int)requestOld) { throw new UnityException("Old value is different. (int type) actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
+                case FieldType.Other:   throw new UnityException("Does not support Other type. FieldType=[" + Type.ToString() + "]");
+                case FieldType.String:  if ((string)actualOld != (string)requestOld) { throw new UnityException("Old value is different. (string type) actual=[" + actualOld + "] old=[" + requestOld + "]"); } break;
+                default: throw new UnityException("Does not support. FieldType=[" + Type.ToString() + "]");
             }            
             return true;
         }
 
         /// <summary>
         /// 既存のオブジェクトのプロパティー更新の場合、これを使う。
+        /// This is used for property update of existing objects.
         /// </summary>
-        /// <param name="instance">ステートマシン、チャイルド・ステート、コンディション・ラッパー、ポジション・ラッパー等</param>
-        /// <param name="record"></param>
-        /// <param name="message"></param>
+        /// <param name="instance">ステートマシン、チャイルド・ステート、コンディション・ラッパー、ポジション・ラッパー等
+        /// Or wrapper. ex. Statemachine, Chlid state, Condition, Position, etc.</param>
         public void Update(object instance, DataManipulationRecord record, StringBuilder message)
         {
-            if (null == instance) { throw new UnityException("instanceがヌルだったぜ☆（／＿＼）"); }
+            if (null == instance) { throw new UnityException("Instance is null."); }
             switch (Type) {
                 case FieldType.Bool: {
-                        if (null == m_getterBool) { throw new UnityException("m_getterBoolがヌルだったぜ☆（／＿＼）"); }
+                        if (null == m_getterBool) { throw new UnityException("m_getterBool is null."); }
                         bool actual = m_getterBool(instance);
                         if (EqualsOld(actual, record.OldBool)) { m_setterBool(instance, record.NewBool); }
                     } break;
                 case FieldType.Float: {
-                        if (null == m_getterFloat) { throw new UnityException("m_getterFloatがヌルだったぜ☆（／＿＼）"); }
+                        if (null == m_getterFloat) { throw new UnityException("m_getterFloat is null."); }
                         float actual = m_getterFloat(instance);
                         if (EqualsOld(actual, record.OldFloat)) { m_setterFloat(instance, record.NewFloat); }
                     } break;
                 case FieldType.Int: {
-                        if (null == m_getterInt) { throw new UnityException("m_getterIntがヌルだったぜ☆（／＿＼）"); }
+                        if (null == m_getterInt) { throw new UnityException("m_getterInt is null."); }
                         int actual = m_getterInt(instance);
                         if (EqualsOld(actual, record.OldInt)) { m_setterInt(instance, record.NewInt); }
                     } break;
-                case FieldType.Other: break; // 未対応は、この型にしてあるんだぜ☆（＾▽＾）
+                // 未対応は、この型にしてある
+                // Not supported type.
+                case FieldType.Other: break;
+
                 case FieldType.String: {
-                        Debug.Log("string型の更新要求だぜ☆（＾～＾）Name=["+Name+ "] record.IsDelete=["+ record.IsClear + "] record.New=["+ record.New + "]");
-                        if (null == m_getterString) { throw new UnityException("m_getterStringがヌルだったぜ☆（／＿＼）"); }
+                        if (null == m_getterString) { throw new UnityException("m_getterString is null."); }
                         string actual = m_getterString(instance);
                         if (EqualsOld(actual, record.Old)) {
-                            if (record.IsClear) { m_setterString(instance, ""); } // 空文字列にセットする
+                            // 空文字列にセットする
+                            // To empty.
+                            if (record.IsClear) { m_setterString(instance, ""); }
                             else { m_setterString(instance, record.New); }
                         }
                     } break;
-                default: throw new UnityException("未定義の型だぜ☆（＾～＾） FieldType=["+Type.ToString()+"]");
+                default: throw new UnityException("Not supported. FieldType=["+Type.ToString()+"]");
             }
         }
     }
 
     /// <summary>
     /// パラメーター
-    /// FIXME: UnityEditorからはプロパティーの更新が反映されない？
+    /// Parameter.
     /// </summary>
     public class ParameterRecord
     {
@@ -295,7 +327,7 @@ namespace StellaQL
                 ),
                 new RecordDefinition("nameHash"     , RecordDefinition.FieldType.Int        ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.ReadOnly
                     ,(object i)=>{       return ((AnimatorControllerParameter)i).nameHash; }
-                    ,(object i,int v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                    ,(object i,int v)=>{ throw new UnityException("Not supported.");}
                 ),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
@@ -310,8 +342,8 @@ namespace StellaQL
             this.Fields = new Dictionary<string, object>()
             {
                 { "num"             ,num                },
-                { "#name_ID#"       ,name               }, // ID用
-                { "name"            ,name               }, // 編集用
+                { "#name_ID#"       ,name               }, // ID用 for key.
+                { "name"            ,name               }, // 編集用 for edit.
                 { "#type_String#"   ,type.ToString()    },
                 { "defaultBool"     ,numberBool         },
                 { "defaultFloat"    ,numberFloat        },
@@ -321,12 +353,12 @@ namespace StellaQL
         }
         public Dictionary<string, object> Fields { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="c">contents (コンテンツ)</param>
-        /// <param name="n">output column name (列名出力)</param>
-        /// <param name="d">output definition (列定義出力)</param>
+        /// <param name="c">コンテンツ
+        /// contents</param>
+        /// <param name="n">列名出力
+        /// output column name</param>
+        /// <param name="d">列定義出力
+        /// output definition</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
             Definitions["num"           ].AppendCsv(Fields, c, n, d);
@@ -344,11 +376,13 @@ namespace StellaQL
 
     /// <summary>
     /// レイヤー
+    /// Layer.
     /// </summary>
     public class LayerRecord
     {
         /// <summary>
         /// レイヤーのコピーを渡されても更新できないので、アニメーション・コントローラーも一緒に渡そうというもの。
+        /// Since it is impossible to update even if a copy of the layer is passed, it is something to pass animation controller together.
         /// </summary>
         public class LayerWrapper
         {
@@ -367,66 +401,62 @@ namespace StellaQL
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
                 // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
+                // The word is sandwiched with # for easier character string searching. For spreadsheet.
                 new RecordDefinition("#layerNum#"               ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering    ,false),
                 new RecordDefinition("name"                     ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false),
                 new RecordDefinition("#avatarMask_assetPath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{
-                        if(null==((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].avatarMask) { Debug.Log("アバターマスク無し☆（＞＿＜）"); return ""; }
+                        if(null==((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].avatarMask) { return ""; }
                         return AssetDatabase.GetAssetPath(((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].avatarMask.GetInstanceID());
                     }
                     ,(object i,string v)=>{
                         AvatarMask value = AssetDatabase.LoadAssetAtPath<AvatarMask>(v);
-                        if(null==value) { throw new UnityException("["+v+"]というアセット・パスのアバターマスクは見つからなかったぜ☆（＞＿＜）！"); }
+                        if(null==value) { throw new UnityException("Not found ["+v+"] avatar mask."); }
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].avatarMask = value;
-                        Debug.Log("アバターマスクアセットパス（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
-                        Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
+                        // Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                         // TODO: Delete にも対応したい。
+                        // TODO: I also want to correspond to Delete.
                     }),
                 new RecordDefinition("#blendingMode_string#"    ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].blendingMode.ToString(); }
                     ,(object i,string v)=>{
-                        HashSet<AnimatorLayerBlendingMode> hits = Operation_AnimatorLayerBlendingMode.Fetch(v);
-                        if(0==hits.Count) { throw new UnityException("正規表現に該当する列挙型の要素が無いぜ☆（＞＿＜）！ v=["+v+"] hits.Count=["+hits.Count+"]"); }
+                        HashSet<AnimatorLayerBlendingMode> hits = Operation_AnimatorLayerBlendingMode.FetchAnimatorLayerBlendingModes(v);
+                        if(0==hits.Count) { throw new UnityException("Not found. v=["+v+"] hits.Count=["+hits.Count+"]"); }
                         else if(1<hits.Count)
                         {
                             StringBuilder sb = new StringBuilder(); foreach(AnimatorLayerBlendingMode enumItem in hits) { sb.Append(enumItem.ToString()); sb.Append(" "); }
-                            throw new UnityException("正規表現に該当する列挙型の要素はどれか１つにしろだぜ☆（＞＿＜）！ v=["+v+"] hits.Count=["+hits.Count+"] sb="+sb.ToString());
+                            throw new UnityException("There was more than one. v=["+v+"] hits.Count=["+hits.Count+"] sb="+sb.ToString());
                         }
                         AnimatorLayerBlendingMode value = 0; bool found =false;
                         foreach(AnimatorLayerBlendingMode enumItem in hits) { value = enumItem; found=true; break; }
                         if(found) {
                             ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].blendingMode = value;
-                            Debug.Log("ブレンドモードストリング（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
-                            Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
+                            //Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                         }
                     }),
                 new RecordDefinition("defaultWeight"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].defaultWeight;           }
                     ,(object i,float v)=>{
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].defaultWeight = v;
-                        Debug.Log("デフォルトウェイト（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
-                        Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
+                        //Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
                 new RecordDefinition("iKPass"                   ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].iKPass;                  }
                     ,(object i,bool v)=>{
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].iKPass = v;
-                        Debug.Log("アイケーパス（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
-                        Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
+                        //Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
                 new RecordDefinition("syncedLayerAffectsTiming" ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None    ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerAffectsTiming;}
                     ,(object i,bool v)=>{
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerAffectsTiming = v;
-                        Debug.Log("シンクレイヤーアフェクトタイミング（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
-                        Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
+                        //Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
                 new RecordDefinition("syncedLayerIndex"         ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerIndex;        }
                     ,(object i,int v)=>{
                         ((LayerWrapper)i).SourceAcWrapper.SourceAc.layers[((LayerWrapper)i).LayerIndex].syncedLayerIndex = v;
-                        Debug.Log("シンクレイヤーインデックス（＾～＾）◆v=["+v+"] layerIndex=["+((LayerWrapper)i).LayerIndex+"]");
-                        Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
+                        //Operation_Layer.DumpLog(((LayerWrapper)i).SourceAcWrapper);
                     }),
             };
             Definitions = new Dictionary<string, RecordDefinition>();
@@ -440,8 +470,8 @@ namespace StellaQL
         {
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum#",num },//レイヤー行番号
-                { "name"                        ,layer.name},//レイヤー名
+                { "#layerNum#"                  ,num },
+                { "name"                        ,layer.name},
                 { "#avatarMask_assetPath#"      ,layer.avatarMask == null ? "" : AssetDatabase.GetAssetPath(layer.avatarMask.GetInstanceID()) },
                 { "#blendingMode_string#"       ,layer.blendingMode.ToString()},
                 { "defaultWeight"               ,layer.defaultWeight},
@@ -452,16 +482,13 @@ namespace StellaQL
         }
         public Dictionary<string,object> Fields { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="c">contents (コンテンツ)</param>
-        /// <param name="n">output column name (列名出力)</param>
-        /// <param name="d">output definition (列定義出力)</param>
+        /// <param name="c">contents</param>
+        /// <param name="n">output column name</param>
+        /// <param name="d">output definition</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum#"                ].AppendCsv(Fields, c, n, d); // レイヤー行番号
-            Definitions["name"                      ].AppendCsv(Fields, c, n, d); // レイヤー名
+            Definitions["#layerNum#"                ].AppendCsv(Fields, c, n, d);
+            Definitions["name"                      ].AppendCsv(Fields, c, n, d);
             Definitions["#avatarMask_assetPath#"    ].AppendCsv(Fields, c, n, d);
             Definitions["#blendingMode_string#"     ].AppendCsv(Fields, c, n, d);
             Definitions["defaultWeight"             ].AppendCsv(Fields, c, n, d);
@@ -475,6 +502,7 @@ namespace StellaQL
 
     /// <summary>
     /// ステートマシン
+    /// Statemachine.
     /// </summary>
     public class StatemachineRecord
     {
@@ -483,7 +511,8 @@ namespace StellaQL
             /// 
             /// </summary>
             /// <param name="source"></param>
-            /// <param name="statemachinePath">例えばフルパスが "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。</param>
+            /// <param name="statemachinePath">例えばフルパスが "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
+            /// If "Base Layer.Alpaca.Bear.Cat.Dog", It is "Alpaca.Bear.Cat".</param>
             public Wrapper(AnimatorStateMachine source, string statemachinePath)
             {
                 Source = source;
@@ -498,33 +527,32 @@ namespace StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                // #で囲んでいるのは、StellaQL用のフィールド。文字列検索しやすいように単語を # で挟んでいる。
                 new RecordDefinition("#layerNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
                 new RecordDefinition("#machineStateNum#"            ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#layerName#"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false), // 内容は空。 LibreOffice Basic に探させる
-                new RecordDefinition("#statemachinePath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      // "Base Layer.Alpaca.Bear.Cat.Dog" のとき、"Alpaca.Bear.Cat"。
+                new RecordDefinition("#layerName#"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false), // Empty.
+                new RecordDefinition("#statemachinePath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      // If "Base Layer.Alpaca.Bear.Cat.Dog", It is "Alpaca.Bear.Cat".
                     ,(object i)=>{          return ((Wrapper)i).StatemachinePath; }
-                    ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                    ,(object i,string v)=>{ throw new UnityException("Not supported.");}
                 ),
                 new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.name; }
-                    ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                    ,(object i,string v)=>{ throw new UnityException("Not supported.");}
                 ),
                 new RecordDefinition("#anyStateTransitions_Length#" ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.anyStateTransitions.Length.ToString(); }
-                    ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                    ,(object i,string v)=>{ throw new UnityException("Not supported.");}
                 ),
                 new RecordDefinition("#behaviours_Length#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.behaviours.Length.ToString(); }
-                    ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                    ,(object i,string v)=>{ throw new UnityException("Not supported.");}
                 ),
                 new RecordDefinition("#defaultState_String#"        ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return (((Wrapper)i).Source.defaultState==null) ? "" : ((Wrapper)i).Source.defaultState.ToString(); }
-                    ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                    ,(object i,string v)=>{ throw new UnityException("Not supported.");}
                 ),
                 new RecordDefinition("#entryTransitions_Length#"    ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.entryTransitions.Length.ToString(); }
-                    ,(object i,string v)=>{ throw new UnityException("セットには未対応☆（＞＿＜）");}
+                    ,(object i,string v)=>{ throw new UnityException("Not supported.");}
                 ),
                 new RecordDefinition("hideFlags"                    ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.StellaQLSpreadsheetDoesNotSupportWriting
                     ,(object i)=>{          return ((Wrapper)i).Source.hideFlags.ToString(); }
@@ -541,16 +569,11 @@ namespace StellaQL
 
         public StatemachineRecord(int layerNum, int machineStateNum, string statemachinePath, AnimatorStateMachine stateMachine, List<PositionRecord> positionsTable)
         {
-            //, string fullnameEndsWithDot
-
-            // fullnameEndsWithDot には「Base Layer.」のような文字が入っているが、レイヤーの持つステートマシンの名前も「Base Layer」なので、つなげると「Base Layer.Base Layer」になってしまう。
-            // state から見れば親パスだが。
-
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum#"                      ,layerNum                                                                                           },//レイヤー行番号
+                { "#layerNum#"                      ,layerNum                                                                                           },
                 { "#machineStateNum#"               ,machineStateNum                                                                                    },
-                { "#layerName#"                     ,""                                                                                                 },//空っぽ
+                { "#layerName#"                     ,""                                                                                                 },// Empty
                 { "#statemachinePath#"              ,statemachinePath                                                                                   },
                 { "name"                            ,stateMachine.name                                                                                  },
                 { "#anyStateTransitions_Length#"    ,stateMachine.anyStateTransitions.Length.ToString()                                                 },
@@ -567,15 +590,12 @@ namespace StellaQL
         }
         public Dictionary<string, object> Fields { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="c">contents (コンテンツ)</param>
-        /// <param name="n">output column name (列名出力)</param>
-        /// <param name="d">output definition (列定義出力)</param>
+        /// <param name="c">contents</param>
+        /// <param name="n">output column name</param>
+        /// <param name="d">output definition</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum#"                    ].AppendCsv(Fields, c, n, d); // レイヤー行番号
+            Definitions["#layerNum#"                    ].AppendCsv(Fields, c, n, d);
             Definitions["#machineStateNum#"             ].AppendCsv(Fields, c, n, d);
             Definitions["#layerName#"                   ].AppendCsv(Fields, c, n, d);
             Definitions["#statemachinePath#"            ].AppendCsv(Fields, c, n, d);
@@ -592,19 +612,18 @@ namespace StellaQL
 
     /// <summary>
     /// ステート
+    /// State.
     /// </summary>
     public class StateRecord
     {
         public class Wrapper
         {
-            public Wrapper(AnimatorState source)//, string statemachinePath
+            public Wrapper(AnimatorState source)
             {
                 Source = source;
-                //StatemachinePath = statemachinePath;
             }
 
             public AnimatorState Source { get; private set; }
-            //public string StatemachinePath { get; private set; }
         }
 
         static StateRecord()
@@ -614,8 +633,8 @@ namespace StellaQL
                 new RecordDefinition("#layerNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
                 new RecordDefinition("#machineStateNum#"            ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
                 new RecordDefinition("#stateNum#"                   ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.TemporaryNumbering,false),
-                new RecordDefinition("#layerName#"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false), // 内容は空。 LibreOffice Basic に探させる
-                new RecordDefinition("#statemachinePath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false), // 内容は空。 LibreOffice Basic に探させる
+                new RecordDefinition("#layerName#"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false), // Empty.
+                new RecordDefinition("#statemachinePath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable      ,false), // Empty.
                 new RecordDefinition("name"                         ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable  ,false) ,
                 new RecordDefinition("cycleOffset"                  ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.cycleOffset; }         ,(object i,float v)=>{ ((Wrapper)i).Source.cycleOffset = v; }),
                 new RecordDefinition("cycleOffsetParameter"         ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.cycleOffsetParameter; },(object i,string v)=>{ ((Wrapper)i).Source.cycleOffsetParameter = v; }),
@@ -642,68 +661,62 @@ namespace StellaQL
 
         public static StateRecord CreateInstance(int layerNum, int machineStateNum, int stateNum, string parentPath, ChildAnimatorState caState, List<PositionRecord> positionsTable)
         {
-            //, string statemachinePath
             positionsTable.Add(new PositionRecord(layerNum, machineStateNum, stateNum, -1, -1, "position", caState.position));
             return new StateRecord(layerNum, machineStateNum, stateNum, caState.state);
-            //, statemachinePath
         }
         public StateRecord(int layerNum, int machineStateNum, int stateNum, AnimatorState state)
         {
-            //, string statemachinePath
             this.Fields = new Dictionary<string, object>()
             {
-                { "#layerNum#",layerNum },//レイヤー行番号
-                { "#machineStateNum#", machineStateNum},
-                { "#stateNum#",stateNum },
-                { "#layerName#", ""},//空っぽ
-                { "#statemachinePath#", ""},//空っぽ
-                { "name", state.name},
-                { "cycleOffset", state.cycleOffset},
-                { "cycleOffsetParameter", state.cycleOffsetParameter},
-                { "hideFlags", state.hideFlags.ToString()},
-                { "iKOnFeet", state.iKOnFeet},
-                { "mirror", state.mirror},
-                { "mirrorParameter",state.mirrorParameter },
-                { "mirrorParameterActive",state.mirrorParameterActive },
-                { "motion_name", state.motion == null ? "" : state.motion.name},// とりあえず名前だけ☆
-                { "nameHash", state.nameHash},// このハッシュは有効なのだろうか？
-                { "speed", state.speed},
-                { "speedParameter", state.speedParameter},
-                { "speedParameterActive", state.speedParameterActive},
-                { "tag", state.tag},
-                { "writeDefaultValues", state.writeDefaultValues},
+                { "#layerNum#"              ,layerNum                   },
+                { "#machineStateNum#"       ,machineStateNum            },
+                { "#stateNum#"              ,stateNum                   },
+                { "#layerName#"             ,""                         }, // Empty.
+                { "#statemachinePath#"      ,""                         }, // Empty.
+                { "name"                    ,state.name                 },
+                { "cycleOffset"             ,state.cycleOffset          },
+                { "cycleOffsetParameter"    ,state.cycleOffsetParameter },
+                { "hideFlags"               ,state.hideFlags.ToString() },
+                { "iKOnFeet"                ,state.iKOnFeet             },
+                { "mirror"                  ,state.mirror               },
+                { "mirrorParameter"         ,state.mirrorParameter      },
+                { "mirrorParameterActive"   ,state.mirrorParameterActive},
+                { "motion_name"             ,state.motion == null ? "" : state.motion.name},
+                { "nameHash"                ,state.nameHash             },
+                { "speed"                   ,state.speed                },
+                { "speedParameter"          ,state.speedParameter       },
+                { "speedParameterActive"    ,state.speedParameterActive },
+                { "tag"                     ,state.tag                  },
+                { "writeDefaultValues"      ,state.writeDefaultValues   },
             };
         }
         public Dictionary<string, object> Fields { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="c">contents (コンテンツ)</param>
-        /// <param name="n">output column name (列名出力)</param>
-        /// <param name="d">output definition (列定義出力)</param>
+        /// <param name="c">contents</param>
+        /// <param name="n">output column name</param>
+        /// <param name="d">output definition</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#layerNum#"].AppendCsv(Fields, c, n, d); // レイヤー行番号
-            Definitions["#machineStateNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#stateNum#"].AppendCsv(Fields, c, n, d);
-            Definitions["#layerName#"].AppendCsv(Fields, c, n, d);
-            Definitions["#statemachinePath#"].AppendCsv(Fields, c, n, d);
-            Definitions["name"].AppendCsv(Fields, c, n, d);
-            Definitions["cycleOffset"].AppendCsv(Fields, c, n, d);
-            Definitions["cycleOffsetParameter"].AppendCsv(Fields, c, n, d);
-            Definitions["hideFlags"].AppendCsv(Fields, c, n, d);
-            Definitions["iKOnFeet"].AppendCsv(Fields, c, n, d);
-            Definitions["mirror"].AppendCsv(Fields, c, n, d);
-            Definitions["mirrorParameter"].AppendCsv(Fields, c, n, d);
-            Definitions["mirrorParameterActive"].AppendCsv(Fields, c, n, d);
-            Definitions["motion_name"].AppendCsv(Fields, c, n, d);
-            Definitions["nameHash"].AppendCsv(Fields, c, n, d);
-            Definitions["speed"].AppendCsv(Fields, c, n, d);
-            Definitions["speedParameter"].AppendCsv(Fields, c, n, d);
-            Definitions["speedParameterActive"].AppendCsv(Fields, c, n, d);
-            Definitions["tag"].AppendCsv(Fields, c, n, d);
-            Definitions["writeDefaultValues"].AppendCsv(Fields, c, n, d);
+            Definitions["#layerNum#"            ].AppendCsv(Fields, c, n, d);
+            Definitions["#machineStateNum#"     ].AppendCsv(Fields, c, n, d);
+            Definitions["#stateNum#"            ].AppendCsv(Fields, c, n, d);
+            Definitions["#layerName#"           ].AppendCsv(Fields, c, n, d);
+            Definitions["#statemachinePath#"    ].AppendCsv(Fields, c, n, d);
+            Definitions["name"                  ].AppendCsv(Fields, c, n, d);
+            Definitions["cycleOffset"           ].AppendCsv(Fields, c, n, d);
+            Definitions["cycleOffsetParameter"  ].AppendCsv(Fields, c, n, d);
+            Definitions["hideFlags"             ].AppendCsv(Fields, c, n, d);
+            Definitions["iKOnFeet"              ].AppendCsv(Fields, c, n, d);
+            Definitions["mirror"                ].AppendCsv(Fields, c, n, d);
+            Definitions["mirrorParameter"       ].AppendCsv(Fields, c, n, d);
+            Definitions["mirrorParameterActive" ].AppendCsv(Fields, c, n, d);
+            Definitions["motion_name"           ].AppendCsv(Fields, c, n, d);
+            Definitions["nameHash"              ].AppendCsv(Fields, c, n, d);
+            Definitions["speed"                 ].AppendCsv(Fields, c, n, d);
+            Definitions["speedParameter"        ].AppendCsv(Fields, c, n, d);
+            Definitions["speedParameterActive"  ].AppendCsv(Fields, c, n, d);
+            Definitions["tag"                   ].AppendCsv(Fields, c, n, d);
+            Definitions["writeDefaultValues"    ].AppendCsv(Fields, c, n, d);
             if (n) { c.Append("[EOL],"); }
             if (!d) { c.AppendLine(); }
         }
@@ -711,7 +724,10 @@ namespace StellaQL
 
     /// <summary>
     /// トランジション
-    /// ※コンディションは別テーブル
+    /// Transition.
+    /// 
+    /// (コンディションは別)
+    /// (Condition separately)
     /// </summary>
     public class TransitionRecord
     {
@@ -764,11 +780,11 @@ namespace StellaQL
                 { "#statemachinePath#"              , ""                                            },
                 { "#stateName#"                     , ""                                            },
                 { "name"                            , transition.name                               },
-                { "#stellaQLComment#"               , stellaQLComment                               }, // どこからどこへ繋いでるのか、動作確認するために見る開発時用の欄を追加。
+                { "#stellaQLComment#"               , stellaQLComment                               }, // For debug.
                 { "canTransitionToSelf"             , transition.canTransitionToSelf                },
-                { "#destinationState_name#"         , transition.destinationState == null ? "" : transition.destinationState.name},// 名前のみ取得
+                { "#destinationState_name#"         , transition.destinationState == null ? "" : transition.destinationState.name},
                 { "#destinationState_nameHash#"     , transition.destinationState == null ? 0 : transition.destinationState.nameHash},
-                { "#destinationStateMachine_name#"  , transition.destinationStateMachine == null ? "" : transition.destinationStateMachine.name},// 名前のみ取得
+                { "#destinationStateMachine_name#"  , transition.destinationStateMachine == null ? "" : transition.destinationStateMachine.name},
                 { "duration"                        , transition.duration                           },
                 { "exitTime"                        , transition.exitTime                           },
                 { "hasExitTime"                     , transition.hasExitTime                        },
@@ -784,12 +800,9 @@ namespace StellaQL
         }
         public Dictionary<string, object> Fields { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="c">contents (コンテンツ)</param>
-        /// <param name="n">output column name (列名出力)</param>
-        /// <param name="d">output definition (列定義出力)</param>
+        /// <param name="c">contents</param>
+        /// <param name="n">output column name</param>
+        /// <param name="d">output definition</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
             Definitions["#layerNum#"                        ].AppendCsv(Fields, c, n, d);
@@ -822,7 +835,8 @@ namespace StellaQL
     }
 
     /// <summary>
-    /// UnityEditor の AnimatorCondition のmodeプロパティーのセッターが機能していないと推測を立て、別途用意。
+    /// UnityEditor の AnimatorCondition のセッターが機能していないと推測を立て、別途用意。
+    /// I guess, AnimatorCondition's setter does not work. I use copy.
     /// </summary>
     public class AconConditionBuilder
     {
@@ -839,26 +853,27 @@ namespace StellaQL
 
     /// <summary>
     /// コンディション
+    /// Condition.
     /// </summary>
     public class ConditionRecord
     {
         /// <summary>
-        /// struct を object に渡したいときに使うラッパーだぜ☆（＾～＾）
+        /// struct を object に渡したいときに使うラッパー
+        /// A wrapper to use when you want to pass a struct to object.
         /// </summary>
         public class AnimatorConditionWrapper
         {
             /// <summary>
             /// 空コンストラクタで生成した場合、.IsNull( ) メソッドでヌルを返す。
+            /// If it is generated with an empty constructor, it returns null in the .IsNull () method.
             /// </summary>
             public AnimatorConditionWrapper()
             {
                 this.IsNull = true;
             }
 
-            /// <summary>
-            /// コンディションはプロパティの入れ物で、それ自体にはフルパスとしての働きがない？
-            /// </summary>
-            /// <param name="sourceParentTransition"></param>
+            /// <param name="conditionNum">For ID.</param>
+            /// <param name="sourceParentTransition">For repaint.</param>
             /// <param name="source"></param>
             public AnimatorConditionWrapper(int conditionNum, AnimatorStateTransition sourceParentTransition, AnimatorCondition source)
             {
@@ -872,6 +887,7 @@ namespace StellaQL
             public int ConditionNum { get; private set; }
             /// <summary>
             /// コンディションへの更新を反映するためには、親トランジションの AddCondition( ) メソッドが必要なようだ。
+            /// In order to reflect the update to the condition, it seems necessary to have a parent transition AddCondition () method.
             /// </summary>
             public AnimatorStateTransition m_sourceParentTransition;
             public AnimatorCondition m_source;
@@ -879,12 +895,11 @@ namespace StellaQL
 
         /// <summary>
         /// モードには、数値型のときは演算子が入っているし、論理値型のときは論理値が入っている。
+        /// The mode contains operators for numeric types, and logical values for logical types.
         /// </summary>
-        /// <param name="mode"></param>
-        /// <returns></returns>
         public static string Mode_to_string(AnimatorConditionMode mode)
         {
-            if (0 == mode) { return ""; } // 0 もある。
+            if (0 == mode) { return ""; }
 
             switch (mode)
             {
@@ -894,17 +909,16 @@ namespace StellaQL
                 case AnimatorConditionMode.NotEqual: return "<>";
                 case AnimatorConditionMode.If: return "TRUE";
                 case AnimatorConditionMode.IfNot: return "FALSE";
-                default: throw new UnityException("コンディションの未対応の演算子だったんだぜ☆（＞＿＜）[" + mode + "]");
+                default: throw new UnityException("Not supported. mode = [" + mode + "]");
             }
         }
         /// <summary>
         /// モードには、数値型のときは演算子が入っているし、論理値型のときは論理値が入っている。
+        /// The mode contains operators for numeric types, and logical values for logical types.
         /// </summary>
-        /// <param name="modeString"></param>
-        /// <returns></returns>
         public static AnimatorConditionMode String_to_mode(string modeString)
         {
-            if ("" == modeString) { return 0; } // 0 もある。
+            if ("" == modeString) { return 0; }
 
             switch (modeString.Trim().ToUpper())
             {
@@ -914,7 +928,7 @@ namespace StellaQL
                 case "<>": return AnimatorConditionMode.NotEqual;
                 case "TRUE": return AnimatorConditionMode.If;
                 case "FALSE": return AnimatorConditionMode.IfNot;
-                default: throw new UnityException("コンディションの未定義の演算子だったんだぜ☆（＞＿＜）[" + modeString + "]");
+                default: throw new UnityException("Not supported. mode string = [" + modeString + "]");
             }
         }
 
@@ -935,8 +949,12 @@ namespace StellaQL
                 // トランジションの持っているコンディションは、全削除、全追加しないと、プロパティ１つ変えられないようだ。（セッターが機能していない）
                 // また、コンディションの変更を反映するためには、親トランジションが必要。
                 // プロパティを１つずつ変えるのは　処理時間の無駄が膨大だが、　今バージョンはこれでいくものとする。
+                // It seems that you can not change one property unless you delete the whole condition, add all the conditions that the transition has. (Setter is not functioning)
+                // Also, in order to reflect the change of condition, parent transition is necessary.
+                // Changing the properties one by one has tremendous waste of processing time, but the version is supposed to do this now.
 
                 // parameter, mode, threshold の順に並べた方が、理解しやすい。
+                // parameter, mode, threshold
                 new RecordDefinition("parameter"            ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None
                     ,(object i)=>{
                         return ((AnimatorConditionWrapper)i).m_source.parameter;
@@ -948,11 +966,15 @@ namespace StellaQL
                             "parameter",
                             v
                             );
-                        //((AnimatorConditionWrapper)i).m_source.parameter = v;
                     }
                 ),
+
                 // 演算子。本来はイニューム型だが、文字列型にする。
                 // 値は本来は Greater,less,Equals,NotEqual,If,IfNot の６つだが、分かりづらいので >, <, =, <>, TRUE, FALSE の６つにする。
+
+                // operator. Originally it is an enum type, but it is a character string type.
+                // Since the value is originally six, Greater,less,Equals,NotEqual,If,IfNot.
+                // it is difficult to understand, so make it six, >, <, =, <>, TRUE, FALSE.
                 new RecordDefinition("mode"                 ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None
                     ,(object i)=>{ return Mode_to_string(((AnimatorConditionWrapper)i).m_source.mode);}
                     ,(object i,string v)=>{
@@ -962,7 +984,6 @@ namespace StellaQL
                             "mode",
                             String_to_mode(v)
                             );
-                        //((AnimatorConditionWrapper)i).m_source.mode = String_to_mode(v);
                     }
                 ),
                 new RecordDefinition("threshold"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None
@@ -974,7 +995,6 @@ namespace StellaQL
                             "threshold",
                             v
                             );
-                       //((AnimatorConditionWrapper)i).m_source.threshold = v;
                     }
                 ),
             };
@@ -998,19 +1018,16 @@ namespace StellaQL
                 { "#layerName#"         , ""                                            },
                 { "#statemachinePath#"  , ""                                            },
                 { "#stateName#"         , ""                                            },
-                { "mode"                , Mode_to_string( condition.mode)}, // 内容を変えて入れる。
+                { "mode"                , Mode_to_string( condition.mode)}, // Change contents
                 { "parameter"           , condition.parameter},
                 { "threshold"           , condition.threshold},
             };
         }
         public Dictionary<string, object> Fields { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="c">contents (コンテンツ)</param>
-        /// <param name="n">output column name (列名出力)</param>
-        /// <param name="d">output definition (列定義出力)</param>
+        /// <param name="c">contents</param>
+        /// <param name="n">output column name</param>
+        /// <param name="d">output definition</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
             Definitions["#layerNum#"            ].AppendCsv(Fields, c, n, d);
@@ -1031,13 +1048,16 @@ namespace StellaQL
 
     /// <summary>
     /// ポジション
+    /// Position.
     /// </summary>
     public class PositionRecord
     {
         /// <summary>
-        /// struct を object に渡したいときに使うラッパーだぜ☆（＾～＾）
+        /// struct を object に渡したいときに使うラッパー
+        /// A wrapper to use when you want to pass a struct to object.
         /// 
-        /// ステートマシンと、ステートでは処理が異なるぜ☆（＾～＾）
+        /// ステートマシンと、ステートでは処理が異なる
+        /// Processing is different in state machine and state.
         /// </summary>
         public class PositionWrapper
         {
@@ -1070,7 +1090,7 @@ namespace StellaQL
                             case "entryPosition": return this.m_statemachine.entryPosition.x;
                             case "exitPosition": return this.m_statemachine.exitPosition.x;
                             case "parentStateMachinePosition": return this.m_statemachine.parentStateMachinePosition.x;
-                            default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
+                            default: throw new UnityException("Not supported. property name = [" + this.PropertyName + "]");
                         }
                     }
                     else { return this.m_caState.position.x; }
@@ -1079,7 +1099,6 @@ namespace StellaQL
                 {
                     if (null != this.m_statemachine)
                     {
-                        Debug.Log("X更新 this.PropertyName=[" + this.PropertyName + "] value=[" + value + "] this.m_statemachine.name=[" + this.m_statemachine.name + "]");
                         switch (this.PropertyName)
                         {
                             case "anyStatePosition":
@@ -1094,11 +1113,10 @@ namespace StellaQL
                             case "parentStateMachinePosition":
                                 this.m_statemachine.parentStateMachinePosition = new Vector3(value, this.m_statemachine.parentStateMachinePosition.y, this.m_statemachine.parentStateMachinePosition.z);
                                 break;
-                            default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
+                            default: throw new UnityException("Not supported. property name = [" + this.PropertyName + "]");
                         }
                     }
                     else {
-                        Debug.Log("X更新 this.PropertyName=[" + this.PropertyName + "] value=[" + value + "] this.m_statemachine なし");
                         this.m_caState.position = new Vector3(value, this.m_caState.position.y, this.m_caState.position.z);
                     }
                 }
@@ -1116,7 +1134,7 @@ namespace StellaQL
                             case "entryPosition": return this.m_statemachine.entryPosition.y;
                             case "exitPosition": return this.m_statemachine.exitPosition.y;
                             case "parentStateMachinePosition": return this.m_statemachine.parentStateMachinePosition.y;
-                            default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
+                            default: throw new UnityException("Not supported. property name = [" + this.PropertyName + "]");
                         }
                     }
                     else { return this.m_caState.position.y; }
@@ -1131,7 +1149,7 @@ namespace StellaQL
                             case "entryPosition": this.m_statemachine.entryPosition = new Vector3( this.m_statemachine.entryPosition.x, value, this.m_statemachine.entryPosition.z); break;
                             case "exitPosition": this.m_statemachine.exitPosition = new Vector3( this.m_statemachine.exitPosition.x, value, this.m_statemachine.exitPosition.z); break;
                             case "parentStateMachinePosition": this.m_statemachine.parentStateMachinePosition = new Vector3( this.m_statemachine.parentStateMachinePosition.x, value, this.m_statemachine.parentStateMachinePosition.z); break;
-                            default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
+                            default: throw new UnityException("Not supported. property name = [" + this.PropertyName + "]");
                         }
                     }
                     else { this.m_caState.position = new Vector3( this.m_caState.position.x, value, this.m_caState.position.z); }
@@ -1150,7 +1168,7 @@ namespace StellaQL
                             case "entryPosition": return this.m_statemachine.entryPosition.z;
                             case "exitPosition": return this.m_statemachine.exitPosition.z;
                             case "parentStateMachinePosition": return this.m_statemachine.parentStateMachinePosition.z;
-                            default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
+                            default: throw new UnityException("Not supported. property name = [" + this.PropertyName + "]");
                         }
                     }
                     else { return this.m_caState.position.z; }
@@ -1165,7 +1183,7 @@ namespace StellaQL
                             case "entryPosition": this.m_statemachine.entryPosition = new Vector3(this.m_statemachine.entryPosition.x, this.m_statemachine.entryPosition.y, value); break;
                             case "exitPosition": this.m_statemachine.exitPosition = new Vector3(this.m_statemachine.exitPosition.x, this.m_statemachine.exitPosition.y, value); break;
                             case "parentStateMachinePosition": this.m_statemachine.parentStateMachinePosition = new Vector3(this.m_statemachine.parentStateMachinePosition.x, this.m_statemachine.parentStateMachinePosition.y, value); break;
-                            default: throw new UnityException("未対応のプロパティー名だぜ☆（＾～＾）=ステートマシン.[" + this.PropertyName + "]");
+                            default: throw new UnityException("Not supported. property name = [" + this.PropertyName + "]");
                         }
                     }
                     else { this.m_caState.position = new Vector3(this.m_caState.position.x, this.m_caState.position.y, value); }
@@ -1186,12 +1204,12 @@ namespace StellaQL
                 new RecordDefinition("#layerName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false),
                 new RecordDefinition("#statemachinePath#"   ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false),
                 new RecordDefinition("#stateName#"          ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.Identifiable          ,false),
-                new RecordDefinition("magnitude"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),// リード・オンリー型
+                new RecordDefinition("magnitude"            ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),// read only?
                 new RecordDefinition("#normalized#"         ,RecordDefinition.FieldType.Other   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),
                 new RecordDefinition("#normalizedX#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),
                 new RecordDefinition("#normalizedY#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),
                 new RecordDefinition("#normalizedZ#"        ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false),
-                new RecordDefinition("sqrMagnitude"         ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false), // リード・オンリー型
+                new RecordDefinition("sqrMagnitude"         ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,false), // read only?
                 new RecordDefinition("x"                    ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.UnityEditorDoesNotSupportWriting
                     ,(object i)=>{ return ((PositionWrapper)i).X; }
                     ,(object i,float v)=>{ ((PositionWrapper)i).X = v; }
@@ -1239,12 +1257,9 @@ namespace StellaQL
         }
         public Dictionary<string, object> Fields { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="c">contents (コンテンツ)</param>
-        /// <param name="n">output column name (列名出力)</param>
-        /// <param name="d">output definition (列定義出力)</param>
+        /// <param name="c">contents</param>
+        /// <param name="n">output column name</param>
+        /// <param name="d">output definition</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
             Definitions["#layerNum#"        ].AppendCsv(Fields, c, n, d);
@@ -1274,22 +1289,22 @@ namespace StellaQL
     {
         public AconData()
         {
-            table_parameter = new HashSet<ParameterRecord>();
-            table_layer = new List<LayerRecord>();
-            table_statemachine = new List<StatemachineRecord>();
-            table_state = new HashSet<StateRecord>();
-            table_transition = new HashSet<TransitionRecord>();
-            table_condition = new List<ConditionRecord>();
-            table_position = new List<PositionRecord>();
+            table_parameter     = new HashSet<ParameterRecord>();
+            table_layer         = new List<LayerRecord>();
+            table_statemachine  = new List<StatemachineRecord>();
+            table_state         = new HashSet<StateRecord>();
+            table_transition    = new HashSet<TransitionRecord>();
+            table_condition     = new List<ConditionRecord>();
+            table_position      = new List<PositionRecord>();
         }
 
-        public HashSet<ParameterRecord> table_parameter { get; set; }
-        public List<LayerRecord> table_layer { get; set; }
-        public List<StatemachineRecord> table_statemachine { get; set; }
-        public HashSet<StateRecord> table_state { get; set; }
-        public HashSet<TransitionRecord> table_transition { get; set; }
-        public List<ConditionRecord> table_condition { get; set; }
-        public List<PositionRecord> table_position { get; set; }
+        public HashSet<ParameterRecord>     table_parameter { get; set; }
+        public List<LayerRecord>            table_layer { get; set; }
+        public List<StatemachineRecord>     table_statemachine { get; set; }
+        public HashSet<StateRecord>         table_state { get; set; }
+        public HashSet<TransitionRecord>    table_transition { get; set; }
+        public List<ConditionRecord>        table_condition { get; set; }
+        public List<PositionRecord>         table_position { get; set; }
     }
 
 
@@ -1301,12 +1316,18 @@ namespace StellaQL
             StringBuilder contents = new StringBuilder();
             if (outputDefinition)
             {
-                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
-                ParameterRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+                // 列定義ヘッダー出力
+                // Column definition header output
+                RecordDefinition.AppendDefinitionHeader(contents);
+                // 列名出力
+                // Column definition output
+                ParameterRecord.Empty.AppendCsvLine(contents, false, outputDefinition);
             }
             else
             {
-                ParameterRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                // 列名出力
+                // Column name output
+                ParameterRecord.Empty.AppendCsvLine(contents, true, outputDefinition);
                 foreach (ParameterRecord record in aconData.table_parameter) { record.AppendCsvLine(contents, false, outputDefinition); }
             }
 
@@ -1319,12 +1340,12 @@ namespace StellaQL
             StringBuilder contents = new StringBuilder();
 
             if (outputDefinition) {
-                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
-                LayerRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+                RecordDefinition.AppendDefinitionHeader(contents);
+                LayerRecord.Empty.AppendCsvLine(contents, false, outputDefinition);
             }
             else
             {
-                LayerRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                LayerRecord.Empty.AppendCsvLine(contents, true, outputDefinition);
                 foreach (LayerRecord record in aconData.table_layer) { record.AppendCsvLine(contents, false, outputDefinition); }
             }
 
@@ -1338,11 +1359,11 @@ namespace StellaQL
 
             if (outputDefinition)
             {
-                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
-                StatemachineRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+                RecordDefinition.AppendDefinitionHeader(contents);
+                StatemachineRecord.Empty.AppendCsvLine(contents, false, outputDefinition);
             }
             else {
-                StatemachineRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                StatemachineRecord.Empty.AppendCsvLine(contents, true, outputDefinition);
                 foreach (StatemachineRecord record in aconData.table_statemachine) { record.AppendCsvLine(contents, false, outputDefinition); }
             }
 
@@ -1354,11 +1375,11 @@ namespace StellaQL
         {
             if (outputDefinition)
             {
-                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
-                StateRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+                RecordDefinition.AppendDefinitionHeader(contents);
+                StateRecord.Empty.AppendCsvLine(contents, false, outputDefinition);
             }
             else {
-                StateRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                StateRecord.Empty.AppendCsvLine(contents, true, outputDefinition);
                 foreach (StateRecord stateRecord in table) { stateRecord.AppendCsvLine(contents, false, outputDefinition); }
             }
         }
@@ -1373,13 +1394,15 @@ namespace StellaQL
 
         public static void CreateCsvTable_Transition(HashSet<TransitionRecord> table, bool outputDefinition, StringBuilder contents)
         {
-            if (outputDefinition) // 列定義シートを作る場合
+            // 列定義シートを作る場合
+            // When creating a column definition sheet
+            if (outputDefinition)
             {
-                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
-                TransitionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+                RecordDefinition.AppendDefinitionHeader(contents);
+                TransitionRecord.Empty.AppendCsvLine(contents, false, outputDefinition);
             }
             else {
-                TransitionRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                TransitionRecord.Empty.AppendCsvLine(contents, true, outputDefinition);
                 foreach (TransitionRecord record in table) { record.AppendCsvLine(contents, false, outputDefinition); }
             }
         }
@@ -1398,11 +1421,11 @@ namespace StellaQL
 
             if (outputDefinition)
             {
-                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
-                ConditionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+                RecordDefinition.AppendDefinitionHeader(contents);
+                ConditionRecord.Empty.AppendCsvLine(contents, false, outputDefinition);
             }
             else {
-                ConditionRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                ConditionRecord.Empty.AppendCsvLine(contents, true, outputDefinition);
                 foreach (ConditionRecord record in aconData.table_condition) { record.AppendCsvLine(contents, false, outputDefinition); }
             }
 
@@ -1416,11 +1439,11 @@ namespace StellaQL
 
             if (outputDefinition)
             {
-                RecordDefinition.AppendDefinitionHeader(contents); // 列定義ヘッダー出力
-                PositionRecord.Empty.AppendCsvLine(contents, false, outputDefinition); // 列定義出力
+                RecordDefinition.AppendDefinitionHeader(contents);
+                PositionRecord.Empty.AppendCsvLine(contents, false, outputDefinition);
             }
             else {
-                PositionRecord.Empty.AppendCsvLine(contents, true, outputDefinition); // 列名出力
+                PositionRecord.Empty.AppendCsvLine(contents, true, outputDefinition);
                 foreach (PositionRecord record in aconData.table_position) { record.AppendCsvLine(contents, false, outputDefinition); }
             }
 
