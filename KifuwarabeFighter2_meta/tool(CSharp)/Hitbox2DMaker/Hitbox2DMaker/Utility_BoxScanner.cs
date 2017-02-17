@@ -37,15 +37,15 @@ namespace Hitbox2DMaker
         /// <summary>
         /// 青箱　太さ２
         /// </summary>
-        public static ColorBoxCondition m_blueBox = new ColorBoxCondition("Hitbox2DScript_Weakbox", 0, 0, 255, 2);
+        public static ColorBoxCondition m_blueBox = new ColorBoxCondition("WeakboxData", 0, 0, 255, 2);
         /// <summary>
         /// 黄箱　太さ４
         /// </summary>
-        public static ColorBoxCondition m_yellowBox = new ColorBoxCondition("Hitbox2DScript_Strongbox", 255, 255, 0, 4);
+        public static ColorBoxCondition m_yellowBox = new ColorBoxCondition("StrongboxData", 255, 255, 0, 4);
         /// <summary>
         /// 赤箱　太さ６
         /// </summary>
-        public static ColorBoxCondition m_redBox = new ColorBoxCondition("Hitbox2DScript_Hitbox", 255,0,0,6);
+        public static ColorBoxCondition m_redBox = new ColorBoxCondition("HitboxData", 255,0,0,6);
         /// <summary>
         /// 図解： http://qiita.com/muzudho1/items/7de6e450e1762b993a63
         /// </summary>

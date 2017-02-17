@@ -3,4 +3,3 @@ C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DMaker\Hitbox2DMaker\bin\Release\Hitbox2DMaker.pdb
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DMaker\Hitbox2DMaker\obj\Release\Hitbox2DMaker.exe
 C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DMaker\Hitbox2DMaker\obj\Release\Hitbox2DMaker.pdb
-C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DMaker\Hitbox2DMaker\obj\Release\Hitbox2DMaker.csprojResolveAssemblyReference.cache

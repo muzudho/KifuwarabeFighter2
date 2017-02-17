@@ -2,13 +2,6 @@
 
 namespace SceneMain
 {
-    public enum HitboxIndex
-    {
-        Hitbox,
-        Weakbox,
-        Strongbox,
-        Num
-    }
     //public enum WeightIndex
     //{
     //    Light,
@@ -125,11 +118,6 @@ namespace SceneMain
         /// 相手と向かい合うために使うプレイヤーのX座標だぜ☆（＾▽＾）x位置を共有するためのものだぜ☆
         /// </summary>
         public static Transform[] Player_to_transform = new Transform[] { null, null };
-
-        /// <summary>
-        /// 画像を２．５倍角にして使っているぜ☆（＾～＾）
-        /// </summary>
-        public static float GRAPHIC_SCALE = 2.5f;
 
         public static string Prefab_TakoyakiParticle0 = "TakoyakiParticle0";
 

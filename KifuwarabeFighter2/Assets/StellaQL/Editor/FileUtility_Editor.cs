@@ -8,11 +8,13 @@ using UnityEngine;
 namespace StellaQL
 {
     /// <summary>
+    /// ユニティー・エディター関連での、読込み関連のファイルパスをまとめる。
     /// Collect read related file paths related to unity editor.
     /// </summary>
     public abstract class StellaQLReader
     {
         #region Fixed file name
+        // 固定のファイル名
         public static string Filepath_UpdateRequestCsv() { return "./UpdateRequest.csv"; }
         #endregion
 
@@ -26,9 +28,16 @@ namespace StellaQL
             foreach (string line in lines)
             {
                 Debug.Log("lines["+row+"]="+line);
-                if (row == 0) { row++; continue; } // Because the [0] line is a header line, skip it
+
+                // [0]行目はヘッダー行なので飛ばす
+                // Because the [0] line is a header line, skip it
+                if (row == 0) { row++; continue; }
+
                 List<string> cells = CsvParser.CsvLine_to_cellList(line);
-                if ("[EOF]" == cells[0]) { break; } // Finding [EOF] is over.
+
+                // [EOF]を見つけたら終わり。
+                // Finding [EOF] is over.
+                if ("[EOF]" == cells[0]) { break; }
                 updateRequestRecords.Add(new DataManipulationRecord(cells[0], cells[1], cells[2], cells[3], cells[4], cells[5], cells[6], cells[7], cells[8], cells[9]));
                 row++;
             }
@@ -45,15 +54,18 @@ namespace StellaQL
     }
 
     /// <summary>
+    /// ユニティー・エディター関連での、書込み関連のファイルパスをまとめる。
     /// Write related file paths related to the unity editor.
     /// </summary>
     public abstract class StellaQLWriter
     {
         #region Fixed file name
+        // 固定のファイル名
         public static string Filepath_StellaQLMacroApplicationOds() { return Path.GetFullPath( "./StellaQL_MacroApplication.ods"); }
         #endregion
 
         #region Variable filename
+        // 可変のファイル名
         public static string Filepath_GenerateFullpathConstCs(AnimatorController ac)
         {
             string fullpath = System.IO.Path.GetFullPath(AssetDatabase.GetAssetPath(ac.GetInstanceID()));

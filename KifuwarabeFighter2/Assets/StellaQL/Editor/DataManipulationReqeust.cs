@@ -3,6 +3,7 @@
 namespace StellaQL
 {
     /// <summary>
+    /// データ操作を要求するレコード。
     /// Record that requests data manipulation.
     /// 
     /// INSERT,
@@ -18,7 +19,8 @@ namespace StellaQL
         /// </summary>
         /// <param name="category"></param>
         /// <param name="foreignkeycategory"></param>
-        /// <param name="fullpath">Full path of any of layer, state machine, state.</param>
+        /// <param name="fullpath">レイヤー、ステートマシン、ステートのいずれかのフルパス。
+        /// Full path of any of layer, state machine, state.</param>
         /// <param name="fullpathTransition"></param>
         /// <param name="fullpathCondition"></param>
         /// <param name="fullpathPropertyname"></param>
@@ -45,7 +47,11 @@ namespace StellaQL
         public string Fullpath { get; private set; }
         public string TransitionNum_ofFullpath { get; private set; }
         public string ConditionNum_ofFullpath { get; private set; }
-        public string Propertyname_ofFullpath { get; private set; } // Use with position
+
+        // position で使う
+        // Use with position
+        public string Propertyname_ofFullpath { get; private set; }
+
         public string Name { get; private set; }
 
         public string Old { get; private set; }
@@ -62,6 +68,7 @@ namespace StellaQL
         public bool IsClear { get { bool val; if (!bool.TryParse(FlagOf_Clear, out val)) { val = false; } return val; } }
 
         /// <summary>
+        /// 中身を確認するのに使う
         /// Used to check the contents.
         /// </summary>
         /// <returns></returns>

@@ -33,7 +33,9 @@ namespace Hitbox2DMaker
             // 大文字・小文字を無視してソート☆
             Array.Sort(files, StringComparer.OrdinalIgnoreCase);
 
-            StringBuilder csFileText = new StringBuilder();
+            StringBuilder script = new StringBuilder();
+            script.AppendLine(@"namespace Hitbox2D
+{");
             {
                 ColorBoxCondition[] expectedBoxes = new ColorBoxCondition[]
                 {
@@ -52,10 +54,11 @@ namespace Hitbox2DMaker
 
                     string text = Utility_Hitbox2DClassFormat.ToText(expectedBox.m_outputClassName, image_to_slice_to_rectangleList);
                     System.Console.WriteLine(text);
-                    csFileText.Append(text);
+                    script.Append(text);
                 }
             }
-            File.WriteAllText(Program.FILE_NAME, csFileText.ToString());
+            script.AppendLine("}");
+            File.WriteAllText(Program.FILE_NAME, script.ToString());
 
 
             // おわり☆

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using StellaQL;
 using StellaQL.Acons.Main_Char3;
+using Hitbox2D;
 
 namespace SceneMain
 {
@@ -71,6 +72,7 @@ namespace SceneMain
 
         void Update()
         {
+
             //if ((int)PlayerIndex.Player1 == playerIndex)
             //{
             //    Debug.Log("Update Time.deltaTime = " + Time.deltaTime);
@@ -388,7 +390,7 @@ namespace SceneMain
 
                     if (isGrounded)// 接地していれば
                     {
-                        animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Stand);
+                        animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileType.Stand);
                     }
                 }
             }
@@ -466,8 +468,11 @@ namespace SceneMain
             }
             #endregion
 
-            // 当たり判定くん
-            UpdateHitbox2D();
+            if (SceneCommon.READY_TIME_LENGTH < mainCameraScript.ReadyingTime)
+            {
+                // 当たり判定くん
+                Hitbox2D_Player_Abstract.Update(animator, AControl.Instance, playerIndex, transform, hitboxsSpriteRenderer, weakboxCollider2D);
+            }
         }
 
         ///// <summary>
@@ -488,111 +493,6 @@ namespace SceneMain
         //    throw new UnityException("aclipType = [" + aclipType + "]に対応するアニメーション・クリップのレコードが無いぜ☆");
         //}
 
-        /// <summary>
-        /// 当たり判定くん☆
-        /// </summary>
-        /// <param name="player"></param>
-        public void UpdateHitbox2D()
-        {
-            if (SceneCommon.READY_TIME_LENGTH < mainCameraScript.ReadyingTime)
-            {
-                // クリップ名取得
-                if (animator.GetCurrentAnimatorClipInfo(0).Length < 1)
-                {
-                    Debug.LogError("クリップインフォの配列の範囲外エラー☆ playerIndex = " + playerIndex);
-                    return;
-                }
-                AnimationClip clip = animator.GetCurrentAnimatorClipInfo(0)[0].clip;
-
-                // FIXME: bug? クリップ名は、Animator Controller Override を使っている場合、継承しているアニメーション・クリップは名前を取れない？
-                // string clipName = clip.name;
-
-                // ステートのスピードを取得したい。
-                AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-                float stateSpeed = animeStateInfo.speed;
-
-                CliptypeExRecordable aclipTypeRecord = AControl.Instance.GetCurrentUserDefinedCliptypeRecord(animator, CliptypeExTable.Instance);
-
-                // 正規化時間取得（0～1 の数倍。時間経過で 1以上になる）
-                float normalizedTime = animeStateInfo.normalizedTime;
-                // ループするモーションでなければ、少しの誤差を除いて、1.0 より大きくはならないはず。
-
-                // Samples、Frame rate は、キー・フレームの数と同じにしている前提。
-                // クリップ・レングスは１になる。
-                // 全てのモーションは１秒として作っておき、Speed を利用して　表示フレーム数 を調整するものとする。
-
-                // Speed の使い方。
-                // 60 / モーション画像枚数 / 表示したいフレーム数
-                //
-                // 例：　弱パンチは画像２枚として、5フレーム表示したい場合。
-                // 60 / 2 / 5 = 6
-                //
-                // 例：　中パンチは画像３枚として、7フレーム表示したい場合。
-                // 60 / 3 / 7 = 約 2.8571
-                //
-                // 例：　強パンチは画像５枚として、9フレーム表示したい場合。
-                // 60 / 5 / 9 = 約 1.3333
-                //
-                // 例：　投了は画像４枚として、１２０フレーム表示したい場合。
-                // 60 / 4 / 120 = 約 0.125
-
-                int currentMotionFrame = Mathf.FloorToInt((normalizedTime % 1.0f) * clip.frameRate);
-
-                // 画像分類　スライス番号　取得
-                int serialTilesetfile;
-                int slice;
-                CharacterIndex character = CommonScript.Player_to_useCharacter[playerIndex];
-                Main_UserDefinedStateTableUtility.GetSlice(
-                    out serialTilesetfile,
-                    out slice,
-                    character, // キャラクター番号
-                    aclipTypeRecord,
-                    currentMotionFrame
-                    );
-                //if((int)PlayerIndex.Player1==iPlayer && MotionDatabaseScript.AclipTypeIndex.Num != aclipType)
-                //{
-                //    Debug.Log( " iPlayer = " + iPlayer + " character = " + character + " aclipType = "+ aclipType + " currentMotionFrame = " + currentMotionFrame + " / serialImage = " + serialImage + " slice = " + slice);
-                //    // + " motion = " + motion
-                //    // "anime.GetCurrentAnimatorClipInfo(0).Length = " + anime.GetCurrentAnimatorClipInfo(0).Length+
-                //}
-
-                if (-1 != slice)
-                {
-                    // 新・当たり判定くん
-                    float offsetX;
-                    float offsetY;
-                    float scaleX;
-                    float scaleY;
-                    for (int iHitbox = 0; iHitbox < (int)HitboxIndex.Num; iHitbox++)
-                    {
-                        offsetX = transform.position.x + Mathf.Sign(transform.localScale.x) * SceneCommon.GRAPHIC_SCALE * Hitbox2DOperationScript.GetOffsetX((HitboxIndex)iHitbox, serialTilesetfile, slice);
-                        offsetY = transform.position.y + SceneCommon.GRAPHIC_SCALE * Hitbox2DOperationScript.GetOffsetY((HitboxIndex)iHitbox, serialTilesetfile, slice);
-                        scaleX = SceneCommon.GRAPHIC_SCALE * Hitbox2DOperationScript.GetScaleX((HitboxIndex)iHitbox, serialTilesetfile, slice);
-                        scaleY = SceneCommon.GRAPHIC_SCALE * Hitbox2DOperationScript.GetScaleY((HitboxIndex)iHitbox, serialTilesetfile, slice);
-
-                        hitboxsSpriteRenderer[iHitbox].transform.position = new Vector3(offsetX, offsetY);
-                        hitboxsSpriteRenderer[iHitbox].transform.localScale = new Vector3(scaleX, scaleY);
-
-                        if ((int)HitboxIndex.Weakbox == iHitbox)
-                        {
-                            // 当たり判定も変更
-                            weakboxCollider2D.transform.position = new Vector3(offsetX, offsetY);
-                            weakboxCollider2D.transform.localScale = new Vector3(scaleX, scaleY);
-                        }
-
-                        //if ((int)PlayerIndex.Player1 == iPlayer)
-                        //{
-                        //Debug.Log("stateSpeed = " + stateSpeed + " clip.frameRate = " + clip.frameRate + " normalizedTime = " + normalizedTime + " currentMotionFrame = " + currentMotionFrame + " 当たり判定くん.position.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.x + " 当たり判定くん.position.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.y + " scale.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.x + " scale.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.y);
-                        //    //" clip.length = " + clip.length +
-                        //    //" motionFrames = " + motionFrames +
-                        //    //" lastKeyframeTime = "+ lastKeyframeTime +
-                        //    //" clip.length = "+ clip.length +
-                        //    //" motionFrames = "+ motionFrames +
-                        //}
-                    }
-                }
-            }
-        }
 
         /// <summary>
         /// 相手に向かって進んでいるか、相手から離れているか、こっちからは動いていないかを判定する。
@@ -630,14 +530,14 @@ namespace SceneMain
             switch (facingOpponentLR)
             {
                 case FacingOpponentLR.Left:
-                    temp.x = -1 * SceneCommon.GRAPHIC_SCALE;
+                    temp.x = -1 * Hitbox2D.Common.SCALE;
                     //if ((int)PlayerIndex.Player1 == playerIndex)
                     //{
                     //    Debug.Log("左を向くぜ☆");
                     //}
                     break;
                 case FacingOpponentLR.Right:
-                    temp.x = 1 * SceneCommon.GRAPHIC_SCALE;
+                    temp.x = 1 * Hitbox2D.Common.SCALE;
                     //if ((int)PlayerIndex.Player1 == playerIndex)
                     //{
                     //    Debug.Log("右を向くぜ☆");

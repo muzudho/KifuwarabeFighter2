@@ -6,6 +6,7 @@ namespace StellaQL
     public class TestFullpathParser
     {
         #region N70 Syntax Parser
+        // 構文パーサー
         [Test]
         public void N80_Syntax_Fixed_LayerName()
         {
@@ -82,6 +83,7 @@ namespace StellaQL
 
 
         #region N80 Lexical Parser
+        // 字句解析パーサー
         [Test]
         public void N80_Lexical_VarLayerName()
         {
@@ -100,13 +102,17 @@ namespace StellaQL
         public void N80_Lexical_VarStatemachineNames()
         {
             string query = "Base Layer.Alpaca.Bear.Cat";
-            int caret = "Base Layer.".Length; // From the continuation of scanning to "Base Layer."
+            // "Base Layer." まで走査した続きから。
+            // From the continuation of scanning to "Base Layer."
+            int caret = "Base Layer.".Length;
             List<string> statemachinesNameEndsWithoutDot;
 
             bool successful = FullpathLexcalP.VarStatemachineNames(query, ref caret, out statemachinesNameEndsWithoutDot);
 
             Assert.IsTrue(successful);
-            Assert.AreEqual(23, caret); // Next to "~ Bear.".
+            // "～Bear." の次。
+            // Next to "~ Bear.".
+            Assert.AreEqual(23, caret);
             Assert.AreEqual(2, statemachinesNameEndsWithoutDot.Count);
             Assert.AreEqual("Alpaca", statemachinesNameEndsWithoutDot[0]);
             Assert.AreEqual("Bear", statemachinesNameEndsWithoutDot[1]);
@@ -116,13 +122,17 @@ namespace StellaQL
         public void N80_Lexical_VarStateName()
         {
             string query = "Base Layer.Alpaca.Bear.Cat";
-            int caret = "Base Layer.Alpaca.Bear.".Length; // From the continuation of scanning to "Base Layer.Alpaca.Bear.".
+            // "Base Layer.Alpaca.Bear." まで走査した続きから。
+            // From the continuation of scanning to "Base Layer.Alpaca.Bear.".
+            int caret = "Base Layer.Alpaca.Bear.".Length;
             string stateName;
 
             bool successful = FullpathLexcalP.VarStateName(query, ref caret, out stateName);
 
             Assert.IsTrue(successful);
-            Assert.AreEqual(26, caret); // Next to "Cat".
+            // "Cat" の次。
+            // Next to "Cat".
+            Assert.AreEqual(26, caret);
             Assert.AreEqual("Cat", stateName);
         }
         #endregion

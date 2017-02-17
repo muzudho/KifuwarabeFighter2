@@ -1,6 +1,7 @@
 ﻿using SceneMain;
 using StellaQL.Acons.Main_Char3;
 using UnityEngine;
+using Hitbox2D;
 
 public class Main_Char3_Behaviour : StateMachineBehaviour {
 
@@ -10,13 +11,13 @@ public class Main_Char3_Behaviour : StateMachineBehaviour {
         #region 立ち
         if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_SWAIT)].Name)) // 立ち待機
         {
-            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Stand);
+            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileType.Stand);
         }
         #endregion
         #region ジャンプ
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_JMOVE_JMOVE0)].Name)) // ジャンプに着手した。
         {
-            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Jump);
+            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileType.Jump);
             animator.SetBool(SceneCommon.BOOL_JMOVE0, true);
         }
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_JMOVE_JMOVE1)].Name)) // 上昇
@@ -28,13 +29,13 @@ public class Main_Char3_Behaviour : StateMachineBehaviour {
         #region 屈み
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_CWAIT)].Name)) // かがみ待機
         {
-            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Crouch);
+            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileType.Crouch);
         }
         #endregion
         #region その他
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_OBACKSTEP)].Name)) // バックステップ
         {
-            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileTypeIndex.Stand);
+            animator.SetInteger(SceneCommon.INTEGER_ACTIONING, (int)TilesetfileType.Stand);
         }
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_OGIVEUP)].Name))
         {

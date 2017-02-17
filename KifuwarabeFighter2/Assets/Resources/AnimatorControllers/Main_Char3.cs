@@ -1,4 +1,5 @@
-﻿using SceneMain;
+﻿using Hitbox2D;
+using UnityEngine;
 
 namespace StellaQL.Acons.Main_Char3
 {
@@ -8,12 +9,12 @@ namespace StellaQL.Acons.Main_Char3
     public class AcState : AbstractAcState
     {
         /// <param name="fullpath">ステートマシン名、ステート名のフルパス</param>
-        /// <param name="cliptype">アニメーションの種類</param>
+        /// <param name="motionName">演技の種類</param>
         /// <param name="userDefinedTags_hash">StellaQL用のユーザー定義タグのハッシュ</param>
-        public AcState(string fullpath, CliptypeIndex cliptype, string[] userDefinedTags)
+        public AcState(string fullpath, string motionName, string[] userDefinedTags)
             :base(fullpath, userDefinedTags)
         {
-            this.Cliptype = (int)cliptype;
+            this.Cliptype = Animator.StringToHash(motionName);
         }
     }
 
@@ -65,75 +66,75 @@ namespace StellaQL.Acons.Main_Char3
             #region Tags
             // あなたの定義したタグをステートに関連付けることができます
             // You can set your defined tags to state.
-            Set(new AcState(BASELAYER_, (CliptypeIndex)0, new[] { TAG_NONE }));
-            Set(new AcState(BASELAYER_SWAIT, CliptypeIndex.SWait, new[] { TAG_STAND }));
-            Set(new AcState(BASELAYER_SMOVE, CliptypeIndex.SMove, new[] { TAG_STAND }));
-            Set(new AcState(BASELAYER_SATKLP, CliptypeIndex.SAtkLP, new[] { TAG_BUSYX, TAG_STAND, TAG_LIGHT, TAG_PUNCH }));
-            Set(new AcState(BASELAYER_SATKMP, CliptypeIndex.SAtkMP, new[] { TAG_BUSYX, TAG_STAND, TAG_MEDIUM, TAG_PUNCH }));
-            Set(new AcState(BASELAYER_SATKHP, CliptypeIndex.SAtkHP, new[] { TAG_BUSYX, TAG_STAND, TAG_HARD, TAG_PUNCH }));
-            Set(new AcState(BASELAYER_SATKLK, CliptypeIndex.SAtkLK, new[] { TAG_BUSYX, TAG_STAND, TAG_LIGHT, TAG_KICK }));
-            Set(new AcState(BASELAYER_SATKMK, CliptypeIndex.SAtkMK, new[] { TAG_BUSYX, TAG_STAND, TAG_MEDIUM, TAG_KICK }));
-            Set(new AcState(BASELAYER_SATKHK, CliptypeIndex.SAtkHK, new[] { TAG_BUSYX, TAG_STAND, TAG_HARD, TAG_KICK }));
-            Set(new AcState(BASELAYER_SBLOCKL, CliptypeIndex.SBlockL, new[] { TAG_BUSYX, TAG_STAND, TAG_LIGHT, TAG_BLOCK }));
-            Set(new AcState(BASELAYER_SBLOCKM, CliptypeIndex.SBlockM, new[] { TAG_BUSYX, TAG_STAND, TAG_MEDIUM, TAG_BLOCK }));
-            Set(new AcState(BASELAYER_SBLOCKH, CliptypeIndex.SBlockH, new[] { TAG_BUSYX, TAG_STAND, TAG_HARD, TAG_BLOCK }));
-            Set(new AcState(BASELAYER_SDAMAGEL, CliptypeIndex.SDamageL, new[] { TAG_NONE, TAG_STAND, TAG_LIGHT, TAG_DAMAGE }));
-            Set(new AcState(BASELAYER_SDAMAGEM, CliptypeIndex.SDamageM, new[] { TAG_NONE, TAG_STAND, TAG_MEDIUM, TAG_DAMAGE }));
-            Set(new AcState(BASELAYER_SDAMAGEH, CliptypeIndex.SDamageH, new[] { TAG_NONE, TAG_STAND, TAG_HARD, TAG_DAMAGE }));
+            Set(new AcState(BASELAYER_, "", new[] { TAG_NONE }));
+            Set(new AcState(BASELAYER_SWAIT, Moviestar.MOTION_CHAR3_SWAIT, new[] { TAG_STAND }));
+            Set(new AcState(BASELAYER_SMOVE, Moviestar.MOTION_CHAR3_SMOVE, new[] { TAG_STAND }));
+            Set(new AcState(BASELAYER_SATKLP, Moviestar.MOTION_CHAR3_SATKLP, new[] { TAG_BUSYX, TAG_STAND, TAG_LIGHT, TAG_PUNCH }));
+            Set(new AcState(BASELAYER_SATKMP, Moviestar.MOTION_CHAR3_SATKMP, new[] { TAG_BUSYX, TAG_STAND, TAG_MEDIUM, TAG_PUNCH }));
+            Set(new AcState(BASELAYER_SATKHP, Moviestar.MOTION_CHAR3_SATKHP, new[] { TAG_BUSYX, TAG_STAND, TAG_HARD, TAG_PUNCH }));
+            Set(new AcState(BASELAYER_SATKLK, Moviestar.MOTION_CHAR3_SATKLK, new[] { TAG_BUSYX, TAG_STAND, TAG_LIGHT, TAG_KICK }));
+            Set(new AcState(BASELAYER_SATKMK, Moviestar.MOTION_CHAR3_SATKMK, new[] { TAG_BUSYX, TAG_STAND, TAG_MEDIUM, TAG_KICK }));
+            Set(new AcState(BASELAYER_SATKHK, Moviestar.MOTION_CHAR3_SATKHK, new[] { TAG_BUSYX, TAG_STAND, TAG_HARD, TAG_KICK }));
+            Set(new AcState(BASELAYER_SBLOCKL, Moviestar.MOTION_CHAR3_SBLOCKL, new[] { TAG_BUSYX, TAG_STAND, TAG_LIGHT, TAG_BLOCK }));
+            Set(new AcState(BASELAYER_SBLOCKM, Moviestar.MOTION_CHAR3_SBLOCKM, new[] { TAG_BUSYX, TAG_STAND, TAG_MEDIUM, TAG_BLOCK }));
+            Set(new AcState(BASELAYER_SBLOCKH, Moviestar.MOTION_CHAR3_SBLOCKH, new[] { TAG_BUSYX, TAG_STAND, TAG_HARD, TAG_BLOCK }));
+            Set(new AcState(BASELAYER_SDAMAGEL, Moviestar.MOTION_CHAR3_SDAMAGEL, new[] { TAG_NONE, TAG_STAND, TAG_LIGHT, TAG_DAMAGE }));
+            Set(new AcState(BASELAYER_SDAMAGEM, Moviestar.MOTION_CHAR3_SDAMAGEM, new[] { TAG_NONE, TAG_STAND, TAG_MEDIUM, TAG_DAMAGE }));
+            Set(new AcState(BASELAYER_SDAMAGEH, Moviestar.MOTION_CHAR3_SDAMAGEH, new[] { TAG_NONE, TAG_STAND, TAG_HARD, TAG_DAMAGE }));
 
-            Set(new AcState(BASELAYER_JMOVE_, (CliptypeIndex)0, new[] { TAG_JUMP }));
-            Set(new AcState(BASELAYER_JMOVE_JMOVE0, CliptypeIndex.JMove0, new[] { TAG_BUSYX, TAG_BUSYY, TAG_JUMP }));
-            Set(new AcState(BASELAYER_JMOVE_JMOVE1, CliptypeIndex.JMove1, new[] { TAG_JUMP }));
-            Set(new AcState(BASELAYER_JMOVE_JMOVE2, CliptypeIndex.JMove2, new[] { TAG_JUMP }));
-            Set(new AcState(BASELAYER_JMOVE_JMOVE3, CliptypeIndex.JMove3, new[] { TAG_JUMP }));
-            Set(new AcState(BASELAYER_JMOVE_JMOVE4, CliptypeIndex.JMove4, new[] { TAG_BUSYX, TAG_JUMP }));
-            Set(new AcState(BASELAYER_JATKLP, CliptypeIndex.JAtkLP, new[] { TAG_JUMP, TAG_LIGHT, TAG_PUNCH }));
-            Set(new AcState(BASELAYER_JATKMP, CliptypeIndex.JAtkMP, new[] { TAG_JUMP, TAG_MEDIUM, TAG_PUNCH }));
-            Set(new AcState(BASELAYER_JATKHP, CliptypeIndex.JAtkHP, new[] { TAG_JUMP, TAG_HARD, TAG_PUNCH }));
-            Set(new AcState(BASELAYER_JATKLK, CliptypeIndex.JAtkLK, new[] { TAG_JUMP, TAG_LIGHT, TAG_KICK }));
-            Set(new AcState(BASELAYER_JATKMK, CliptypeIndex.JAtkMK, new[] { TAG_JUMP, TAG_MEDIUM, TAG_KICK }));
-            Set(new AcState(BASELAYER_JATKHK, CliptypeIndex.JAtkHK, new[] { TAG_JUMP, TAG_HARD, TAG_KICK }));
-            Set(new AcState(BASELAYER_JBLOCKL, CliptypeIndex.JBlockL, new[] { TAG_BUSYX, TAG_JUMP, TAG_LIGHT, TAG_BLOCK }));
-            Set(new AcState(BASELAYER_JBLOCKM, CliptypeIndex.JBlockM, new[] { TAG_BUSYX, TAG_JUMP, TAG_MEDIUM, TAG_BLOCK }));
-            Set(new AcState(BASELAYER_JBLOCKH, CliptypeIndex.JBlockH, new[] { TAG_BUSYX, TAG_JUMP, TAG_HARD, TAG_BLOCK }));
-            Set(new AcState(BASELAYER_JDAMAGEL, CliptypeIndex.JDamageL, new[] { TAG_JUMP, TAG_LIGHT, TAG_DAMAGE }));
-            Set(new AcState(BASELAYER_JDAMAGEM, CliptypeIndex.JDamageM, new[] { TAG_JUMP, TAG_MEDIUM, TAG_DAMAGE }));
-            Set(new AcState(BASELAYER_JDAMAGEH, CliptypeIndex.JDamageH, new[] { TAG_JUMP, TAG_HARD, TAG_DAMAGE }));
+            Set(new AcState(BASELAYER_JMOVE_, "", new[] { TAG_JUMP }));
+            Set(new AcState(BASELAYER_JMOVE_JMOVE0, Moviestar.MOTION_CHAR3_JMOVE0, new[] { TAG_BUSYX, TAG_BUSYY, TAG_JUMP }));
+            Set(new AcState(BASELAYER_JMOVE_JMOVE1, Moviestar.MOTION_CHAR3_JMOVE1, new[] { TAG_JUMP }));
+            Set(new AcState(BASELAYER_JMOVE_JMOVE2, Moviestar.MOTION_CHAR3_JMOVE2, new[] { TAG_JUMP }));
+            Set(new AcState(BASELAYER_JMOVE_JMOVE3, Moviestar.MOTION_CHAR3_JMOVE3, new[] { TAG_JUMP }));
+            Set(new AcState(BASELAYER_JMOVE_JMOVE4, Moviestar.MOTION_CHAR3_JMOVE4, new[] { TAG_BUSYX, TAG_JUMP }));
+            Set(new AcState(BASELAYER_JATKLP, Moviestar.MOTION_CHAR3_JATKLP, new[] { TAG_JUMP, TAG_LIGHT, TAG_PUNCH }));
+            Set(new AcState(BASELAYER_JATKMP, Moviestar.MOTION_CHAR3_JATKMP, new[] { TAG_JUMP, TAG_MEDIUM, TAG_PUNCH }));
+            Set(new AcState(BASELAYER_JATKHP, Moviestar.MOTION_CHAR3_JATKHP, new[] { TAG_JUMP, TAG_HARD, TAG_PUNCH }));
+            Set(new AcState(BASELAYER_JATKLK, Moviestar.MOTION_CHAR3_JATKLK, new[] { TAG_JUMP, TAG_LIGHT, TAG_KICK }));
+            Set(new AcState(BASELAYER_JATKMK, Moviestar.MOTION_CHAR3_JATKMK, new[] { TAG_JUMP, TAG_MEDIUM, TAG_KICK }));
+            Set(new AcState(BASELAYER_JATKHK, Moviestar.MOTION_CHAR3_JATKHK, new[] { TAG_JUMP, TAG_HARD, TAG_KICK }));
+            Set(new AcState(BASELAYER_JBLOCKL, Moviestar.MOTION_CHAR3_JBLOCKL, new[] { TAG_BUSYX, TAG_JUMP, TAG_LIGHT, TAG_BLOCK }));
+            Set(new AcState(BASELAYER_JBLOCKM, Moviestar.MOTION_CHAR3_JBLOCKM, new[] { TAG_BUSYX, TAG_JUMP, TAG_MEDIUM, TAG_BLOCK }));
+            Set(new AcState(BASELAYER_JBLOCKH, Moviestar.MOTION_CHAR3_JBLOCKH, new[] { TAG_BUSYX, TAG_JUMP, TAG_HARD, TAG_BLOCK }));
+            Set(new AcState(BASELAYER_JDAMAGEL, Moviestar.MOTION_CHAR3_JDAMAGEL, new[] { TAG_JUMP, TAG_LIGHT, TAG_DAMAGE }));
+            Set(new AcState(BASELAYER_JDAMAGEM, Moviestar.MOTION_CHAR3_JDAMAGEM, new[] { TAG_JUMP, TAG_MEDIUM, TAG_DAMAGE }));
+            Set(new AcState(BASELAYER_JDAMAGEH, Moviestar.MOTION_CHAR3_JDAMAGEH, new[] { TAG_JUMP, TAG_HARD, TAG_DAMAGE }));
 
-            Set(new AcState(BASELAYER_DMOVE, CliptypeIndex.DMove, new[] { TAG_DASH }));
-            Set(new AcState(BASELAYER_DATKLP, CliptypeIndex.DAtkLP, new[] { TAG_DASH, TAG_LIGHT, TAG_PUNCH }));
-            Set(new AcState(BASELAYER_DATKMP, CliptypeIndex.DAtkMP, new[] { TAG_DASH, TAG_MEDIUM, TAG_PUNCH }));
-            Set(new AcState(BASELAYER_DATKHP, CliptypeIndex.DAtkHP, new[] { TAG_DASH, TAG_HARD, TAG_PUNCH }));
-            Set(new AcState(BASELAYER_DATKLK, CliptypeIndex.DAtkLK, new[] { TAG_DASH, TAG_LIGHT, TAG_KICK }));
-            Set(new AcState(BASELAYER_DATKMK, CliptypeIndex.DAtkMK, new[] { TAG_DASH, TAG_MEDIUM, TAG_KICK }));
-            Set(new AcState(BASELAYER_DATKHK, CliptypeIndex.DAtkHK, new[] { TAG_DASH, TAG_HARD, TAG_KICK }));
-            Set(new AcState(BASELAYER_DBLOCKL, CliptypeIndex.DBlockL, new[] { TAG_BUSYX, TAG_DASH, TAG_LIGHT, TAG_BLOCK }));
-            Set(new AcState(BASELAYER_DBLOCKM, CliptypeIndex.DBlockM, new[] { TAG_BUSYX, TAG_DASH, TAG_MEDIUM, TAG_BLOCK }));
-            Set(new AcState(BASELAYER_DBLOCKH, CliptypeIndex.DBlockH, new[] { TAG_BUSYX, TAG_DASH, TAG_HARD, TAG_BLOCK }));
-            Set(new AcState(BASELAYER_DDAMAGEL, CliptypeIndex.DDamageL, new[] { TAG_DASH, TAG_LIGHT, TAG_DAMAGE }));
-            Set(new AcState(BASELAYER_DDAMAGEM, CliptypeIndex.DDamageM, new[] { TAG_DASH, TAG_MEDIUM, TAG_DAMAGE }));
-            Set(new AcState(BASELAYER_DDAMAGEH, CliptypeIndex.DDamageH, new[] { TAG_DASH, TAG_HARD, TAG_DAMAGE }));
+            Set(new AcState(BASELAYER_DMOVE, Moviestar.MOTION_CHAR3_DMOVE, new[] { TAG_DASH }));
+            Set(new AcState(BASELAYER_DATKLP, Moviestar.MOTION_CHAR3_DATKLP, new[] { TAG_DASH, TAG_LIGHT, TAG_PUNCH }));
+            Set(new AcState(BASELAYER_DATKMP, Moviestar.MOTION_CHAR3_DATKMP, new[] { TAG_DASH, TAG_MEDIUM, TAG_PUNCH }));
+            Set(new AcState(BASELAYER_DATKHP, Moviestar.MOTION_CHAR3_DATKHP, new[] { TAG_DASH, TAG_HARD, TAG_PUNCH }));
+            Set(new AcState(BASELAYER_DATKLK, Moviestar.MOTION_CHAR3_DATKLK, new[] { TAG_DASH, TAG_LIGHT, TAG_KICK }));
+            Set(new AcState(BASELAYER_DATKMK, Moviestar.MOTION_CHAR3_DATKMK, new[] { TAG_DASH, TAG_MEDIUM, TAG_KICK }));
+            Set(new AcState(BASELAYER_DATKHK, Moviestar.MOTION_CHAR3_DATKHK, new[] { TAG_DASH, TAG_HARD, TAG_KICK }));
+            Set(new AcState(BASELAYER_DBLOCKL, Moviestar.MOTION_CHAR3_DBLOCKL, new[] { TAG_BUSYX, TAG_DASH, TAG_LIGHT, TAG_BLOCK }));
+            Set(new AcState(BASELAYER_DBLOCKM, Moviestar.MOTION_CHAR3_DBLOCKM, new[] { TAG_BUSYX, TAG_DASH, TAG_MEDIUM, TAG_BLOCK }));
+            Set(new AcState(BASELAYER_DBLOCKH, Moviestar.MOTION_CHAR3_DBLOCKH, new[] { TAG_BUSYX, TAG_DASH, TAG_HARD, TAG_BLOCK }));
+            Set(new AcState(BASELAYER_DDAMAGEL, Moviestar.MOTION_CHAR3_DDAMAGEL, new[] { TAG_DASH, TAG_LIGHT, TAG_DAMAGE }));
+            Set(new AcState(BASELAYER_DDAMAGEM, Moviestar.MOTION_CHAR3_DDAMAGEM, new[] { TAG_DASH, TAG_MEDIUM, TAG_DAMAGE }));
+            Set(new AcState(BASELAYER_DDAMAGEH, Moviestar.MOTION_CHAR3_DDAMAGEH, new[] { TAG_DASH, TAG_HARD, TAG_DAMAGE }));
 
-            Set(new AcState(BASELAYER_CWAIT, CliptypeIndex.CWait, new[] { TAG_CROUCH }));
-            Set(new AcState(BASELAYER_CMOVE, CliptypeIndex.CMove, new[] { TAG_CROUCH }));
-            Set(new AcState(BASELAYER_CATKLP, CliptypeIndex.CAtkLP, new[] { TAG_BUSYX, TAG_CROUCH, TAG_LIGHT, TAG_PUNCH }));
-            Set(new AcState(BASELAYER_CATKMP, CliptypeIndex.CAtkMP, new[] { TAG_BUSYX, TAG_CROUCH, TAG_MEDIUM, TAG_PUNCH }));
-            Set(new AcState(BASELAYER_CATKHP, CliptypeIndex.CAtkHP, new[] { TAG_BUSYX, TAG_CROUCH, TAG_HARD, TAG_PUNCH }));
-            Set(new AcState(BASELAYER_CATKLK, CliptypeIndex.CAtkLK, new[] { TAG_BUSYX, TAG_CROUCH, TAG_LIGHT, TAG_KICK }));
-            Set(new AcState(BASELAYER_CATKMK, CliptypeIndex.CAtkMK, new[] { TAG_BUSYX, TAG_CROUCH, TAG_MEDIUM, TAG_KICK }));
-            Set(new AcState(BASELAYER_CATKHK, CliptypeIndex.CAtkHK, new[] { TAG_BUSYX, TAG_CROUCH, TAG_HARD, TAG_KICK }));
-            Set(new AcState(BASELAYER_CBLOCKL, CliptypeIndex.CBlockL, new[] { TAG_BUSYX, TAG_CROUCH, TAG_LIGHT, TAG_BLOCK }));
-            Set(new AcState(BASELAYER_CBLOCKM, CliptypeIndex.CBlockM, new[] { TAG_BUSYX, TAG_CROUCH, TAG_MEDIUM, TAG_BLOCK }));
-            Set(new AcState(BASELAYER_CBLOCKH, CliptypeIndex.CBlockH, new[] { TAG_BUSYX, TAG_CROUCH, TAG_HARD, TAG_BLOCK }));
-            Set(new AcState(BASELAYER_CDAMAGEL, CliptypeIndex.CDamageL, new[] { TAG_CROUCH, TAG_LIGHT, TAG_DAMAGE }));
-            Set(new AcState(BASELAYER_CDAMAGEM, CliptypeIndex.CDamageM, new[] { TAG_CROUCH, TAG_MEDIUM, TAG_DAMAGE }));
-            Set(new AcState(BASELAYER_CDAMAGEH, CliptypeIndex.CDamageH, new[] { TAG_CROUCH, TAG_HARD, TAG_DAMAGE }));
+            Set(new AcState(BASELAYER_CWAIT, Moviestar.MOTION_CHAR3_CWAIT, new[] { TAG_CROUCH }));
+            Set(new AcState(BASELAYER_CMOVE, Moviestar.MOTION_CHAR3_CMOVE, new[] { TAG_CROUCH }));
+            Set(new AcState(BASELAYER_CATKLP, Moviestar.MOTION_CHAR3_CATKLP, new[] { TAG_BUSYX, TAG_CROUCH, TAG_LIGHT, TAG_PUNCH }));
+            Set(new AcState(BASELAYER_CATKMP, Moviestar.MOTION_CHAR3_CATKMP, new[] { TAG_BUSYX, TAG_CROUCH, TAG_MEDIUM, TAG_PUNCH }));
+            Set(new AcState(BASELAYER_CATKHP, Moviestar.MOTION_CHAR3_CATKHP, new[] { TAG_BUSYX, TAG_CROUCH, TAG_HARD, TAG_PUNCH }));
+            Set(new AcState(BASELAYER_CATKLK, Moviestar.MOTION_CHAR3_CATKLK, new[] { TAG_BUSYX, TAG_CROUCH, TAG_LIGHT, TAG_KICK }));
+            Set(new AcState(BASELAYER_CATKMK, Moviestar.MOTION_CHAR3_CATKMK, new[] { TAG_BUSYX, TAG_CROUCH, TAG_MEDIUM, TAG_KICK }));
+            Set(new AcState(BASELAYER_CATKHK, Moviestar.MOTION_CHAR3_CATKHK, new[] { TAG_BUSYX, TAG_CROUCH, TAG_HARD, TAG_KICK }));
+            Set(new AcState(BASELAYER_CBLOCKL, Moviestar.MOTION_CHAR3_CBLOCKL, new[] { TAG_BUSYX, TAG_CROUCH, TAG_LIGHT, TAG_BLOCK }));
+            Set(new AcState(BASELAYER_CBLOCKM, Moviestar.MOTION_CHAR3_CBLOCKM, new[] { TAG_BUSYX, TAG_CROUCH, TAG_MEDIUM, TAG_BLOCK }));
+            Set(new AcState(BASELAYER_CBLOCKH, Moviestar.MOTION_CHAR3_CBLOCKH, new[] { TAG_BUSYX, TAG_CROUCH, TAG_HARD, TAG_BLOCK }));
+            Set(new AcState(BASELAYER_CDAMAGEL, Moviestar.MOTION_CHAR3_CDAMAGEL, new[] { TAG_CROUCH, TAG_LIGHT, TAG_DAMAGE }));
+            Set(new AcState(BASELAYER_CDAMAGEM, Moviestar.MOTION_CHAR3_CDAMAGEM, new[] { TAG_CROUCH, TAG_MEDIUM, TAG_DAMAGE }));
+            Set(new AcState(BASELAYER_CDAMAGEH, Moviestar.MOTION_CHAR3_CDAMAGEH, new[] { TAG_CROUCH, TAG_HARD, TAG_DAMAGE }));
 
-            Set(new AcState(BASELAYER_OBACKSTEP, CliptypeIndex.OBackstep, new[] { TAG_OTHER }));
-            Set(new AcState(BASELAYER_OGIVEUP, CliptypeIndex.OGiveup, new[] { TAG_OTHER }));
-            Set(new AcState(BASELAYER_ODOWNSDAMAGEH, CliptypeIndex.SDamageH, new[] { TAG_BUSYX, TAG_OTHER, TAG_HARD }));
-            Set(new AcState(BASELAYER_ODOWN, CliptypeIndex.ODown, new[] { TAG_BUSYX, TAG_OTHER }));
-            Set(new AcState(BASELAYER_OSTANDUP, CliptypeIndex.OStandup, new[] { TAG_OTHER }));
+            Set(new AcState(BASELAYER_OBACKSTEP, Moviestar.MOTION_CHAR3_OBACKSTEP, new[] { TAG_OTHER }));
+            Set(new AcState(BASELAYER_OGIVEUP, Moviestar.MOTION_CHAR3_OGIVEUP, new[] { TAG_OTHER }));
+            Set(new AcState(BASELAYER_ODOWNSDAMAGEH, Moviestar.MOTION_CHAR3_SDAMAGEH, new[] { TAG_BUSYX, TAG_OTHER, TAG_HARD }));
+            Set(new AcState(BASELAYER_ODOWN, Moviestar.MOTION_CHAR3_ODOWN, new[] { TAG_BUSYX, TAG_OTHER }));
+            Set(new AcState(BASELAYER_OSTANDUP, Moviestar.MOTION_CHAR3_OSTANDUP, new[] { TAG_OTHER }));
             #endregion
         }
     }

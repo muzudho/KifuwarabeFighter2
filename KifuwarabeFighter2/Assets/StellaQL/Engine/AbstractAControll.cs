@@ -179,24 +179,5 @@ namespace StellaQL
 
             throw new UnityException("Not found [" + state.fullPathHash + "].");
         }
-
-        /// <summary>
-        /// 現在のアニメーション・クリップに対応したユーザー定義レコードを取得。
-        /// Current.
-        /// </summary>
-        /// <returns></returns>
-        public CliptypeExRecordable GetCurrentUserDefinedCliptypeRecord(Animator animator, UserDefinedCliptypeTableable userDefinedCliptypeTable)
-        {
-            AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-
-            int cliptype = (StateHash_to_record[animeStateInfo.fullPathHash]).Cliptype;
-
-            if (userDefinedCliptypeTable.Cliptype_to_exRecord.ContainsKey(cliptype))
-            {
-                return userDefinedCliptypeTable.Cliptype_to_exRecord[cliptype];
-            }
-
-            throw new UnityException("Not found record. cliptype = [" + cliptype + "]");
-        }
     }
 }

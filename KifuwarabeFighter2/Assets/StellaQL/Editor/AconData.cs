@@ -195,7 +195,7 @@ namespace StellaQL
                 // Output column names.
                 if (outputColumnName)
                 {
-                    switch (this.Type)
+                    switch (Type)
                     {
                         case FieldType.Int://thru
                         case FieldType.Float:
@@ -207,7 +207,7 @@ namespace StellaQL
                 }
                 else
                 {
-                    switch (this.Type)
+                    switch (Type)
                     {
                         case FieldType.Int://thru
                         case FieldType.Float:
@@ -643,7 +643,7 @@ namespace StellaQL
                 new RecordDefinition("mirror"                       ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.mirror; }              ,(object i,bool v)=>{ ((Wrapper)i).Source.mirror = v; }),
                 new RecordDefinition("mirrorParameter"              ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.mirrorParameter; }     ,(object i,string v)=>{ ((Wrapper)i).Source.mirrorParameter = v; }),
                 new RecordDefinition("mirrorParameterActive"        ,RecordDefinition.FieldType.Bool    ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.mirrorParameterActive;},(object i,bool v)=>{ ((Wrapper)i).Source.mirrorParameterActive = v; }),
-                new RecordDefinition("motion_name"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None          ,false),
+                new RecordDefinition("#motion_assetPath#"           ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None          ,false),
                 new RecordDefinition("nameHash"                     ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None          ,false),
                 new RecordDefinition("speed"                        ,RecordDefinition.FieldType.Float   ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.speed; }               ,(object i,float v)=>{ ((Wrapper)i).Source.speed = v; }),
                 new RecordDefinition("speedParameter"               ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None     ,RecordDefinition.KeyType.None                  ,(object i)=>{ return ((Wrapper)i).Source.speedParameter; }      ,(object i,string v)=>{ ((Wrapper)i).Source.speedParameter = v; }),
@@ -681,7 +681,11 @@ namespace StellaQL
                 { "mirror"                  ,state.mirror               },
                 { "mirrorParameter"         ,state.mirrorParameter      },
                 { "mirrorParameterActive"   ,state.mirrorParameterActive},
-                { "motion_name"             ,state.motion == null ? "" : state.motion.name},
+
+                 // name だと一意性がないのでアセット・パスとする。
+                 // Since there is no uniqueness in name, it is assumed to be a full path.
+                { "#motion_assetPath#"      ,state.motion == null ? "" : AssetDatabase.GetAssetPath(state.motion.GetInstanceID()) },
+
                 { "nameHash"                ,state.nameHash             },
                 { "speed"                   ,state.speed                },
                 { "speedParameter"          ,state.speedParameter       },
@@ -710,7 +714,7 @@ namespace StellaQL
             Definitions["mirror"                ].AppendCsv(Fields, c, n, d);
             Definitions["mirrorParameter"       ].AppendCsv(Fields, c, n, d);
             Definitions["mirrorParameterActive" ].AppendCsv(Fields, c, n, d);
-            Definitions["motion_name"           ].AppendCsv(Fields, c, n, d);
+            Definitions["#motion_assetPath#"    ].AppendCsv(Fields, c, n, d);
             Definitions["nameHash"              ].AppendCsv(Fields, c, n, d);
             Definitions["speed"                 ].AppendCsv(Fields, c, n, d);
             Definitions["speedParameter"        ].AppendCsv(Fields, c, n, d);
