@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Hitbox2D
+﻿namespace DojinCircleGrayscale.Hitbox2D
 {
     public abstract class Common
     {

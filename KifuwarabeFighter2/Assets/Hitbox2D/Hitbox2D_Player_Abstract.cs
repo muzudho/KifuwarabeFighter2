@@ -1,11 +1,8 @@
-﻿using System;
+﻿using DojinCircleGrayscale.StellaQL;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using StellaQL;
 
-namespace Hitbox2D
+namespace DojinCircleGrayscale.Hitbox2D
 {
     public abstract class Operation
     {
@@ -180,14 +177,14 @@ namespace Hitbox2D
         {
             AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
-            int cliptype = (aControl.StateHash_to_record[animeStateInfo.fullPathHash]).Cliptype;
+            int motionAssetPathHash = (aControl.StateHash_to_record[animeStateInfo.fullPathHash]).MotionAssetPathHash;
 
-            if (userDefinedCliptypeTable.MotionHash_to_instance.ContainsKey(cliptype))
+            if (userDefinedCliptypeTable.MotionHash_to_instance.ContainsKey(motionAssetPathHash))
             {
-                return userDefinedCliptypeTable.MotionHash_to_instance[cliptype];
+                return userDefinedCliptypeTable.MotionHash_to_instance[motionAssetPathHash];
             }
 
-            throw new UnityException("Not found record. cliptype = [" + cliptype + "]");
+            throw new UnityException("Not found record. motionAssetPathHash = [" + motionAssetPathHash + "]");
         }
 
         /// <summary>

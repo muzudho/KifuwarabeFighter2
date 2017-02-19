@@ -56,12 +56,14 @@
      <Compile Include="Assets\StellaQL\Editor\FileUtility_Editor.cs" />
      <Compile Include="Assets\StellaQL\Editor\FullpathConstantGenerator.cs" />
      <Compile Include="Assets\StellaQL\Editor\FullpathParser.cs" />
-     <Compile Include="Assets\StellaQL\Editor\Reference.cs" />
-     <Compile Include="Assets\StellaQL\Editor\StateCmdline.cs" />
+     <Compile Include="Assets\StellaQL\Editor\StateMachineQueryStellaQL.cs" />
      <Compile Include="Assets\StellaQL\Editor\StellaQL.cs" />
-     <Compile Include="Assets\StellaQL\Editor\TestFullpathParser.cs" />
-     <Compile Include="Assets\StellaQL\Editor\TestStellaQLDemo.cs" />
-     <Compile Include="Assets\StellaQL\Editor\Tutorial.cs" />
+     <Compile Include="Assets\StellaQL\MayBeDeletedThisFolder\Editor\TestFullpathParser.cs" />
+     <Compile Include="Assets\StellaQL\MayBeDeletedThisFolder\Editor\TestStellaQLDemo.cs" />
+     <None Include="Assets\StellaQL\Document\チュートリアル.txt" />
+     <None Include="Assets\StellaQL\Document\コマンドリファレンス.txt" />
+     <None Include="Assets\StellaQL\readme_en.txt" />
+     <None Include="Assets\StellaQL\readme_jp.txt" />
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>
  </Reference>

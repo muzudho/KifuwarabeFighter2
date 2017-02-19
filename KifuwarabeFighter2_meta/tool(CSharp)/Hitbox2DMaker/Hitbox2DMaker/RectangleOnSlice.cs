@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Hitbox2DMaker
+namespace DojinCircleGrayscale.Hitbox2DMaker
 {
     /// <summary>
     /// どのスライス画像の、どのあたりの矩形か。

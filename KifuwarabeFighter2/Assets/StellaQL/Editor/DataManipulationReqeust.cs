@@ -1,10 +1,9 @@
 ﻿using System.Text;
 
-namespace StellaQL
+namespace DojinCircleGrayscale.StellaQL
 {
     /// <summary>
     /// データ操作を要求するレコード。
-    /// Record that requests data manipulation.
     /// 
     /// INSERT,
     /// INSERT(Change Destination),
@@ -19,8 +18,7 @@ namespace StellaQL
         /// </summary>
         /// <param name="category"></param>
         /// <param name="foreignkeycategory"></param>
-        /// <param name="fullpath">レイヤー、ステートマシン、ステートのいずれかのフルパス。
-        /// Full path of any of layer, state machine, state.</param>
+        /// <param name="fullpath">レイヤー、ステートマシン、ステートのいずれかのフルパス</param>
         /// <param name="fullpathTransition"></param>
         /// <param name="fullpathCondition"></param>
         /// <param name="fullpathPropertyname"></param>
@@ -49,7 +47,6 @@ namespace StellaQL
         public string ConditionNum_ofFullpath { get; private set; }
 
         // position で使う
-        // Use with position
         public string Propertyname_ofFullpath { get; private set; }
 
         public string Name { get; private set; }
@@ -69,7 +66,6 @@ namespace StellaQL
 
         /// <summary>
         /// 中身を確認するのに使う
-        /// Used to check the contents.
         /// </summary>
         /// <returns></returns>
         public void ToCsvLine(StringBuilder contents)

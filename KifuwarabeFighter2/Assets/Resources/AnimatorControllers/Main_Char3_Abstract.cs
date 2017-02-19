@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace StellaQL.Acons.Main_Char3
+namespace DojinCircleGrayscale.StellaQL.Acons.Main_Char3
 {
     /// <summary>
     /// This file was automatically generated.

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace Hitbox2DMaker
+namespace DojinCircleGrayscale.Hitbox2DMaker
 {
     public class ColorBoxCondition
     {

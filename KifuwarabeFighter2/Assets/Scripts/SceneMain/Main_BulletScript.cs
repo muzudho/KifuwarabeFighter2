@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using DojinCircleGrayscale.Hitbox2D;
 
 namespace SceneMain
 {
@@ -35,7 +36,7 @@ namespace SceneMain
             rigidbody2D.velocity = new Vector2(speed * friendChar.transform.localScale.x, rigidbody2D.velocity.y);
             // 弾の画像の向きを　味方キャラクター　に合わせる
             Vector2 temp = transform.localScale;
-            temp.x = friendChar.transform.localScale.x / Hitbox2D.Common.SCALE;
+            temp.x = friendChar.transform.localScale.x / Common.SCALE;
             transform.localScale = temp;
             // 5秒後に消滅
             Destroy(gameObject, 5);

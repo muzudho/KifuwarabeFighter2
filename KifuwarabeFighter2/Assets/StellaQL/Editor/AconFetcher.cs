@@ -2,16 +2,14 @@
 using UnityEditor.Animations;
 using UnityEngine;
 
-namespace StellaQL
+namespace DojinCircleGrayscale.StellaQL
 {
     public abstract class AconFetcher
     {
         /// <summary>
         /// パスを指定すると パラメーターを返す。
-        /// If you specify a path, it returns the parameter.
         /// </summary>
-        /// <param name="parameterName">"Average body length" といった文字列。
-        /// ex. "Average body length"</param>
+        /// <param name="parameterName">"Average body length" といった文字列</param>
         public static AnimatorControllerParameter FetchParameter(AnimatorController ac, string parameterName)
         {
             foreach (AnimatorControllerParameter parameter in ac.parameters) { if (parameterName == parameter.name) { return parameter; } }
@@ -20,10 +18,8 @@ namespace StellaQL
 
         /// <summary>
         /// パスを指定すると レイヤーを返す。
-        /// When you specify a path, it returns a layer.
         /// </summary>
-        /// <param name="justLayerName_EndsWithoutDot">"Base Layer" といった文字列。
-        /// ex. "Base Layer"</param>
+        /// <param name="justLayerName_EndsWithoutDot">"Base Layer" といった文字列</param>
         public static AnimatorControllerLayer FetchLayer_JustLayerName(AnimatorController ac, string justLayerName_EndsWithoutDot)
         {
             foreach (AnimatorControllerLayer layer in ac.layers) { if (justLayerName_EndsWithoutDot == layer.name) { return layer; } }
@@ -32,16 +28,13 @@ namespace StellaQL
 
         /// <summary>
         /// パスを指定すると ステートマシンを返す。
-        /// If you specify a path, it returns a state machine.
         /// </summary>
-        /// <param name="query">"Base Layer.JMove" といった文字列。
-        /// ex. "Base Layer.JMove"</param>
+        /// <param name="query">"Base Layer.JMove" といった文字列</param>
         public static AnimatorStateMachine FetchStatemachine(AnimatorController ac, List<string> statemachineNamesEndsWithoutDot, AnimatorControllerLayer layer)
         {
             AnimatorStateMachine currentMachine = layer.stateMachine;
 
             // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
-            // If the state machine is in the middle, it will get off to the last state machine.
             if (0 < statemachineNamesEndsWithoutDot.Count)
             {
                 currentMachine = GetLeafMachine_ofStatemachine(ac, currentMachine, statemachineNamesEndsWithoutDot);
@@ -53,7 +46,6 @@ namespace StellaQL
 
         /// <summary>
         /// 最後のステートマシンを返す。
-        /// Return the last state machine.
         /// </summary>
         private static AnimatorStateMachine GetLeafMachine_ofStatemachine(AnimatorController ac, AnimatorStateMachine currentMachine, List<string> statemachineNamesEndsWithoutDot)
         {
@@ -67,7 +59,6 @@ namespace StellaQL
 
         /// <summary>
         /// ノード名から、ステートマシンを取得する。
-        /// Acquire the state machine from the node name.
         /// </summary>
         private static AnimatorStateMachine FetchChildMachine_ofStatemachine(AnimatorStateMachine machine, string childName)
         {
@@ -80,14 +71,11 @@ namespace StellaQL
 
         /// <summary>
         /// パスを指定すると ステートを返す。
-        /// When you specify a path, it returns the state.
         /// </summary>
-        /// <param name="path">"Base Layer.JMove.JMove0" といった文字列。
-        /// ex. "Base Layer.JMove.JMove0"</param>
+        /// <param name="path">"Base Layer.JMove.JMove0" といった文字列</param>
         public static ChildAnimatorState FetchChildstate(AnimatorController ac, string path, out AnimatorStateMachine parentStatemachine)
         {
             // レイヤー名.ステートマシン名(いくつか).ステート名
-            // layer name.(several)statemachine name.state name
             string[] nodes = path.Split('.');
             if (nodes.Length < 2) { throw new UnityException("Less than 2 nodes. path=[" + path + "]"); }
 
@@ -96,7 +84,6 @@ namespace StellaQL
             if (null == currentMachine) { throw new UnityException("Not found layer statemachine. nodes=[" + string.Join("][", nodes) + "]"); }
 
             // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
-            // If the state machine is in the middle, it will get off to the last state machine.
             if (2 < nodes.Length)
             {
                 currentMachine = FetchLeafMachine_ofChilestate(currentMachine, nodes);
@@ -109,7 +96,6 @@ namespace StellaQL
 
         /// <summary>
         /// 最後のステートマシンを返す。
-        /// Return the last state machine.
         /// </summary>
         private static AnimatorStateMachine FetchLeafMachine_ofChilestate(AnimatorStateMachine currentMachine, string[] nodes)
         {
@@ -141,7 +127,6 @@ namespace StellaQL
 
         /// <summary>
         /// パス・トークンを指定すると ステートを返す。
-        /// When you specify a path token, it returns the state.
         /// </summary>
         public static AnimatorState FetchState(AnimatorController ac, FullpathTokens ft)
         {
@@ -150,7 +135,6 @@ namespace StellaQL
             if (null == currentMachine) { throw new UnityException("Not found layer. nodes=[" + ft.StatemachinePath + "]"); }
 
             // ステートマシンが途中にある場合、最後のステートマシンまで降りていく。
-            // If the state machine is in the middle, it will get off to the last state machine.
             if (0 < ft.StatemachineNamesEndsWithoutDot.Count)
             {
                 currentMachine = FetchLeafMachine_ofState(currentMachine, ft.StatemachineNamesEndsWithoutDot);
@@ -162,7 +146,6 @@ namespace StellaQL
 
         /// <summary>
         /// 最後のステートマシンを返す。
-        /// Return the last state machine.
         /// </summary>
         private static AnimatorStateMachine FetchLeafMachine_ofState(AnimatorStateMachine currentMachine, List<string> statemachineNamesEndsWithoutDot)
         {
@@ -218,10 +201,8 @@ namespace StellaQL
         }
         /// <summary>
         /// ２つのステートを結んでいる全てのトランジション。
-        /// All transitions connecting two states.
         /// </summary>
-        /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列。
-        /// ex. "Base Layer.JMove.JMove0"</param>
+        /// <param name="path_src">"Base Layer.JMove.JMove0" といった文字列</param>
         public static List<AnimatorStateTransition> FetchTransition_SrcDst(AnimatorController ac, string path_src, string path_dst)
         {
             List<AnimatorStateTransition> hit = new List<AnimatorStateTransition>();
@@ -269,7 +250,6 @@ namespace StellaQL
             }
 
             // 空コンストラクタで生成した場合、.IsNull( ) メソッドでヌルを返す。
-            // If it is generated with an empty constructor, it returns null in the .IsNull () method.
             return new ConditionRecord.AnimatorConditionWrapper();
         }
 
@@ -298,7 +278,6 @@ namespace StellaQL
             AnimatorStateMachine parentStatemachine;
 
             // 構造体
-            // struct
             ChildAnimatorState caState = AconFetcher.FetchChildstate(ac, fullpath, out parentStatemachine);
 
             return AconFetcher.FetchPosition_OfState(parentStatemachine, caState, propertyname_ofFullpath);

@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using StellaQL;
-using StellaQL.Acons.Main_Char3;
-using Hitbox2D;
+﻿using DojinCircleGrayscale.Hitbox2D;
+using DojinCircleGrayscale.StellaQL.Acons.Main_Char3;
+using UnityEngine;
 
 namespace SceneMain
 {
@@ -530,14 +529,14 @@ namespace SceneMain
             switch (facingOpponentLR)
             {
                 case FacingOpponentLR.Left:
-                    temp.x = -1 * Hitbox2D.Common.SCALE;
+                    temp.x = -1 * Common.SCALE;
                     //if ((int)PlayerIndex.Player1 == playerIndex)
                     //{
                     //    Debug.Log("左を向くぜ☆");
                     //}
                     break;
                 case FacingOpponentLR.Right:
-                    temp.x = 1 * Hitbox2D.Common.SCALE;
+                    temp.x = 1 * Common.SCALE;
                     //if ((int)PlayerIndex.Player1 == playerIndex)
                     //{
                     //    Debug.Log("右を向くぜ☆");

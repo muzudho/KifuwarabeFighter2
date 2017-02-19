@@ -1,19 +1,17 @@
 ﻿using UnityEditor.Animations;
 using UnityEngine;
 
-namespace StellaQL
+namespace DojinCircleGrayscale.StellaQL
 {
     /// <summary>
     /// 下の方に シャローコピーの AconShallowcopy もある。
-    /// There is also a shallow copy (incomplete) AconShallowcopy on the lower side.
     /// 
     /// 下の方に リンクを切る AconRemoveLink というのもある。
-    /// There is also AconRemoveLink which cuts off the link on the lower side.
     /// </summary>
     public class AconDeepcopy
     {
         /// <summary>
-        /// I want you to deep copy the layer.
+        /// TODO: レイヤーをディープコピーして欲しい。
         /// </summary>
         public static AnimatorControllerLayer DeepcopyLayer(AnimatorControllerLayer old)
         {
@@ -31,7 +29,6 @@ namespace StellaQL
 
         /// <summary>
         /// TODO: 子ステートマシンをディープコピーして欲しい。
-        /// TODO: I want you to deep copy the child statemachine.
         /// </summary>
         public static ChildAnimatorStateMachine[] DeepcopyChildStatemachine(ChildAnimatorStateMachine[] oldItems)
         {
@@ -47,7 +44,6 @@ namespace StellaQL
 
         /// <summary>
         /// TODO: 子ステートマシンをディープコピーして欲しい。
-        /// TODO: I want you to deep copy the child statemachine.
         /// </summary>
         public static ChildAnimatorStateMachine DeepcopyChildStatemachine(ChildAnimatorStateMachine old)
         {
@@ -59,7 +55,6 @@ namespace StellaQL
 
         /// <summary>
         /// TODO: ステートマシンをディープコピーして欲しい。
-        /// TODO: I want you to deep copy the statemachine.
         /// </summary>
         public static AnimatorStateMachine DeepcopyStatemachine(AnimatorStateMachine old)
         {
@@ -81,7 +76,6 @@ namespace StellaQL
 
         /// <summary>
         /// TODO: 子ステートをディープコピーして欲しい。
-        /// TODO: I want you to deep copy the child state.
         /// </summary>
         public static ChildAnimatorState DeepcopyChildstate(ChildAnimatorState old)
         {
@@ -93,7 +87,6 @@ namespace StellaQL
 
         /// <summary>
         /// TODO: 子ステートマシンをディープコピーして欲しい。
-        /// TODO: I want you to deep copy the state.
         /// </summary>
         public static AnimatorState DeepcopyState(AnimatorState old)
         {
@@ -123,7 +116,6 @@ namespace StellaQL
 
         /// <summary>
         /// TODO: トランジションをディープコピーして欲しい。
-        /// TODO: I want you to deep copy the transitions.
         /// </summary>
         public static AnimatorStateTransition[] DeepcopyTransitions(AnimatorStateTransition[] oldArray)
         {
@@ -139,7 +131,6 @@ namespace StellaQL
 
         /// <summary>
         /// TODO: トランジションをディープコピーして欲しい。
-        /// TODO: I want you to deep copy the transition.
         /// </summary>
         public static AnimatorStateTransition DeepcopyTransition(AnimatorStateTransition old)
         {
@@ -168,7 +159,6 @@ namespace StellaQL
     {
         /// <summary>
         /// TODO: ステートをシャローコピーして欲しい。容れ物を変える程度に使う。
-        /// TODO: I want you to carry out shallow copy of the state. Use it to the extent that it changes the contents.
         /// </summary>
         public static AnimatorState ShallowcopyState(AnimatorState old)
         {
@@ -198,7 +188,6 @@ namespace StellaQL
 
         /// <summary>
         /// TODO: トランジションをシャローコピーして欲しい。容れ物を変える程度に使う。
-        /// TODO: I want you to carry out shallow copy of the transitions. Use it to the extent that it changes the contents.
         /// </summary>
         public static AnimatorStateTransition[] ShallowcopyTransitions(AnimatorStateTransition[] srcArray)
         {
@@ -214,7 +203,6 @@ namespace StellaQL
 
         /// <summary>
         /// TODO: トランジションをシャローコピーして欲しい。容れ物を変える程度に使う。
-        /// TODO: I want you to carry out shallow copy of the transition. Use it to the extent that it changes the contents.
         /// </summary>
         public static AnimatorStateTransition ShallowcopyTransition(AnimatorStateTransition src)
         {
@@ -223,7 +211,6 @@ namespace StellaQL
 
         /// <summary>
         /// TODO: DestinationState プロパティーを除いてトランジションをシャローコピーして欲しい。容れ物を変える程度に使う。
-        /// TODO: I would like you to have a shallow copy of the transition except the DestinationState property. Use it to the extent that it changes the contents.
         /// </summary>
         public static AnimatorStateTransition ShallowcopyTransition(AnimatorStateTransition dst, AnimatorStateTransition src)
         {
@@ -234,7 +221,6 @@ namespace StellaQL
 
         /// <summary>
         /// TODO: DestinationState プロパティーを除いてトランジションをシャローコピーして欲しい。容れ物を変える程度に使う。
-        /// TODO: I would like you to have a shallow copy of the transition except the DestinationState property. Use it to the extent that it changes the contents.
         /// </summary>
         public static AnimatorStateTransition ShallowcopyTransition_ExceptDestinaionState(AnimatorStateTransition dst, AnimatorStateTransition src)
         {

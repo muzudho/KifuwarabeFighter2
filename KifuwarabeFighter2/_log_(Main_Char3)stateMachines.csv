@@ -1,0 +1,4 @@
+#layerNum#,#machineStateNum#,#layerName#,#statemachinePath#,name,#anyStateTransitions_Length#,#behaviours_Length#,#defaultState_String#,#entryTransitions_Length#,hideFlags,[EOL],
+0,0,,,Base Layer,13,1,SWait (UnityEngine.AnimatorState),0,HideInHierarchy,
+0,1,,JMove,JMove,0,0,JMove0 (UnityEngine.AnimatorState),0,HideInHierarchy,
+[EOF],

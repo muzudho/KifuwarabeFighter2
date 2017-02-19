@@ -1,4 +1,4 @@
-﻿namespace StellaQL.Acons.Select_Cursor
+﻿namespace DojinCircleGrayscale.StellaQL.Acons.Select_Cursor
 {
     /// <summary>
     /// (Step 3.) Click [Generate fullpath constant C#] button. and "using StellaQL.FullpathConst;". ([Generate fullpath constant C#]ボタンをクリックしてください)

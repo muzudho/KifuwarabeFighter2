@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace Hitbox2DMaker
+namespace DojinCircleGrayscale.Hitbox2DMaker
 {
 
     /// <summary>
@@ -14,7 +14,7 @@ namespace Hitbox2DMaker
     /// </summary>
     public class Program
     {
-        public const string FILE_NAME = "Hitbox2DScript.cs";
+        public const string FILE_NAME = "Hitbox2D_Data.cs";
         /// <summary>
         /// 2の倍数であること。
         /// </summary>
@@ -34,7 +34,7 @@ namespace Hitbox2DMaker
             Array.Sort(files, StringComparer.OrdinalIgnoreCase);
 
             StringBuilder script = new StringBuilder();
-            script.AppendLine(@"namespace Hitbox2D
+            script.AppendLine(@"namespace DojinCircleGrayscale.Hitbox2D
 {");
             {
                 ColorBoxCondition[] expectedBoxes = new ColorBoxCondition[]

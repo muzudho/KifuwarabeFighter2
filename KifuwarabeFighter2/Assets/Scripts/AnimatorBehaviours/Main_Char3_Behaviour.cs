@@ -1,7 +1,7 @@
 ﻿using SceneMain;
-using StellaQL.Acons.Main_Char3;
+using DojinCircleGrayscale.StellaQL.Acons.Main_Char3;
 using UnityEngine;
-using Hitbox2D;
+using DojinCircleGrayscale.Hitbox2D;
 
 public class Main_Char3_Behaviour : StateMachineBehaviour {
 

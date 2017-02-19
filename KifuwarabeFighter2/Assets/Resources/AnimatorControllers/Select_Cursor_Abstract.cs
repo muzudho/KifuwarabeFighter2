@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace StellaQL.Acons.Select_Cursor
+namespace DojinCircleGrayscale.StellaQL.Acons.Select_Cursor
 {
     /// <summary>
     /// This file was automatically generated.

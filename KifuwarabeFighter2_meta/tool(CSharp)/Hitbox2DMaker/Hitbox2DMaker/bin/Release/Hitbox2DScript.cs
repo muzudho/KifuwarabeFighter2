@@ -1,4 +1,4 @@
-namespace Hitbox2D
+namespace DojinCircleGrayscale.Hitbox2D
 {
     public class HitboxData
     {

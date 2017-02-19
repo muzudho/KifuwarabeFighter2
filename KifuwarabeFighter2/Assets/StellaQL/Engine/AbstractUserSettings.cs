@@ -2,7 +2,7 @@
 using System.Text;
 using UnityEngine;
 
-namespace StellaQL
+namespace DojinCircleGrayscale.StellaQL
 {
     public class AbstractUserSettings
     {
@@ -26,7 +26,7 @@ namespace StellaQL
         }
 
         /// <summary>
-        /// For error.
+        /// エラー時の表示のために。
         /// </summary>
         public void Dump_Presentable(StringBuilder info_message)
         {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Hitbox2D
+namespace DojinCircleGrayscale.Hitbox2D
 {
     /// <summary>
     /// ステートに設定されるアニメーション・クリップの種類

@@ -1,0 +1,328 @@
+﻿---------------------------------------------------
+ステートマシンクエリー StellaQL チュートリアル
+---------------------------------------------------
+開発:同人サークルぐれーすけーる(作者 むずでょ)
+---------------------------------------------------
+
+手順1
+  あなたのUnityプロジェクトのバックアップを
+  取っておいてください。エラー等で中断した際
+  データの復元機能は付いていません
+
+手順2
+  メニューから[Window]-[State Machine
+  Query (StellaQL)]をクリックしてください。
+  StateMachineQueryStellaQL ウィンドウが
+  出ます
+
+手順3
+  "Assets/StellaQL/MayBeDeletedThisFolder/
+  AnimatorControllers/Demo_Zoo.controller"
+  ファイルを開いてださい。また、その
+  Demo_Zoo.controllerファイルを
+  [Animation Controller Drag & Drop]枠に
+  ドラッグ＆ドロップしてください
+
+  StellaQLは操作完了後にゲームを再生しますが、
+  これは再描画を行うためです。再生ボタンは
+  押し戻してください
+
+手順4 (任意)
+  始める前にStellaQLが正常に導入されているか
+  テストすることができます
+
+  [Window]-[Editor Tests Runner]-[StellaQL]
+
+  [Run All]を押してください。チェックが全て
+  緑色ならＯＫです。ただし、既にDemo_Zooを
+  編集していた場合はテストが正常に行えません
+
+  改行のテストで失敗することがあるかも
+  しれませんが、おそらく問題ありません
+
+手順5
+  次の文を Query (StellaQL)
+  テキストボックスに入力してください
+
+  # Step 5
+  TRANSITION INSERT
+  FROM "Base Layer\.Cat"
+  TO   "Base Layer\.Dog"
+
+  そして、Executeボタンを押してください。
+  (以下、クエリーを実行してくださいと呼称)
+
+  Base Layer.Catステートから
+  Base Layer.Dogステートへトランジションが
+  引かれていることを確認してください。
+  (以下、ステートと呼称するのは略。
+  トランジションは線と呼称)
+
+手順6
+  次のクエリーを実行してください
+
+  # Step 6
+  TRANSITION INSERT
+  FROM "Base Layer\.Foo"
+  TO   "Base Layer\..*[Nn].*"
+
+  Fooから、名前に N が含まれるステートに線が
+  引かれました
+
+手順7
+  次のクエリーを実行してください
+
+  # Step 7
+  TRANSITION SELECT
+  FROM "Base Layer\.Foo"
+  TO   ".*"
+  THE  Zoo001
+
+  Unityのプロジェクト・フォルダ直下の
+  StellaQL_Work フォルダの中にCSVファイル
+  が作られます。Fooから伸びている線が一覧
+  されています
+
+手順8
+  次のクエリーを実行してください
+
+  # Step 8
+  TRANSITION UPDATE
+  SET exitTime 1.0
+      duration 0
+  FROM "Base Layer\.Foo"
+  TO   "Base Layer\..*[Nn].*"
+
+  exitTimeとdurationが一斉に更新されました。
+  次の文で SELECT してみるのもいいでしょう
+
+  # Zoo001 to Zoo002
+  TRANSITION SELECT
+  FROM "Base Layer\.Foo"
+  TO   ".*"
+  THE  Zoo002
+
+手順9
+  次のクエリーを実行してください
+
+  # Step 9
+  TRANSITION DELETE
+  FROM "Base Layer\.Foo"
+  TO   "Base Layer\..*"
+
+  Fooから伸びている線が全て消えました。
+  Catから Dogへの線はつながったままな
+  ことを確認してください
+
+手順10
+  次のクエリーを実行してください
+
+  # Step 10
+  STATE UPDATE
+  SET  speedParameterActive true
+    speedParameter       "New Float"
+    speed                1.23
+  WHERE "Base Layer\.Cat"
+
+  Inspector ウィンドウを見てCatのプロパティ
+  が更新されていることを確認してください
+
+手順11
+  次のクエリーを実行してください
+
+  # Step 11
+  STATE INSERT
+  WORDS
+    WhiteAlpaca
+    "White Bear"
+    "\"White\" Cat"
+    "White\\Gray\\Black Dog"
+  WHERE "Base Layer"
+
+  ステートが４つ作成されました
+
+手順12
+  次のクエリーを実行してください
+
+  # Step 12
+  STATE DELETE
+  WORDS ".*(White).*"
+  WHERE "Base Layer"
+
+  名前にWhiteを含むステートが削除されました
+
+手順13
+  次のクエリーを実行してください
+
+  # Step 13
+  TRANSITION INSERT
+  FROM TAG ( Ei I )
+  TO   "Base Layer\.Foo"
+
+  AとEを含む動物からFooに線が引かれました。
+  丸括弧は全てのタグに一致するものを探します。
+  TAG と ( の間には 半角スペースを入れて
+  ください
+
+手順14
+  Projectウィンドウから
+  Assets/StellaQL/MayBeDeletedThisFolder/
+  AnimatorControllers/Demo_Zoo
+  をダブルクリックして C#スクリプトファイルを
+  開いてください
+
+  ステートに１つ１つタグを設定しています。
+  エイ、ビー、シー... このタグはUnityのタグとは
+  関係なく、ただの文字列です
+
+  ユニティーエディターに戻ってください
+
+手順15
+  次のクエリーを実行してください
+
+  # Step 15
+  TRANSITION INSERT
+  FROM "Base Layer\.Foo"
+  TO TAG [ Eks Uai Zi ]
+
+  Foo から X と Y と Z のいずれかを含む動物に
+  線が引かれました。角括弧は１つでもタグが一致
+  するものを探します
+
+手順16
+  次のクエリーを実行してください
+
+  # Step 16
+  TRANSITION DELETE
+  FROM "Base Layer\.Foo"
+  TO   TAG { I Ai Uai }
+
+  Foo から E と I と Y の１つも含まない動物
+  への線は消されました。中括弧はタグが１つも
+  一致しないものを探します
+
+手順17
+  一旦 全ての線を消しましょう。
+  次のクエリーを実行してください
+
+  # Step 17
+  TRANSITION DELETE
+  FROM ".*"
+  TO   ".*"
+
+  全ての線が削除されました
+
+手順18
+  次のクエリーを実行してください
+
+  # Step 18
+  TRANSITION INSERT
+  FROM "Base Layer\.Foo"
+  TO TAG ( [ Ei Ou ] { I } )
+
+  Fooから、A か O を含み、E は含まない動物へ
+  線が引かれました。タグは　はみ出さずに
+  囲ってください。
+  ( ( A B ) ( C ) ) はＯＫ。
+  ( ( A B ) C ) はダメ
+
+手順19
+  難しい場合はセミコロンで命令文を分けま
+  しょう。もう一度、全ての線を消します。
+  次のクエリーを実行してください
+
+  # Step 19
+  TRANSITION DELETE FROM ".*"
+  TO ".*" ;
+  TRANSITION INSERT FROM
+  "Base Layer\.Foo" TO TAG [ Ei Ou ] ;
+  TRANSITION DELETE FROM
+  "Base Layer\.Foo" TO TAG ( I )
+
+  Fooから、A か O を含み、E は含まない
+  動物へ線が引かれました
+
+手順20
+  もう一度、全ての線を消し、Catを
+  設定し直します。
+  次のクエリーを実行してください
+
+  # Step 20
+  TRANSITION DELETE FROM ".* "
+  TO ".* " ;
+  STATE UPDATE SET
+  speedParameterActive false
+  speedParameter "" speed 1
+  WHERE "Base Layer\.Cat"
+
+  チュートリアルの最初の状態に戻ったこと
+  でしょう
+
+手順21
+  次のクエリーを実行してください
+
+  # Step 21
+TRANSITION INSERT FROM "Base Layer\.Alpaca" TO "Base Layer\.Alpaca" ;
+TRANSITION INSERT FROM "Base Layer\.Bear" TO "Base Layer\.Rabbit" ;
+TRANSITION INSERT FROM "Base Layer\.Cat" TO "Base Layer\.Tiger" ;
+TRANSITION INSERT FROM "Base Layer\.Dog" TO "Base Layer\.Giraffe" ;
+TRANSITION INSERT FROM "Base Layer\.Elephant" TO "Base Layer\.Tiger" ;
+TRANSITION INSERT FROM "Base Layer\.Fox" TO "Base Layer\.Xenopus" ;
+TRANSITION INSERT FROM "Base Layer\.Giraffe" TO "Base Layer\.Elephant" ;
+TRANSITION INSERT FROM "Base Layer\.Horse" TO "Base Layer\.Elephant" ;
+TRANSITION INSERT FROM "Base Layer\.Iguana" TO "Base Layer\.Alpaca" ;
+TRANSITION INSERT FROM "Base Layer\.Jellyfish" TO "Base Layer\.Horse" ;
+TRANSITION INSERT FROM "Base Layer\.Kangaroo" TO "Base Layer\.Ox" ;
+TRANSITION INSERT FROM "Base Layer\.Lion" TO "Base Layer\.Nutria" ;
+TRANSITION INSERT FROM "Base Layer\.Monkey" TO "Base Layer\.Yak" ;
+TRANSITION INSERT FROM "Base Layer\.Nutria" TO "Base Layer\.Alpaca" ;
+TRANSITION INSERT FROM "Base Layer\.Ox" TO "Base Layer\.Xenopus" ;
+TRANSITION INSERT FROM "Base Layer\.Pig" TO "Base Layer\.Giraffe" ;
+TRANSITION INSERT FROM "Base Layer\.Quetzal" TO "Base Layer\.Lion" ;
+TRANSITION INSERT FROM "Base Layer\.Rabbit" TO "Base Layer\.Tiger" ;
+TRANSITION INSERT FROM "Base Layer\.Sheep" TO "Base Layer\.Pig" ;
+TRANSITION INSERT FROM "Base Layer\.Tiger" TO "Base Layer\.Rabbit" ;
+TRANSITION INSERT FROM "Base Layer\.Unicorn" TO "Base Layer\.Nutria" ;
+TRANSITION INSERT FROM "Base Layer\.Vixen" TO "Base Layer\.Nutria" ;
+TRANSITION INSERT FROM "Base Layer\.Wolf" TO "Base Layer\.Fox" ;
+TRANSITION INSERT FROM "Base Layer\.Xenopus" TO "Base Layer\.Sheep" ;
+TRANSITION INSERT FROM "Base Layer\.Yak" TO "Base Layer\.Kangaroo" ;
+TRANSITION INSERT FROM "Base Layer\.Zebra" TO "Base Layer\.Alpaca" ;
+
+  しりとりを作りました
+
+手順22
+  [Export spread sheet]ボタンを押して
+  ください。プロジェクト・フォルダ直下の
+  StellaQL_Workフォルダの中に いくつかの
+  CSVファイルが出力されます
+
+手順23
+  StellaQL_Workフォルダに置いてある
+  StellaQL_MacroApplication.ods ファイルを
+  開いてください。マクロは有効化してください
+
+  StellaQL_MacroApplication.ods ファイルに
+  書かれている手順に沿って進んでください。
+  例えば、ビューの transitionsシートを
+  編集してみてください
+
+  Base Layer.BearからBase Layer.Rabbitへと
+  つなぐ線のduration 0.1を 0 にするのも
+  いいでしょう。手順を最後まで終えると
+  インポート用のCSVファイルが１つ作られます
+  
+手順24
+  必ず、あなたのUnityのプロジェクトを丸ごと
+  バックアップを取っておいてください
+
+  [Import spread sheet]ボタンを押して
+  ください。例えば Base Layer.Bearから
+  Base Layer.Rabbit へとつなぐ線の
+  durationが0になっていることを確認して
+  ください
+
+  基本操作の説明は以上です。その他のクエリーは
+  コマンドリファレンスをご覧ください
+
+ありがとうございました

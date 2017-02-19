@@ -52,6 +52,7 @@
      <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_Hitbox2D.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Select_Cursor.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Select_Cursor_Abstract.cs" />
+     <Compile Include="Assets\Resources\StellaQLUserSettings.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\Main_Char3_Behaviour.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\SampleBehaviour.cs" />
      <Compile Include="Assets\Scripts\CommonScript.cs" />
@@ -72,13 +73,16 @@
      <Compile Include="Assets\Scripts\TakoyakiParticleScript.cs" />
      <Compile Include="Assets\Scripts\TakoyakiTokenScript.cs" />
      <Compile Include="Assets\Scripts\TakoyakiUtilScript.cs" />
-     <Compile Include="Assets\StellaQL\AnimatorControllers\Demo_Zoo.cs" />
-     <Compile Include="Assets\StellaQL\AnimatorControllers\Demo_Zoo_Abstract.cs" />
      <Compile Include="Assets\StellaQL\Engine\AbstractAControll.cs" />
      <Compile Include="Assets\StellaQL\Engine\AbstractUserSettings.cs" />
      <Compile Include="Assets\StellaQL\Engine\FileUtility_Engine.cs" />
      <Compile Include="Assets\StellaQL\Engine\StellaQLCode.cs" />
-     <Compile Include="Assets\StellaQLUserSettings.cs" />
+     <Compile Include="Assets\StellaQL\MayBeDeletedThisFolder\AnimatorControllers\Demo_Zoo.cs" />
+     <Compile Include="Assets\StellaQL\MayBeDeletedThisFolder\AnimatorControllers\Demo_Zoo_Abstract.cs" />
+     <None Include="Assets\StellaQL\Document\チュートリアル.txt" />
+     <None Include="Assets\StellaQL\Document\コマンドリファレンス.txt" />
+     <None Include="Assets\StellaQL\readme_en.txt" />
+     <None Include="Assets\StellaQL\readme_jp.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

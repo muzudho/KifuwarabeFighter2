@@ -1,8 +1,8 @@
-﻿using StellaQL;
+﻿using DojinCircleGrayscale.StellaQL;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using StellaQL.Acons.Select_Cursor;
+using DojinCircleGrayscale.StellaQL.Acons.Select_Cursor;
 
 namespace SceneSelect
 {

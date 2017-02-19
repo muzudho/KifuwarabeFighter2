@@ -1,0 +1,5 @@
+#layerNum#,#machineStateNum#,#stateNum#,#layerName#,#statemachinePath#,name,cycleOffset,cycleOffsetParameter,#hideFlags_string#,iKOnFeet,mirror,mirrorParameter,mirrorParameterActive,#motion_assetPath#,nameHash,speed,speedParameter,speedParameterActive,tag,writeDefaultValues,[EOL],
+0,0,0,,,Alpaca,1,New Float,HideInHierarchy,False,False,New Bool,False,Assets/StellaQL/MayBeDeletedThisFolder/AnimationClips/Attack.anim,2135656967,1,New Float,False,HelloTokyo,True,
+0,0,0,,,Cat,0,,HideInHierarchy,False,False,,False,Assets/StellaQL/MayBeDeletedThisFolder/AnimationClips/Crouch.anim,-1508702904,1,,False,,True,
+0,0,0,,,Rabbit,0,,"HideInHierarchy, HideInInspector",False,False,,False,Assets/StellaQL/MayBeDeletedThisFolder/AnimationClips/Run.anim,1845302191,1,,False,,True,
+[EOF],

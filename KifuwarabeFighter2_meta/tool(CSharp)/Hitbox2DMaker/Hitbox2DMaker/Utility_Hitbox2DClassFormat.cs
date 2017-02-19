@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace Hitbox2DMaker
+namespace DojinCircleGrayscale.Hitbox2DMaker
 {
     public abstract class Utility_Hitbox2DClassFormat
     {

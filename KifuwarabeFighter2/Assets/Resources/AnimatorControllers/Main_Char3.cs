@@ -1,7 +1,7 @@
-﻿using Hitbox2D;
+﻿using DojinCircleGrayscale.Hitbox2D;
 using UnityEngine;
 
-namespace StellaQL.Acons.Main_Char3
+namespace DojinCircleGrayscale.StellaQL.Acons.Main_Char3
 {
     /// <summary>
     /// 独自拡張
@@ -9,12 +9,12 @@ namespace StellaQL.Acons.Main_Char3
     public class AcState : AbstractAcState
     {
         /// <param name="fullpath">ステートマシン名、ステート名のフルパス</param>
-        /// <param name="motionName">演技の種類</param>
+        /// <param name="motionAssetPath">演技の種類</param>
         /// <param name="userDefinedTags_hash">StellaQL用のユーザー定義タグのハッシュ</param>
-        public AcState(string fullpath, string motionName, string[] userDefinedTags)
+        public AcState(string fullpath, string motionAssetPath, string[] userDefinedTags)
             :base(fullpath, userDefinedTags)
         {
-            this.Cliptype = Animator.StringToHash(motionName);
+            this.MotionAssetPathHash = Animator.StringToHash(motionAssetPath);
         }
     }
 
