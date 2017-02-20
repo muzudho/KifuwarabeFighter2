@@ -1,4 +1,4 @@
-﻿using DojinCircleGrayscale.Hitbox2D;
+﻿using DojinCircleGrayscale.Hitbox2DLorikeet;
 using DojinCircleGrayscale.StellaQL.Acons.Main_Char3;
 using UnityEngine;
 

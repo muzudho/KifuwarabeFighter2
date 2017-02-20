@@ -49,6 +49,8 @@
      <Compile Include="Assets\Hitbox2D\Hitbox2D_Player_Abstract.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_Abstract.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_AbstractMotor.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_AbstractMotor2.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_Hitbox2D.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Select_Cursor.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Select_Cursor_Abstract.cs" />
@@ -79,6 +81,7 @@
      <Compile Include="Assets\StellaQL\Engine\StellaQLCode.cs" />
      <Compile Include="Assets\StellaQL\MayBeDeletedThisFolder\AnimatorControllers\Demo_Zoo.cs" />
      <Compile Include="Assets\StellaQL\MayBeDeletedThisFolder\AnimatorControllers\Demo_Zoo_Abstract.cs" />
+     <Compile Include="Assets\StellaQL\MayBeDeletedThisFolder\AnimatorControllers\Demo_Zoo_AbstractMotor.cs" />
      <None Include="Assets\StellaQL\Document\チュートリアル.txt" />
      <None Include="Assets\StellaQL\Document\コマンドリファレンス.txt" />
      <None Include="Assets\StellaQL\readme_en.txt" />

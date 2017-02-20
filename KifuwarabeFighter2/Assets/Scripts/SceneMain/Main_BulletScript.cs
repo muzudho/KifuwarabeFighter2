@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using DojinCircleGrayscale.Hitbox2D;
+using DojinCircleGrayscale.Hitbox2DLorikeet;
 
 namespace SceneMain
 {

@@ -1245,6 +1245,8 @@ namespace DojinCircleGrayscale.StellaQL
     /// </summary>
     public class MotionRecord : AconObjectRecordable
     {
+        public const string ASSET_PATH = "#assetPath#";
+
         public class Wrapper
         {
             public Wrapper(Motion source, int countOfAttachDestination)
@@ -1260,7 +1262,7 @@ namespace DojinCircleGrayscale.StellaQL
         {
             List<RecordDefinition> temp = new List<RecordDefinition>()
             {
-                new RecordDefinition("#assetPath#"                  ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None ,RecordDefinition.KeyType.Identifiable  ,false),
+                new RecordDefinition(ASSET_PATH                     ,RecordDefinition.FieldType.String  ,RecordDefinition.SubFieldType.None ,RecordDefinition.KeyType.Identifiable  ,false),
                 new RecordDefinition("#countOfAttachDestination#"   ,RecordDefinition.FieldType.Int     ,RecordDefinition.SubFieldType.None ,RecordDefinition.KeyType.ReadOnly
                     ,(object i)=>{ return ((Wrapper)i).CountOfAttachDestination; }
                     ,(object i,int v)=>{ ((Wrapper)i).CountOfAttachDestination = v; }
@@ -1311,7 +1313,7 @@ namespace DojinCircleGrayscale.StellaQL
         {
             this.Fields = new Dictionary<string, object>()
             {
-                { "#assetPath#"                     , assetPath                         },
+                { ASSET_PATH                        , assetPath                         },
                 { "#countOfAttachDestination#"      , countOfAttachDestination          }, // 取り付け先の数
                 { "apparentSpeed"                   , motion.apparentSpeed              },
                 { "averageAngularSpeed"             , motion.averageAngularSpeed        },
@@ -1331,7 +1333,7 @@ namespace DojinCircleGrayscale.StellaQL
         /// <param name="d">列定義出力 output definition</param>
         public void AppendCsvLine(StringBuilder c, bool n, bool d)
         {
-            Definitions["#assetPath#"               ].AppendCsv(Fields, c, n, d);
+            Definitions[ASSET_PATH                  ].AppendCsv(Fields, c, n, d);
             Definitions["#countOfAttachDestination#"].AppendCsv(Fields, c, n, d);
             Definitions["apparentSpeed"             ].AppendCsv(Fields, c, n, d);
             Definitions["averageAngularSpeed"       ].AppendCsv(Fields, c, n, d);

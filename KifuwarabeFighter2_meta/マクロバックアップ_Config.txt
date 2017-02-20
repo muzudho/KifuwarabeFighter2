@@ -1,0 +1,202 @@
+REM  *****  BASIC  *****
+
+Option Explicit
+
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+'	1	2	3	4	5	6	7	8	9	0	1	2	3	4	5	6	7	8	9	0	1	2	3	4	5	6	7	8	9	0	1	2	3	4	5	6	7	8	9	0
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' １つのオブジェクトにつきシート６枚
+Public Const sh_unit											=	6
+																																' 全てのシートの枚数（欠番含め）
+Public Const sh_number											=	9 * sh_unit
+
+																																' シート名
+Public Const shName_coPm										=	"parameters_def"
+Public Const shName_cbPm										=	"parameters"
+Public Const shName_voPm										=	"parameters_dfObj"
+Public Const shName_vwPm										=	"parameters"
+Public Const shName_roPm										=	"parameters_upObj"
+Public Const shName_rqPm										=	"parameters_upd"
+
+Public Const shName_coLy										=	"layers_def"
+Public Const shName_cbLy										=	"layers"
+Public Const shName_voLy										=	"layers_dfObj"
+Public Const shName_vwLy										=	"layers"
+Public Const shName_roLy										=	"layers_upObj"
+Public Const shName_rqLy										=	"layers_upd"
+
+Public Const shName_coSm										=	"stateMachines_def"
+Public Const shName_cbSm										=	"stateMachines"
+Public Const shName_voSm										=	"stateMachines_dfObj"
+Public Const shName_vwSm										=	"stateMachines"
+Public Const shName_roSm										=	"stateMachines_upObj"
+Public Const shName_rqSm										=	"stateMachines_upd"
+
+Public Const shName_coSt										=	"states_def"
+Public Const shName_cbSt										=	"states"
+Public Const shName_voSt										=	"states_dfObj"
+Public Const shName_vwSt										=	"states"
+Public Const shName_roSt										=	"states_upObj"
+Public Const shName_rqSt										=	"states_upd"
+
+Public Const shName_coTr										=	"transitions_def"
+Public Const shName_cbTr										=	"transitions"
+Public Const shName_voTr										=	"transitions_dfObj"
+Public Const shName_vwTr										=	"transitions"
+Public Const shName_roTr										=	"transitions_upObj"
+Public Const shName_rqTr										=	"transitions_upd"
+
+Public Const shName_coCd										=	"conditions_def"
+Public Const shName_cbCd										=	"conditions"
+Public Const shName_voCd										=	"conditions_dfObj"
+Public Const shName_vwCd										=	"conditions"
+Public Const shName_roCd										=	"conditions_upObj"
+Public Const shName_rqCd										=	"conditions_upd"
+
+Public Const shName_coPs										=	"positions_def"
+Public Const shName_cbPs										=	"positions"
+Public Const shName_voPs										=	"positions_dfObj"
+Public Const shName_vwPs										=	"positions"
+Public Const shName_roPs										=	"positions_upObj"
+Public Const shName_rqPs										=	"positions_upd"
+
+Public Const shName_coMo										=	"motions_def"
+Public Const shName_cbMo										=	"motions"
+Public Const shName_voMo										=	"motions_dfObj"
+Public Const shName_vwMo										=	"motions"
+Public Const shName_roMo										=	"motions_upObj"
+Public Const shName_rqMo										=	"motions_upd"
+
+Public Const shName_coUr										=	"updateRequest_def"
+Public Const shName_cbUr										=	"updateRequest"
+Public Const shName_voUr										=	"updateRequest_vwDfObj"
+Public Const shName_vwUr										=	"updateRequest"
+Public Const shName_roUr										=	"updateRequest_upObj"
+Public Const shName_rqUr										=	"updateRequest_upd"
+
+Sub GetShNames( ) As Object
+																																' 定数 sh_number で要素サイズを初期化できなかった
+	Dim	shNames	( 9 * 6 )										As	String
+	Dim	i_sh													As	Integer
+	i_sh														=	0
+
+	shNames		( i_sh		)									=	shName_coPm
+	Code.CountUp( i_sh	,1	)
+	shNames		( i_sh		)									=	shName_cbPm
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_voPm
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_vwPm
+	Code.CountUp( i_sh	,1	)
+	shNames		( i_sh		)									=	shName_roPm
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_rqPm
+	Code.CountUp( i_sh	,1	)
+
+	shNames		( i_sh		)									=	shName_coLy
+	Code.CountUp( i_sh	,1	)
+	shNames		( i_sh		)									=	shName_cbLy
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_voLy
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_vwLy
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_roLy
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_rqLy
+	Code.CountUp( i_sh	,1 	)
+
+	shNames		( i_sh		)									=	shName_coSm
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_cbSm
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_voSm
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_vwSm
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_roSm
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_rqSm
+	Code.CountUp( i_sh	,1 	)
+
+	shNames		( i_sh		)									=	shName_coSt
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_cbSt
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_voSt
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_vwSt
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_roSt
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_rqSt
+	Code.CountUp( i_sh	,1 	)
+
+	shNames		( i_sh		)									=	shName_coTr
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_cbTr
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_voTr
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_vwTr
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_roTr
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_rqTr
+	Code.CountUp( i_sh	,1 	)
+
+	shNames		( i_sh		)									=	shName_coCd
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_cbCd
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_voCd
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_vwCd
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_roCd
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_rqCd
+	Code.CountUp( i_sh	,1 	)
+
+	shNames		( i_sh		)									=	shName_coPs
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_cbPs
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_voPs
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_vwPs
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_roPs
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_rqPs
+	Code.CountUp( i_sh	,1 	)
+
+	shNames		( i_sh		)									=	shName_coMo
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_cbMo
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_voMo
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_vwMo
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_roMo
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_rqMo
+	Code.CountUp( i_sh	,1 	)
+
+	shNames		( i_sh		)									=	shName_coUr
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_cbUr
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_voUr
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_vwUr
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_roUr
+	Code.CountUp( i_sh	,1 	)
+	shNames		( i_sh		)									=	shName_rqUr
+	Code.CountUp( i_sh	,1 	)
+
+	GetShNames													=	shNames
+End Sub
+

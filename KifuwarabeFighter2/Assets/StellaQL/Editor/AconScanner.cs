@@ -152,6 +152,62 @@ namespace DojinCircleGrayscale.StellaQL
     }
 
     /// <summary>
+    /// モーション・スキャナー
+    /// </summary>
+    public class MotionScanner
+    {
+        public MotionScanner()
+        {
+            motionCounter = new Dictionary<string, MotionRecord.Wrapper>();
+        }
+        public Dictionary<string, MotionRecord.Wrapper> motionCounter { get; private set; }
+
+        public void OnState(ChildAnimatorState caState)
+        {
+            if (null != caState.state.motion)
+            {
+                Motion motion = caState.state.motion;
+                string assetPath = AssetDatabase.GetAssetPath(motion.GetInstanceID());
+                //ebug.Log(" motion.GetType()=[" + motion.GetType().ToString() + "] assetPath=["+ assetPath + "]");
+
+                if (motionCounter.ContainsKey(assetPath))
+                {
+                    // 既存のモーションを複数回使うことはある。
+                    motionCounter[assetPath].CountOfAttachDestination++;
+                }
+                else
+                {
+                    motionCounter.Add(assetPath, new MotionRecord.Wrapper(caState.state.motion, 1));
+                }
+            }
+        }
+
+        public void OnScanned(HashSet<MotionRecord> motions, bool appendUnreferencedMotion, StringBuilder info_message)
+        {
+            if (appendUnreferencedMotion)
+            {
+                info_message.AppendLine("Append Unreferenced Motion...");
+                string[] allAssetPaths = AssetDatabase.GetAllAssetPaths();
+                foreach (string assetPath in allAssetPaths)
+                {
+                    if (assetPath.EndsWith(".anim", true, System.Globalization.CultureInfo.CurrentCulture) && !motionCounter.ContainsKey(assetPath))
+                    {
+                        // 参照されていないモーション
+                        Motion unreferencedMotion = AssetDatabase.LoadAssetAtPath<Motion>(assetPath);
+                        motionCounter.Add(assetPath, new MotionRecord.Wrapper(unreferencedMotion, 0));
+                    }
+                }
+            }
+
+            // モーションを移し替える。
+            foreach (KeyValuePair<string, MotionRecord.Wrapper> item in motionCounter)
+            {
+                motions.Add(new MotionRecord(item.Key, item.Value.CountOfAttachDestination, item.Value.Source));
+            }
+        }
+    }
+
+    /// <summary>
     /// 全走査。
     /// </summary>
     public class AconScanner : AbstractAconScanner
@@ -159,10 +215,10 @@ namespace DojinCircleGrayscale.StellaQL
         public AconScanner() : base(true)
         {
             AconDocument = new AconDocument();
-            m_motionCounter_ = new Dictionary<string, MotionRecord.Wrapper>();
+            motionScanner = new MotionScanner();
         }
         public AconDocument AconDocument { get; private set; }
-        private Dictionary<string, MotionRecord.Wrapper> m_motionCounter_ { get; }
+        private MotionScanner motionScanner;
 
         public override void OnParameter( int num, AnimatorControllerParameter acp)
         {
@@ -205,22 +261,7 @@ namespace DojinCircleGrayscale.StellaQL
             AconDocument.states.Add(stateRecord);
 
             // モーション・スキャン
-            if (null != caState.state.motion)
-            {
-                Motion motion = caState.state.motion;
-                string assetPath = AssetDatabase.GetAssetPath(motion.GetInstanceID());
-                //ebug.Log(" motion.GetType()=[" + motion.GetType().ToString() + "] assetPath=["+ assetPath + "]");
-
-                if (m_motionCounter_.ContainsKey(assetPath))
-                {
-                    // 既存のモーションを複数回使うことはある。
-                    m_motionCounter_[assetPath].CountOfAttachDestination++;
-                }
-                else
-                {
-                    m_motionCounter_.Add(assetPath, new MotionRecord.Wrapper(caState.state.motion,1));
-                }
-            }
+            motionScanner.OnState(caState);
 
             return true;
         }
@@ -263,24 +304,8 @@ namespace DojinCircleGrayscale.StellaQL
 
         public override void OnScanned(StringBuilder info_message)
         {
-            // 参照されていないモーションを探す
-            info_message.AppendLine("Assets folder Scanning...");
-            string[] allAssetPaths = AssetDatabase.GetAllAssetPaths();
-            foreach (string assetPath in allAssetPaths)
-            {
-                if (assetPath.EndsWith(".anim",true, System.Globalization.CultureInfo.CurrentCulture) && !m_motionCounter_.ContainsKey(assetPath))
-                {
-                    // 参照されていないモーション
-                    Motion unreferencedMotion = AssetDatabase.LoadAssetAtPath<Motion>(assetPath);
-                    m_motionCounter_.Add(assetPath, new MotionRecord.Wrapper(unreferencedMotion, 0));
-                }
-            }
-
-            // モーションを移し替える。
-            foreach (KeyValuePair<string, MotionRecord.Wrapper> item in m_motionCounter_)
-            {
-                AconDocument.motions.Add(new MotionRecord(item.Key, item.Value.CountOfAttachDestination, item.Value.Source));
-            }
+            // 参照されていないモーションを探します
+            motionScanner.OnScanned(AconDocument.motions, true, info_message);
         }
     }
 
@@ -292,8 +317,12 @@ namespace DojinCircleGrayscale.StellaQL
         public AconStateNameScanner() : base(false)
         {
             FullpathSet = new HashSet<string>();
+            Motions = new HashSet<MotionRecord>();
+            MotionScanner = new MotionScanner();
         }
         public HashSet<string> FullpathSet { get; private set; }
+        public HashSet<MotionRecord> Motions { get; private set; }
+        private MotionScanner MotionScanner { get; }
 
         public override bool OnLayer( AnimatorControllerLayer layer, int lNum)
         {
@@ -307,7 +336,18 @@ namespace DojinCircleGrayscale.StellaQL
 
         public override bool OnState( string parentPath, ChildAnimatorState caState, int lNum, int smNum, int sNum)
         {
-            FullpathSet.Add(parentPath + caState.state.name); return false;
+            FullpathSet.Add(parentPath + caState.state.name);
+
+            // モーション・スキャン
+            MotionScanner.OnState(caState);
+
+            return false;
+        }
+
+        public override void OnScanned(StringBuilder info_message)
+        {
+            // 参照されていないモーションを探します
+            MotionScanner.OnScanned(Motions, false, info_message);
         }
 
         public string Dump()

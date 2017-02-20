@@ -73,6 +73,19 @@ namespace DojinCircleGrayscale.StellaQL
                 filename + "_Abstract.cs"
                 );
         }
+        // 可変のファイル名
+        public static string Filepath_GenerateMotor(AnimatorController ac)
+        {
+            string fullpath = System.IO.Path.GetFullPath(AssetDatabase.GetAssetPath(ac.GetInstanceID()));
+
+            // ファイル名はネーム・スペースに合わせたいので同じ処理をします。
+            string filename = FullpathConstantGenerator.String_to36_pascalCase(Path.GetFileNameWithoutExtension(fullpath), "_", "_");
+
+            return Path.Combine(
+                Directory.GetParent(fullpath).FullName,
+                filename + "_AbstractMotor.cs"
+                );
+        }
         public static string Filepath_LogStateSelect(string aconName, string theName)
         {
             StringBuilder sb = new StringBuilder();

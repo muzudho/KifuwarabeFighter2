@@ -69,8 +69,8 @@ public class StateMachineQueryStellaQL : EditorWindow
         }
         bool repaint_allWindow = false;
 
-        GUILayout.Label("Animator controller", EditorStyles.boldLabel);
         #region Drag and drop area
+        GUILayout.Label("Animator controller", EditorStyles.boldLabel);
         var dropArea = GUILayoutUtility.GetRect(0.0f, 20.0f, GUILayout.ExpandWidth(true));
         GUI.Box(dropArea, "Animator Controller Drag & Drop");
         string droppedPath_animatorController = "";

@@ -1,4 +1,4 @@
-﻿namespace DojinCircleGrayscale.Hitbox2D
+﻿namespace DojinCircleGrayscale.Hitbox2DLorikeet
 {
     public abstract class Common
     {

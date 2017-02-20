@@ -2,631 +2,736 @@ REM  *****  BASIC  *****
 
 Option Explicit
 
-' CreateUpdateRequest シート用
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+'	1	2	3	4	5	6	7	8	9	0	1	2	3	4	5	6	7	8	9	0	1	2	3	4	5	6	7	8	9	0	1	2	3	4	5	6	7	8	9	0
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' UpdateRequest シート用
 Sub Main
-	' msgbox "あいう" & Chr$(13) & "えお"
+																																' 使わない引数に
+	Dim Dummy()
+	
 
-	Dim Dummy() ' 使わない引数に
+	Dim sh_cnf													As	Object
+	sh_cnf														=	ThisComponent.GetCurrentController.ActiveSheet
 	
-	' アクティブ・シートを取得
-	Dim sht_cnfg				As Object ' 設定シート
-	sht_cnfg					= ThisComponent.GetCurrentController.ActiveSheet
-	
-	Dim row_cnfg_header1		As Integer ' ヘッダー1 の行番号
-	Const COLUMN0				= 0
-	row_cnfg_header1			= Utility.RowOf( "#Header1#"	,sht_cnfg	,COLUMN0	,0	,1000	)
+																																' ヘッダー1 の行番号
+	Dim rw_cnf_sheetfooter1										As	Integer
+	Const COLUMN0												=	0
+	rw_cnf_sheetfooter1											=	Utility.RowOf( "#SheetFooter1#"	,sh_cnf	,COLUMN0	,0	,1000	)
 
-	' ヘッダー1 の列番号
-	Dim col_cnfg_key			As Integer
-	Dim col_cnfg_folderpath		As Integer
-	Dim col_cnfg_filename		As Integer
-	Dim col_cnfg_sheetname		As Integer
-    col_cnfg_key				= Utility.ColumnOf( "#Key#"			,sht_cnfg	,row_cnfg_header1	,0	,1000	)
-    col_cnfg_folderpath			= Utility.ColumnOf( "#FolderPath#"	,sht_cnfg	,row_cnfg_header1	,0	,1000	)
-    col_cnfg_filename			= Utility.ColumnOf( "#Filename#"	,sht_cnfg	,row_cnfg_header1	,0	,1000	)
-	col_cnfg_sheetname			= Utility.ColumnOf( "#SheetName#"	,sht_cnfg	,row_cnfg_header1	,0	,1000	)
+																																' ヘッダー1 の列番号
+	Dim cm_cnf_key												As	Integer
+	Dim cm_cnf_value											As	Integer
+    cm_cnf_key													=	Utility.ColumnOf( "#Key#"			,sh_cnf	,rw_cnf_sheetfooter1	,0	,1000	)
+    cm_cnf_value												=	Utility.ColumnOf( "#Value#"			,sh_cnf	,rw_cnf_sheetfooter1	,0	,1000	)
 
-	' フォルダーパス（ 末尾は \ ）
-	Dim folder As String ' 信頼のおけるディレクトリ
-	    folder = Utility.VLookup(	"folder"	,sht_cnfg	,col_cnfg_key	,col_cnfg_folderpath	)
+																																' 信頼のおけるフォルダーのパス（ 末尾は \ ）
+	Dim folder													As	String
+	    folder													=	Utility.VLookup(	"folder"	,sh_cnf	,cm_cnf_key	,cm_cnf_value	)
 
-	' ( column, row ) is 0 start.
-	Dim viewFilepath	As String ' アニメーション・コントローラー・ビュー
-	Dim outputFilePath	As String
-	Dim outputFilePath2 As String
-	viewFilepath	= folder & Utility.VLookup( "viewFile"		,sht_cnfg	,col_cnfg_key	,col_cnfg_filename )
-	outputFilePath	= folder & Utility.VLookup( "outputFile"	,sht_cnfg	,col_cnfg_key	,col_cnfg_filename )
-	outputFilePath2	= folder & Utility.VLookup( "outputCsvFile"	,sht_cnfg	,col_cnfg_key	,col_cnfg_filename )
+	Dim viewFilepath											As	String
+	Dim outputFilePath											As	String
+	Dim outputFilePath2											As	String
+	viewFilepath												=	folder & Utility.VLookup( "viewFile"		,sh_cnf	,cm_cnf_key	,cm_cnf_value	)
+	outputFilePath												=	folder & Utility.VLookup( "outputFile"		,sh_cnf	,cm_cnf_key	,cm_cnf_value	)
+	outputFilePath2												=	folder & Utility.VLookup( "outputCsvFile"	,sh_cnf	,cm_cnf_key	,cm_cnf_value	)
 
-	' シート名
-	Dim shtNames (4*8) As String
-	shtNames( 0) = Utility.VLookup( "parameters"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname ) ' 既存ビューの、ビュー・シート
-	shtNames( 1) = Utility.VLookup( "parameters_vwDfObj"	,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname ) ' 既存ビューの、中間列定義シート
-	shtNames( 2) = Utility.VLookup( "parameters_upObj"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname ) ' これから作る中間シート
-	shtNames( 3) = Utility.VLookup( "parameters_upd"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname ) ' これから作るシート
-	shtNames( 4) = Utility.VLookup( "layers"				,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname ) ' 以下略
-	shtNames( 5) = Utility.VLookup( "layers_vwDfObj"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames( 6) = Utility.VLookup( "layers_upObj"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames( 7) = Utility.VLookup( "layers_upd"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames( 8) = Utility.VLookup( "stateMachines"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames( 9) = Utility.VLookup( "stateMachines_vwDfObj"	,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(10) = Utility.VLookup( "stateMachines_upObj"	,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(11) = Utility.VLookup( "stateMachines_upd"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(12) = Utility.VLookup( "states"				,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(13) = Utility.VLookup( "states_vwDfObj"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(14) = Utility.VLookup( "states_upObj"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(15) = Utility.VLookup( "states_upd"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(16) = Utility.VLookup( "transitions"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(17) = Utility.VLookup( "transitions_vwDfObj"	,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(18) = Utility.VLookup( "transitions_upObj"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(19) = Utility.VLookup( "transitions_upd"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(20) = Utility.VLookup( "conditions"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(21) = Utility.VLookup( "conditions_vwDfObj"	,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(22) = Utility.VLookup( "conditions_upObj"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(23) = Utility.VLookup( "conditions_upd"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(24) = Utility.VLookup( "positions"				,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(25) = Utility.VLookup( "positions_vwDfObj"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(26) = Utility.VLookup( "positions_upObj"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(27) = Utility.VLookup( "positions_upd"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(28) = Utility.VLookup( "updateRequest"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(29) = Utility.VLookup( "updateRequest_vwDfObj"	,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(30) = Utility.VLookup( "updateRequest_upObj"	,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
-	shtNames(31) = Utility.VLookup( "updateRequest_upd"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname )
+																																' シート名
+	Dim	shNames													As	Object
+	shNames														=	GetShNames( )
+
+																																' 新しい文書を新規作成
+	Dim dc_viw													As	Object
+	Dim dc_req													As	Object
+	dc_viw 														=	StarDesktop.loadComponentFromURL( ConvertToUrl(viewFilepath),"_blank"	,0	,Array()	)
+	dc_req 														=	StarDesktop.loadComponentFromURL( "private:factory/scalc"	,"_blank"	,0	,Dummy()	)
 	
-	
-	Dim doc_view		As Object
-	Dim doc_requ		As Object ' 新しいブック
-	doc_view 			= StarDesktop.loadComponentFromURL( ConvertToUrl(viewFilepath) , "_blank", 0, Array())
-	doc_requ 			= StarDesktop.loadComponentFromURL("private:factory/scalc", "_blank", 0, Dummy()) ' ブックを新規作成
-	
-	'--------------------------------------------------------------------------------
-	' 最初からあるシートを名前変更
-	
-	doc_requ.Sheets(0).Name = shtNames(2)
-	
-	' 更新要求シートを追加
-	Dim	shtName_requ		As String ' シートの名前
-		shtName_requ		= shtNames(3)
-	if	doc_requ.getSheets().hasByName(shtName_requ) = false then
-		doc_requ.getSheets().insertNewByName(shtName_requ,3)
-	end if
-	
-	'作成したシートへの書込
-	ReadOds_requ(	doc_view,	doc_requ,		shtNames(0),		shtNames(1),		shtNames(2),		shtNames(3)		) ' ODS読込み
-	
-	'--------------------------------------------------------------------------------
-	' ３つ目以降のシートを作成
-	
-	Dim index As Integer
-	
-	For index = 4 To 24 Step 4
-	
-		' シートの名前
-		Dim shtName_vdob 	As String ' シートの名前
-		Dim shtName_reob 	As String ' シートの名前
-		shtName_vdob		= shtNames(index+1)
-		shtName_reob		= shtNames(index+2)
-		shtName_requ		= shtNames(index+3)
-		
-		' 更新要求中間シートを追加
-		if	doc_requ.getSheets().hasByName(shtName_reob) = false then
-			doc_requ.getSheets().insertNewByName(shtName_reob,index)
-		end if
-		
-		' 更新要求シートを追加
-		if	doc_requ.getSheets().hasByName(shtName_requ) = false then
-			doc_requ.getSheets().insertNewByName(shtName_requ,index)
-		end if
-		
-		'作成したシートへの書込
-		ReadOds_requ(	doc_view,	doc_requ,	shtNames(index),		shtName_vdob,		shtName_reob,		shtName_requ		) ' CSV読込
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+	Dim shName_vdo 												As	String
+	Dim	shName_viw												As	String
+	Dim shName_reo 												As	String
+	Dim	shName_req												As	String
+		shName_vdo												=	shNames(2)
+		shName_viw												=	shNames(3)
+		shName_reo												=	shNames(4)
+		shName_req												=	shNames(5)
+
+																																' 最初からあるシートを名前変更
+	dc_req.Sheets(0).Name										=	shName_reo
+
+																																' シートを１つ追加
+	' If _
+	'     dc_req.getSheets().hasByName(shName_req) = false _
+	' Then
+	dc_req.getSheets().insertNewByName( shName_req ,1 )
+	' End If
+
+																																' ２つのシートにデータ挿入
+	InsertRecords_reo(	 dc_viw	,dc_req	,shName_vdo	_
+						,shName_viw	,shName_reo			)
+	InsertRecords_req(	 dc_req	,shName_reo	,shName_req	)
+
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' ３つ目以降のシートを作成
+	Dim index													As	Integer
+
+																																' updateRequestシーツの手前まで	
+	For index = sh_unit To sh_number - 2*sh_unit Step sh_unit
+		shName_vdo												=	shNames(index+2)
+		shName_viw												=	shNames(index+3)
+		shName_reo												=	shNames(index+4)
+		shName_req												=	shNames(index+5)		
+																																' 更新要求中間シートを追加
+		If _
+			dc_req.getSheets().hasByName(shName_reo) = false _
+		Then
+			dc_req.getSheets().insertNewByName(shName_reo _
+												,index)
+		End if
+																																' 更新要求シートを追加
+		If _
+			dc_req.getSheets().hasByName(shName_req) = false _
+		Then
+			dc_req.getSheets().insertNewByName(shName_req _
+												,index)
+		End If
+																																' ２つのシートにデータ挿入
+		InsertRecords_reo(	 dc_viw	,dc_req	,shName_vdo	_
+							,shName_viw	,shName_reo			)
+		InsertRecords_req(	 dc_req	,shName_reo	,shName_req	)
 	Next
-	
-	'--------------------------------------------------------------------------------
-	'C:test.odsとして保存
-	doc_requ.storeAsURL(ConvertToUrl( outputFilePath), Dummy())
-	
-	'ファイルを閉じる
-	doc_view.dispose
 
-	' CSVファイルを書き出す
-	WriteCsv( doc_requ, outputFilePath2 )
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
 
-	'ファイルを閉じる
-	doc_requ.dispose
-	
-
+	dc_req.storeAsURL(ConvertToUrl( outputFilePath), Dummy())
+	dc_viw.dispose
+	WriteCsv( dc_req, outputFilePath2 )
+	dc_req.dispose
 End Sub
 
-' LibreOffice Calc Basic fun!!! 「変数の有効範囲」 http://calibreblo.blogspot.jp/2011/06/blog-post_29.html
-Public Const col_reob_category				= 0
-Public Const col_reob_foreignkeycategory	= 1 ' 外部キーのカテゴリ―
-Public Const col_reob_key					= 2
-Public Const col_reob_fullpath				= 3
-Public Const col_reob_fullpathtransition	= 4
-Public Const col_reob_fullpathcondition		= 5
-Public Const col_reob_fullpathpropertyname	= 6
-Public Const col_reob_name					= 7
-Public Const col_reob_old					= 8
-Public Const col_reob_new					= 9
-Public Const col_reob_delete				= 10
+																																' LibreOffice Calc Basic fun!!! 「変数の有効範囲」 http://calibreblo.blogspot.jp/2011/06/blog-post_29.html
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+Public Const cm_reo_category									=	0
+																																' 外部キーのカテゴリー
+Public Const cm_reo_foreignkeycategory							=	1
+Public Const cm_reo_key											=	2
+Public Const cm_reo_fullpath									=	3
+Public Const cm_reo_fullpathtransition							=	4
+Public Const cm_reo_fullpathcondition							=	5
+Public Const cm_reo_fullpathpropertyname						=	6
+Public Const cm_reo_name										=	7
+Public Const cm_reo_old											=	8
+Public Const cm_reo_new											=	9
+Public Const cm_reo_clear										=	10
 
-Public Const col_vdob_name					= 0
-Public Const col_vdob_type					= 1
-Public Const col_vdob_key					= 2
+Public Const cm_vdo_name										=	0
+Public Const cm_vdo_type										=	1
+Public Const cm_vdo_key											=	2
 
-'--------------------------------------------------------------------------------
-' ODS読取
-' 参考： LibreOffice Calc Basic fun!!! 「既存ドキュメント(ブック)を開く」 http://calibreblo.blogspot.jp/2011/04/blog-post_2121.html
-' 参考： LibreOffice Calc Basic fun!!! 「文字列関数 (1)」 http://calibreblo.blogspot.jp/2011/05/1_30.html
-' 参考： White Tiger 「セルの背景色とフォント色を設定する方法」 http://www7b.biglobe.ne.jp/~whitetiger/ex/liboffice015.html
-' 参考： 列幅の指定に :　OSS( Open Source Software )でいこう!! 「 OpenOffice.org / LibreOfficeを使おう編 」 「Macroの杜 (OpenOffice.org/LibreOffice Basic編) Calc No.2 ###【 Previous Page ( Calc No.1 ) 】###」 http://openoffice3.web.fc2.com/OOoBasic_Calc_No2.html#OOoCCR06a
-' 参考： kojのとりあえず日記2 「OpenOffice.org/LibreOffice Calcでマクロからウィンドウの固定」 http://www.ofug.net/koj/2011/10/21/openoffice-orglibreoffice-calc%E3%81%A7%E3%83%9E%E3%82%AF%E3%83%AD%E3%81%8B%E3%82%89%E3%82%A6%E3%82%A3%E3%83%B3%E3%83%89%E3%82%A6%E3%81%AE%E5%9B%BA%E5%AE%9A/
-' 参考： ウィンドウの固定に : ApacheOpenOfficeFORUM 「[Solved] Calc Macro FreezeAtPosition is relative to location」 https://forum.openoffice.org/en/forum/viewtopic.php?f=20&t=72745
-' 参考： ubuntu & LibreOffice  「シートをアクティブにする　LibreOffice Calc Basic　[LibreOffice Calc Basic]」 http://j11.blog.so-net.ne.jp/2013-10-22
-Sub ReadOds_requ(	doc_view As Object	,doc_requ As Object	,shtName_view As String	,shtName_vdob As String	,shtName_reob As String	,shtName_requ As String	)
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' ODS読取
+																																
+																																' 参考： LibreOffice Calc Basic fun!!! 「既存ドキュメント(ブック)を開く」 http://calibreblo.blogspot.jp/2011/04/blog-post_2121.html
+																																' 参考： LibreOffice Calc Basic fun!!! 「文字列関数 (1)」 http://calibreblo.blogspot.jp/2011/05/1_30.html
+																																' 参考： White Tiger 「セルの背景色とフォント色を設定する方法」 http://www7b.biglobe.ne.jp/~whitetiger/ex/liboffice015.html
+																																' 参考： 列幅の指定に :　OSS( Open Source Software )でいこう!! 「 OpenOffice.org / LibreOfficeを使おう編 」 「Macroの杜 (OpenOffice.org/LibreOffice Basic編) Calc No.2 ###【 Previous Page ( Calc No.1 ) 】###」 http://openoffice3.web.fc2.com/OOoBasic_Calc_No2.html#OOoCCR06a
+																																' 参考： kojのとりあえず日記2 「OpenOffice.org/LibreOffice Calcでマクロからウィンドウの固定」 http://www.ofug.net/koj/2011/10/21/openoffice-orglibreoffice-calc%E3%81%A7%E3%83%9E%E3%82%AF%E3%83%AD%E3%81%8B%E3%82%89%E3%82%A6%E3%82%A3%E3%83%B3%E3%83%89%E3%82%A6%E3%81%AE%E5%9B%BA%E5%AE%9A/
+																																' 参考： ウィンドウの固定に : ApacheOpenOfficeFORUM 「[Solved] Calc Macro FreezeAtPosition is relative to location」 https://forum.openoffice.org/en/forum/viewtopic.php?f=20&t=72745
+																																' 参考： ubuntu & LibreOffice  「シートをアクティブにする　LibreOffice Calc Basic　[LibreOffice Calc Basic]」 http://j11.blog.so-net.ne.jp/2013-10-22
+Sub InsertRecords_reo_req( _
+					 dc_viw		As Object	_
+					,dc_req		As Object	_
+					,shName_vdo As String	_
+					,shName_viw As String	_
+					,shName_reo As String	_
+					,shName_req As String	_
+				)
+																																' 各種 _upObj シートの作成
+	InsertRecords_reo(	 dc_viw		,dc_req		,shName_vdo	_
+						,shName_viw	,shName_reo			)
 
-	' 各種 _upObj シートの作成
-	CreateSheet_reob	(	shtName_vdob,		shtName_view,		doc_view,		shtName_reob,		doc_requ		)
-
-	' 各種 _upd シートの作成
-	CreateSheet_requ	(	shtName_reob,		shtName_requ,		doc_requ		)
-
+																																' 各種 _upd シートの作成
+	InsertRecords_req(	 dc_req	,shName_reo	,shName_req	)
 End Sub
 
-' 各種、更新要求中間シート（ ～_upObj ）作成
-'
-' ビューを、そのまま　更新要求シート　にコピーする。
-'
-Sub CreateSheet_reob(		shtName_vdob As String,		shtName_view As String,		doc_view As Object,		shtName_reob As String,		doc_requ As Object	)
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' reoシートにレコード挿入
+																																
+																																' ビューを、そのまま　更新要求シート　にコピーする。
+Sub InsertRecords_reo( _
+						 dc_viw		As Object _
+						,dc_req		As Object _
+						,shName_vdo As String _
+						,shName_viw As String _
+						,shName_reo As String _
+					)
+																																' 今回のオブジェクトのシート
+	Dim sh_vdo 													As	Object
+		sh_vdo      											=	Code.GetSh(	dc_viw	,shName_vdo )
 
-	Dim sht_reob 		As Object
-	sht_reob 			= doc_requ.getSheets().getByName( shtName_reob )
+	Dim sh_viw													As	Object
+		sh_viw													=	Code.GetSh(	dc_viw	,shName_viw	)
 
-	Dim sht_vdob 		As Object
-	sht_vdob      		= doc_view.getSheets().getByName( shtName_vdob )
+	Dim sh_reo 													As	Object
+		sh_reo 													=	Code.GetSh(	dc_req	,shName_reo	)
 
-	Dim sht_view		As Object
-	sht_view			= doc_view.getSheets().getByName( shtName_view )
-	
-	Dim sht_vwSm		As Object
-	sht_vwSm			= doc_view.getSheets().getByName( "stateMachines" )
+																																' "stateMachines"
+	Dim sh_vwSm													As	Object
+		sh_vwSm													=	Code.GetSh(	dc_viw	,shName_vwSm	)
 
-	Dim sht_vwSt		As Object
-	sht_vwSt			= doc_view.getSheets().getByName( "states" )
+																																' "states"
+	Dim sh_vwSt													As	Object
+		sh_vwSt													=	Code.GetSh(	dc_viw	,shName_vwSt	)
 
-	' ヘッダー作成
-	Dim row_reob			As Integer
-	Dim cell_reob		As Object
-	Dim phase			As Integer
+																																' ヘッダー作成
+	Dim rw_reo													As	Integer
+	Dim ce_reo													As	Object
+	Dim phase													As	Integer
 
-					cell_reob					= sht_reob.getCellByPosition( col_reob_category				,0	)
-					cell_reob.String			= "#Category#"
-	Style.ColHed(	cell_reob ) 
-					cell_reob					= sht_reob.getCellByPosition( col_reob_foreignkeycategory	,0	)
-					cell_reob.String			= "#Foreignkeycategory#"
-	Style.ColHed( 	cell_reob ) 
-					cell_reob					= sht_reob.getCellByPosition( col_reob_key					,0	)
-					cell_reob.String			= "#Key#"
-	Style.ColHed( 	cell_reob ) 
-					cell_reob					= sht_reob.getCellByPosition( col_reob_fullpath				,0	)
-					cell_reob.String			= "#Fullpath#"
-	Style.ColHed( 	cell_reob ) 
-					cell_reob					= sht_reob.getCellByPosition( col_reob_fullpathtransition	,0	)
-					cell_reob.String			= "#FullpathTransition#"
-	Style.ColHed( 	cell_reob ) 
-					cell_reob					= sht_reob.getCellByPosition( col_reob_fullpathcondition	,0	)
-					cell_reob.String			= "#FullpathCondition#"
-	Style.ColHed( 	cell_reob ) 
-					cell_reob					= sht_reob.getCellByPosition( col_reob_fullpathpropertyname	,0	)
-					cell_reob.String			= "#FullpathPropertyname#"
-	Style.ColHed( 	cell_reob ) 
-					cell_reob					= sht_reob.getCellByPosition( col_reob_name					,0	)
-					cell_reob.String			= "#Name#"
-	Style.ColHed( 	cell_reob ) 
-					cell_reob					= sht_reob.getCellByPosition( col_reob_old					,0	)
-					cell_reob.String			= "#Old#"
-	Style.ColHed( 	cell_reob ) 
-					cell_reob					= sht_reob.getCellByPosition( col_reob_new					,0	)
-					cell_reob.String			= "#New#"
-	Style.ColHed( 	cell_reob ) 
-					cell_reob					= sht_reob.getCellByPosition( col_reob_delete				,0	)
-					cell_reob.String			= "#Delete#"
-	Style.ColHed( 	cell_reob ) 
-					cell_reob					= sht_reob.getCellByPosition( col_reob_delete + 1			,0	) ' フィールドの末端の次
-					cell_reob.String			= "[EOL]"
+					ce_reo										=	Code.GetCeOb(	sh_reo	,cm_reo_category				,0	)
+					ce_reo.String								=	"#Category#"
+	Style.CmHed(	ce_reo ) 
+					ce_reo										=	Code.GetCeOb(	sh_reo	,cm_reo_foreignkeycategory		,0	)
+					ce_reo.String								=	"#Foreignkeycategory#"
+	Style.CmHed( 	ce_reo ) 
+					ce_reo										=	Code.GetCeOb(	sh_reo	,cm_reo_key						,0	)
+					ce_reo.String								=	"#Key#"
+	Style.CmHed( 	ce_reo ) 
+					ce_reo										=	Code.GetCeOb(	sh_reo	,cm_reo_fullpath				,0	)
+					ce_reo.String								=	"#Fullpath#"
+	Style.CmHed( 	ce_reo ) 
+					ce_reo										=	Code.GetCeOb(	sh_reo	,cm_reo_fullpathtransition		,0	)
+					ce_reo.String								=	"#FullpathTransition#"
+	Style.CmHed( 	ce_reo ) 
+					ce_reo										=	Code.GetCeOb(	sh_reo	,cm_reo_fullpathcondition		,0	)
+					ce_reo.String								=	"#FullpathCondition#"
+	Style.CmHed( 	ce_reo ) 
+					ce_reo										=	Code.GetCeOb(	sh_reo	,cm_reo_fullpathpropertyname	,0	)
+					ce_reo.String								=	"#FullpathPropertyname#"
+	Style.CmHed( 	ce_reo ) 
+					ce_reo										=	Code.GetCeOb(	sh_reo	,cm_reo_name					,0	)
+					ce_reo.String								=	"#Name#"
+	Style.CmHed( 	ce_reo ) 
+					ce_reo										=	Code.GetCeOb(	sh_reo	,cm_reo_old						,0	)
+					ce_reo.String								=	"#Old#"
+	Style.CmHed( 	ce_reo ) 
+					ce_reo										=	Code.GetCeOb(	sh_reo	,cm_reo_new						,0	)
+					ce_reo.String								=	"#New#"
+	Style.CmHed( 	ce_reo ) 
+					ce_reo										=	Code.GetCeOb(	sh_reo	,cm_reo_clear					,0	)
+					ce_reo.String								=	"#Clear#"
+	Style.CmHed( 	ce_reo )
+																																' フィールドの末端の次
+					ce_reo										=	Code.GetCeOb(	sh_reo	,cm_reo_clear + 1				,0	)
+					ce_reo.String								=	"[EOL]"
 
 
-	' ビュー・シートの 1列目の [EOF] を探す
-	Dim iR_vdob				As Integer
-	Dim rowLen_vdob				As Integer
-	iR_vdob = 1 ' [0]行目はヘッダーなので [1]行目から
-    Do While "[EOF]"<> sht_vdob.getCellByPosition( 0, iR_vdob ).String
-	    	iR_vdob = iR_vdob + 1
+																																' ビュー・シートの 1列目の [EOF] を探す
+	Dim iR_vdo													As	Integer
+	Dim rwLen_vdo												As	Integer	
+																																' [0]行目はヘッダーなので [1]行目から
+	iR_vdo														=	1
+    Do While "[EOF]"<> Code.GetCe(	sh_vdo	,0	,iR_vdo	)
+			Code.CountUp( iR_vdo ,1 )
     Loop
-    rowLen_vdob = iR_vdob - 1 ' EOFはカウントしないので 1 引く
+																		    													' EOFはカウントしないので 1 引く
+    rwLen_vdo													=	iR_vdo - 1
 
-	' カーソル
-	Dim iR_view			As Integer
-	Dim iC_view			As Integer
+																																' カーソル
+	Dim iR_viw													As	Integer
+	Dim iC_viw													As	Integer
 
-	' ビュー・シート( ～_view )と、中間シート（ ～_obj ）を読取り、
-	' 更新要求中間シート（ ～_upObj ）の書き出し
-	doc_requ.getCurrentController().setActiveSheet( sht_reob ) ' 更新要求中間シートをアクティブにする
-	iR_view		= 2 ' [0][1]行目はヘッダーなので、[2]行目から
-	row_reob		= 1 ' [0]行目はヘッダーなので、[1]行目から
+																																' ビュー・シート( ～_viw )と、中間シート（ ～_obj ）を読取り、
+																																' 更新要求中間シート（ ～_upObj ）の書き出し
+	dc_req.getCurrentController().setActiveSheet( sh_reo )
+																																' [0][1]行目はヘッダーなので、[2]行目から
+	iR_viw														=	2
+																																' [0]行目はヘッダーなので、[1]行目から
+	rw_reo														=	1
 	
-	' ビュー・シートを垂直方向に走査する
-	Do While "[EOF]" <> sht_view.getCellByPosition( 0, iR_view ).String
+																																' ビュー・シートを垂直方向に走査する
+	Do While "[EOF]" <> Code.GetCe(	sh_viw	,0	,iR_viw	)
 
-		Dim val_view_concatKey		As String
-		val_view_concatKey			= ""
-		phase						= 0
-		iC_view					= 0
+		Dim vl_viw_concatKey									As	String
+		vl_viw_concatKey										=	""
+		phase													=	0
+		iC_viw													=	0
 		
-		' ビュー列定義シートを垂直方向に走査する。
-	    For iR_vdob = 1 To rowLen_vdob ' [0]行目はヘッダーなので[1]行目からスタート
+																																' ビュー列定義シートを垂直方向に走査する。
+							    																								' [0]行目はヘッダーなので[1]行目からスタート
+	    For iR_vdo = 1 To rwLen_vdo
 	
-			Dim val_view_single					As String ' 単一セルの項目のセル値
-			Dim val_view_old					As String
-			Dim val_view_new					As String
-			Dim val_view_delete					As String
-			Dim foreignKeyTokens(0)				As String
-			Dim val_vwSm_foreignKey				As String
-			Dim val_vwSt_foreignKey				As String
-			Dim row_foreignSheet				As Integer
+																																' 単一セルの項目のセル値
+			Dim vl_viw_single									As	String
 
-			' ビュー列定義シート　からデータを引っ張り出す。
-			Dim val_vdob_name					As String
-			Dim val_vdob_type					As String
-			Dim val_vdob_key					As String
-			val_vdob_name						= sht_vdob.getCellByPosition( col_vdob_name		, iR_vdob ).String
-			val_vdob_type						= sht_vdob.getCellByPosition( col_vdob_type		, iR_vdob ).String
-			val_vdob_key						= sht_vdob.getCellByPosition( col_vdob_key		, iR_vdob ).String
+			Dim vl_viw_old										As	String
+			Dim vl_viw_new										As	String
+			Dim vl_viw_clear									As	String
+			Dim foreignKeyTokens(0)								As	String
+			Dim vl_vwSm_foreignKey								As	String
+			Dim vl_vwSt_foreignKey								As	String
+			Dim rw_foreignSheet									As	Integer
 
-			' ビューシート　からデータを引っ張り出す。
-			Dim val_view_fullpath				As String
-			If "#FullPath#" 		= sht_vdob.getCellByPosition( col_vdob_name		,iR_vdob 	).String Then
-				val_view_fullpath	= sht_view.getCellByPosition( iC_view			,iR_view	).String
+																																' ビュー列定義シート　からデータを引っ張り出す。
+			Dim vl_vdo_name										As	String
+			Dim vl_vdo_type										As	String
+			Dim vl_vdo_key										As	String
+			vl_vdo_name											=	Code.GetCe(	sh_vdo	,cm_vdo_name	,iR_vdo )
+			vl_vdo_type											=	Code.GetCe(	sh_vdo	,cm_vdo_type	,iR_vdo )
+			vl_vdo_key											=	Code.GetCe(	sh_vdo	,cm_vdo_key		,iR_vdo )
+
+																																' ビューシート　からデータを引っ張り出す。
+			Dim vl_viw_fullpath									As	String
+			If _
+				"#FullPath#" = Code.GetCe( sh_vdo	_
+					,cm_vdo_name	,iR_vdo	)		_
+			Then
+				vl_viw_fullpath									=	Code.GetCe(	sh_viw	,iC_viw			,iR_viw )
 			End If
 
 			If phase = 0 Then
-				' TemporaryNumbering フィールド
-				If "TemporaryNumbering" = val_vdob_key	 Then
-					val_view_single	= sht_view.getCellByPosition( iC_view, iR_view ).String ' iC_view & " " & iR_view
-					iC_view	= iC_view + 1 ' 1列のみ
+				If "TemporaryNumbering" = vl_vdo_key	 Then
+					vl_viw_single								=	Code.GetCe(	sh_viw	,iC_viw	,iR_viw	)
+					Code.CountUp( iC_viw ,1 )
 					
-					sht_reob.getCellByPosition( col_reob_category	,row_reob ).String = shtName_view			' "短ＩＤカテ"
-					sht_reob.getCellByPosition( col_reob_key		,row_reob ).String = "#TemporaryNumbering#"	' "短ＩＤキー"
-					sht_reob.getCellByPosition( col_reob_fullpath	,row_reob ).String = "#--#"					' "短ＩＤキー"
-					sht_reob.getCellByPosition( col_reob_name		,row_reob ).String = val_vdob_name			' "#--" ' "短ＩＤネーム"
-					sht_reob.getCellByPosition( col_reob_old		,row_reob ).String = val_view_single
-					' New列空き
-					' Delete列空き
-			    	row_reob = row_reob + 1
+					Code.SetCe(	sh_reo	,cm_reo_category	_
+									,rw_reo						,	shName_viw				)
+					Code.SetCe(	sh_reo	,cm_reo_key	_
+									,rw_reo						,	"#TemporaryNumbering#"	)
+					Code.SetCe(	sh_reo	,cm_reo_fullpath	_
+									,rw_reo						,	"#--#"					)
+					Code.SetCe(	sh_reo	,cm_reo_name	_
+									,rw_reo						,	vl_vdo_name				)
+					Code.SetCe(	sh_reo	,cm_reo_old	_
+									,rw_reo						,	vl_viw_single			)
+																																' New列空き
+																																' Clear列空き
+					Code.CountUp( rw_reo ,1 )
 				Else
-					phase = phase + 1
+					Code.CountUp( phase ,1 )
 				End If
 			ElseIf phase = 2 Then
-				' Identifiable フィールド。フルパス文字列の元になるトークンが入っている。
-				If "Identifiable" = val_vdob_key		Then
-					val_view_single				= sht_view.getCellByPosition( iC_view, iR_view ).String ' ビュー・シートの中身をそのまま
-					iC_view					= iC_view + 1 ' 1列のみ
+																																' Identifiable フィールド。フルパス文字列の元になるトークンが入っている。
+				If "Identifiable" = vl_vdo_key		Then
+																																' ビュー・シートの中身をそのまま
+					vl_viw_single								=	Code.GetCe(	sh_viw	,iC_viw	,iR_viw	)
+					Code.CountUp( iC_viw ,1 )
 					
-					sht_reob.getCellByPosition( col_reob_category	,row_reob	).String = shtName_view			' "短名カテ"
-					sht_reob.getCellByPosition( col_reob_key		,row_reob	).String = "#Identifiable#" 	' "短名キー"
-					sht_reob.getCellByPosition( col_reob_fullpath	,row_reob	).String = "#--#" 				' "短名キー"
-					sht_reob.getCellByPosition( col_reob_name		,row_reob	).String = val_vdob_name		' "#--" ' "短名ネーム"
-					sht_reob.getCellByPosition( col_reob_old		,row_reob	).String = val_view_single
-					' New列空き
-					' Delete列空き
-			    	row_reob = row_reob + 1
+					Code.SetCe(	sh_reo	,cm_reo_category	_
+								,rw_reo							,	shName_viw			)
+					Code.SetCe(	sh_reo	,cm_reo_key	_
+								,rw_reo							,	"#Identifiable#"	)
+					Code.SetCe(	sh_reo	,cm_reo_fullpath	_
+								,rw_reo							,	"#--#"				)
+					Code.SetCe(	sh_reo	,cm_reo_name	_
+								,rw_reo							,	vl_vdo_name			)
+					Code.SetCe(	sh_reo	,cm_reo_old	_
+								,rw_reo							,	vl_viw_single		)
+																																' New列空き
+																																' Clear列空き
+					Code.CountUp( rw_reo ,1 )
 				Else
-					phase = phase + 1
+					Code.CountUp( phase ,1 )
 				End If	
 			ElseIf phase = 4 Then
-				' それ以外のフィールド
-				If		"#Skipped#"			= val_vdob_key	 Then
-					' 出力していないフィールド
-					' 無視する
-				ElseIf	"#NoManipulate#"	= val_vdob_key	 Then
-					' 更新要求は出さないフィールド
-					iC_view	= iC_view + 1	' とりあえず 1行 無視する
-				ElseIf	"ReadOnly"			= val_vdob_key	 Then
-					' 読取専用フィールド
-					iC_view				= iC_view + 1	' とりあえず 1行 無視する
+																																' それ以外のフィールド
+				If 		"#Skipped#"			= vl_vdo_key Then
+																																' 出力していないフィールド
+																																' 無視する
+				ElseIf	"#NoManipulate#"	= vl_vdo_key Then
+																																' 更新要求は出さないフィールド
+																																' とりあえず 1行 無視する
+					Code.CountUp( iC_viw ,1 )
+																																' 読取専用フィールド
+				ElseIf	"ReadOnly"			= vl_vdo_key Then
+																																' とりあえず 1行 無視する
+					Code.CountUp( iC_viw ,1 )
+																																' ユニティ・エディターが書込みに対応していない場合はこれ。
+				ElseIf	"UnityEditorDoesNotSupportWriting" _
+							= vl_vdo_key _
+				Then
+																																' とりあえず 1行 無視する
+					Code.CountUp( iC_viw ,1 )
+																																' StellaQLスプレッドシートが書込みに対応していない場合はこれ。
+				ElseIf	"StellaQLSpreadsheetDoesNotSupportWriting" _
+							= vl_vdo_key _
+				Then
+																																' とりあえず 1行 無視する
+					Code.CountUp( iC_viw ,1 )
 				Else
-					' 出力されているフィールド
-					If	"string"	=	val_vdob_type		Or		"specialString"	=	val_vdob_type		Then
-						' 文字列型
-						val_view_old	= sht_view.getCellByPosition( iC_view, iR_view ).String ' iC_view & " " & iR_view
-						iC_view		= iC_view + 1
-						val_view_new	= sht_view.getCellByPosition( iC_view, iR_view ).String
-						iC_view		= iC_view + 1
-						val_view_delete	= sht_view.getCellByPosition( iC_view, iR_view ).String
-						iC_view		= iC_view + 1
+																																' 出力されているフィールド
+					If _
+						"string"		= vl_vdo_type	Or	_
+						"specialString"	= vl_vdo_type		_
+					Then
+																																' 文字列型
+						vl_viw_old								=	Code.GetCe(	sh_viw	,iC_viw, iR_viw )
+						Code.CountUp( iC_viw ,1 )
+						vl_viw_new								=	Code.GetCe(	sh_viw	,iC_viw, iR_viw )
+						Code.CountUp( iC_viw ,1 )
+						vl_viw_clear							=	Code.GetCe(	sh_viw	,iC_viw, iR_viw )
+						Code.CountUp( iC_viw ,1 )
 	
-						sht_reob.getCellByPosition( col_reob_category	,row_reob	).String = shtName_view			' "項目カテ"
-						sht_reob.getCellByPosition( col_reob_key		,row_reob	).String = val_view_concatKey	' "項目キー"
-						sht_reob.getCellByPosition( col_reob_fullpath	,row_reob	).String = val_view_fullpath		' "項目キー"
-						sht_reob.getCellByPosition( col_reob_name		,row_reob	).String = val_vdob_name			' "項目ネーム"
-						sht_reob.getCellByPosition( col_reob_old		,row_reob	).String = val_view_old
-						sht_reob.getCellByPosition( col_reob_new		,row_reob	).String = val_view_new
-						sht_reob.getCellByPosition( col_reob_delete		,row_reob	).String = val_view_delete
+						Code.SetCe(	sh_reo	,cm_reo_category _
+									,rw_reo						,	shName_viw			)
+						Code.SetCe(	sh_reo	,cm_reo_key _
+									,rw_reo						,	vl_viw_concatKey	)
+						Code.SetCe(	sh_reo	,cm_reo_fullpath _
+									,rw_reo						,	vl_viw_fullpath		)
+						Code.SetCe(	sh_reo	,cm_reo_name _
+									,rw_reo						,	vl_vdo_name			)
+						Code.SetCe(	sh_reo	,cm_reo_old _
+									,rw_reo						,	vl_viw_old			)
+						Code.SetCe(	sh_reo	,cm_reo_new _
+									,rw_reo						,	vl_viw_new			)
+						Code.SetCe(	sh_reo	,cm_reo_clear _
+									,rw_reo						,	vl_viw_clear		)
 					Else
-						' 文字列型以外
-						val_view_old	= sht_view.getCellByPosition( iC_view, iR_view ).String
-						iC_view		= iC_view + 1
-						val_view_new	= sht_view.getCellByPosition( iC_view, iR_view ).String
-						iC_view		= iC_view + 1
+																																' 文字列型以外
+						vl_viw_old								=	Code.GetCe(	sh_viw	,iC_viw	,iR_viw	)
+						Code.CountUp( iC_viw ,1 )
+						vl_viw_new								=	Code.GetCe(	sh_viw	,iC_viw	,iR_viw	)
+						Code.CountUp( iC_viw ,1 )
 	
-						sht_reob.getCellByPosition( col_reob_category	,row_reob	).String = shtName_view			' "項目カテ"
-						sht_reob.getCellByPosition( col_reob_key		,row_reob	).String = val_view_concatKey	' "項目キー"
-						sht_reob.getCellByPosition( col_reob_fullpath	,row_reob	).String = val_view_fullpath		' "項目キー"
-						sht_reob.getCellByPosition( col_reob_name		,row_reob	).String = val_vdob_name			' "項目ネーム"
-						sht_reob.getCellByPosition( col_reob_old		,row_reob	).String = val_view_old
-						sht_reob.getCellByPosition( col_reob_new		,row_reob	).String = val_view_new
-						' Delete列空き
+						Code.SetCe(	sh_reo	,cm_reo_category _
+									,rw_reo						,	shName_viw			)
+						Code.SetCe(	sh_reo	,cm_reo_key	_
+									,rw_reo						,	vl_viw_concatKey	)
+						Code.SetCe(	sh_reo	,cm_reo_fullpath _
+									,rw_reo						,	vl_viw_fullpath		)
+						Code.SetCe(	sh_reo	,cm_reo_name _
+									,rw_reo						,	vl_vdo_name			)
+						Code.SetCe(	sh_reo	,cm_reo_old	_
+									,rw_reo						,	vl_viw_old			)
+						Code.SetCe(	sh_reo	,cm_reo_new	_
+									,rw_reo						,	vl_viw_new			)
+																																' Clear列空き
 					End If
-					
-					If "states" = shtName_view And "#"<>Mid( val_view_concatKey, 1, 1 ) Then ' states シートで、"#TemporaryNumbering#" といった行データでなければ
-						foreignKeyTokens	= Split( val_view_concatKey, "." ) ' 要素数 3 のはず。
-						val_vwSt_foreignKey	= foreignKeyTokens(0) & "." &  foreignKeyTokens(1) & "." &  foreignKeyTokens(2)
 
-						sht_reob.getCellByPosition( col_reob_foreignkeycategory		,row_reob ).String = "states"
-						sht_reob.getCellByPosition( col_reob_fullpath				,row_reob ).String = Utility.VLookup( val_vwSt_foreignKey	,sht_vwSt	,3	,6	)
-					
-					ElseIf "transitions" 	= shtName_view And "#"<>Mid( val_view_concatKey, 1, 1 ) Then ' transitions シートで、"#TemporaryNumbering#" といった行データでなければ
-						foreignKeyTokens	= Split( val_view_concatKey, "." ) ' 要素数 4 のはず。
-						val_vwSt_foreignKey	= foreignKeyTokens(0) & "." &  foreignKeyTokens(1) & "." &  foreignKeyTokens(2)
+																																' states シートで、"#TemporaryNumbering#" といった行データでなければ
+					If _
+						"states" = shName_viw And	_
+						"#"		<>Mid( vl_viw_concatKey, 1, 1 )	_
+					Then
 
-						sht_reob.getCellByPosition( col_reob_foreignkeycategory		,row_reob ).String = "states"
-						sht_reob.getCellByPosition( col_reob_fullpath				,row_reob ).String = Utility.VLookup( val_vwSt_foreignKey	,sht_vwSt	,3	,6	)
-						sht_reob.getCellByPosition( col_reob_fullpathtransition		,row_reob ).String = foreignKeyTokens( 3 )
-					
-					ElseIf "conditions" 	= shtName_view And "#"<>Mid( val_view_concatKey	,1	,1 ) Then ' conditions シートで、"#TemporaryNumbering#" といった行データでなければ
-						foreignKeyTokens	= Split( val_view_concatKey, "." ) ' 要素数 5 のはず。
-						val_vwSt_foreignKey	= foreignKeyTokens(0) & "." &  foreignKeyTokens(1) & "." &  foreignKeyTokens(2)
-
-						sht_reob.getCellByPosition( col_reob_foreignkeycategory		,row_reob ).String = "transitions"
-						sht_reob.getCellByPosition( col_reob_fullpath				,row_reob ).String = Utility.VLookup( val_vwSt_foreignKey	,sht_vwSt	,3	,6	)
-						sht_reob.getCellByPosition( col_reob_fullpathtransition		,row_reob ).String = foreignKeyTokens( 3 )
-						sht_reob.getCellByPosition( col_reob_fullpathcondition		,row_reob ).String = foreignKeyTokens( 4 )
-					
-					ElseIf "positions" 		= shtName_view And "#"<>Mid( val_view_concatKey, 1, 1 ) Then ' positions シートで、"#TemporaryNumbering#" といった行データでなければ
-						foreignKeyTokens	= Split( val_view_concatKey, "." ) ' 要素数 6 のはず。
-						val_vwSm_foreignKey = foreignKeyTokens(0) & "." & foreignKeyTokens(1)
-						val_vwSt_foreignKey	= foreignKeyTokens(0) & "." & foreignKeyTokens(1) & "." &  foreignKeyTokens(2)
+						Code.SetCe(	sh_reo _
+							,cm_reo_foreignkeycategory	,rw_reo	,	"states"	)
 						
-						If		"-1" = foreignKeyTokens(2) Then
-							sht_reob.getCellByPosition( col_reob_foreignkeycategory	,row_reob	).String = "stateMachines"
-							sht_reob.getCellByPosition( col_reob_fullpath, row_reob				).String = Utility.VLookup( val_vwSm_foreignKey	,sht_vwSm	,2	,4	)
+																																' transitions シートで、"#TemporaryNumbering#" といった行データでなければ
+					ElseIf _
+						"transitions" 	= shName_viw And	_
+						"#"<>Mid( vl_viw_concatKey, 1, 1 )	_
+					Then
+						foreignKeyTokens						=	Split( vl_viw_concatKey, "." ) ' 要素数 4 のはず。
+						vl_vwSt_foreignKey						=	foreignKeyTokens(0) & "." &  foreignKeyTokens(1) & "." &  foreignKeyTokens(2)
+
+						Code.SetCe(	sh_reo _
+							,cm_reo_foreignkeycategory	,rw_reo	,	"states"	)
+						Code.SetCe(	sh_reo _
+							,cm_reo_fullpathtransition	,rw_reo	,	foreignKeyTokens( 3 )	)
+					
+																																' conditions シートで、"#TemporaryNumbering#" といった行データでなければ
+					ElseIf _
+						"conditions" 	= shName_viw And	_
+						"#"<>Mid( vl_viw_concatKey	,1	,1)	_
+					Then
+																																' 要素数 5 のはず。
+						foreignKeyTokens						=	Split( vl_viw_concatKey, "." )
+						vl_vwSt_foreignKey						=	foreignKeyTokens(0) & "." &  foreignKeyTokens(1) & "." &  foreignKeyTokens(2)
+
+						Code.SetCe(	sh_reo _
+							,cm_reo_foreignkeycategory	,rw_reo	,	"transitions"	)
+						Code.SetCe(	sh_reo _
+							,cm_reo_fullpathtransition	,rw_reo ,	foreignKeyTokens( 3 )	)
+						Code.SetCe(	sh_reo _
+							,cm_reo_fullpathcondition	,rw_reo	,	foreignKeyTokens( 4 )	)
+
+																																 ' positions シートで、"#TemporaryNumbering#" といった行データでなければ
+					ElseIf _
+						"positions" 		= shName_viw And	_
+						"#"<>Mid( vl_viw_concatKey, 1, 1 )	_
+					Then
+																																 ' 要素数 6 のはず。
+						foreignKeyTokens						=	Split( vl_viw_concatKey, "." )
+						vl_vwSm_foreignKey 						=	foreignKeyTokens(0) & "." & foreignKeyTokens(1)
+						vl_vwSt_foreignKey						=	foreignKeyTokens(0) & "." & foreignKeyTokens(1) & "." &  foreignKeyTokens(2)
+						
+						If		"-1" = foreignKeyTokens(2) Then	
+							Code.SetCe(	sh_reo _
+								,cm_reo_foreignkeycategory _
+								,rw_reo							,	"stateMachines"	)
 						ElseIf	"-1" = foreignKeyTokens(3) Then
-							sht_reob.getCellByPosition( col_reob_foreignkeycategory	,row_reob	).String = "states"
-							sht_reob.getCellByPosition( col_reob_fullpath, row_reob				).String = Utility.VLookup( val_vwSt_foreignKey	,sht_vwSt	,3	,6	)
+							Code.SetCe(	sh_reo _
+								,cm_reo_foreignkeycategory _
+								,rw_reo							,	"states"	)
 						ElseIf	"-1" = foreignKeyTokens(4) Then
-							sht_reob.getCellByPosition( col_reob_foreignkeycategory	,row_reob	).String = "transitions"
-							sht_reob.getCellByPosition( col_reob_fullpath, row_reob				).String = Utility.VLookup( val_vwSt_foreignKey	,sht_vwSt	,3	,6	)
+							Code.SetCe(	sh_reo _
+								,cm_reo_foreignkeycategory _
+								,rw_reo							,	"transitions"	)
 						Else
-							sht_reob.getCellByPosition( col_reob_foreignkeycategory	,row_reob	).String = "conditions"
-							sht_reob.getCellByPosition( col_reob_fullpath, row_reob				).String = Utility.VLookup( val_vwSt_foreignKey	,sht_vwSt	,3	,6	)
+							Code.SetCe(	sh_reo _
+								,cm_reo_foreignkeycategory _
+								,rw_reo							,	"conditions"	)
 						EndIf
 
-						If "-1" <> foreignKeyTokens( 3 ) Then ' transition number
-							sht_reob.getCellByPosition( col_reob_fullpathtransition	,row_reob	).String = foreignKeyTokens( 3 )
+						If "-1" <> foreignKeyTokens( 3 ) Then																	' トランジション番号
+							Code.SetCe(	sh_reo _
+								,cm_reo_fullpathtransition _
+								,rw_reo							,	foreignKeyTokens( 3 )	)
 						End If
 
-						If "-1" <> foreignKeyTokens( 4 ) Then ' condition number
-							sht_reob.getCellByPosition( col_reob_fullpathcondition	,row_reob	).String = foreignKeyTokens( 4 )
+						If "-1" <> foreignKeyTokens( 4 ) Then																	' コンディション番号
+							Code.SetCe(	sh_reo _
+								,cm_reo_fullpathcondition _
+								,rw_reo							,	foreignKeyTokens( 4 )	)
 						End If
 
-						sht_reob.getCellByPosition( col_reob_fullpathpropertyname	,row_reob	).String = foreignKeyTokens( 5 )
-						
+						Code.SetCe(	sh_reo _
+							,cm_reo_fullpathpropertyname _
+							,rw_reo								,	foreignKeyTokens( 5 )	)						
 					End If
 					
-			    	row_reob = row_reob + 1
+					Code.CountUp( rw_reo ,1 )
 				End If	
 			End If
 			
 			If phase = 1 Then
 					' #Key フィールド
-					val_view_single			= sht_view.getCellByPosition( iC_view	,iR_view	).String ' iC_view & " " & iR_view
-					val_view_concatKey		= val_view_single
-					iC_view				= iC_view + 1 ' 1列のみ
+					vl_viw_single								=	Code.GetCe(	sh_viw	,iC_viw	,iR_viw	)
+					vl_viw_concatKey							=	vl_viw_single
+					Code.CountUp( iC_viw ,1 )
 
-					sht_reob.getCellByPosition( col_reob_category	,row_reob		).String = shtName_view		' "長IDカテ"
-					sht_reob.getCellByPosition( col_reob_key		,row_reob		).String = "#Key#"			' "長IDキー"
-					sht_reob.getCellByPosition( col_reob_fullpath	,row_reob		).String = "#--#"			' "長IDキー"
-					sht_reob.getCellByPosition( col_reob_name		,row_reob		).String = val_vdob_name	' "#--" ' "長IDネーム"
-					sht_reob.getCellByPosition( col_reob_old		,row_reob		).String = val_view_single
-					' New列空き
-					' Delete列空き
-			    	row_reob				= row_reob + 1
-					phase					= phase + 1
+					Code.SetCe(	 sh_reo	,cm_reo_category _
+								,rw_reo							,	shName_viw		)
+					Code.SetCe(	sh_reo	,cm_reo_key _
+								,rw_reo							,	"#Key#"		)
+					Code.SetCe(	sh_reo	,cm_reo_fullpath _
+								,rw_reo							,	"#--#"		)
+					Code.SetCe(	sh_reo	,cm_reo_name _
+								,rw_reo							,	vl_vdo_name		)
+					Code.SetCe(	sh_reo	,cm_reo_old _
+								,rw_reo							,	vl_viw_single	)
+																																' New列空き
+																																' Clear列空き
+			    	Code.CountUp( rw_reo ,1 )
+			    	Code.CountUp( phase ,1 )
 			ElseIf phase = 3 Then
-					' #FullPath フィールド
-					val_view_single			= sht_view.getCellByPosition( iC_view	,iR_view ).String ' iC_view & " " & iR_view
-					iC_view				= iC_view + 1 ' 1列のみ
+																																' #FullPath フィールドに #--# を入れる
+					vl_viw_single								=	Code.GetCe(	sh_viw	,iC_viw	,iR_viw	)
+					Code.CountUp( iC_viw ,1 )
 
-					sht_reob.getCellByPosition( col_reob_category	,row_reob		).String = shtName_view		' "長名カテ"
-					sht_reob.getCellByPosition( col_reob_key		,row_reob		).String = "#FullPath#"		' "長名キー"
-					sht_reob.getCellByPosition( col_reob_fullpath	,row_reob		).String = "#--#"			' "長名キー"
-					sht_reob.getCellByPosition( col_reob_name		,row_reob		).String = val_vdob_name	' "#--" ' "長名ネーム"
-					sht_reob.getCellByPosition( col_reob_old		,row_reob		).String = val_view_single
-					' New列空き
-					' Delete列空き
-			    	row_reob				= row_reob + 1
-					phase					= phase + 1
+					Code.SetCe(	 sh_reo	,cm_reo_category _
+								,rw_reo							,	shName_viw		)
+					Code.SetCe(	sh_reo	,cm_reo_key _
+								,rw_reo							,	"#FullPath#"	)
+					Code.SetCe(	sh_reo	,cm_reo_fullpath _
+								,rw_reo							,	"#--#"			)
+					Code.SetCe(	sh_reo	,cm_reo_name _
+								,rw_reo							,	vl_vdo_name		)
+					Code.SetCe(	sh_reo	,cm_reo_old _
+								,rw_reo							,	vl_viw_single	)
+																																' New列空き
+																																' Clear列空き
+					Code.CountUp( rw_reo ,1 )
+					Code.CountUp( phase ,1 )
 			End If
 	    Next
 	    
-	    iR_view = iR_view + 1
+		Code.CountUp( iR_viw ,1 )
 	Loop
-	sht_reob.getCellByPosition( 0, row_reob ).String = "[EOF]" ' ファイル末尾に [EOF] を追加
+																																' ファイル末尾に [EOF] を追加
+	Code.SetCe(	sh_reo	,0	,rw_reo								,	"[EOF]"		)
 End Sub
 
-' 各種 _upd シートの作成
-Sub CreateSheet_requ( shtName_reob As String, shtName_requ As String, doc_requ As Object )
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' req シートにレコード挿入
+Sub InsertRecords_req( _
+						 dc_req		As Object	_
+						,shName_reo As String	_
+						,shName_req As String	_
+					)
+	Dim	sh_reo													As	Object
+		sh_reo													=	Code.GetSh(	dc_req	,shName_reo	)
 
-	Dim	sht_reob As Object
-		sht_reob = doc_requ.getSheets().getByName( shtName_reob )
+	Dim	sh_req													As	Object
+		sh_req													=	Code.GetSh(	dc_req	,shName_req	)
 
-	Dim	sht_requ As Object
-		sht_requ = doc_requ.getSheets().getByName( shtName_requ )
+	Const	cm_req_category										=	0	
+																																' position が stateMachineのものなのか、 stateの物なのか区別するために使う
+	Const	cm_req_foreignkeycategory							=	1
+	Const	cm_req_fullpath										=	2
+	Const	cm_req_fullpathtransition							=	3
+	Const	cm_req_fullpathcondition							=	4
+	Const	cm_req_fullpathpropertyname							=	5
+	Const	cm_req_name											=	6
+	Const	cm_req_old											=	7
+	Const	cm_req_new											=	8
+	Const	cm_req_clear										=	9
 
-	Const	col_requ_category				= 0
-	Const	col_requ_foreignkeycategory		= 1 ' position が stateMachineのものなのか、 stateの物なのか区別するために使う
-	Const	col_requ_fullpath				= 2
-	Const	col_requ_fullpathtransition		= 3
-	Const	col_requ_fullpathcondition		= 4
-	Const	col_requ_fullpathpropertyname	= 5
-	Const	col_requ_name					= 6
-	Const	col_requ_old					= 7
-	Const	col_requ_new					= 8
-	Const	col_requ_delete					= 9
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' 更新要求シート（ ～_upd ）のヘッダー作成
+	dc_req.getCurrentController().setActiveSheet( sh_req )
 
-	' 更新要求シート（ ～_upd ）のヘッダー作成
-	doc_requ.getCurrentController().setActiveSheet( sht_requ ) ' 更新要求シートをアクティブにする
+	Dim				ce_req										As	Object
+					ce_req										=	Code.GetCeOb(	sh_req	,cm_req_category			,0	)
+					ce_req.String								=	"#Category#"
+	Style.CmHed( 	ce_req ) 
+					ce_req										=	Code.GetCeOb(	sh_req	,cm_req_foreignkeycategory	,0	)
+					ce_req.String								=	"#Foreignkeycategory#"
+	Style.CmHed( 	ce_req ) 
+					ce_req										=	Code.GetCeOb(	sh_req	,cm_req_fullpath			,0	)
+					ce_req.String								=	"#Fullpath#"
+	Style.CmHed( 	ce_req ) 
+					ce_req										=	Code.GetCeOb(	sh_req	,cm_req_fullpathtransition	,0	)
+					ce_req.String								=	"#FullpathTransition#"
+	Style.CmHed( 	ce_req ) 
+					ce_req										=	Code.GetCeOb(	sh_req	,cm_req_fullpathcondition	,0	)
+					ce_req.String								=	"#FullpathCondition#"
+	Style.CmHed( 	ce_req ) 
+					ce_req										=	Code.GetCeOb(	sh_req	,cm_req_fullpathpropertyname,0	)
+					ce_req.String								=	"#FullpathPropertyname#"
+	Style.CmHed( 	ce_req ) 
+					ce_req										=	Code.GetCeOb(	sh_req	,cm_req_name				,0	)
+					ce_req.String								=	"#Name#"
+	Style.CmHed( 	ce_req ) 
+					ce_req										=	Code.GetCeOb(	sh_req	,cm_req_old					,0	)
+					ce_req.String								=	"#Old#"
+	Style.CmHed( 	ce_req ) 
+					ce_req										=	Code.GetCeOb(	sh_req	,cm_req_new					,0	)
+					ce_req.String								=	"#New#"
+	Style.CmHed( 	ce_req ) 
+					ce_req										=	Code.GetCeOb(	sh_req	,cm_req_clear				,0	)
+					ce_req.String								=	"#Clear#"
+	Style.CmHed( 	ce_req ) 
+					ce_req										=	Code.GetCeOb(	sh_req	,cm_req_clear + 1			,0	)
+					ce_req.String								=	"[EOL]"
 
-	Dim				cell_requ	As Object
-					cell_requ				= sht_requ.getCellByPosition( col_requ_category, 0 )
-					cell_requ.String		= "#Category#"
-	Style.ColHed( 	cell_requ ) 
-					cell_requ				= sht_requ.getCellByPosition( col_requ_foreignkeycategory, 0 )
-					cell_requ.String		= "#Foreignkeycategory#"
-	Style.ColHed( 	cell_requ ) 
-					cell_requ				= sht_requ.getCellByPosition( col_requ_fullpath, 0 )
-					cell_requ.String		= "#Fullpath#"
-	Style.ColHed( 	cell_requ ) 
-					cell_requ				= sht_requ.getCellByPosition( col_requ_fullpathtransition, 0 )
-					cell_requ.String		= "#FullpathTransition#"
-	Style.ColHed( 	cell_requ ) 
-					cell_requ				= sht_requ.getCellByPosition( col_requ_fullpathcondition, 0 )
-					cell_requ.String		= "#FullpathCondition#"
-	Style.ColHed( 	cell_requ ) 
-					cell_requ				= sht_requ.getCellByPosition( col_requ_fullpathpropertyname, 0 )
-					cell_requ.String		= "#FullpathPropertyname#"
-	Style.ColHed( 	cell_requ ) 
-					cell_requ				= sht_requ.getCellByPosition( col_requ_name, 0 )
-					cell_requ.String		= "#Name#"
-	Style.ColHed( 	cell_requ ) 
-					cell_requ				= sht_requ.getCellByPosition( col_requ_old, 0 )
-					cell_requ.String		= "#Old#"
-	Style.ColHed( 	cell_requ ) 
-					cell_requ				= sht_requ.getCellByPosition( col_requ_new, 0 )
-					cell_requ.String		= "#New#"
-	Style.ColHed( 	cell_requ ) 
-					cell_requ				= sht_requ.getCellByPosition( col_requ_delete, 0 )
-					cell_requ.String		= "#Delete#"
-	Style.ColHed( 	cell_requ ) 
-					cell_requ				= sht_requ.getCellByPosition( col_requ_delete + 1, 0 )
-					cell_requ.String		= "[EOL]"
+	Dim rw_reo													As	Integer
+	Dim rw_req													As	Integer
+																																' [0]行目はヘッダーなので[1]行目から。
+																																' Since the [0] line is a header, it is from the [1] line.
+		rw_reo													=	1
+																																' [0]行目はヘッダーなので[1]行目から。
+		rw_req													=	1
 
-	Dim row_reob		As Integer
-	Dim row_requ		As Integer
-	row_reob			= 1 ' [0]行目はヘッダーなので[1]行目から。
-	row_requ			= 1 ' [0]行目はヘッダーなので[1]行目から。
+	Do While "[EOF]" <> Code.GetCe(	sh_reo	,0	,rw_reo	)																		' 更新要求中間シートを垂直方向に走査する
 
-	Do While "[EOF]" <> sht_reob.getCellByPosition( 0, row_reob ).String ' 更新要求中間シートを垂直方向に走査する
+		If _
+			"#--#" <> Code.GetCe( sh_reo, cm_reo_fullpath _
+								,rw_reo )	_
+		Then																													' フルパス列にデータがあるレコード
 
-		If "#--#" <> sht_reob.getCellByPosition( col_reob_fullpath			,row_reob ).String Then ' フルパス列にデータがあるレコード
-			If "" <> sht_reob.getCellByPosition( col_reob_new				,row_reob ).String Or "" <> sht_reob.getCellByPosition( col_reob_delete, row_reob ).String Then ' NewかDeleteに値が入っているレコード
-
-				' 中間シートから、更新要求シートへ、内容をコピーするぜ☆（＾～＾）
-				sht_requ.getCellByPosition( col_requ_category				, row_requ ).String	= sht_reob.getCellByPosition( col_reob_category				, row_reob ).String
-				sht_requ.getCellByPosition( col_requ_foreignkeycategory		, row_requ ).String	= sht_reob.getCellByPosition( col_reob_foreignkeycategory	, row_reob ).String
-				sht_requ.getCellByPosition( col_requ_fullpath				, row_requ ).String	= sht_reob.getCellByPosition( col_reob_fullpath				, row_reob ).String
-				sht_requ.getCellByPosition( col_requ_fullpathtransition		, row_requ ).String	= sht_reob.getCellByPosition( col_reob_fullpathtransition	, row_reob ).String
-				sht_requ.getCellByPosition( col_requ_fullpathcondition		, row_requ ).String	= sht_reob.getCellByPosition( col_reob_fullpathcondition	, row_reob ).String
-				sht_requ.getCellByPosition( col_requ_fullpathpropertyname	, row_requ ).String	= sht_reob.getCellByPosition( col_reob_fullpathpropertyname	, row_reob ).String
-				sht_requ.getCellByPosition( col_requ_name					, row_requ ).String	= sht_reob.getCellByPosition( col_reob_name					, row_reob ).String
-				sht_requ.getCellByPosition( col_requ_old					, row_requ ).String	= sht_reob.getCellByPosition( col_reob_old					, row_reob ).String
-				sht_requ.getCellByPosition( col_requ_new					, row_requ ).String	= sht_reob.getCellByPosition( col_reob_new					, row_reob ).String
-				sht_requ.getCellByPosition( col_requ_delete					, row_requ ).String	= sht_reob.getCellByPosition( col_reob_delete				, row_reob ).String
-				row_requ = row_requ + 1
-				
+																																' NewかClearに値が入っているレコード
+			If _
+				"" <> Code.GetCe( sh_reo, cm_reo_new _
+								,rw_reo )	Or	_
+				"" <> Code.GetCe( sh_reo, cm_reo_clear _
+								,rw_reo )	_
+			Then
+																																' 中間シートから、更新要求シートへ、内容をコピーする
+				Code.CopCe(	sh_req _
+					,cm_req_category			,rw_req			,	sh_reo	,cm_reo_category			,rw_reo	)
+				Code.CopCe(	sh_req _
+					,cm_req_foreignkeycategory	,rw_req			,	sh_reo	,cm_reo_foreignkeycategory	,rw_reo	)
+				Code.CopCe(	sh_req _
+					,cm_req_fullpath			,rw_req			,	sh_reo	,cm_reo_fullpath			,rw_reo	)
+				Code.CopCe(	sh_req _
+					,cm_req_fullpathtransition	,rw_req			,	sh_reo	,cm_reo_fullpathtransition	,rw_reo	)
+				Code.CopCe(	sh_req _
+					,cm_req_fullpathcondition	,rw_req			,	sh_reo	,cm_reo_fullpathcondition	,rw_reo	)
+				Code.CopCe(	sh_req _
+					,cm_req_fullpathpropertyname,rw_req			,	sh_reo	,cm_reo_fullpathpropertyname,rw_reo	)
+				Code.CopCe(	sh_req _
+					,cm_req_name				,rw_req			,	sh_reo	,cm_reo_name				,rw_reo	)
+				Code.CopCe(	sh_req _
+					,cm_req_old					,rw_req			,	sh_reo	,cm_reo_old					,rw_reo	)
+				Code.CopCe(	sh_req _
+					,cm_req_new					,rw_req			,	sh_reo	,cm_reo_new					,rw_reo	)
+				Code.CopCe(	sh_req _
+					,cm_req_clear				,rw_req			,	sh_reo	,cm_reo_clear				,rw_reo	)
+				Code.CountUp( rw_req ,1 )
 			End If
 		End If
 
-		row_reob = row_reob + 1
+		Code.CountUp( rw_reo ,1 )
 	Loop
-	sht_requ.getCellByPosition( col_requ_category, row_requ ).String = "[EOF]"
-
+	Code.SetCe(	sh_req	,cm_req_category	,rw_req				,	"[EOF]"		)
 End Sub
 
-' 複数の同じ列形のシートを、１つのCSVファイルにまとめ、書き出す。
-' LibreOffice Calc Basic fun!!! 「テキストファイルへの書き込み」 http://calibreblo.blogspot.jp/2011/04/blog-post_06.html
-Sub WriteCsv( doc_requ As Object, outputFilePath2 As String )
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' 複数の同じ列形のシートを、１つのCSVファイルにまとめ、書き出す。
+																																
+																																' LibreOffice Calc Basic fun!!! 「テキストファイルへの書き込み」 http://calibreblo.blogspot.jp/2011/04/blog-post_06.html
+Sub WriteCsv( dc_req As Object, outputFilePath2 As String )
 
-	Dim sht_rqPm As Object
-	Dim sht_rqLy As Object
-	Dim sht_rqSm As Object
-	Dim sht_rqSt As Object
-	Dim sht_rqTr As Object
-	Dim sht_rqCd As Object
-	Dim sht_rqPs As Object
+	Dim sh_rqPm													As	Object
+	Dim sh_rqLy													As	Object
+	Dim sh_rqSm													As	Object
+	Dim sh_rqSt													As	Object
+	Dim sh_rqTr													As	Object
+	Dim sh_rqCd													As	Object
+	Dim sh_rqPs													As	Object
+	Dim sh_rqMo													As	Object
 	
-	sht_rqPm	= doc_requ.getSheets().getByName( "parameters_upd"		)
-	sht_rqLy	= doc_requ.getSheets().getByName( "layers_upd"			)
-	sht_rqSm	= doc_requ.getSheets().getByName( "stateMachines_upd"	)
-	sht_rqSt	= doc_requ.getSheets().getByName( "states_upd" 			)
-	sht_rqTr	= doc_requ.getSheets().getByName( "transitions_upd" 	)
-	sht_rqCd	= doc_requ.getSheets().getByName( "conditions_upd" 		)
-	sht_rqPs	= doc_requ.getSheets().getByName( "positions_upd" 		)
+	sh_rqPm														=	Code.GetSh(	dc_req	,"parameters_upd"		)
+	sh_rqLy														=	Code.GetSh(	dc_req	,"layers_upd"			)
+	sh_rqSm														=	Code.GetSh( dc_req	,"stateMachines_upd"	)
+	sh_rqSt														=	Code.GetSh( dc_req	,"states_upd" 			)
+	sh_rqTr														=	Code.GetSh( dc_req	,"transitions_upd" 		)
+	sh_rqCd														=	Code.GetSh( dc_req	,"conditions_upd" 		)
+	sh_rqPs														=	Code.GetSh( dc_req	,"positions_upd" 		)
+	sh_rqMo														=	Code.GetSh( dc_req	,"motions_upd" 			)
 
-	Dim col_requ 		As Integer
-	Dim colLen_requ		As Integer
-	col_requ = 0
-	Do While "[EOL]" <> sht_rqPm.getCellByPosition( col_requ, 0 ).String
-		col_requ = col_requ + 1
+	Dim cm_req 													As	Integer
+	Dim colLen_req												As	Integer
+		cm_req								 					=	0
+	Do While "[EOL]" <> Code.GetCe(	sh_rqPm	,cm_req	,0	)
+		Code.CountUp( cm_req ,1 )
 	Loop
-	colLen_requ = col_requ - 1 ' [EOL] は含まないので-1。
+	colLen_req													=	cm_req - 1													' [EOL] は含まないので-1。
 
-	Dim contents As String
-	' ヘッダー作成
-	contents = "#Category#,#Foreignkeycategory#,#Fullpath#,#FullpathTransition#,#FullpathCondition#,#FullpathPropertyname#,#Name#,#Old#,#New#,#Delete#,[EOL]," & Chr$(13) ' 改行
+	Dim contents												As	String
+																																' ヘッダー作成。改行は Chr$(13)
+																																' 各シートの選出行追加
+		contents	 											=		"#Category#,#Foreignkeycategory#,#Fullpath#,#FullpathTransition#,#FullpathCondition#,#FullpathPropertyname#,#Name#,#Old#,#New#,#Clear#,[EOL]," & Chr$(13) _
+																	&	WriteCsv2( sh_rqPm, colLen_req )	_
+																	&	WriteCsv2( sh_rqLy, colLen_req )	_
+																	&	WriteCsv2( sh_rqSm, colLen_req )	_
+																	&	WriteCsv2( sh_rqSt, colLen_req )	_
+																	&	WriteCsv2( sh_rqTr, colLen_req )	_
+																	&	WriteCsv2( sh_rqCd, colLen_req )	_
+																	&	WriteCsv2( sh_rqPs, colLen_req )	_
+																	&	WriteCsv2( sh_rqMo, colLen_req )	_
+																	&	"[EOF]," & Chr$(13)										' ファイルの末端に [EOF] を追加。
 
-	contents = contents & WriteCsv2( sht_rqPm, colLen_requ )
-	contents = contents & WriteCsv2( sht_rqLy, colLen_requ )
-	contents = contents & WriteCsv2( sht_rqSm, colLen_requ )
-	contents = contents & WriteCsv2( sht_rqSt, colLen_requ )
-	contents = contents & WriteCsv2( sht_rqTr, colLen_requ )
-	contents = contents & WriteCsv2( sht_rqCd, colLen_requ )
-	contents = contents & WriteCsv2( sht_rqPs, colLen_requ )
-
-	' ファイルの末端に追加
-	contents = contents & "[EOF]," & Chr$(13) ' 改行
-
-	Dim intFileNo	As Integer
-	Dim strData		As String
-
-	'ファイルのオープン
-	intFileNo = FreeFile() 
+																																' ファイルの書き出し
+	Dim intFileNo												As	Integer
+		intFileNo												=	FreeFile()
     Open outputFilePath2 For Output As #intFileNo
-
-	'レコードの出力
 	Print #intFileNo, contents
-
-	'ファイルのクローズ
     Close #intFileNo
 End Sub
 
-' シート１個分を CSVにする
-Sub WriteCsv2( sht_requ As Object, colLen_requ As Integer ) As String
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' シート１個分を CSVにする
+Sub WriteCsv2(	_
+				 sh_req		As Object	_
+				,colLen_req As Integer	_
+			 ) As String
+	Dim rw_req													As	Integer
+	Dim cm_req													As	Integer
+	Dim contents												As	String
+	contents													=	""
 
-	Dim row_requ	As Integer
-	Dim col_requ	As Integer
-	Dim contents	As String
-	contents = ""
-
-	row_requ = 1 ' [0]行目はヘッダーなので[1]行目から
-	Do While "[EOF]" <> sht_requ.getCellByPosition( 0, row_requ ).String
-		For col_requ = 0 To colLen_requ
-			contents = contents & Utility.EscapeCsv( sht_requ.getCellByPosition( col_requ, row_requ ).String ) & ","
+	rw_req														=	1															' [0]行目はヘッダーなので[1]行目から
+	Do While "[EOF]" <>	Code.GetCe(	sh_req	,0	,rw_req	)
+		For cm_req = 0 To colLen_req
+			Code.AppendTail(	contents						,	Utility.EscapeCsv(  Code.GetCe(	sh_req	,cm_req	,rw_req	)  ) & ","	)
 		Next
-		contents = contents & Chr$(13) ' 改行
-		row_requ = row_requ + 1
+																																' 改行
+		Code.AppendTail(	contents							,	Chr$(13)	)
+		Code.CountUp( rw_req ,1 )
 	Loop
 
-	WriteCsv2 = contents
+	WriteCsv2													=	contents
 End Sub

@@ -1,8 +1,9 @@
 ﻿using DojinCircleGrayscale.StellaQL;
 using System.Collections.Generic;
 using UnityEngine;
+using DojinCircleGrayscale.StellaQL.Acons.Main_Char3;
 
-namespace DojinCircleGrayscale.Hitbox2D
+namespace DojinCircleGrayscale.Hitbox2DLorikeet
 {
     public abstract class Operation
     {
@@ -142,7 +143,19 @@ namespace DojinCircleGrayscale.Hitbox2D
         public int[] Slices { get; set; }
     }
 
-    public interface Moviestarable
+    /// <summary>
+    /// ステートに設定されるアニメーション・クリップの種類
+    /// （キャラクター＠モーション名　となっているとして、モーション名の部分）
+    /// </summary>
+    public class Motion : AbstractMotion
+    {
+        public Motion(int[] slices, TilesetfileType actioning) : base(slices, (int)actioning)
+        {
+
+        }
+    }
+
+    public interface Motorable
     {
         /// <summary>
         /// [CliptypeIndex]
@@ -150,7 +163,7 @@ namespace DojinCircleGrayscale.Hitbox2D
         Dictionary<int, Motionable> MotionHash_to_instance { get; set; }
     }
 
-    public abstract class AbstractMoviestar : Moviestarable
+    public abstract class AbstractMotor : Motorable
     {
         /// <summary>
         /// [CliptypeIndex]
@@ -173,7 +186,7 @@ namespace DojinCircleGrayscale.Hitbox2D
         /// Current.
         /// </summary>
         /// <returns></returns>
-        public static Motionable GetCurrentUserDefinedCliptypeRecord(Animator animator, AControllable aControl, Moviestarable userDefinedCliptypeTable)
+        public static Motionable GetCurrentUserDefinedCliptypeRecord(Animator animator, AControllable aControl, Motorable userDefinedCliptypeTable)
         {
             AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
@@ -211,7 +224,7 @@ namespace DojinCircleGrayscale.Hitbox2D
             AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
             float stateSpeed = animeStateInfo.speed;
 
-            Motionable cliptypeExRecord = Hitbox2D_Player_Abstract.GetCurrentUserDefinedCliptypeRecord(animator, aControl, Moviestar.Instance);
+            Motionable cliptypeExRecord = Hitbox2D_Player_Abstract.GetCurrentUserDefinedCliptypeRecord(animator, aControl, Motor.Instance);
 
             // 正規化時間取得（0～1 の数倍。時間経過で 1以上になる）
             float normalizedTime = animeStateInfo.normalizedTime;

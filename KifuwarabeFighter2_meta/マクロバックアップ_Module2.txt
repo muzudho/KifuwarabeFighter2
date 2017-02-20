@@ -2,688 +2,846 @@ REM  *****  BASIC  *****
 
 Option Explicit
 
-' ビューを作るぞ
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+'	1	2	3	4	5	6	7	8	9	0	1	2	3	4	5	6	7	8	9	0	1	2	3	4	5	6	7	8	9	0	1	2	3	4	5	6	7	8	9	0
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' ビューを作ります
 Sub Main
-	
-	Dim sht_cnfg			As Object ' 設定シート
-	Dim sht_view			As Object ' 出力シート
-	Dim shtName_cdob		As String ' シートの名前
-	Dim shtName_vdob 		As String ' シートの名前
-	Dim doc_view			As Object ' 新しいブック
-	Dim Dummy() 					' 使わない引数に
-	Dim shtNames (3*7) 		As String
-	
-	' アクティブ・シートを取得
-	sht_cnfg				= ThisComponent.GetCurrentController.ActiveSheet
+																																' 設定シート
+	Dim sh_cnf													As	Object
+																																' 出力シート
+	Dim sh_viw													As	Object
+																																' 新しいドキュメント
+	Dim dc_viw													As	Object
+				 																												' 使わない引数に
+	Dim Dummy()
+																																' アクティブ・シートを取得
+		sh_cnf													=	ThisComponent.GetCurrentController.ActiveSheet
+																																' ヘッダー1 の行番号
+	Dim rw_cnf_sheetfooter1										As	Integer
+	Const COLUMN0												=	0
+		rw_cnf_sheetfooter1										=	Utility.RowOf( "#SheetFooter1#", sh_cnf, COLUMN0, 0, 1000 )
+																																' ヘッダー1 の列番号
+	Dim cm_cnf_key												As	Integer
+	Dim cm_cnf_value	 										As	Integer
+		cm_cnf_key												=	Utility.ColumnOf( "#Key#"			,sh_cnf	,rw_cnf_sheetfooter1	,0	,1000	)
+		cm_cnf_value											=	Utility.ColumnOf( "#Value#"			,sh_cnf	,rw_cnf_sheetfooter1	,0	,1000	)
+																																' 信頼のおけるフォルダーのパス（ 末尾は \ ）
+	Dim folder													As	String
+		folder													=	Utility.VLookup( "folder", sh_cnf, cm_cnf_key, cm_cnf_value )
+																																' アニメーション・コントローラー・データ・ファイル
+	Dim dataFilePath											As	String
+	Dim dc_cnb													As	Object
+		dataFilePath											=	folder & Utility.VLookup( "dataFile"		,sh_cnf	,cm_cnf_key	,cm_cnf_value	) ' .ods file
+		dc_cnb													=	StarDesktop.loadComponentFromURL(	ConvertToUrl(dataFilePath)	,"_blank"	,0	,Array()	)
 
-	Dim row_cnfg_header1	As Integer ' ヘッダー1 の行番号
-	Const COLUMN0			= 0
-	row_cnfg_header1		= Utility.RowOf( "#Header1#", sht_cnfg, COLUMN0, 0, 1000 )
+																																' 出力.odsファイル
+	Dim outputFilePath											As	String
+		outputFilePath											=	folder & Utility.VLookup(	"outputFile"	,sh_cnf	,cm_cnf_key	,cm_cnf_value	)
 
-	' ヘッダー1 の列番号
-	Dim col_cnfg_key		As Integer
-	Dim col_cnfg_folderpath As Integer
-	Dim col_cnfg_filename	As Integer
-	Dim col_cnfg_sheetname	As Integer
-	col_cnfg_key			= Utility.ColumnOf( "#Key#"			,sht_cnfg	,row_cnfg_header1	,0	,1000	)
-	col_cnfg_folderpath		= Utility.ColumnOf( "#FolderPath#"	,sht_cnfg	,row_cnfg_header1	,0	,1000	)
-	col_cnfg_filename		= Utility.ColumnOf( "#Filename#"	,sht_cnfg	,row_cnfg_header1	,0	,1000	)
-	col_cnfg_sheetname		= Utility.ColumnOf( "#SheetName#"	,sht_cnfg	,row_cnfg_header1	,0	,1000	)
+																																' シート名
+	Dim	shNames													As	Object
+	shNames														=	GetShNames( )
+																																
+																																' ドキュメントを新規作成
+	dc_viw														=	StarDesktop.loadComponentFromURL("private:factory/scalc", "_blank", 0, Dummy())
+	
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' 最初からあるシートを名前変更
 
-	' フォルダーパス（ 末尾は \ ）
-	Dim folder				As String ' 信頼のおけるディレクトリ
-	folder					= Utility.VLookup( "folder", sht_cnfg, col_cnfg_key, col_cnfg_folderpath )
+	Dim	shName_cdo												As	String
+	Dim	shName_cnb												As	String
+	Dim	shName_vdo												As	String
+	Dim	shName_viw												As	String
+		shName_cdo												=	shNames(0)
+		shName_cnb												=	shNames(1)
+		shName_vdo												=	shNames(2)
+		shName_viw												=	shNames(3)
 
-	' データ・ファイル
-	Dim dataFilePath		As String ' アニメーション・コントローラー・データ
-	Dim doc_cnbn			As Object
-	dataFilePath			= folder & Utility.VLookup( "dataFile"		,sht_cnfg	,col_cnfg_key	,col_cnfg_filename	) ' .ods file
-	doc_cnbn				= StarDesktop.loadComponentFromURL(	ConvertToUrl(dataFilePath)	,"_blank"	,0	,Array()	)
+	sh_viw														=	dc_viw.Sheets(0)
+	sh_viw.Name													=	shName_viw
+																																' 中間列定義シート作成
+	Dim sh_vdo													As	Object
+	shName_vdo													=	shNames(2)
+	' if dc_viw.getSheets().hasByName(shName_vdo) = false then
+	dc_viw.getSheets().insertNewByName(	shName_vdo	,1	)
+	'end if
+	sh_vdo	 													=	Code.GetSh(	dc_viw	,shName_vdo	)
+																																' 作成したシートへレコードの挿入
+	InsertRecords_vdo(	 dc_cnb	,dc_viw	,shName_cdo	_
+						,shName_cnb	,sh_vdo	,sh_viw	)
+	InsertRecords_viw(	 dc_cnb	,dc_viw	,shName_cnb	_
+						,sh_vdo	,sh_viw				)
+	
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' ３つ目以降のシートを作成
+	
+																																' シートの名前
+	Dim index													As	Integer
 
-	' 出力ファイル
-	Dim outputFilePath		As String
-	outputFilePath			= folder & Utility.VLookup(	"outputFile"	,sht_cnfg	,col_cnfg_key	,col_cnfg_filename	) ' .ods file
-
-	' シート名
-	shtNames( 0) = Utility.VLookup( "parameters"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	) ' 既存のデータ・シート名、また、これから作る　ビュー・シート名
-	shtNames( 1) = Utility.VLookup( "parameters_def"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	) ' 既存の列定義シート名
-	shtNames( 2) = Utility.VLookup( "parameters_dfObj"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	) ' これから作る中間列定義シート名
-	shtNames( 3) = Utility.VLookup( "layers"				,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	) ' 以下略
-	shtNames( 4) = Utility.VLookup( "layers_def"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames( 5) = Utility.VLookup( "layers_dfObj"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames( 6) = Utility.VLookup( "stateMachines"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames( 7) = Utility.VLookup( "stateMachines_def"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames( 8) = Utility.VLookup( "stateMachines_dfObj"	,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames( 9) = Utility.VLookup( "states"				,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames(10) = Utility.VLookup( "states_def"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames(11) = Utility.VLookup( "states_dfObj"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames(12) = Utility.VLookup( "transitions"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames(13) = Utility.VLookup( "transitions_def"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames(14) = Utility.VLookup( "transitions_dfObj"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames(15) = Utility.VLookup( "conditions"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames(16) = Utility.VLookup( "conditions_def"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames(17) = Utility.VLookup( "conditions_dfObj"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames(18) = Utility.VLookup( "positions"				,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames(19) = Utility.VLookup( "positions_def"			,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-	shtNames(20) = Utility.VLookup( "positions_dfObj"		,sht_cnfg	,col_cnfg_key	,col_cnfg_sheetname	)
-
-	
-	doc_view = StarDesktop.loadComponentFromURL("private:factory/scalc", "_blank", 0, Dummy()) ' ブックを新規作成
-	
-	'--------------------------------------------------------------------------------
-	' 最初からあるシートを名前変更
-	
-	sht_view				=	doc_view.Sheets(0)
-	sht_view.Name			=	shtNames(0)
-
-	' 中間列定義シート作成
-	Dim sht_vdob			As Object ' 中間列定義シート
-	shtName_vdob			= shtNames(2)
-	if doc_view.getSheets().hasByName(shtName_vdob) = false then
-		doc_view.getSheets().insertNewByName(shtName_vdob,2)
-	end if
-	sht_vdob	 			= doc_view.getSheets().getByName(shtName_vdob)
-	
-	'作成したシートへの書込
-	ReadOds_view(doc_cnbn, doc_view, shtNames(0), shtNames(1), shtNames(2), sht_view, sht_vdob ) ' ODS読込み
-	
-	'--------------------------------------------------------------------------------
-	' ３つ目以降のシートを作成
-	
-	Dim shtName_cnbn		As String ' シートの名前
-	Dim index				As Integer
-	
-	For index = 3 To 18 Step 3
-	
-		shtName_cnbn = shtNames(index  )
-		shtName_cdob = shtNames(index+1)
-		shtName_vdob = shtNames(index+2)
+																																' updateRequestシーツの手前まで	
+	For index = sh_unit To sh_number - 2*sh_unit Step sh_unit
+		shName_cdo												=	shNames(index		)
+		shName_cnb												=	shNames(index + 1	)
+		shName_vdo												=	shNames(index + 2	)
+																																' シートを追加
+		If _
+			dc_viw.getSheets().hasByName(shName_cnb) = false _
+		Then
+			dc_viw.getSheets().insertNewByName(shName_cnb _
+												,index	)
+		End If
+		sh_viw													=	Code.GetSh(	dc_viw	,shName_cnb	)
 		
-		' シートを追加
-		if  doc_view.getSheets().hasByName(shtName_cnbn) = false then
-			doc_view.getSheets().insertNewByName(shtName_cnbn, index)
-		end if
-		sht_view = doc_view.getSheets().getByName(shtName_cnbn)
-		
-		' 中間列定義シート作成
-		if  doc_view.getSheets().hasByName(shtName_vdob) = false then
-			doc_view.getSheets().insertNewByName(shtName_vdob,index)
-		end if
-		sht_vdob	= doc_view.getSheets().getByName(shtName_vdob)
-	
-		'作成したシートへの書込
-		ReadOds_view(	doc_cnbn	,doc_view	,shtName_cnbn	,shtName_cdob	,shtName_vdob	,sht_view	,sht_vdob	) ' CSV読込
+																																' 中間列定義シート作成
+		If _
+			dc_viw.getSheets().hasByName(shName_vdo) = false _
+		Then
+			dc_viw.getSheets().insertNewByName(shName_vdo _
+												,index	)
+		End If
+		sh_vdo													=	Code.GetSh(	dc_viw	,shName_vdo	)
+																																' 作成したシートへレコードの挿入
+		InsertRecords_vdo(	 dc_cnb	,dc_viw	,shName_cdo	_
+							,shName_cnb	,sh_vdo	,sh_viw	)
+		InsertRecords_viw(	 dc_cnb	,dc_viw	,shName_cnb	_
+							,sh_vdo	,sh_viw	)
 	Next
 	
-	'--------------------------------------------------------------------------------
-	' ビュー・ドキュメントを保存
-	doc_view.storeAsURL(ConvertToUrl( outputFilePath), Dummy())
-	
-	'ファイルを閉じる
-	doc_cnbn.dispose
-	doc_view.dispose
-
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' ビュー・ドキュメントを保存
+	dc_viw.storeAsURL(ConvertToUrl( outputFilePath), Dummy())
+																																' ファイルを閉じる
+	dc_cnb.dispose
+	dc_viw.dispose
 End Sub
 
-'--------------------------------------------------------------------------------
-' ODS読取
-' 参考： LibreOffice Calc Basic fun!!! 「既存ドキュメント(ブック)を開く」 http://calibreblo.blogspot.jp/2011/04/blog-post_2121.html
-' 参考： LibreOffice Calc Basic fun!!! 「文字列関数 (1)」 http://calibreblo.blogspot.jp/2011/05/1_30.html
-' 参考： White Tiger 「セルの背景色とフォント色を設定する方法」 http://www7b.biglobe.ne.jp/~whitetiger/ex/liboffice015.html
-' 参考： 列幅の指定に :　OSS( Open Source Software )でいこう!! 「 OpenOffice.org / LibreOfficeを使おう編 」 「Macroの杜 (OpenOffice.org/LibreOffice Basic編) Calc No.2 ###【 Previous Page ( Calc No.1 ) 】###」 http://openoffice3.web.fc2.com/OOoBasic_Calc_No2.html#OOoCCR06a
-' 参考： kojのとりあえず日記2 「OpenOffice.org/LibreOffice Calcでマクロからウィンドウの固定」 http://www.ofug.net/koj/2011/10/21/openoffice-orglibreoffice-calc%E3%81%A7%E3%83%9E%E3%82%AF%E3%83%AD%E3%81%8B%E3%82%89%E3%82%A6%E3%82%A3%E3%83%B3%E3%83%89%E3%82%A6%E3%81%AE%E5%9B%BA%E5%AE%9A/
-' 参考： ウィンドウの固定に : ApacheOpenOfficeFORUM 「[Solved] Calc Macro FreezeAtPosition is relative to location」 https://forum.openoffice.org/en/forum/viewtopic.php?f=20&t=72745
-' 参考： ubuntu & LibreOffice  「シートをアクティブにする　LibreOffice Calc Basic　[LibreOffice Calc Basic]」 http://j11.blog.so-net.ne.jp/2013-10-22
-Sub ReadOds_view(	doc_cnbn As Object	,doc_view As Object	,shtName_cnbn As String	,shtName_cdob As String	,sheetName_1obj As String _
-			   	   ,sht_view as Object	,sht_vdob as Object )
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' 文書作成
 
-	CreateSheet_vdob(	doc_cnbn		,shtName_cnbn	,shtName_cdob	,doc_view	,sht_view	,sht_vdob	)
+																																' 参考 : LibreOffice Calc Basic fun!!! 「既存ドキュメント(ブック)を開く」 http://calibreblo.blogspot.jp/2011/04/blog-post_2121.html
+																																' 参考 : LibreOffice Calc Basic fun!!! 「文字列関数 (1)」 http://calibreblo.blogspot.jp/2011/05/1_30.html
+																																' 参考 : White Tiger 「セルの背景色とフォント色を設定する方法」 http://www7b.biglobe.ne.jp/~whitetiger/ex/liboffice015.html
+																																' 参考 : 列幅の指定に :　OSS( Open Source Software )でいこう!! 「 OpenOffice.org / LibreOfficeを使おう編 」 「Macroの杜 (OpenOffice.org/LibreOffice Basic編) Calc No.2 ###【 Previous Page ( Calc No.1 ) 】###」 http://openoffice3.web.fc2.com/OOoBasic_Calc_No2.html#OOoCCR06a
+																																' 参考 : kojのとりあえず日記2 「OpenOffice.org/LibreOffice Calcでマクロからウィンドウの固定」 http://www.ofug.net/koj/2011/10/21/openoffice-orglibreoffice-calc%E3%81%A7%E3%83%9E%E3%82%AF%E3%83%AD%E3%81%8B%E3%82%89%E3%82%A6%E3%82%A3%E3%83%B3%E3%83%89%E3%82%A6%E3%81%AE%E5%9B%BA%E5%AE%9A/
+																																' 参考 : ウィンドウの固定に : ApacheOpenOfficeFORUM 「[Solved] Calc Macro FreezeAtPosition is relative to location」 https://forum.openoffice.org/en/forum/viewtopic.php?f=20&t=72745
+																																' 参考 : ubuntu & LibreOffice  「シートをアクティブにする　LibreOffice Calc Basic　[LibreOffice Calc Basic]」 http://j11.blog.so-net.ne.jp/2013-10-22
 
-	CreateSheet_view(	doc_cnbn		,shtName_cnbn					,doc_view	,sht_view	,sht_vdob	)
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' あとで使う、テーブルの行番号、列番号
+Public Const hedRw_cnb											=	0
+Public Const hedRw_viw											=	0
+Public Const cm_cdo_name										=	0
+Public Const cm_cdo_type										=	1
+Public Const cm_cdo_key											=	2
+Public Const cm_cdo_input										=	3
+Public Const cm_vdo_name										=	0
+Public Const cm_vdo_type										=	1
+Public Const cm_vdo_key											=	2
+																																' 中間列定義シート作成
+																																'
+																																' (1) #Key#、#FullPath# の２フィールドを追加する
+																																' 
+																																' (2) transitions表のみ、#FullPath# の次に #DestinationFullpath# フィールドを追加する。
+																																'
+																																' 挟みこむ位置は、
+																																' 
+																																' #Key#			フィールドは、TemporaryNumbering	属性のフィールドの次。
+																																'
+																																' #FullPath#	フィールドは、Identifable			属性のフィールドの次。
+Sub InsertRecords_vdo( _
+						 dc_cnb		As Object _
+						,dc_viw		As Object _
+						,shName_cdo	As String _
+						,shName_cnb	As String _
+						,sh_vdo		As Object _
+						,sh_viw		As Object )
+	Dim sh_cdo													As	Object
+	Dim sh_cnb													As	Object
+		sh_cdo													=	Code.GetSh(	dc_cnb	,shName_cdo		)
+		sh_cnb													=	Code.GetSh(	dc_cnb	,shName_cnb		)
 	
-	SolveSheet_view( )
-	
-End Sub
+	Dim ce_xx													As	Object
+	Dim phase													As	Integer
 
-' あとで使う、テーブルの行番号、列番号
-Public Const hedRow_cnbn		= 0
-Public Const hedRow_view		= 0
-Public Const col_cdob_name		= 0
-Public Const col_cdob_type		= 1
-Public Const col_cdob_key		= 2
-Public Const col_cdob_input		= 3
-Public Const col_vdob_name		= 0
-Public Const col_vdob_type		= 1
-Public Const col_vdob_key		= 2
+																																' ヘッダー行作成
+	ce_xx														=	Code.GetCeOb(	sh_vdo	,cm_vdo_name	, 0 )
+	ce_xx.String												= 	"#Name#"
+	Style.CmHed( ce_xx )
+	ce_xx														=	Code.GetCeOb(	sh_vdo	,cm_vdo_type	, 0 )
+	ce_xx.String												=	"#Type#"
+	Style.CmHed( ce_xx )
+	ce_xx														=	Code.GetCeOb(	sh_vdo	,cm_vdo_key		, 0 )
+	ce_xx.String												=	"#Key#"
+	Style.CmHed( ce_xx )
 
-' 中間列定義シート作成
-'
-' 中間列定義シートでは、
-' (1) #Key#、#FullPath# の２フィールドを追加する
-' (2) transitions表のみ、#FullPath# の次に #DestinationFullpath# フィールドを追加する。
-'
-' 挟みこむ位置は、
-' #Key#			フィールドは、TemporaryNumbering	属性のフィールドの次。
-' #FullPath#	フィールドは、Identifable					属性のフィールドの次。
-'
-Sub CreateSheet_vdob( doc_cnbn As Object, shtName_cnbn As String, shtName_cdob As String, doc_view As Object, sht_view As Object, sht_vdob as Object )
+																																' カーソル
+	Dim iR_cdo													As	Integer
+	Dim iR_vdo													As	Integer
 
-	Dim sht_cdob			As Object
-	Dim sht_cnbn			As Object
-	sht_cdob				= doc_cnbn.getSheets().getByName(shtName_cdob		)
-	sht_cnbn				= doc_cnbn.getSheets().getByName(shtName_cnbn		)
-	
-	Dim cell_xx				As Object
-	Dim phase				As Integer
+																																' 中間シート（ ～_obj ）の作成
+																																
+																																' 中間シートをアクティブにする
+	dc_viw.getCurrentController().setActiveSheet( sh_vdo )
+	phase														=	0
+																																' ソース列定義シート [0]行目はヘッダーなので[1]行目から
+	iR_cdo														=	1
+																																' 中間列定義シートは [0]行目はヘッダーなので[1]行目から
+	iR_vdo														=	1
+														    																	' 列定義シートを垂直方向に走査する
+    Do While "[EOF]" <> Code.GetCe(sh_cdo ,cm_cdo_name ,iR_cdo)
 
-	' ヘッダー行作成
-	cell_xx					= sht_vdob.		getCellByPosition( col_vdob_name	, 0 )
-	cell_xx.String			= "#Name#"
-	Style.ColHed( cell_xx )
-	cell_xx					= sht_vdob.		getCellByPosition( col_vdob_type	, 0 )
-	cell_xx.String			= "#Type#"
-	Style.ColHed( cell_xx )
-	cell_xx					= sht_vdob.		getCellByPosition( col_vdob_key		, 0 )
-	cell_xx.String			= "#Key#"
-	Style.ColHed( cell_xx )
-	' 中間シートは、列定義シートに「#Key#」「#FullPath#」の２行を足し、キー・フィールド、表示用フィールド、入力フィールドを残したもの。
-	' StellaQL が追加した列名には「#」で挟むものとする。
-
-	' カーソル
-	Dim iR_cdob			As Integer ' 列定義シートの何行目か
-	Dim iR_vdob			As Integer ' 中間列定義シートの何行目か
-
-	' 中間シート（ ～_obj ）の作成
-	doc_view.getCurrentController().setActiveSheet( sht_vdob ) ' 中間シートをアクティブにする
-	phase					= 0
-	iR_cdob				= 1 ' ソース列定義シート [0]行目はヘッダーなので[1]行目から
-	iR_vdob				= 1 ' 中間列定義シートは [0]行目はヘッダーなので[1]行目から
-    Do While "[EOF]"<>sht_cdob.getCellByPosition( col_cdob_name, iR_cdob ).String ' 列定義シートを垂直方向に走査する
-
-		' 定義シートは縦に、データシートは横に、フィールドが並んでいるだけ。
-
+																																' 定義シートは縦に、データシートは横に、フィールドが並んでいる。
 		If phase = 0 Then
-			' 定義シートを見て、 TemporaryNumbering フィールドを並べたい。
-			If "TemporaryNumbering" = sht_cdob.getCellByPosition( col_cdob_key, iR_cdob ).String Then
-				sht_vdob.getCellByPosition( col_vdob_name		,iR_vdob		).String = sht_cdob.getCellByPosition( col_cdob_name	,iR_cdob	).String
-				sht_vdob.getCellByPosition( col_vdob_type		,iR_vdob		).String = sht_cdob.getCellByPosition( col_cdob_type	,iR_cdob	).String
-				sht_vdob.getCellByPosition( col_vdob_key		,iR_vdob		).String = sht_cdob.getCellByPosition( col_cdob_key		,iR_cdob	).String
-		    	iR_cdob	= iR_cdob + 1
-		    	iR_vdob	= iR_vdob + 1
+			If _
+				"TemporaryNumbering"	= Code.GetCe(sh_cdo _
+									,cm_cdo_key	,iR_cdo) _
+			Then
+				Code.CopCe(sh_vdo	,cm_vdo_name	,iR_vdo		,	sh_cdo	,cm_cdo_name	,iR_cdo	)
+				Code.CopCe(sh_vdo	,cm_vdo_type	,iR_vdo		,	sh_cdo	,cm_cdo_type	,iR_cdo	)
+				Code.CopCe(sh_vdo	,cm_vdo_key		,iR_vdo		,	sh_cdo	,cm_cdo_key		,iR_cdo	)
+				Code.CountUp( iR_cdo ,1 )
+				Code.CountUp( iR_vdo ,1 )
 			Else
-				phase = phase + 1
+				Code.CountUp( phase ,1 )
 			End If
 		ElseIf phase = 2 Then
-			' 定義シートを見て、Identifiable フィールドを並べたい。
-			If "Identifiable" = sht_cdob.getCellByPosition( col_cdob_key, iR_cdob ).String Then
-				sht_vdob.getCellByPosition( col_vdob_name		,iR_vdob		).String = sht_cdob.getCellByPosition( col_cdob_name	,iR_cdob	).String
-				sht_vdob.getCellByPosition( col_vdob_type		,iR_vdob		).String = sht_cdob.getCellByPosition( col_cdob_type	,iR_cdob	).String
-				sht_vdob.getCellByPosition( col_vdob_key		,iR_vdob		).String = sht_cdob.getCellByPosition( col_cdob_key		,iR_cdob	).String
-		    	iR_cdob	= iR_cdob + 1
-		    	iR_vdob	= iR_vdob + 1
+			If _
+				"Identifiable" = Code.GetCe( _
+					sh_cdo	,cm_cdo_key	,iR_cdo	)	_
+			Then
+				Code.CopCe(sh_vdo,	cm_vdo_name	,iR_vdo			,	sh_cdo	,cm_cdo_name	,iR_cdo	)
+				Code.CopCe(sh_vdo,	cm_vdo_type	,iR_vdo			,	sh_cdo	,cm_cdo_type	,iR_cdo	)
+				Code.CopCe(sh_vdo,	cm_vdo_key	,iR_vdo			,	sh_cdo	,cm_cdo_key		,iR_cdo	)
+				Code.CountUp( iR_cdo ,1 )
+				Code.CountUp( iR_vdo ,1 )
 			Else
-				phase = phase + 1
-			End If	
+				Code.CountUp( phase ,1 )
+			End If
+																																' Input フィールド
 		ElseIf phase = 4 Then
-			' 定義シートを見て、Input フィールドを並べたい。
-			If	sht_cdob.getCellByPosition( col_cdob_input		,iR_cdob		).String Then
-				sht_vdob.getCellByPosition( col_vdob_name		,iR_vdob		).String = sht_cdob.getCellByPosition( col_cdob_name	,iR_cdob	).String
-				sht_vdob.getCellByPosition( col_vdob_type		,iR_vdob		).String = sht_cdob.getCellByPosition( col_cdob_type	,iR_cdob	).String
-				sht_vdob.getCellByPosition( col_vdob_key		,iR_vdob		).String = sht_cdob.getCellByPosition( col_cdob_key		,iR_cdob	).String
-		    	iR_cdob	= iR_cdob + 1
-		    	iR_vdob	= iR_vdob + 1
+			If	Code.GetCe (sh_cdo	,cm_cdo_input _
+					,iR_cdo	)	Then
+				Code.CopCe(sh_vdo	,cm_vdo_name	,iR_vdo		,	sh_cdo	,cm_cdo_name	,iR_cdo	)
+				Code.CopCe(sh_vdo	,cm_vdo_type	,iR_vdo		,	sh_cdo	,cm_cdo_type	,iR_cdo	)
+				Code.CopCe(sh_vdo	,cm_vdo_key		,iR_vdo		,	sh_cdo	,cm_cdo_key		,iR_cdo	)
+				Code.CountUp( iR_cdo ,1 )
+				Code.CountUp( iR_vdo ,1 )
 			Else
-				' 出力しないフィールド
-				sht_vdob.getCellByPosition( col_vdob_name		,iR_vdob		).String = sht_cdob.getCellByPosition( col_cdob_name	,iR_cdob	).String
-				sht_vdob.getCellByPosition( col_vdob_type		,iR_vdob		).String = ""
-				sht_vdob.getCellByPosition( col_vdob_key		,iR_vdob		).String = "#Skipped#"		' ビューにも出さないフィールド
-		    	iR_cdob	= iR_cdob + 1
-		    	iR_vdob	= iR_vdob + 1
+																																' 出力しないフィールド
+				Code.CopCe(sh_vdo	,cm_vdo_name	,iR_vdo		,	sh_cdo	,cm_cdo_name	,iR_cdo	)
+				Code.SetCe (sh_vdo	,cm_vdo_type	,iR_vdo		,	""	)
+				Code.SetCe (sh_vdo	,cm_vdo_key		,iR_vdo		,	"#Skipped#"	)
+				Code.CountUp( iR_cdo ,1 )
+				Code.CountUp( iR_vdo ,1 )
 			End If	
 		End If
 		
 		If phase = 1 Then
-				sht_vdob.getCellByPosition( col_vdob_name		,iR_vdob		).String = "#Key#"
-				sht_vdob.getCellByPosition( col_vdob_type		,iR_vdob		).String = "string"
-				sht_vdob.getCellByPosition( col_vdob_key		,iR_vdob		).String = "Other"
-		    	iR_vdob	= iR_vdob + 1
-				phase		= phase + 1
+				Code.SetCe(sh_vdo	,cm_vdo_name	,iR_vdo		,	"#Key#"			)
+				Code.SetCe(sh_vdo	,cm_vdo_type	,iR_vdo		,	"string"		)
+				Code.SetCe(sh_vdo	,cm_vdo_key		,iR_vdo		,	"Other"			)
+				Code.CountUp( iR_vdo ,1 )
+				phase											=	phase + 1
 		ElseIf phase = 3 Then
 				
-				sht_vdob.getCellByPosition( col_vdob_name		,iR_vdob		).String = "#FullPath#"
-				sht_vdob.getCellByPosition( col_vdob_type		,iR_vdob		).String = "string"
-				sht_vdob.getCellByPosition( col_vdob_key		,iR_vdob		).String = "Other"
-		    	iR_vdob	= iR_vdob + 1
+				Code.SetCe(sh_vdo	,cm_vdo_name	,iR_vdo		,	"#FullPath#"	)
+				Code.SetCe(sh_vdo	,cm_vdo_type	,iR_vdo		,	"string"		)
+				Code.SetCe(sh_vdo	,cm_vdo_key		,iR_vdo		,	"Other"			)
+				Code.CountUp( iR_vdo ,1 )
 
-				If "transitions" = shtName_cnbn Then				' トランジション表のみ、さらに列追加
-					sht_vdob.getCellByPosition( col_vdob_name		,iR_vdob		).String = "#DestinationNameHash#"
-					sht_vdob.getCellByPosition( col_vdob_type		,iR_vdob		).String = "string"
-					sht_vdob.getCellByPosition( col_vdob_key		,iR_vdob		).String = "#NoManipulate#"			' 操作要求に出さないフィールド
-			    	iR_vdob	= iR_vdob + 1
+																																' トランジション表のみ、さらに列追加
+				If "transitions" = shName_cnb Then
+					Code.SetCe(sh_vdo	,cm_vdo_name	,iR_vdo	,	"#DestinationNameHash#"		)
+					Code.SetCe(sh_vdo	,cm_vdo_type	,iR_vdo	,	"string"					)
+																																' 操作要求に出さないフィールド
+					Code.SetCe(sh_vdo	,cm_vdo_key		,iR_vdo	,	"#NoManipulate#"			)
+					Code.CountUp( iR_vdo ,1 )
 			    	
-					sht_vdob.getCellByPosition( col_vdob_name		,iR_vdob		).String = "#DestinationFullpath#"
-					sht_vdob.getCellByPosition( col_vdob_type		,iR_vdob		).String = "specialString"				' 特別な文字列型
-					sht_vdob.getCellByPosition( col_vdob_key		,iR_vdob		).String = "Other"
-			    	iR_vdob	= iR_vdob + 1
+					Code.SetCe(sh_vdo	,cm_vdo_name	,iR_vdo	,	"#DestinationFullpath#"	)
+																																' 実装をハードコーディングしている文字列型
+					Code.SetCe(sh_vdo	,cm_vdo_type	,iR_vdo	,	"specialString"			)
+					Code.SetCe(sh_vdo	,cm_vdo_key		,iR_vdo	,	"Other"					)
+					Code.CountUp( iR_vdo ,1 )
 				End If
 
-				phase		= phase + 1
+				Code.CountUp( phase ,1 )
 		End If
     Loop
-	sht_vdob.getCellByPosition( 0, iR_vdob ).String = "[EOF]" ' ファイル末尾に [EOF] を追加
+																		    													' ファイル末尾に [EOF] を追加
+    Code.SetCe(	sh_vdo	,0	,iR_vdo								,	"[EOF]"	)
 End Sub
 
-' ビュー・シート作成
-'
-' 基本的に、縦方向に並んでいる　中間列定義シートを、横方向に並び直す。
-' その過程で　いくつか処理を挟む。
-'
-' この工程では、
-' parameters、layers、statemachines、states の #FullPath# は埋まるが、
-' transitions、conditions、positions の #FullPath# は埋まらない。
-'
-Sub CreateSheet_view( doc_cnbn As Object	,shtName_cnbn As String		,doc_view As Object		,sht_view As Object		,sht_vdob as Object		)
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' ビュー・シート作成
+																																'
+																																' 基本的に、縦方向に並んでいる　中間列定義シートを、横方向に並び直す。
+																																' 
+																																' その過程で　いくつか処理を挟む。
+Sub InsertRecords_viw( _
+						 dc_cnb		As Object _
+						,dc_viw		As Object _
+						,shName_cnb As String _
+						,sh_vdo		As Object _
+						,sh_viw		As Object )
+																																' シート一覧
+	Dim sh_cnb													As	Object
+		sh_cnb													=	Code.GetSh(	dc_cnb	,shName_cnb	)
 
-	' シート一覧
-	Dim sht_cnbn		As Object
-	sht_cnbn			= doc_cnbn.getSheets().getByName(	shtName_cnbn	)
+	Dim sh_cbLy													As	Object
+		sh_cbLy													=	Code.GetSh(	dc_cnb	,"layers"	)
+																																' レイヤー番号からレイヤー名を調べる下地
+	If _
+		"stateMachines" 	= shName_cnb Or _
+		"states"			= shName_cnb Or _
+		"transitions"		= shName_cnb Or _
+		"conditions"		= shName_cnb Or _
+		"positions"			= shName_cnb _
+	Then
+																																' (列番号)自表のレイヤー番号、レイヤー表のレイヤー番号、レイヤー表のレイヤー名
+		Dim cm_cnb_layerNum										As	Integer
+		Dim cm_cbLy_layerNum									As	Integer
+		Dim cm_cbLy_name										As	Integer
+			cm_cnb_layerNum										=	Utility.ColumnOf( "#layerNum#"	,sh_cnb		,hedRw_cnb	,0	,1000	)
+			cm_cbLy_layerNum									=	Utility.ColumnOf( "#layerNum#"	,sh_cbLy	,hedRw_cnb	,0	,1000	)
+			cm_cbLy_name										=	Utility.ColumnOf( "name"		,sh_cbLy	,hedRw_cnb	,0	,1000	)
+	End If
+																																' レイヤー番号・ステートマシンパス番号からステートマシン・パスを調べる下地
+	If _
+	 	"states"			= shName_cnb Or _
+		"transitions"		= shName_cnb Or _
+		"conditions"		= shName_cnb Or _
+		"positions"			= shName_cnb _
+	Then
+																																' ステートマシン表
+		Dim sh_vwSm												As	Object
+																																' (列番号)自表のステートマシン番号、ステートマシン表のセル連結キー、ステートマシン表のステートマシンパス
+		Dim cm_cnb_machineStateNum								As	Integer
+		Dim cm_vwSm_key											As	Integer
+		Dim cm_vwSm_statemachinePath							As	Integer
+																																' 先にこのシートを作っていること。	
+			sh_vwSm												=	Code.GetSh(	dc_viw	,"stateMachines"	)
+			cm_cnb_machineStateNum								=	Utility.ColumnOf( "#machineStateNum#"	,sh_cnb		,hedRw_cnb	,0	,1000	)
+			cm_vwSm_key											=	Utility.ColumnOf( "#Key#"				,sh_vwSm	,hedRw_viw	,0	,1000	)
+			cm_vwSm_statemachinePath							=	Utility.ColumnOf( "#statemachinePath#"	,sh_vwSm	,hedRw_viw	,0	,1000	)
+	End If
+																																' レイヤー番号・ステートマシンパス番号・ステート番号からステート名を調べる下地
+	If _
+		"transitions"		= shName_cnb Or _
+		"conditions"		= shName_cnb Or _
+		"positions"			= shName_cnb _
+	Then
+																																' (列番号)自表のステート番号、ステート表のセル連結キー、ステート表のステート名
+		Dim sh_vwSt												As	Object
+		Dim cm_cnb_stateNum										As	Integer
+		Dim cm_vwSt_key											As	Integer
+		Dim cm_vwSt_name										As	Integer
+																																' 先にこのシートを作っていること。	
+			sh_vwSt												=	Code.GetSh(	dc_viw	,"states"			)
+			cm_cnb_stateNum										=	Utility.ColumnOf( "#stateNum#"	,sh_cnb	,hedRw_cnb	,0	,1000	)
+			cm_vwSt_key											=	Utility.ColumnOf( "#Key#"		,sh_vwSt,hedRw_viw	,0	,1000	)
+			cm_vwSt_name										=	Utility.ColumnOf( "name"		,sh_vwSt,hedRw_viw	,0	,1000	)
+	End If
+																																' 遷移先ステート・ネームハッシュから、ステート・フルパスを特定する下地
+	If _
+		"transitions"		= shName_cnb _
+	Then
+		Dim sh_cbSt												As	Object
+																																' (列番号)自表の遷移先ステートのネームハッシュステート表のネームハッシュ列、レイヤー番号、ステートマシン番号、ステート番号、フルパス
+		Dim cm_cnb_destinationStateNameHash						As	Integer
+		Dim cm_cbSt_nameHash									As	Integer
+		Dim cm_cbSt_layerNum									As	Integer
+		Dim cm_cbSt_machineStateNum								As	Integer
+		Dim cm_cbSt_stateNum									As	Integer
+		Dim cm_vwSt_fullPath									As	Integer
+			sh_cbSt												=	Code.GetSh(	dc_cnb	,"states"			)
+			cm_cnb_destinationStateNameHash						=	Utility.ColumnOf( "#destinationState_nameHash#"	,sh_cnb		,hedRw_cnb	,0	,1000	)
+			cm_cbSt_nameHash									=	Utility.ColumnOf( "nameHash"					,sh_cbSt	,hedRw_cnb	,0	,1000	)
+			cm_cbSt_layerNum									=	Utility.ColumnOf( "#layerNum#"					,sh_cbSt	,hedRw_cnb	,0	,1000	)
+			cm_cbSt_machineStateNum								=	Utility.ColumnOf( "#machineStateNum#"			,sh_cbSt	,hedRw_cnb	,0	,1000	)
+			cm_cbSt_stateNum									=	Utility.ColumnOf( "#stateNum#"					,sh_cbSt	,hedRw_cnb	,0	,1000	)
+			cm_vwSt_fullPath									=	Utility.ColumnOf( "#FullPath#"					,sh_vwSt	,hedRw_viw	,0	,1000	)
+	End If
+																																' ステート番号が -1 かどうか判定するのに使う
+	If _
+		"positions"		= shName_cnb _
+	Then
+		Dim sh_cbPs												As	Object
+																																' (列番号)ポジション表のステート番号
+		Dim cm_cbPs_stateNum									As	Integer
+			sh_cbPs												=	Code.GetSh(	dc_cnb	,"positions"		)
+			cm_cbPs_stateNum									=	Utility.ColumnOf( "#stateNum#"					,sh_cbPs	,hedRw_cnb	,0	,1000	)
+	End If
 
-	Dim sht_cbLy	As Object
-	sht_cbLy		= doc_cnbn.getSheets().getByName(	"layers"		)
+	Dim ce_xx													As	Object
+	Dim vl_vdo_name												As	String
+	Dim vl_vdo_type												As	String
+	Dim vl_vdo_key												As	String
 
-	Dim sht_cbSt	As Object
+																																' ビュー・シートをアクティブにする
+	dc_viw.getCurrentController().setActiveSheet( sh_viw )
+	
+																																' 遷移先ハッシュ列。列が作られたときに入れること
+	Dim cm_viw_destinationStateNameHash							As	Integer
+																																' カーソル
+	Dim iC_viw													As	Integer
+	Dim iR_vdo													As	Integer
 
-	' 列番号一覧
-		' レイヤー番号列
-				Dim col_cnbn_layerNum					As Integer ' コンバイン文書/自表 ステートマシン表
-				Dim col_cbLy_layerNum					As Integer ' コンバイン文書/レイヤー表
-
-		' レイヤー名列
-				Dim col_cbLy_name						As Integer ' コンバイン文書/レイヤー表
-				Dim col_cbSt_layerName					As Integer ' コンバイン文書/ステート表
-
-		' ステートマシン番号列
-				Dim col_cnbn_machineStateNum			As Integer ' コンバイン文書/自表 ステート表 #machineStateNum#列
-
-		' ステートマシン・パス列
-				Dim col_cbSt_statemachinePath			As Integer ' コンバイン文書/ステート表
-				Dim col_vwSm_statemachinePath			As Integer ' ビュー文書     /ステートマシン表
-
-		' 遷移先ハッシュ列
-				Dim col_cnbn_destinationStateNameHash	As Integer ' コンバイン文書/自表 トランジション表
-				Dim col_view_destinationStateNameHash	As Integer ' 列が作られたときに入れること
-
-		' 名前列
-				Dim col_cbSt_name						As Integer ' コンバイン文書/ステート表
-
-		' 複合キー列
-				Dim col_vwSm_key						As Integer ' ビュー文書     /ステートマシン表
-
-		' 名前ハッシュ列
-				Dim col_cbSt_nameHash					As Integer ' コンバイン文書/ステート表
-
-
-	If	"stateMachines" 	= shtName_cnbn Or _
-		"states"			= shtName_cnbn Or _
-		"transitions"		= shtName_cnbn _
-	Then ' 表名を並べる
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' ヘッダー行作成
+																																
+																																' 中間列定義シートは [0]行目がヘッダーなので[1]行目から
+	iR_vdo														=	1
+	iC_viw														=	0
+    Do While "[EOF]" <> Code.GetCe(sh_vdo ,cm_vdo_name ,iR_vdo)
+		vl_vdo_name												=	Code.GetCe(	sh_vdo	,cm_vdo_name	,iR_vdo	)
+		vl_vdo_type												=	Code.GetCe(	sh_vdo	,cm_vdo_type	,iR_vdo	)
+		vl_vdo_key												=	Code.GetCe(	sh_vdo	,cm_vdo_key		,iR_vdo	)
 		
-		' レイヤー番号からレイヤー名を調べる下地
-		col_cnbn_layerNum								= Utility.ColumnOf( "#layerNum#"	,sht_cnbn	,hedRow_cnbn	,0	,1000	)
-		col_cbLy_layerNum								= Utility.ColumnOf( "#layerNum#"	,sht_cbLy	,hedRow_cnbn	,0	,1000	)
-		col_cbLy_name									= Utility.ColumnOf( "name"			,sht_cbLy	,hedRow_cnbn	,0	,1000	)
-	End If
-	
+																																' 出力しないフィールド
+		If "#Skipped#" = vl_vdo_key Then
 
-	If 	"states"			= shtName_cnbn Or _
-		"transitions"		= shtName_cnbn _
-	Then ' 表名を並べる
-
-		' ステートマシン番号からステートマシン・パスを調べる下地
-		Dim sht_vwSm									As Object
-		sht_vwSm										= doc_view.getSheets().getByName(	"stateMachines"		)		' 先に ステートマシン・ビュー表を作っていること。	
-		col_cnbn_machineStateNum						= Utility.ColumnOf( "#machineStateNum#"				,sht_cnbn	,hedRow_cnbn	,0	,1000	)
-		col_vwSm_key									= Utility.ColumnOf( "#Key#"							,sht_vwSm	,hedRow_view	,0	,1000	)
-		col_vwSm_statemachinePath						= Utility.ColumnOf( "#statemachinePath#"			,sht_vwSm	,hedRow_view	,0	,1000	)
-
-	End If
-
-	If "transitions"		= shtName_cnbn Then ' トランジション表のみ追加
-
-		' 遷移先ステート・ネームハッシュから、ステート・フルパスを特定する下地
-		sht_cbSt										= doc_cnbn.getSheets().getByName(	"states"	)
-		col_cnbn_destinationStateNameHash				= Utility.ColumnOf( "#destinationState_nameHash#"	,sht_cnbn	,hedRow_cnbn	,0	,1000	)
-		col_cbSt_nameHash								= Utility.ColumnOf( "nameHash"						,sht_cbSt	,hedRow_cnbn	,0	,1000	)
-		col_cbSt_layerName								= Utility.ColumnOf( "#layerName#"					,sht_cbSt	,hedRow_cnbn	,0	,1000	)
-		col_cbSt_statemachinePath						= Utility.ColumnOf( "#statemachinePath#"			,sht_cbSt	,hedRow_cnbn	,0	,1000	)
-		col_cbSt_name									= Utility.ColumnOf( "name"							,sht_cbSt	,hedRow_cnbn	,0	,1000	)
-	End If
-	
-
-	Dim cell_xx				As Object
-	Dim val_vdob_name			As String
-	Dim val_vdob_type			As String
-	Dim val_vdob_key				As String
-
-	doc_view.getCurrentController().setActiveSheet( sht_view ) ' ビュー・シートをアクティブにする
-	
-	' カーソル
-	Dim iC_view				As Integer ' column
-	Dim iR_vdob				As Integer ' row 中間列定義シートの何行目か
-	
-	' ヘッダー行作成
-	iR_vdob			= 1 ' 中間列定義シートは [0]行目がヘッダーなので[1]行目から
-	iC_view			= 0
-    Do While "[EOF]"<>sht_vdob.getCellByPosition( col_vdob_name, iR_vdob ).String ' 中間列定義シートを垂直方向に走査する
-
-		' 中間列定義シートは縦方向に、ビュー・シートは横方向に、フィールドが並んでいるだけ。
-
-		' 中間列定義シートの #Name列、#Type列 を確認。
-		val_vdob_name	= sht_vdob.getCellByPosition( col_vdob_name	,iR_vdob	).String
-		val_vdob_type	= sht_vdob.getCellByPosition( col_vdob_type	,iR_vdob	).String
-		val_vdob_key		= sht_vdob.getCellByPosition( col_vdob_key	,iR_vdob	).String
-		
-		If "#Skipped#" = val_vdob_key Then
-			' 出力しないフィールド
-		ElseIf "TemporaryNumbering" = val_vdob_key Then
-								cell_xx							= sht_view.getCellByPosition( iC_view, 0 )
-		    					cell_xx.String					= val_vdob_name
-		    Style.ColHed(		cell_xx		)
-			sht_view.Columns(	iC_view	).Width					= 100
-						    	iC_view							= iC_view + 1
-		ElseIf "Identifiable" = val_vdob_key Then
-								cell_xx							= sht_view.getCellByPosition( iC_view, 0 )
-		    					cell_xx.String					= val_vdob_name
-		    Style.ColHed( 		cell_xx 	)
-			sht_view.Columns( 	iC_view 	).Width				= 200
-	    						iC_view							= iC_view + 1
-		ElseIf "Other" = val_vdob_key And "#Key#" = val_vdob_name Then
-								cell_xx							= sht_view.getCellByPosition( iC_view, 0 )
-		    					cell_xx.String					= val_vdob_name
-		    Style.ColHed( 		cell_xx 	)
-	    						iC_view							= iC_view + 1
-		ElseIf "Other" = val_vdob_key And "#FullPath#" = val_vdob_name Then
-								cell_xx							= sht_view.getCellByPosition( iC_view, 0 )
-		    					cell_xx.String					= val_vdob_name
-		    Style.ColHed( 		cell_xx 	)
-	    						iC_view							= iC_view + 1
-		ElseIf "#NoManipulate#" = val_vdob_key And "#DestinationNameHash#" = val_vdob_name Then ' トランジション表のみに在る列
-			col_view_destinationStateNameHash					= iC_view
-								cell_xx							= sht_view.getCellByPosition( iC_view, 0 )
-		    					cell_xx.String					= val_vdob_name
-		    Style.ColHed( 		cell_xx 	)
-	    						iC_view							= iC_view + 1
-		ElseIf "ReadOnly" = val_vdob_key Then ' 読取専用列
-								cell_xx							= sht_view.getCellByPosition( iC_view, 0 )
-		    					cell_xx.String					= val_vdob_name
-		    Style.RoColHed( 	cell_xx 	)
-								cell_xx							= sht_view.getCellByPosition( iC_view, 1 )
-		    					cell_xx.String					= "ReadOnly"
-		    Style.RoSubColHed( 	cell_xx 	)
-	    	iC_view												= iC_view + 1
-		ElseIf "specialString" = val_vdob_type Then	
-								cell_xx							= sht_view.getCellByPosition( iC_view, 0 )
-		    					cell_xx.String					= val_vdob_name
-		    Style.ColHed( 		cell_xx 	)
-								cell_xx							= sht_view.getCellByPosition( iC_view, 1 )
-		    					cell_xx.String					= "SpecialOld"
-		    Style.SubColHed( 	cell_xx 	)
-	    						iC_view							= iC_view + 1
+		ElseIf "TemporaryNumbering" = vl_vdo_key Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,0	)
+		    					ce_xx.String					=	vl_vdo_name
+		    Style.CmHed(		ce_xx		)
+			sh_viw.Columns(	iC_viw	).Width						=	100
+			Code.CountUp( iC_viw ,1 )
+		ElseIf "Identifiable" = vl_vdo_key Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,0	)
+		    					ce_xx.String					=	vl_vdo_name
+		    Style.CmHed( 		ce_xx 	)
+			sh_viw.Columns( 	iC_viw 	).Width					=	200
+			Code.CountUp( iC_viw ,1 )
+		ElseIf _
+			"Other" = vl_vdo_key And	_
+			"#Key#" = vl_vdo_name		_
+		Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,0	)
+		    					ce_xx.String					=	vl_vdo_name
+		    Style.CmHed( 		ce_xx 	)
+			Code.CountUp( iC_viw ,1 )
+		ElseIf _
+			"Other"			= vl_vdo_key And	_
+			"#FullPath#"	= vl_vdo_name		_
+		Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,0	)
+		    					ce_xx.String					=	vl_vdo_name
+		    Style.CmHed( 		ce_xx 	)
+			Code.CountUp( iC_viw ,1 )
+		ElseIf _
+			"#NoManipulate#"		= vl_vdo_key And	_
+			"#DestinationNameHash#" = vl_vdo_name		_
+		Then
+			cm_viw_destinationStateNameHash						=	iC_viw
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,0	)
+		    					ce_xx.String					=	vl_vdo_name
+		    Style.CmHed( 		ce_xx 	)
+			Code.CountUp( iC_viw ,1 )
+																																' 読取専用列
+		ElseIf "ReadOnly" = vl_vdo_key Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,0	)
+		    					ce_xx.String					=	vl_vdo_name
+		    Style.RoCmHed( 	ce_xx 	)
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,1	)
+		    					ce_xx.String					=	"ReadOnly"
+		    Style.RoSubCmHed( 	ce_xx 	)
+			Code.CountUp( iC_viw ,1 )
+																																' ユニティ・エディターが書込みに対応していない場合はこれ。
+		ElseIf _
+			"UnityEditorDoesNotSupportWriting" = vl_vdo_key _
+		Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,0	)
+		    					ce_xx.String					=	vl_vdo_name
+		    Style.RoCmHed( 	ce_xx 	)
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,1	)
+		    					ce_xx.String					=	"UnityEditorDoesNotSupportWriting"
+		    Style.RoSubCmHed( 	ce_xx 	)
+			Code.CountUp( iC_viw ,1 )
+																																' StellaQLスプレッドシートが書込みに対応していない場合はこれ。
+		ElseIf _
+			"StellaQLSpreadsheetDoesNotSupportWriting" = _
+				vl_vdo_key _
+		Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,0	)
+		    					ce_xx.String					=	vl_vdo_name
+		    Style.RoCmHed( 	ce_xx 	)
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,1	)
+		    					ce_xx.String					=	"StellaQLSpreadsheetDoesNotSupportWriting"
+		    Style.RoSubCmHed( 	ce_xx 	)
+			Code.CountUp( iC_viw ,1 )
+		ElseIf "specialString" = vl_vdo_type Then	
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,0	)
+		    					ce_xx.String					=	vl_vdo_name
+		    Style.CmHed( 		ce_xx 	)
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,1	)
+		    					ce_xx.String					=	"SpecialOld"
+		    Style.SubCmHed( 	ce_xx 	)
+			Code.CountUp( iC_viw ,1 )
 			
-								cell_xx							= sht_view.getCellByPosition( iC_view, 1 )
-			    				cell_xx.String					= "SpecialNew"
-		    Style.SubColHed( 	cell_xx 	)
-	    						iC_view							= iC_view + 1
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,1	)
+			    				ce_xx.String					=	"SpecialNew"
+		    Style.SubCmHed( 	ce_xx 	)
+			Code.CountUp( iC_viw ,1 )
 			
-								cell_xx							= sht_view.getCellByPosition( iC_view, 1 )
-		    					cell_xx.String					= "SpecialDelete"
-		    Style.SubColHed( 	cell_xx 	)
-	    						iC_view							= iC_view + 1	    	
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,1	)
+		    					ce_xx.String					=	"SpecialClear"
+		    Style.SubCmHed( 	ce_xx 	)
+			Code.CountUp( iC_viw ,1 )
 		Else
-								cell_xx							= sht_view.getCellByPosition( iC_view, 0 )
-		    					cell_xx.String					= val_vdob_name
-		    Style.ColHed( 		cell_xx 	)
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,0	)
+		    					ce_xx.String					=	vl_vdo_name
+		    Style.CmHed( 		ce_xx 	)
 			
-								cell_xx							= sht_view.getCellByPosition( iC_view, 1 )
-		    					cell_xx.String					= "Old"
-		    Style.SubColHed( 	cell_xx 	)
-	    						iC_view							= iC_view + 1
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,1	)
+		    					ce_xx.String					=	"Old"
+		    Style.SubCmHed( 	ce_xx 	)
+			Code.CountUp( iC_viw ,1 )
 			
-								cell_xx							= sht_view.getCellByPosition( iC_view, 1 )
-		    					cell_xx.String					= "New"
-		    Style.SubColHed( 	cell_xx 	)
-	    						iC_view							= iC_view + 1
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,1	)
+		    					ce_xx.String					=	"New"
+		    Style.SubCmHed( 	ce_xx 	)
+			Code.CountUp( iC_viw ,1 )
 	    	
-	    	If "string" = val_vdob_type Then
-		    					cell_xx							= sht_view.getCellByPosition( iC_view, 1 )
-			    				cell_xx.String					= "Delete"
-			    Style.SubColHed( cell_xx 	)
-		    					iC_view							= iC_view + 1
+	    	If "string" = vl_vdo_type Then
+		    					ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,1	)
+			    				ce_xx.String					=	"Clear"
+			    Style.SubCmHed( ce_xx 	)
+				Code.CountUp( iC_viw ,1 )
 	    	End If
 		End If
 		
-    	iR_vdob = iR_vdob + 1
+    	Code.CountUp( iR_vdo ,1 )
     Loop
-    sht_view.getCellByPosition( iC_view, 0 ).String = "[EOL]" ' 行末に [EOL] を付加
+																		    													' 行末に [EOL] を付加
+    Code.SetCe(	sh_viw	,iC_viw	,0								,	"[EOL]"	)
 
-	' カーソル
-	Dim iC_cnbn					As Integer	' column
-	Dim iR_view					As Integer	' row
-
-	' データ・シートのデータ行作成
-	Dim val_concatKey			As String
-	Dim val_concatPath			As String
-	Dim col_freeze				As Integer ' セルを固定する場所を調べるために使う
-	Dim row_cnbn				As Integer
-	row_cnbn					= 1		' [0]行目はヘッダーなので[1]行目から
-	iR_view					= 2		' [0][1]行目はヘッダー
-	Do While "[EOF]"<> sht_cnbn.getCellByPosition( 0, row_cnbn ).String ' 最終行のうしろの [EOF] を探す。
-		iC_cnbn					= 0
-		iC_view					= 0
-		iR_vdob					= 1	' 中間列定義シートの [0]行目はヘッダーなので[1]行目から
-		val_concatKey			= ""
-		val_concatPath			= ""
-	    Do While "[EOF]"<> sht_vdob.getCellByPosition( col_vdob_name, iR_vdob ).String ' 中間列定義シートを垂直方向に走査する
-	
-			' 中間シートの #Name、#Type、#Key 列 を確認。
-			val_vdob_name		= sht_vdob.getCellByPosition( col_vdob_name	,iR_vdob ).String
-			val_vdob_type		= sht_vdob.getCellByPosition( col_vdob_type	,iR_vdob ).String
-			val_vdob_key		= sht_vdob.getCellByPosition( col_vdob_key	,iR_vdob ).String
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' カーソル
+	Dim iC_cnb													As	Integer
+	Dim iR_viw													As	Integer
+																																' データ・シートのデータ行作成
+	Dim vl_concatKey											As	String
+	Dim vl_concatPath											As	String
+																																' セルを固定する場所を調べるために使う
+	Dim cm_freeze												As	Integer
+	Dim rw_cnb													As	Integer
+																																' [0]行目はヘッダーなので[1]行目から
+	rw_cnb														=	1
+																																' [0][1]行目はヘッダー
+	iR_viw														=	2
+																																' 最終行のうしろの [EOF] を探す。
+	Do While "[EOF]"<> Code.GetCe( sh_cnb	,0	,rw_cnb	)
+		iC_cnb													=	0
+		iC_viw													=	0
+																																' 中間列定義シートの [0]行目はヘッダーなので[1]行目から
+		iR_vdo													=	1
+		vl_concatKey											=	""
+		vl_concatPath											=	""
+	    Do While "[EOF]"<> Code.GetCe( _
+	    						sh_vdo ,cm_vdo_name ,iR_vdo)
+			vl_vdo_name											=	Code.GetCe(	sh_vdo	,cm_vdo_name	,iR_vdo )
+			vl_vdo_type											=	Code.GetCe(	sh_vdo	,cm_vdo_type	,iR_vdo )
+			vl_vdo_key											=	Code.GetCe(	sh_vdo	,cm_vdo_key		,iR_vdo )
 			
-			If "#Skipped#" = val_vdob_key Then
-				' 出力しないフィールド
-			    iC_cnbn = iC_cnbn + 1
-			ElseIf "TemporaryNumbering" = val_vdob_key Then
-								cell_xx				= sht_view.	getCellByPosition( iC_view	,iR_view	)
-			    				cell_xx.String		= sht_cnbn.	getCellByPosition( iC_cnbn	,row_cnbn	).String
-			    val_concatKey						= val_concatKey & cell_xx.String & "."	' 数字とドット
-			    Style.RowHed( 	cell_xx )
-			    iC_cnbn							= iC_cnbn + 1
-		    	iC_view							= iC_view + 1
-			ElseIf "Identifiable" = val_vdob_key Then
+			If "#Skipped#" = vl_vdo_key Then
+																																' 出力しないフィールド
+			    Code.CountUp( iC_cnb ,1 )
+			ElseIf "TemporaryNumbering" = vl_vdo_key Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw  ,iR_viw	)
+			    				ce_xx.String					=	Code.GetCe	(	sh_cnb	,iC_cnb  ,rw_cnb	)
+			    Style.RwHed( 	ce_xx )
+																						    									' 数字とドット
+			    Code.AppendTail(	vl_concatKey				,	ce_xx.String  &  "."	)
+		    	Code.CountUp( iC_cnb ,1 )
+		    	Code.CountUp( iC_viw ,1 )
+			ElseIf  "Identifiable"  =  vl_vdo_key  Then
 
-				Dim successful As Boolean
-				successful = false
+				Dim successful									As	Boolean
+				successful										=	false
 
-				Dim myLayerNum						As String
-				Dim myMachineStateNum				As String
-				Dim foundValue						As String
-				If "#layerName#" = val_vdob_name	Then	' レイヤー名列を　レイヤー・コンバイン表から引っ張ってくる。
-								
-					If "stateMachines"	= shtName_cnbn	Or "states" = shtName_cnbn	Or "transitions" = shtName_cnbn 	Then ' ステートマシン表、ステート表、トランジション表
-						myLayerNum						= sht_cnbn.	getCellByPosition( col_cnbn_layerNum	, iR_view	 -1 ).String		' ビューはヘッダー２行、データはヘッダー１行で 1行の差
-						foundValue						= Utility.VLookup(	myLayerNum,	sht_cbLy,	col_cbLy_layerNum,	col_cbLy_name	)
-	
-										cell_xx			= sht_view.		getCellByPosition( iC_view		, iR_view			)
-					    				cell_xx.String	= foundValue
-					    val_concatPath					= val_concatPath & cell_xx.String & "."		' レイヤー名 + ドットをつなげる。
-					    Style.RowHed( 	cell_xx )
-				    
-					    iC_cnbn							= iC_cnbn + 1
-				    	iC_view							= iC_view + 1 ' パスノード列は1列
-				    	successful 						= true
+				Dim myKey										As	String
+				Dim foundValue									As	String
+				If  "#layerName#"  =  vl_vdo_name  Then
+																																' レイヤー名列を　レイヤー・コンバイン表から引っ張ってくる。
+					If _
+						"stateMachines"	= shName_cnb	Or	_
+						"states"		= shName_cnb	Or	_
+						"transitions"	= shName_cnb	Or	_
+						"conditions"	= shName_cnb 	Or	_
+						"positions"		= shName_cnb		_
+					Then
+																																' ビューはヘッダー２行、データはヘッダー１行で 1行の差
+						myKey									=	Code.GetCe(sh_cnb	,cm_cnb_layerNum	,iR_viw - 1)
+																						 
+						foundValue								=	Utility.VLookup(	 myKey  ,sh_cbLy  ,cm_cbLy_layerNum _
+																			 			,cm_cbLy_name  						  )
+
+										ce_xx					=	Code.GetCeOb(	sh_viw	,iC_viw  ,iR_viw  )
+					    				ce_xx.String			=	foundValue
+					    Style.RwHed( 	ce_xx )
+																					    										' レイヤー名 + ドットをつなげる。
+					    Code.AppendTail(	vl_concatPath		,	ce_xx.String & "."	)
+					    Code.CountUp( iC_cnb ,1 )
+				    	Code.CountUp( iC_viw ,1 )
+				    	successful 								=	true
 				    End If
-				ElseIf		"#statemachinePath#" = val_vdob_name	Then	' ステートマシン・パス列を　ステートマシン・ビュー表から引っ張ってくる。
-					If	"states" = shtName_cnbn	Or "transitions" = shtName_cnbn 	Then ' ステート表、トランジション表
-						myLayerNum						=	sht_cnbn.	getCellByPosition( col_cnbn_layerNum				, iR_view	 -1 ).String		' ビューはヘッダー２行、データはヘッダー１行で 1行の差
-						myMachineStateNum				=	sht_cnbn.	getCellByPosition( col_cnbn_machineStateNum	, iR_view	 -1 ).String		' ビューはヘッダー２行、データはヘッダー１行で 1行の差
 
-						' 2列を１つにまとめた #Key# 列を一致検索する。
-						foundValue						= Utility.VLookup(	myLayerNum & "." & myMachineStateNum ,	sht_vwSm,		col_vwSm_key,		col_vwSm_statemachinePath	)
+				ElseIf _
+					"#statemachinePath#"  =  vl_vdo_name	_
+				Then
+																																' ステートマシン・パス列を　ステートマシン・ビュー表から引っ張ってくる。
+					If _
+						"states"		= shName_cnb	Or	_
+						"transitions"	= shName_cnb	Or	_
+						"conditions"	= shName_cnb 	Or	_
+						"positions"		= shName_cnb		_
+					Then
+																																' 2列を ドットでつないで １つのキーにする
+																																
+																	  															' ビューはヘッダー２行、データはヘッダー１行で 1行の差
+						myKey									=	ConcatKey2(	 sh_cnb			,cm_cnb_layerNum	_
+																				,cm_cnb_machineStateNum	,iR_viw - 1		,"."  )
+						foundValue								=	Utility.VLookup(  myKey  ,sh_vwSm  ,cm_vwSm_key _
+																			 	,cm_vwSm_statemachinePath			)
 	
-										cell_xx			= sht_view.		getCellByPosition( iC_view		, iR_view			)
-					    				cell_xx.String	= foundValue
-					    if "" <> foundValue Then ' ステートマシン・パスが無いのにドットを余分に付けてしまわないように場合分け
-						    val_concatPath				= val_concatPath & cell_xx.String & "."		' レイヤー名 + ドットをつなげる。
+										ce_xx					=	Code.GetCeOb(	sh_viw	,iC_viw  ,iR_viw  )
+					    				ce_xx.String			=	foundValue
+					    Style.RwHed( 	ce_xx )
+																																' ステートマシン・パスが無いのにドットを余分に付けてしまわないように場合分け
+					    if "" <> foundValue Then
+					    	Code.AppendTail(	vl_concatPath	,	ce_xx.String  &  "."	)
+						End If				    
+					    Code.CountUp( iC_cnb ,1 )
+				    	Code.CountUp( iC_viw ,1 )
+				    	successful 								=	true
+					End If
+
+				ElseIf  "#stateName#"  =  vl_vdo_name  Then
+																																' ステート名を　ステート表から引っ張ってくる。
+										ce_xx					=	Code.GetCeOb(	sh_viw	,iC_viw  ,iR_viw  )
+					    Style.RwHed( 	ce_xx )
+
+					Dim vl_test									As	String
+					If _
+						"positions"	= shName_cnb	_
+					Then
+						vl_test									=	Code.GetCe(sh_cbPs	,cm_cbPs_stateNum  ,iR_viw - 1  )
+																																' positions表のみ、stateNum列が -1 場合は空欄という仕様
+						If "-1" = vl_test Then
+																																' ステート名は空欄にする
+						    Code.CountUp( iC_cnb ,1 )
+					    	Code.CountUp( iC_viw ,1 )
+					    	successful 							=	true
 						End If
-					    Style.RowHed( 	cell_xx )
-				    
-					    iC_cnbn							= iC_cnbn + 1
-				    	iC_view							= iC_view + 1 ' パスノード列は1列
-				    	successful 						= true
+					End If
+
+					If Not successful Then
+						If _
+							"transitions"	= shName_cnb	Or	_
+							"conditions"	= shName_cnb 	Or	_
+							"positions"		= shName_cnb		_
+						Then
+																																' 3列を ドットでつないで １つのキーにする
+							myKey								=	ConcatKey3(  sh_cnb           	,cm_cnb_layerNum _
+																		,cm_cnb_machineStateNum  	,cm_cnb_stateNum _
+																		,iR_viw - 1					,"."  )
+							foundValue							=	Utility.VLookup(  myKey  ,sh_vwSt  ,cm_vwSt_key _
+																						,cm_vwSt_name  )
+					    																										' ステート名を表示する
+					    				ce_xx.String			=	foundValue
+																																' パスに、ステート名をつなげる
+							Code.AppendTail(	vl_concatPath	,	ce_xx.String )
+
+						    Code.CountUp( iC_cnb ,1 )
+					    	Code.CountUp( iC_viw ,1 )
+					    	successful 							=	true
+						End If
 					End If
 				End If
 
 				If Not successful Then
-									cell_xx				= sht_view.	getCellByPosition( iC_view	,iR_view	)
-				    				cell_xx.String		= sht_cnbn.	getCellByPosition( iC_cnbn	,row_cnbn	).String
-				    val_concatPath						= val_concatPath & cell_xx.String		' 「Base Layer.」といった文字をつなげていく。Identifableな列が無いテーブルもある。
-				    Style.RowHed( 	cell_xx )
-
-				    iC_cnbn								= iC_cnbn + 1
-			    	iC_view								= iC_view + 1
+																																' 該当しない表はとりあえず１列出しておく。
+									ce_xx						=	Code.GetCeOb(	sh_viw	,iC_viw	,iR_viw		)
+				    				ce_xx.String				=	Code.GetCe	(	sh_cnb	,iC_cnb	,rw_cnb	)
+				    Style.RwHed( 	ce_xx )
+																				    											' 「Base Layer.」といった文字をつなげていく。Identifableな列が無いテーブルもある。
+				    Code.AppendTail(	vl_concatPath			,	ce_xx.String	)
+				    Code.CountUp( iC_cnb ,1 )
+			    	Code.CountUp( iC_viw ,1 )
 				End If
 
-			ElseIf "Other" = val_vdob_key And "#Key#" = val_vdob_name Then
-								cell_xx					= sht_view.		getCellByPosition( iC_view		, iR_view			)
-				If 0 < Len ( val_concatKey ) Then
-				    			cell_xx.String			= Mid ( val_concatKey, 1, Len ( val_concatKey ) - 1 )	' 「Base Layer.」といった文字の末尾のドットを削除
+			ElseIf _
+				"Other" = vl_vdo_key And	_
+				"#Key#" = vl_vdo_name		_
+			Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,iR_viw		)
+				If 0 < Len ( vl_concatKey ) Then
+																									    						' 「Base Layer.」といった文字の末尾のドットを削除
+				    			ce_xx.String					=	Mid ( vl_concatKey, 1, Len ( vl_concatKey ) - 1 )
 				End If
-			    Style.RowHed( 	cell_xx )
-			    ' iC_cnbn は進めない。追加したフィールドだから。
-		    	iC_view								= iC_view + 1
-			ElseIf "Other" = val_vdob_key And "#FullPath#" = val_vdob_name Then
-								cell_xx					= sht_view.		getCellByPosition( iC_view		, iR_view			)
-				If 0 < Len ( val_concatPath ) Then
-				    			cell_xx.String			= val_concatPath
-				End If
-			    Style.RowHed( 	cell_xx )
-				col_freeze								= iC_view
-			    ' iC_cnbn は進めない。追加したフィールドだから。
-		    	iC_view								= iC_view + 1
-			ElseIf "#NoManipulate#" = val_vdob_key And "#DestinationNameHash#" = val_vdob_name Then ' トランジション表のみに在る列
-								cell_xx					= sht_view.		getCellByPosition( iC_view		, iR_view			)
-				
-				' 遷移先のステート、またはステートマシンの　フルネーム・ハッシュを取ってきたい。
-			    				cell_xx.String			= sht_cnbn.	getCellByPosition( 		col_cnbn_destinationStateNameHash		, row_cnbn	).String
-			    
-			    Style.RowHed( 	cell_xx )
-				col_freeze								= iC_view
-			    ' iC_cnbn は進めない。追加したフィールドだから。
-		    	iC_view								= iC_view + 1
-			ElseIf "Other" = val_vdob_key And "#DestinationFullpath#" = val_vdob_name Then ' トランジション表のみに在る列 specialString
-								cell_xx					= sht_view.		getCellByPosition( iC_view		, iR_view			)
-				
-				' フルネーム・ハッシュをステート表と照らし合わせ、フルパスを取ってきたい。
-				Dim fullnameHash_temp As String		' 探す値 = フルネーム・ハッシュ
-				fullnameHash_temp						= sht_view.		getCellByPosition( col_view_destinationStateNameHash	, iR_view			).String
-				
-				Dim hitRow_1cmbStates As Integer
-				hitRow_1cmbStates	= Utility.RowOf(	fullnameHash_temp	,	sht_cbSt	,	col_cbSt_nameHash	,	1, 1000 )
+			    Style.RwHed( 	ce_xx )
+			    ' iC_cnb は進めない。追加したフィールドだから。
+		    	Code.CountUp( iC_viw ,1 )
 
-				If -1 = hitRow_1cmbStates Then
-								cell_xx.String			= ""
+			ElseIf _
+				"Other"			= vl_vdo_key	And	_
+				"#FullPath#"	= vl_vdo_name		_
+			Then
+																																' #FullPath# 列には、あれば vl_concatPath を出力する
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,iR_viw		)
+				If 0 < Len ( vl_concatPath ) Then
+				    			ce_xx.String					=	vl_concatPath
+				End If
+			    Style.RwHed( 	ce_xx )
+				cm_freeze										=	iC_viw
+			    																												' iC_cnb は進めない。追加したフィールドだから。
+		    	Code.CountUp( iC_viw ,1 )
+
+				 																												' トランジション表のみに在る列
+			ElseIf _
+				"#NoManipulate#"		= vl_vdo_key	And _
+				"#DestinationNameHash#" = vl_vdo_name		_
+			Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,iR_viw		)
+																																' 遷移先のステート、またはステートマシンの　フルネーム・ハッシュを取ってきたい。
+			    				ce_xx.String					=	Code.GetCe(	 sh_cnb	,cm_cnb_destinationStateNameHash _
+			    																,rw_cnb	)
+			    Style.RwHed( 	ce_xx )
+				cm_freeze										=	iC_viw
+			    																												' iC_cnb は進めない。追加したフィールドだから。
+		    	Code.CountUp( iC_viw ,1 )
+
+																																' トランジション表のみに在る列
+			ElseIf _
+				"Other"					= vl_vdo_key And	_
+				"#DestinationFullpath#" = vl_vdo_name		_
+			Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,iR_viw	)
+																																' フルネーム・ハッシュをステート表と照らし合わせ、フルパスを取ってきたい。
+
+																																' 遷移先フルネーム・ハッシュを探す
+				Dim vl_vwTr_destinationNameHash					As	String
+					vl_vwTr_destinationNameHash					=	Code.GetCe(	 sh_viw	,cm_viw_destinationStateNameHash	_
+																				,iR_viw	)
+				Dim rw_cbSt										As	Integer
+					rw_cbSt										=	Utility.RowOf(  vl_vwTr_destinationNameHash  ,sh_cbSt _
+																					,cm_cbSt_nameHash	,1  ,1000	)
+				If -1 = rw_cbSt Then
+																																' 無いのはおかしい
+								ce_xx.String					=	"#NotFound#"
 				Else
-				    			cell_xx.String			=		sht_cbSt.	getCellByPosition( 	col_cbSt_layerName			,hitRow_1cmbStates	).String _
-				    										& "." _
-				    										&	sht_cbSt.	getCellByPosition( 	col_cbSt_statemachinePath	,hitRow_1cmbStates	).String _
-				    										&	sht_cbSt.	getCellByPosition( 	col_cbSt_name				,hitRow_1cmbStates	).String
+																																' 3つのセルをドットでつなげてキーを作る
+					myKey										=	ConcatKey3(	 sh_cbSt					_
+																				,cm_cbSt_layerNum			_
+																				,cm_cbSt_machineStateNum	_
+																				,cm_cbSt_stateNum			_
+																				,rw_cbSt					_
+																				,"."						_
+																			  )
+																			  													' ビューのキー列と照らし合わせ、フルパスを取得
+				    			ce_xx.String					=	Utility.VLookup(	myKey	,sh_vwSt	,cm_vwSt_key	_
+				    																	,cm_vwSt_fullPath	)
 				End If
 			    
-				col_freeze			= iC_view
-			    ' iC_cnbn は進めない。追加したフィールドだから。
-		    	iC_view						= iC_view + 3 ' SpecialOld列、SpecialNew列、SpecialDelete列の３列分進める。
+				cm_freeze										=	iC_viw
+			    																												' iC_cnb は進めない。追加したフィールドだから。
 
-			ElseIf "ReadOnly" = val_vdob_key Then ' 読取専用列
-								cell_xx					= sht_view.	getCellByPosition( iC_view	,iR_view	)
-			    				cell_xx.String			= sht_cnbn.	getCellByPosition( iC_cnbn	,row_cnbn	).String
-			    Style.RoData( 	cell_xx ) 
-			    iC_cnbn								= iC_cnbn + 1
-		    	iC_view								= iC_view + 1 ' 読取専用列は1列
+		    																													' SpecialOld列、SpecialNew列、SpecialClear列の３列分進める。
+		    	Code.CountUp( iC_viw ,3 )
+
+																																' 読取専用列
+			ElseIf "ReadOnly" = vl_vdo_key Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,iR_viw		)
+			    				ce_xx.String					=	Code.GetCe	(	sh_cnb	,iC_cnb	,rw_cnb	)
+			    Style.RoData( 	ce_xx )
+			    Code.CountUp( iC_cnb ,1 )
+		    	Code.CountUp( iC_viw ,1 )
+																																' ユニティ・エディターが書込みに対応していない場合はこれ。
+			ElseIf _
+				"UnityEditorDoesNotSupportWriting" = _
+					vl_vdo_key _
+			Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,iR_viw		)
+			    				ce_xx.String					=	Code.GetCe	(	sh_cnb	,iC_cnb	,rw_cnb	)
+			    Style.RoData( 	ce_xx )
+			    Code.CountUp( iC_cnb ,1 )
+		    	Code.CountUp( iC_viw ,1 )
+																																' StellaQLスプレッドシートが書込みに対応していない場合はこれ。
+			ElseIf _
+				"StellaQLSpreadsheetDoesNotSupportWriting" = _
+					vl_vdo_key _
+			Then
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,iR_viw		)
+			    				ce_xx.String					=	Code.GetCe	(	sh_cnb	,iC_cnb	,rw_cnb	)
+			    Style.RoData( 	ce_xx )
+			    Code.CountUp( iC_cnb ,1 )
+		    	Code.CountUp( iC_viw ,1 )
 			Else
-								cell_xx					= sht_view.		getCellByPosition( iC_view		, iR_view			)
-			    				cell_xx.String			= sht_cnbn.	getCellByPosition( iC_cnbn, row_cnbn	).String
-			    iC_cnbn								= iC_cnbn + 1
-		    	If "string" = val_vdob_type Or "specialString" = val_vdob_type Then ' 文字列型と、独自実装がないスペシャル文字列
-			    	iC_view							= iC_view + 3 ' 文字列型だけ３列
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw  ,iR_viw	)
+			    				ce_xx.String					=	Code.GetCe	(	sh_cnb	,iC_cnb  ,rw_cnb	)
+			    Code.CountUp( iC_cnb ,1 )
+		    	If _
+		    		"string"		= vl_vdo_type Or	_
+		    		"specialString"	= vl_vdo_type		_
+		    	Then
+		    																													' Old 列
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,iR_viw		)
+			    Style.Label( 	ce_xx )
+			    	Code.CountUp( iC_viw ,1 )
+		    																													' New,Clearの2列
+			    	Code.CountUp( iC_viw ,2 )
 			    Else
-			    	iC_view							= iC_view + 2 ' 文字列型以外は２列
+		    																													' Old 列
+								ce_xx							=	Code.GetCeOb(	sh_viw	,iC_viw	,iR_viw		)
+			    Style.Label( 	ce_xx )
+			    	Code.CountUp( iC_viw ,1 )
+			    																												' New の1列
+			    	Code.CountUp( iC_viw ,1 )
 		    	End If
 			End If
 			
-	    	iR_vdob = iR_vdob + 1
+			Code.CountUp( iR_vdo ,1 )
 	    Loop
-		row_cnbn = row_cnbn + 1
-		iR_view = iR_view + 1
+	    Code.CountUp( rw_cnb ,1 )
+		Code.CountUp( iR_viw ,1 )
 	Loop
-	sht_view.getCellByPosition( 0, iR_view ).String = "[EOF]" ' ファイル末尾に [EOF] を付加
-
-	' データ・シートのセルを固定したい
-	doc_view.getCurrentController().freezeAtPosition( col_freeze + 1, 2 ) ' アクティブなシートに対して設定される
+																																' ファイル末尾に [EOF] を付加
+	Code.SetCe(	sh_viw	,0	,iR_viw								,	"[EOF]"		)
+																																' データ・シートのセルを固定したい。アクティブなシートに対して設定される
+	dc_viw.getCurrentController().freezeAtPosition( _
+		cm_freeze + 1, 2 )
 End Sub
 
-' TODO: view シートの #FullPath# を埋めます。
-'
-' この工程では、
-' transitions、conditions、positions の #FullPath# フィールドを埋めます。
-'
-Sub SolveSheet_view( )
-
-	' TODO:
-
+'---------------------------------------------------------------=---------------------------------------------------------------'--------------------------------
+																																' 2列を ドットでつないで １つのキーにする
+Sub ConcatKey2(	 sht			As Object	_
+				,col1			As Integer	_
+				,col2			As Integer	_
+				,row			As Integer	_
+				,joinDelimiter	As String	_
+			  ) As String
+	Dim	key1													As	String
+	Dim key2													As	String
+		key1													=	Code.GetCe(	sht	,col1  ,row  )
+		key2													=	Code.GetCe(	sht	,col2  ,row  )
+	ConcatKey2													=	key1  &  joinDelimiter  &  key2
 End Sub
 
-' FIXME: うまくいかない
-' 参考： 列幅の指定に :　OSS( Open Source Software )でいこう!! 「 OpenOffice.org / LibreOfficeを使おう編 」 「Macroの杜 (OpenOffice.org/LibreOffice Basic編) Calc No.2 ###【 Previous Page ( Calc No.1 ) 】###」 http://openoffice3.web.fc2.com/OOoBasic_Calc_No2.html#OOoCCR06a
-Sub OptimalColumnWidth( column As Integer, row As Integer )
-
-	Dim oFrame as Object
-	oFrame = ThisComponent.CurrentController.Frame
-
-    Dim oDispatcher as Object
-	oDispatcher = createUnoService("com.sun.star.frame.DispatchHelper")
-	
-	' 指定のセルに飛ぶ
-	' ToPoint = "A:A"
-	Dim oProp(0) as new com.sun.star.beans.PropertyValue
-	oProp(0).Name = "ToPoint"
-	oProp(0).Value = NumberToAlphabet26( column ) & ":" & NumberToAlphabet26( row ) ' ex.) "A:A"
-	' msgbox "column=[" & column & "] row=[" & row & "] ToPoint=[" & NumberToAlphabet26( row ) & ":" & NumberToAlphabet26( column ) & "]"
-	oDispatcher.executeDispatch( oFrame,  ".uno:GoToCell", "", 0, oProp()) ' 指定のセルに飛んでいる
-
-	' 列幅を最適にする
-	oDispatcher.executeDispatch( oFrame,  ".uno:SetOptimalColumnWidthDirect", "", 0, Array())
+																																' 3列を ドットでつないで １つのキーにする
+Sub ConcatKey3(	 sht			As Object 	_
+				,col1			As Integer	_
+				,col2			As Integer  _
+				,col3			As Integer	_
+				,row			As Integer	_
+				,joinDelimiter	As String	_
+			  ) As String
+	Dim	key1													As	String
+	Dim key2													As	String
+	Dim key3													As	String
+		key1													=	Code.GetCe(	sht	,col1  ,row  )
+		key2													=	Code.GetCe(	sht	,col2  ,row  )
+		key3													=	Code.GetCe(	sht	,col3  ,row  )
+	ConcatKey3													=	key1  &  joinDelimiter  &  key2  &  joinDelimiter  &  key3
 End Sub
 
-' 数字を 26進数のアルファベットに変換
-' libreoffice.org 「手続きおよび関数の使用法」 https://help.libreoffice.org/Basic/Using_Procedures_and_Functions/ja
-' libreoffice.org 「算術演算子」 https://help.libreoffice.org/4.2/Basic/Mathematical_Operators/ja
-' libreoffice.org 「テキスト関数」 https://help.libreoffice.org/Calc/Text_Functions/ja
-Function NumberToAlphabet26( number As Integer ) As String
-	Dim alphabet As String
-	Dim figure As Integer ' 一の位
-
-	If number=0 Then
-		alphabet = "A"
-	Else
-		alphabet = ""
-		DO WHILE 0 < number
-			figure = number Mod 26
-			alphabet = alphabet & Chr( Asc( "A" ) + figure )
-	
-			number = ( number - figure ) / 26
-		Loop
-	End If
-		
-	NumberToAlphabet26 = alphabet
-End Function
