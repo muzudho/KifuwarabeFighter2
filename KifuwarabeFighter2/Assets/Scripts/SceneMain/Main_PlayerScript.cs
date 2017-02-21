@@ -470,7 +470,7 @@ namespace SceneMain
             if (SceneCommon.READY_TIME_LENGTH < mainCameraScript.ReadyingTime)
             {
                 // 当たり判定くん
-                Hitbox2D_Player_Abstract.Update(animator, AControl.Instance, playerIndex, transform, hitboxsSpriteRenderer, weakboxCollider2D);
+                Motor.Instance.Update(animator, AControl.Instance, playerIndex, transform, hitboxsSpriteRenderer, weakboxCollider2D);
             }
         }
 

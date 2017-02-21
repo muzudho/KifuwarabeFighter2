@@ -46,8 +46,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Hitbox2D\Editor\Hitbox2DLorikeetWindow.cs" />
-     <Compile Include="Assets\Hitbox2D\Editor\MotorGenerator.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Hitbox2DLorikeetWindow.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\Editor\MotorGenerator.cs" />
      <Compile Include="Assets\StellaQL\Editor\AconData.cs" />
      <Compile Include="Assets\StellaQL\Editor\AconDeepcopy.cs" />
      <Compile Include="Assets\StellaQL\Editor\AconFetcher.cs" />

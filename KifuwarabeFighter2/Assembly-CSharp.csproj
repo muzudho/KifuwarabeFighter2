@@ -46,7 +46,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Hitbox2D\Hitbox2D_Player_Abstract.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\FramedMotion.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\LorikeetData.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\Motor.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_Abstract.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_AbstractMotor.cs" />
@@ -58,8 +60,8 @@
      <Compile Include="Assets\Scripts\AnimatorBehaviours\SampleBehaviour.cs" />
      <Compile Include="Assets\Scripts\CommonScript.cs" />
      <Compile Include="Assets\Scripts\EnumExtensions.cs" />
-     <Compile Include="Assets\Scripts\SceneMain\Hitbox2D_Common.cs" />
-     <Compile Include="Assets\Scripts\SceneMain\Hitbox2D_Data.cs" />
+     <Compile Include="Assets\Scripts\SceneMain\Hitbox2DLorikeet_Common.cs" />
+     <Compile Include="Assets\Scripts\SceneMain\Hitbox2DLorikeet_Data.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_BulletScript.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_CameraScript.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_PlayerScript.cs" />

@@ -1,0 +1,5 @@
+C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DLorikeetMaker\Hitbox2DLorikeetMaker\bin\Release\Hitbox2DMaker.exe.config
+C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DLorikeetMaker\Hitbox2DLorikeetMaker\obj\Release\Hitbox2DMaker.exe
+C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DLorikeetMaker\Hitbox2DLorikeetMaker\obj\Release\Hitbox2DMaker.pdb
+C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DLorikeetMaker\Hitbox2DLorikeetMaker\bin\Release\Hitbox2DMaker.exe
+C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DLorikeetMaker\Hitbox2DLorikeetMaker\bin\Release\Hitbox2DMaker.pdb
