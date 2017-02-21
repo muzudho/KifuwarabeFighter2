@@ -2,7 +2,7 @@
 
 namespace DojinCircleGrayscale.StellaQL.Acons.Main_Char3
 {
-    public abstract class Main_Char3_AbstractMotor2 : AbstractMotor
+    public abstract class Main_Char3_AbstractMotor3 : AbstractMotor
     {
         #region Motion tags
         /// <summary>

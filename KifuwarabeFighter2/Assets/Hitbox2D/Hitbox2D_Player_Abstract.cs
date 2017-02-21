@@ -160,15 +160,20 @@ namespace DojinCircleGrayscale.Hitbox2DLorikeet
         /// <summary>
         /// [CliptypeIndex]
         /// </summary>
-        Dictionary<int, Motionable> MotionHash_to_instance { get; set; }
+        Dictionary<int, Motionable> MotionHash_to_instance { get; }
     }
 
     public abstract class AbstractMotor : Motorable
     {
+        public AbstractMotor()
+        {
+            MotionHash_to_instance = new Dictionary<int, Motionable>();
+        }
+
         /// <summary>
         /// [CliptypeIndex]
         /// </summary>
-        public Dictionary<int, Motionable> MotionHash_to_instance { get; set; }
+        public Dictionary<int, Motionable> MotionHash_to_instance { get; private set; }
 
         public void AddMappings_MotionAssetPath_to_Instance(Dictionary<string, Motionable> mappings)
         {
@@ -177,29 +182,29 @@ namespace DojinCircleGrayscale.Hitbox2DLorikeet
                 MotionHash_to_instance.Add(Animator.StringToHash(pair.Key), pair.Value);
             }
         }
-    }
 
-    public abstract class Hitbox2D_Player_Abstract
-    {
         /// <summary>
         /// 現在のアニメーション・クリップに対応したユーザー定義レコードを取得。
         /// Current.
         /// </summary>
         /// <returns></returns>
-        public static Motionable GetCurrentUserDefinedCliptypeRecord(Animator animator, AControllable aControl, Motorable userDefinedCliptypeTable)
+        public Motionable GetCurrentUserDefinedCliptypeRecord(Animator animator, AControllable aControl)
         {
             AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
             int motionAssetPathHash = (aControl.StateHash_to_record[animeStateInfo.fullPathHash]).MotionAssetPathHash;
 
-            if (userDefinedCliptypeTable.MotionHash_to_instance.ContainsKey(motionAssetPathHash))
+            if (MotionHash_to_instance.ContainsKey(motionAssetPathHash))
             {
-                return userDefinedCliptypeTable.MotionHash_to_instance[motionAssetPathHash];
+                return MotionHash_to_instance[motionAssetPathHash];
             }
 
             throw new UnityException("Not found record. motionAssetPathHash = [" + motionAssetPathHash + "]");
         }
+    }
 
+    public abstract class Hitbox2D_Player_Abstract
+    {
         /// <summary>
         /// 当たり判定くん☆
         /// 
@@ -224,7 +229,7 @@ namespace DojinCircleGrayscale.Hitbox2DLorikeet
             AnimatorStateInfo animeStateInfo = animator.GetCurrentAnimatorStateInfo(0);
             float stateSpeed = animeStateInfo.speed;
 
-            Motionable cliptypeExRecord = Hitbox2D_Player_Abstract.GetCurrentUserDefinedCliptypeRecord(animator, aControl, Motor.Instance);
+            Motionable cliptypeExRecord = Motor.Instance.GetCurrentUserDefinedCliptypeRecord(animator, aControl);
 
             // 正規化時間取得（0～1 の数倍。時間経過で 1以上になる）
             float normalizedTime = animeStateInfo.normalizedTime;
@@ -263,7 +268,7 @@ namespace DojinCircleGrayscale.Hitbox2DLorikeet
                 );
             //if((int)PlayerIndex.Player1==iPlayer && MotionDatabaseScript.AclipTypeIndex.Num != aclipType)
             //{
-            //    Debug.Log( " iPlayer = " + iPlayer + " character = " + character + " aclipType = "+ aclipType + " currentMotionFrame = " + currentMotionFrame + " / serialImage = " + serialImage + " slice = " + slice);
+            //    //ebug.Log( " iPlayer = " + iPlayer + " character = " + character + " aclipType = "+ aclipType + " currentMotionFrame = " + currentMotionFrame + " / serialImage = " + serialImage + " slice = " + slice);
             //    // + " motion = " + motion
             //    // "anime.GetCurrentAnimatorClipInfo(0).Length = " + anime.GetCurrentAnimatorClipInfo(0).Length+
             //}
@@ -293,7 +298,7 @@ namespace DojinCircleGrayscale.Hitbox2DLorikeet
 
                     //if ((int)PlayerIndex.Player1 == iPlayer)
                     //{
-                    //Debug.Log("stateSpeed = " + stateSpeed + " clip.frameRate = " + clip.frameRate + " normalizedTime = " + normalizedTime + " currentMotionFrame = " + currentMotionFrame + " 当たり判定くん.position.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.x + " 当たり判定くん.position.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.y + " scale.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.x + " scale.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.y);
+                    //ebug.Log("stateSpeed = " + stateSpeed + " clip.frameRate = " + clip.frameRate + " normalizedTime = " + normalizedTime + " currentMotionFrame = " + currentMotionFrame + " 当たり判定くん.position.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.x + " 当たり判定くん.position.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.y + " scale.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.x + " scale.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.y);
                     //    //" clip.length = " + clip.length +
                     //    //" motionFrames = " + motionFrames +
                     //    //" lastKeyframeTime = "+ lastKeyframeTime +

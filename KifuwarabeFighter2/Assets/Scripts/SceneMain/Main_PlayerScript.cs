@@ -74,7 +74,7 @@ namespace SceneMain
 
             //if ((int)PlayerIndex.Player1 == playerIndex)
             //{
-            //    Debug.Log("Update Time.deltaTime = " + Time.deltaTime);
+            //    //ebug.Log("Update Time.deltaTime = " + Time.deltaTime);
             //}
 
             // 現在のアニメーター・ステートに紐づいたデータ
@@ -197,12 +197,12 @@ namespace SceneMain
                     );
                 //if ((int)PlayerIndex.Player1 == playerIndex)
                 //{
-                //    Debug.Log("B playerIndex = " + playerIndex + " isGrounded = " + isGrounded + " transform.position.y = " + transform.position.y + " Rigidbody2D.velocity.y = " + Rigidbody2D.velocity.y);
+                //    //ebug.Log("B playerIndex = " + playerIndex + " isGrounded = " + isGrounded + " transform.position.y = " + transform.position.y + " Rigidbody2D.velocity.y = " + Rigidbody2D.velocity.y);
                 //}
 
                 //Animatorへパラメーターを送る
                 animator.SetFloat(SceneCommon.FLOAT_VEL_Y, Rigidbody2D.velocity.y); // y方向へかかる速度単位,上へいくとプラス、下へいくとマイナス
-                //Debug.Log("Jumping velY="+animator.GetFloat(SceneCommon.FLOAT_VEL_Y));
+                //ebug.Log("Jumping velY="+animator.GetFloat(SceneCommon.FLOAT_VEL_Y));
                 animator.SetBool(SceneCommon.BOOL_IS_GROUNDED, isGrounded);
             }
             #endregion
@@ -325,13 +325,13 @@ namespace SceneMain
                 }
 
                 DoFacingOpponent(GetFacingOfOpponentLR());
-                //Debug.Log("さあ、どっちだ☆ input.leverX = " + input.leverX + " facingOpponentMoveFwBkSt = " + facingOpponentMoveFwBkSt + " Time.deltaTime = " + Time.deltaTime);
+                //ebug.Log("さあ、どっちだ☆ input.leverX = " + input.leverX + " facingOpponentMoveFwBkSt = " + facingOpponentMoveFwBkSt + " Time.deltaTime = " + Time.deltaTime);
 
                 if (FacingOpponentMoveFwBkSt.Forward == facingOpponentMoveFwBkSt)// 相手に向かってレバーを倒したとき
                 {
                     //if ((int)PlayerIndex.Player1 == playerIndex)
                     //{
-                    //    Debug.Log("相手に向かっていくぜ☆ input.leverX = " + input.leverX);
+                    //    //ebug.Log("相手に向かっていくぜ☆ input.leverX = " + input.leverX);
                     //}
 
                     Pull_Forward();
@@ -343,7 +343,7 @@ namespace SceneMain
                     //    // ダッシュ・アニメーションの開始
                     //    //if ((int)PlayerIndex.Player1 == playerIndex)
                     //    //{
-                    //    //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ダッシュ!");
+                    //    //    //ebug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ダッシュ!");
                     //    //}
                     //}
                     //else
@@ -355,7 +355,7 @@ namespace SceneMain
                 {
                     //if ((int)PlayerIndex.Player1 == playerIndex)
                     //{
-                    //    Debug.Log("相手の反対側に向かっていくぜ☆ input.leverX = " + input.leverX);
+                    //    //ebug.Log("相手の反対側に向かっていくぜ☆ input.leverX = " + input.leverX);
                     //}
 
                     Pull_Back();
@@ -364,7 +364,7 @@ namespace SceneMain
                 {
                     //if ((int)PlayerIndex.Player1 == playerIndex)
                     //{
-                    //    Debug.Log("止まっているぜ☆ input.leverX = " + input.leverX);
+                    //    //ebug.Log("止まっているぜ☆ input.leverX = " + input.leverX);
                     //}
                 }
             }
@@ -384,7 +384,7 @@ namespace SceneMain
                 {
                     //if ((int)PlayerIndex.Player1 == playerIndex)
                     //{
-                    //    Debug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ストップ!");
+                    //    //ebug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ストップ!");
                     //}
 
                     if (isGrounded)// 接地していれば
@@ -394,7 +394,7 @@ namespace SceneMain
                 }
             }
 
-            //Debug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
+            //ebug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
 
             if (0 != input.leverY)// 上か下キーを入力していたら
             {
@@ -427,43 +427,43 @@ namespace SceneMain
             #region 行動
             //if (buttonDownHP && buttonDownHK)
             //{
-            //    Debug.Log("投了☆！");
+            //    //ebug.Log("投了☆！");
             //    Resign();
             //}
             //else
             if (input.buttonDownLP)
             {
-                //Debug.Log("button BUTTON_03_P1_LP");
+                //ebug.Log("button BUTTON_03_P1_LP");
                 Pull_LightPunch();
             }
             else if (input.buttonDownMP)
             {
-                //Debug.Log("button BUTTON_04_P1_MP");
+                //ebug.Log("button BUTTON_04_P1_MP");
                 Pull_MediumPunch();
             }
             else if (input.buttonDownHP)
             {
-                //Debug.Log("button BUTTON_05_P1_HP");
+                //ebug.Log("button BUTTON_05_P1_HP");
                 Pull_HardPunch();
             }
             else if (input.buttonDownLK)
             {
-                //Debug.Log("button BUTTON_06_P1_LK");
+                //ebug.Log("button BUTTON_06_P1_LK");
                 Pull_LightKick();
             }
             else if (input.buttonDownMK)
             {
-                //Debug.Log("button BUTTON_07_P1_MK");
+                //ebug.Log("button BUTTON_07_P1_MK");
                 Pull_MediumKick();
             }
             else if (input.buttonDownHK)
             {
-                //Debug.Log("button BUTTON_08_P1_HK");
+                //ebug.Log("button BUTTON_08_P1_HK");
                 Pull_HardKick();
             }
             else if (input.buttonDownPA)
             {
-                //Debug.Log("button BUTTON_09_P1_PA");
+                //ebug.Log("button BUTTON_09_P1_PA");
             }
             #endregion
 
@@ -532,14 +532,14 @@ namespace SceneMain
                     temp.x = -1 * Common.SCALE;
                     //if ((int)PlayerIndex.Player1 == playerIndex)
                     //{
-                    //    Debug.Log("左を向くぜ☆");
+                    //    //ebug.Log("左を向くぜ☆");
                     //}
                     break;
                 case FacingOpponentLR.Right:
                     temp.x = 1 * Common.SCALE;
                     //if ((int)PlayerIndex.Player1 == playerIndex)
                     //{
-                    //    Debug.Log("右を向くぜ☆");
+                    //    //ebug.Log("右を向くぜ☆");
                     //}
                     break;
                 default:
@@ -551,13 +551,13 @@ namespace SceneMain
         #region ジャンプ
         public void JMove0Exit()
         {
-            Debug.Log("JMove0Exit");
+            //ebug.Log("JMove0Exit");
             animator.SetBool(SceneCommon.BOOL_JMOVE0, false);
         }
 
         public void Jump1()
         {
-            Debug.Log("Jump1");
+            //ebug.Log("Jump1");
             float velocityX = Rigidbody2D.velocity.x;
 
             //左キー: -1、右キー: 1
@@ -565,7 +565,7 @@ namespace SceneMain
 
             if (leverX != 0)//左か右を入力したら
             {
-                //Debug.Log("lever x = " + x.ToString());
+                //ebug.Log("lever x = " + x.ToString());
 
                 //入力方向へ移動
                 velocityX = speedX;
@@ -611,7 +611,7 @@ namespace SceneMain
         {
             //ジャンプアニメーションの開始
             animator.SetTrigger(SceneCommon.TRIGGER_JUMP);
-            //Debug.Log("JUMP trigger!");
+            //ebug.Log("JUMP trigger!");
         }
         void Pull_Crouch()
         {
@@ -665,7 +665,7 @@ namespace SceneMain
         /// </summary>
         void Pull_Resign()
         {
-            //Debug.Log("トリガー　投了Ａ");
+            //ebug.Log("トリガー　投了Ａ");
             animator.SetTrigger(SceneCommon.TRIGGER_GIVEUP);
         }
         /// <summary>
@@ -673,7 +673,7 @@ namespace SceneMain
         /// </summary>
         public void Pull_ResignByLose()
         {
-            //Debug.Log("トリガー　投了Ｘ");
+            //ebug.Log("トリガー　投了Ｘ");
             animator.SetTrigger(SceneCommon.TRIGGER_GIVEUP);
         }
         #endregion

@@ -50,8 +50,8 @@
      <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_Abstract.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_AbstractMotor.cs" />
-     <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_AbstractMotor2.cs" />
-     <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_Hitbox2D.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_AbstractMotor3.cs" />
+     <Compile Include="Assets\Resources\AnimatorControllers\Main_Char3_Moter.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Select_Cursor.cs" />
      <Compile Include="Assets\Resources\AnimatorControllers\Select_Cursor_Abstract.cs" />
      <Compile Include="Assets\Resources\StellaQLUserSettings.cs" />

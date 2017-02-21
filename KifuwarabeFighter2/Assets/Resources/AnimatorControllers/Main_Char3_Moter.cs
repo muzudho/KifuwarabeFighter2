@@ -4,9 +4,9 @@ using DojinCircleGrayscale.Hitbox2DLorikeet;
 namespace DojinCircleGrayscale.StellaQL.Acons.Main_Char3
 {
     /// <summary>
-    /// 俳優クラス
+    /// モーションするものクラス
     /// </summary>
-    public class Motor : Main_Char3_AbstractMotor2
+    public class Motor : Main_Char3_AbstractMotor
     {
         #region Singleton
         static Motor()
@@ -18,7 +18,7 @@ namespace DojinCircleGrayscale.StellaQL.Acons.Main_Char3
 
         Motor()
         {
-            Instance.AddMappings_MotionAssetPath_to_Instance( new Dictionary<string, Motionable>()
+            AddMappings_MotionAssetPath_to_Instance( new Dictionary<string, Motionable>()
             {
                 { MOTION_CHAR3_SWAIT, new Motion( new int[] { 0,1,2,3 } ,TilesetfileType.Stand)},
                 { MOTION_CHAR3_SMOVE, new Motion( new int[] { 4,5,6,7 } ,TilesetfileType.Stand)},
