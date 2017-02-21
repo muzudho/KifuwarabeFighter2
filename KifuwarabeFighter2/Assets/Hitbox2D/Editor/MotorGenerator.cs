@@ -40,15 +40,28 @@ namespace DojinCircleGrayscale.StellaQL.Acons."); contents.AppendLine(className)
             HashSet<MotionRecord> motionRecords = new HashSet<MotionRecord>(aconScanner.Motions);
             if(0< motionRecords.Count)
             {
-                // 文字列のリストに移し替えます
-                List<string> motionAssetPaths = new List<string>();
-                foreach (MotionRecord record in motionRecords)
+                #region list and sort motionAssetPath
+                // 重複は削除し、文字列の配列に移し替えてソートします
+                string[] array_motionAssetPath;
                 {
-                    motionAssetPaths.Add((string)record.Fields[MotionRecord.ASSET_PATH]);
+                    HashSet<string> hashSet_motionAssetPath = new HashSet<string>();
+                    foreach (MotionRecord record in motionRecords)
+                    {
+                        hashSet_motionAssetPath.Add((string)record.Fields[MotionRecord.ASSET_PATH]);
+                    }
+                    StringComparer cmp = StringComparer.OrdinalIgnoreCase;
+                    array_motionAssetPath = new string[hashSet_motionAssetPath.Count];
+                    int i = 0;
+                    foreach (string item in hashSet_motionAssetPath)
+                    {
+                        array_motionAssetPath[i] = item;
+                        i++;
+                    }
+                    Array.Sort(array_motionAssetPath, cmp);
                 }
-                motionAssetPaths.Sort(); // FIXME: 文字列順になるわけではない？
+                #endregion
                 contents.Append("        public const string");
-                foreach (string motionAssetPath in motionAssetPaths)
+                foreach (string motionAssetPath in array_motionAssetPath)
                 {
                     string motionFilename = Path.GetFileNameWithoutExtension(motionAssetPath);
 
