@@ -47,6 +47,11 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Hitbox2DLorikeet\Editor\Hitbox2DLorikeetWindow.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Maker\DataGenerator.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Maker\PngReader.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Maker\RectangleOnSlice.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Maker\Utility_BoxScanner.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Maker\Utility_Hitbox2DClassFormat.cs" />
      <Compile Include="Assets\Hitbox2DLorikeet\Editor\MotorGenerator.cs" />
      <Compile Include="Assets\StellaQL\Editor\AconData.cs" />
      <Compile Include="Assets\StellaQL\Editor\AconDeepcopy.cs" />
@@ -63,6 +68,8 @@
      <Compile Include="Assets\StellaQL\MayBeDeletedThisFolder\Editor\TestFullpathParser.cs" />
      <Compile Include="Assets\StellaQL\MayBeDeletedThisFolder\Editor\TestStellaQLDemo.cs" />
      <None Include="Assets\StellaQL\Document\チュートリアル.txt" />
+     <None Include="Assets\Hitbox2DLorikeet\Editor\Work\テストデータ3.txt" />
+     <None Include="Assets\Hitbox2DLorikeet\Editor\Work\テストデータ4.txt" />
      <None Include="Assets\StellaQL\Document\コマンドリファレンス.txt" />
      <None Include="Assets\StellaQL\readme_en.txt" />
      <None Include="Assets\StellaQL\readme_jp.txt" />

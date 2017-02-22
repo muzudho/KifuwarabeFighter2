@@ -1,6 +1,0 @@
-C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DMaker\Hitbox2DMaker\bin\Debug\AtarihanteiMaker.exe.config
-C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DMaker\Hitbox2DMaker\bin\Debug\AtarihanteiMaker.exe
-C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DMaker\Hitbox2DMaker\bin\Debug\AtarihanteiMaker.pdb
-C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DMaker\Hitbox2DMaker\obj\Debug\Hitbox2DMaker.csprojResolveAssemblyReference.cache
-C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DMaker\Hitbox2DMaker\obj\Debug\AtarihanteiMaker.exe
-C:\Users\Takahashi\Documents\muzudho\Unity\KifuwarabeFighter2\KifuwarabeFighter2_meta\tool(CSharp)\Hitbox2DMaker\Hitbox2DMaker\obj\Debug\AtarihanteiMaker.pdb

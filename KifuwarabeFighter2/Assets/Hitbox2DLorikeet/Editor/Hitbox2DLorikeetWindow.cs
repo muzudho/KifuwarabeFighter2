@@ -3,6 +3,7 @@ using UnityEditor.Animations;
 using UnityEngine;
 using DojinCircleGrayscale.StellaQL;
 using System.Text;
+using DojinCircleGrayscale.Hitbox2DLorikeetMaker;
 
 namespace DojinCircleGrayscale.Hitbox2DLorikeet
 {
@@ -125,9 +126,17 @@ namespace DojinCircleGrayscale.Hitbox2DLorikeet
             #endregion
 
             #region Create full path constant button
-            if (GUILayout.Button("Generate Motor"))
+            if (GUILayout.Button("Generate C# (Motor)"))
             {
                 MotorGenerator.WriteCshapScript(m_ac, info_message);
+            }
+            GUILayout.Space(4.0f);
+            #endregion
+
+            #region Create full path constant button
+            if (GUILayout.Button("Generate C# (Data)"))
+            {
+                DataGenerator.Generate(info_message);
             }
             GUILayout.Space(4.0f);
             #endregion

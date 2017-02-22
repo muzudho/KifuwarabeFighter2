@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Hitbox2DLorikeet\Data\Hitbox2DLorikeet_Data.cs" />
      <Compile Include="Assets\Hitbox2DLorikeet\FramedMotion.cs" />
      <Compile Include="Assets\Hitbox2DLorikeet\LorikeetData.cs" />
      <Compile Include="Assets\Hitbox2DLorikeet\Motor.cs" />
@@ -61,7 +62,7 @@
      <Compile Include="Assets\Scripts\CommonScript.cs" />
      <Compile Include="Assets\Scripts\EnumExtensions.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Hitbox2DLorikeet_Common.cs" />
-     <Compile Include="Assets\Scripts\SceneMain\Hitbox2DLorikeet_Data.cs" />
+     <Compile Include="Assets\Scripts\SceneMain\Hitbox2DLorikeet_Data2.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_BulletScript.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_CameraScript.cs" />
      <Compile Include="Assets\Scripts\SceneMain\Main_PlayerScript.cs" />
@@ -84,6 +85,8 @@
      <Compile Include="Assets\StellaQL\MayBeDeletedThisFolder\AnimatorControllers\Demo_Zoo_Abstract.cs" />
      <Compile Include="Assets\StellaQL\MayBeDeletedThisFolder\AnimatorControllers\Demo_Zoo_AbstractMotor.cs" />
      <None Include="Assets\StellaQL\Document\チュートリアル.txt" />
+     <None Include="Assets\Hitbox2DLorikeet\Editor\Work\テストデータ3.txt" />
+     <None Include="Assets\Hitbox2DLorikeet\Editor\Work\テストデータ4.txt" />
      <None Include="Assets\StellaQL\Document\コマンドリファレンス.txt" />
      <None Include="Assets\StellaQL\readme_en.txt" />
      <None Include="Assets\StellaQL\readme_jp.txt" />
