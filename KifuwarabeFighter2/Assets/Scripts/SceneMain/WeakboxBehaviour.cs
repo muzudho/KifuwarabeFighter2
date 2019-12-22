@@ -1,15 +1,15 @@
 ﻿namespace SceneMain
 {
     using Assets.Scripts.Model.Dto;
+    using Assets.Scripts.Model.Dto.Fight;
     using Assets.Scripts.Model.Dto.Input;
-    using Assets.Scripts.SceneMain;
     using UnityEngine;
 
-    public class WeakboxScript : MonoBehaviour
+    public class WeakboxBehaviour : MonoBehaviour
     {
 
         public int playerIndex;
-        PlayerScript playerScript;
+        PlayerBehaviour playerScript;
         #region 効果音
         AudioSource[] audioSources;
         #endregion
@@ -17,7 +17,7 @@
         // Use this for initialization
         void Start()
         {
-            playerScript = GameObject.Find(ThisSceneConst.PlayerToTag[playerIndex]).GetComponent<PlayerScript>();
+            playerScript = GameObject.Find(ThisSceneDto.PlayerToTag[playerIndex]).GetComponent<PlayerBehaviour>();
             #region 効果音
             audioSources = GetComponents<AudioSource>();
             #endregion
@@ -48,7 +48,7 @@
                     //    Debug.Log("ブロック☆！ col.tag = " + col.tag + " input.leverX = " + input.leverX + " Time.deltaTime = " + Time.deltaTime);
                     //}
                     audioSources[1].PlayOneShot(audioSources[1].clip);// 効果音を鳴らすぜ☆
-                    playerScript.Animator.SetTrigger(ThisSceneConst.TriggerBlock);
+                    playerScript.Animator.SetTrigger(ThisSceneDto.TriggerBlock);
                 }
                 else
                 {

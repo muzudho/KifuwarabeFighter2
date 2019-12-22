@@ -21,7 +21,7 @@
             this.PlayerName = playerName;
             this.Value = value;
             this.PlayerChar = playerChar;
-            this.PlayerCharScript = this.PlayerChar.GetComponent<PlayerScript>();
+            this.PlayerCharScript = this.PlayerChar.GetComponent<PlayerBehaviour>();
             this.PlayerCharAnimetor = this.PlayerChar.GetComponent<Animator>();
 
             this.RoundsResult = roundsResult;
@@ -61,7 +61,7 @@
         /// <summary>
         /// player character's attached script. プレイヤー・キャラにアタッチされているスクリプト。
         /// </summary>
-        public PlayerScript PlayerCharScript { get; private set; }
+        public PlayerBehaviour PlayerCharScript { get; private set; }
 
         /// <summary>
         /// players animator. アニメーター。

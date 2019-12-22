@@ -1,10 +1,10 @@
-﻿namespace Assets.Scripts.SceneMain
+﻿namespace Assets.Scripts.Model.Dto.Fight
 {
     using System.Collections.Generic;
     using Assets.Scripts.Model.Dto.Input;
     using UnityEngine;
 
-    public class ThisSceneConst
+    public class ThisSceneDto
     {
         public const string TriggerMoveX = "moveX";
         public const string TriggerMoveXForward = "moveXForward";

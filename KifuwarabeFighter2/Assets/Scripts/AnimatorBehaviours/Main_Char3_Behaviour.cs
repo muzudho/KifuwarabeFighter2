@@ -1,8 +1,8 @@
-﻿using SceneMain;
-using DojinCircleGrayscale.StellaQL.Acons.Main_Char3;
-using UnityEngine;
+﻿using Assets.Scripts.Model.Dto.Fight;
 using DojinCircleGrayscale.Hitbox2DLorikeet;
-using Assets.Scripts.SceneMain;
+using DojinCircleGrayscale.StellaQL.Acons.Main_Char3;
+using SceneMain;
+using UnityEngine;
 
 public class Main_Char3_Behaviour : StateMachineBehaviour {
 
@@ -12,35 +12,35 @@ public class Main_Char3_Behaviour : StateMachineBehaviour {
         #region 立ち
         if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_SWAIT)].Name)) // 立ち待機
         {
-            animator.SetInteger(ThisSceneConst.IntegerActioning, (int)TilesetfileType.Stand);
+            animator.SetInteger(ThisSceneDto.IntegerActioning, (int)TilesetfileType.Stand);
         }
         #endregion
         #region ジャンプ
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_JMOVE_JMOVE0)].Name)) // ジャンプに着手した。
         {
-            animator.SetInteger(ThisSceneConst.IntegerActioning, (int)TilesetfileType.Jump);
-            animator.SetBool(ThisSceneConst.BoolJMove0, true);
+            animator.SetInteger(ThisSceneDto.IntegerActioning, (int)TilesetfileType.Jump);
+            animator.SetBool(ThisSceneDto.BoolJMove0, true);
         }
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_JMOVE_JMOVE1)].Name)) // 上昇
         {
-            PlayerScript script = animator.gameObject.GetComponent<PlayerScript>();
+            PlayerBehaviour script = animator.gameObject.GetComponent<PlayerBehaviour>();
             script.Jump1();
         }
         #endregion
         #region 屈み
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_CWAIT)].Name)) // かがみ待機
         {
-            animator.SetInteger(ThisSceneConst.IntegerActioning, (int)TilesetfileType.Crouch);
+            animator.SetInteger(ThisSceneDto.IntegerActioning, (int)TilesetfileType.Crouch);
         }
         #endregion
         #region その他
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_OBACKSTEP)].Name)) // バックステップ
         {
-            animator.SetInteger(ThisSceneConst.IntegerActioning, (int)TilesetfileType.Stand);
+            animator.SetInteger(ThisSceneDto.IntegerActioning, (int)TilesetfileType.Stand);
         }
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_OGIVEUP)].Name))
         {
-            animator.SetBool(ThisSceneConst.BoolGiveUping, true);
+            animator.SetBool(ThisSceneDto.BoolGiveUping, true);
         }
         #endregion
     }
@@ -53,7 +53,7 @@ public class Main_Char3_Behaviour : StateMachineBehaviour {
             // 投了モーション中
             if(2.0f<=stateInfo.normalizedTime % 1 * animator.GetCurrentAnimatorClipInfo(0)[0].clip.frameRate)
             {
-                PlayerScript script = animator.gameObject.GetComponent<PlayerScript>();
+                PlayerBehaviour script = animator.gameObject.GetComponent<PlayerBehaviour>();
                 if (!script.MainCameraScript.IsResignCalled)
                 {
                     script.ResignCall();
@@ -67,15 +67,15 @@ public class Main_Char3_Behaviour : StateMachineBehaviour {
     {
         if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_JMOVE_JMOVE0)].Name)) // 屈伸が終わった時
         {
-            PlayerScript script = animator.gameObject.GetComponent<PlayerScript>();
+            PlayerBehaviour script = animator.gameObject.GetComponent<PlayerBehaviour>();
             script.JMove0Exit();
         }
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_OGIVEUP)].Name))
         {
             // 投了モーションが終わった時。
-            animator.SetBool(ThisSceneConst.BoolGiveUping, false);
+            animator.SetBool(ThisSceneDto.BoolGiveUping, false);
 
-            PlayerScript script = animator.gameObject.GetComponent<PlayerScript>();
+            PlayerBehaviour script = animator.gameObject.GetComponent<PlayerBehaviour>();
             script.IsResign = true;
         }
     }

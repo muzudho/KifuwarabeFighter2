@@ -1,11 +1,11 @@
 ﻿namespace SceneMain
 {
+    using Assets.Scripts.Model.Dto.Fight;
     using Assets.Scripts.Model.Dto.Input;
-    using Assets.Scripts.SceneMain;
     using DojinCircleGrayscale.Hitbox2DLorikeet;
     using UnityEngine;
 
-    public class BulletScript : MonoBehaviour
+    public class BulletBehaviour : MonoBehaviour
     {
         #region 弾作成
         /// <summary>
@@ -20,18 +20,18 @@
         /// </summary>
         public int opponent;
         GameObject mainCamera;
-        CameraScript mainCameraScript;
+        CameraBehaviour mainCameraScript;
         #endregion
 
         void Start()
         {
             #region 当たり判定
             mainCamera = GameObject.Find("Main Camera");
-            mainCameraScript = mainCamera.GetComponent<CameraScript>();
+            mainCameraScript = mainCamera.GetComponent<CameraBehaviour>();
             #endregion
             #region 弾作成
             // 味方キャラクター　のオブジェクトを取得
-            GameObject friendChar = GameObject.FindWithTag(ThisSceneConst.PlayerToTag[friend]);
+            GameObject friendChar = GameObject.FindWithTag(ThisSceneDto.PlayerToTag[friend]);
             // 弾のrigidbody2Dコンポーネントを取得
             Rigidbody2D rigidbody2D = GetComponent<Rigidbody2D>();
             // 味方キャラクター　の向いている向きに弾を飛ばす
@@ -48,7 +48,7 @@
         void OnTriggerEnter2D(Collider2D col)
         {
             // 相手キャラクター　に当たったら、この弾を消すぜ☆
-            if (col.gameObject.tag == ThisSceneConst.PlayerToTag[opponent])
+            if (col.gameObject.tag == ThisSceneDto.PlayerToTag[opponent])
             {
                 if (mainCameraScript != null)// なぜかヌルになっていることがあるぜ☆（＾～＾）
                 {

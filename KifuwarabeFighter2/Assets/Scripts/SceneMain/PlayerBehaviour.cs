@@ -1,13 +1,13 @@
 ﻿namespace SceneMain
 {
     using Assets.Scripts.Model.Dto;
+    using Assets.Scripts.Model.Dto.Fight;
     using Assets.Scripts.Model.Dto.Input;
-    using Assets.Scripts.SceneMain;
     using DojinCircleGrayscale.Hitbox2DLorikeet;
     using DojinCircleGrayscale.StellaQL.Acons.Main_Char3;
     using UnityEngine;
 
-    public class PlayerScript : MonoBehaviour
+    public class PlayerBehaviour : MonoBehaviour
     {
 
         #region 敵味方判定
@@ -20,7 +20,7 @@
         public GameObject bullet;
         Animator animator;
         public Animator Animator { get { return animator; } }
-        CameraScript mainCameraScript; public CameraScript MainCameraScript { get { return mainCameraScript; } }
+        CameraBehaviour mainCameraScript; public CameraBehaviour MainCameraScript { get { return mainCameraScript; } }
 
         #region 当たり判定
         string opponentHitboxTag; public string OpponentHitboxTag { get { return opponentHitboxTag; } }
@@ -53,17 +53,17 @@
         {
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
 
-            mainCameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
+            mainCameraScript = GameObject.Find("Main Camera").GetComponent<CameraBehaviour>();
             #region 当たり判定
             opponent = CommonScript.ReverseTeban(player);
-            opponentHitboxTag = ThisSceneConst.HitboxTags[this.Opponent][(int)HitboxIndex.Hitbox];
+            opponentHitboxTag = ThisSceneDto.HitboxTags[this.Opponent][(int)HitboxIndex.Hitbox];
 
             hitboxsSpriteRenderer = new SpriteRenderer[] {
-                 GameObject.Find(ThisSceneConst.HitboxPaths[player][(int)HitboxIndex.Hitbox]).GetComponent<SpriteRenderer>(),
-                 GameObject.Find(ThisSceneConst.HitboxPaths[player][(int)HitboxIndex.Weakbox]).GetComponent<SpriteRenderer>(),
-                 GameObject.Find(ThisSceneConst.HitboxPaths[player][(int)HitboxIndex.Strongbox]).GetComponent<SpriteRenderer>(),
+                 GameObject.Find(ThisSceneDto.HitboxPaths[player][(int)HitboxIndex.Hitbox]).GetComponent<SpriteRenderer>(),
+                 GameObject.Find(ThisSceneDto.HitboxPaths[player][(int)HitboxIndex.Weakbox]).GetComponent<SpriteRenderer>(),
+                 GameObject.Find(ThisSceneDto.HitboxPaths[player][(int)HitboxIndex.Strongbox]).GetComponent<SpriteRenderer>(),
             };
-            weakboxCollider2D = GameObject.Find(ThisSceneConst.HitboxPaths[player][(int)HitboxIndex.Weakbox]).GetComponent<BoxCollider2D>();
+            weakboxCollider2D = GameObject.Find(ThisSceneDto.HitboxPaths[player][(int)HitboxIndex.Weakbox]).GetComponent<BoxCollider2D>();
             #endregion
             #region ジャンプ
             groundLayer = LayerMask.GetMask("Ground");
@@ -72,7 +72,7 @@
             #endregion
 
             // x位置を共有できるようにするぜ☆
-            ThisSceneConst.PlayerToTransform[player] = transform;
+            ThisSceneDto.PlayerToTransform[player] = transform;
         }
 
 
@@ -192,7 +192,7 @@
                 if (FacingOpponentMoveFwBkSt.Back != facingOpponentMoveFwBkSt)
                 {
                     // バックを解除している場合。
-                    animator.SetTrigger(ThisSceneConst.TriggerDeblock);
+                    animator.SetTrigger(ThisSceneDto.TriggerDeblock);
                 }
             }
 
@@ -211,16 +211,16 @@
                 //}
 
                 //Animatorへパラメーターを送る
-                animator.SetFloat(ThisSceneConst.FloatVelY, Rigidbody2D.velocity.y); // y方向へかかる速度単位,上へいくとプラス、下へいくとマイナス
+                animator.SetFloat(ThisSceneDto.FloatVelY, Rigidbody2D.velocity.y); // y方向へかかる速度単位,上へいくとプラス、下へいくとマイナス
                 //ebug.Log("Jumping velY="+animator.GetFloat(SceneCommon.FLOAT_VEL_Y));
-                animator.SetBool(ThisSceneConst.BoolIsGrounded, isGrounded);
+                animator.SetBool(ThisSceneDto.BoolIsGrounded, isGrounded);
             }
             #endregion
 
             #region 弾を撃つ
             // 弾を撃つぜ☆
             if (
-                (3 == animator.GetInteger(ThisSceneConst.IntegerLeverXNeutral) % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
+                (3 == animator.GetInteger(ThisSceneDto.IntegerLeverXNeutral) % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
                 &&
                 (
                     input.Lp.Down ||
@@ -282,43 +282,43 @@
             // レバー・ニュートラル時間と、レバー・プレッシング時間は、8フレームほど重複する部分がある。
             if (input.LeverX != 0)//左か右を入力したら
             {
-                animator.SetInteger(ThisSceneConst.IntegerLeverXPressing, animator.GetInteger(ThisSceneConst.IntegerLeverXPressing) + 1);
-                animator.SetInteger(ThisSceneConst.IntegerLeverXNeutral, 0);
-                animator.SetInteger(ThisSceneConst.IntegerLeverXIdol, 0);
+                animator.SetInteger(ThisSceneDto.IntegerLeverXPressing, animator.GetInteger(ThisSceneDto.IntegerLeverXPressing) + 1);
+                animator.SetInteger(ThisSceneDto.IntegerLeverXNeutral, 0);
+                animator.SetInteger(ThisSceneDto.IntegerLeverXIdol, 0);
             }
             else //左も右も入力していなかったら
             {
                 // 感覚的に、左から右に隙間なく切り替えたと思っていても、
                 // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
-                if (8 < animator.GetInteger(ThisSceneConst.IntegerLeverXIdol))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
+                if (8 < animator.GetInteger(ThisSceneDto.IntegerLeverXIdol))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
                 {
-                    animator.SetInteger(ThisSceneConst.IntegerLeverXPressing, 0);
-                    animator.SetInteger(ThisSceneConst.IntegerLeverXNeutral, animator.GetInteger(ThisSceneConst.IntegerLeverXNeutral) + 1);
+                    animator.SetInteger(ThisSceneDto.IntegerLeverXPressing, 0);
+                    animator.SetInteger(ThisSceneDto.IntegerLeverXNeutral, animator.GetInteger(ThisSceneDto.IntegerLeverXNeutral) + 1);
                 }
                 else
                 {
-                    animator.SetInteger(ThisSceneConst.IntegerLeverXIdol, animator.GetInteger(ThisSceneConst.IntegerLeverXIdol) + 1);
+                    animator.SetInteger(ThisSceneDto.IntegerLeverXIdol, animator.GetInteger(ThisSceneDto.IntegerLeverXIdol) + 1);
                 }
             }
 
             if (0 != input.LeverY)// 上か下キーを入力していたら
             {
-                animator.SetInteger(ThisSceneConst.IntegerLeverYPressing, animator.GetInteger(ThisSceneConst.IntegerLeverYPressing) + 1);
-                animator.SetInteger(ThisSceneConst.IntegerLeverYNeutral, 0);
-                animator.SetInteger(ThisSceneConst.IntegerLeverYIdol, 0);
+                animator.SetInteger(ThisSceneDto.IntegerLeverYPressing, animator.GetInteger(ThisSceneDto.IntegerLeverYPressing) + 1);
+                animator.SetInteger(ThisSceneDto.IntegerLeverYNeutral, 0);
+                animator.SetInteger(ThisSceneDto.IntegerLeverYIdol, 0);
             }
             else // 下も上も入力していなかったら
             {
                 // 感覚的に、左から右に隙間なく切り替えたと思っていても、
                 // 入力装置的には、下から上（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
-                if (8 < animator.GetInteger(ThisSceneConst.IntegerLeverYIdol))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
+                if (8 < animator.GetInteger(ThisSceneDto.IntegerLeverYIdol))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
                 {
-                    animator.SetInteger(ThisSceneConst.IntegerLeverYPressing, 0);
-                    animator.SetInteger(ThisSceneConst.IntegerLeverYNeutral, animator.GetInteger(ThisSceneConst.IntegerLeverYNeutral) + 1);
+                    animator.SetInteger(ThisSceneDto.IntegerLeverYPressing, 0);
+                    animator.SetInteger(ThisSceneDto.IntegerLeverYNeutral, animator.GetInteger(ThisSceneDto.IntegerLeverYNeutral) + 1);
                 }
                 else
                 {
-                    animator.SetInteger(ThisSceneConst.IntegerLeverYIdol, animator.GetInteger(ThisSceneConst.IntegerLeverYIdol) + 1);
+                    animator.SetInteger(ThisSceneDto.IntegerLeverYIdol, animator.GetInteger(ThisSceneDto.IntegerLeverYIdol) + 1);
                 }
             }
             #endregion
@@ -390,7 +390,7 @@
 
                 // 感覚的に、左から右に隙間なく切り替えたと思っていても、
                 // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
-                if (8 < animator.GetInteger(ThisSceneConst.IntegerLeverXNeutral))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
+                if (8 < animator.GetInteger(ThisSceneDto.IntegerLeverXNeutral))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
                 {
                     //if (PlayerIndex.Player1 == player)
                     //{
@@ -399,7 +399,7 @@
 
                     if (isGrounded)// 接地していれば
                     {
-                        animator.SetInteger(ThisSceneConst.IntegerActioning, (int)TilesetfileType.Stand);
+                        animator.SetInteger(ThisSceneDto.IntegerActioning, (int)TilesetfileType.Stand);
                     }
                 }
             }
@@ -477,7 +477,7 @@
             }
             #endregion
 
-            if (ThisSceneConst.ReadyTimeLength < mainCameraScript.ReadyingTime)
+            if (ThisSceneDto.ReadyTimeLength < mainCameraScript.ReadyingTime)
             {
                 // 当たり判定くん
                 Motor.Instance.Update(animator, AControl.Instance, player, transform, hitboxsSpriteRenderer, weakboxCollider2D);
@@ -517,7 +517,7 @@
 
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
 
-            if (Mathf.Sign(ThisSceneConst.PlayerToTransform[CommonScript.ReverseTeban(player)].position.x - transform.position.x)
+            if (Mathf.Sign(ThisSceneDto.PlayerToTransform[CommonScript.ReverseTeban(player)].position.x - transform.position.x)
                 ==
                 Mathf.Sign(leverX)
                 )
@@ -532,7 +532,7 @@
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
 
             // 自分と相手の位置（相手が右側にいるとき正となるようにする）
-            if (0 <= ThisSceneConst.PlayerToTransform[CommonScript.ReverseTeban(player)].position.x - transform.position.x)
+            if (0 <= ThisSceneDto.PlayerToTransform[CommonScript.ReverseTeban(player)].position.x - transform.position.x)
             {
                 return FacingOpponentLR.Right;
             }
@@ -571,7 +571,7 @@
         public void JMove0Exit()
         {
             //ebug.Log("JMove0Exit");
-            animator.SetBool(ThisSceneConst.BoolJMove0, false);
+            animator.SetBool(ThisSceneDto.BoolJMove0, false);
         }
 
         public void Jump1()
@@ -599,45 +599,45 @@
         #region トリガーを引く
         public void Pull_DamageH()
         {
-            animator.SetTrigger(ThisSceneConst.TriggerDamageH);
+            animator.SetTrigger(ThisSceneDto.TriggerDamageH);
         }
         public void Pull_DamageM()
         {
-            animator.SetTrigger(ThisSceneConst.TriggerDamageM);
+            animator.SetTrigger(ThisSceneDto.TriggerDamageM);
         }
         public void Pull_DamageL()
         {
-            animator.SetTrigger(ThisSceneConst.TriggerDamageL);
+            animator.SetTrigger(ThisSceneDto.TriggerDamageL);
         }
         public void Pull_Down()
         {
             damageHitCount = 0;
-            animator.SetTrigger(ThisSceneConst.TriggerDown);
+            animator.SetTrigger(ThisSceneDto.TriggerDown);
         }
         void Pull_Forward()
         {
-            animator.SetTrigger(ThisSceneConst.TriggerMoveX);
+            animator.SetTrigger(ThisSceneDto.TriggerMoveX);
 
-            animator.ResetTrigger(ThisSceneConst.TriggerMoveXBack);
-            animator.SetTrigger(ThisSceneConst.TriggerMoveXForward);
+            animator.ResetTrigger(ThisSceneDto.TriggerMoveXBack);
+            animator.SetTrigger(ThisSceneDto.TriggerMoveXForward);
         }
         void Pull_Back()
         {
-            animator.SetTrigger(ThisSceneConst.TriggerMoveX);
+            animator.SetTrigger(ThisSceneDto.TriggerMoveX);
 
-            animator.ResetTrigger(ThisSceneConst.TriggerMoveXForward);
-            animator.SetTrigger(ThisSceneConst.TriggerMoveXBack);
+            animator.ResetTrigger(ThisSceneDto.TriggerMoveXForward);
+            animator.SetTrigger(ThisSceneDto.TriggerMoveXBack);
         }
         void Pull_Jump()
         {
             //ジャンプアニメーションの開始
-            animator.SetTrigger(ThisSceneConst.TriggerJump);
+            animator.SetTrigger(ThisSceneDto.TriggerJump);
             //ebug.Log("JUMP trigger!");
         }
         void Pull_Crouch()
         {
             // 屈みアニメーションの開始
-            animator.SetTrigger(ThisSceneConst.TriggerCrouch);
+            animator.SetTrigger(ThisSceneDto.TriggerCrouch);
         }
         void Pull_LightPunch()
         {
@@ -645,7 +645,7 @@
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 10.0f;
 
             // アニメーションの開始
-            animator.SetTrigger(ThisSceneConst.TriggerAtkLp);
+            animator.SetTrigger(ThisSceneDto.TriggerAtkLp);
         }
         void Pull_MediumPunch()
         {
@@ -653,7 +653,7 @@
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 50.0f;
 
             // アニメーションの開始
-            animator.SetTrigger(ThisSceneConst.TriggerAtkMp);
+            animator.SetTrigger(ThisSceneDto.TriggerAtkMp);
         }
         void Pull_HardPunch()
         {
@@ -661,7 +661,7 @@
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 100.0f;
 
             // アニメーションの開始
-            animator.SetTrigger(ThisSceneConst.TriggerAtkHp);
+            animator.SetTrigger(ThisSceneDto.TriggerAtkHp);
         }
         void Pull_LightKick()
         {
@@ -669,7 +669,7 @@
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 10.0f;
 
             // アニメーションの開始
-            animator.SetTrigger(ThisSceneConst.TriggerAtkLk);
+            animator.SetTrigger(ThisSceneDto.TriggerAtkLk);
         }
         void Pull_MediumKick()
         {
@@ -677,7 +677,7 @@
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 50.0f;
 
             // アニメーションの開始
-            animator.SetTrigger(ThisSceneConst.TriggerAtkMk);
+            animator.SetTrigger(ThisSceneDto.TriggerAtkMk);
         }
         void Pull_HardKick()
         {
@@ -685,7 +685,7 @@
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 100.0f;
 
             // アニメーションの開始
-            animator.SetTrigger(ThisSceneConst.TriggerAtkHk);
+            animator.SetTrigger(ThisSceneDto.TriggerAtkHk);
         }
         /// <summary>
         /// お辞儀の開始。
@@ -693,7 +693,7 @@
         void Pull_Resign()
         {
             //ebug.Log("トリガー　投了Ａ");
-            animator.SetTrigger(ThisSceneConst.TriggerGiveUp);
+            animator.SetTrigger(ThisSceneDto.TriggerGiveUp);
         }
         /// <summary>
         /// お辞儀の開始。
@@ -701,7 +701,7 @@
         public void Pull_ResignByLose()
         {
             //ebug.Log("トリガー　投了Ｘ");
-            animator.SetTrigger(ThisSceneConst.TriggerGiveUp);
+            animator.SetTrigger(ThisSceneDto.TriggerGiveUp);
         }
         #endregion
 

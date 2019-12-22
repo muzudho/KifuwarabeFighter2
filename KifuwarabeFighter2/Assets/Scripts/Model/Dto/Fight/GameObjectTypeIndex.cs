@@ -1,6 +1,6 @@
-﻿namespace Assets.Scripts.SceneMain
+﻿namespace Assets.Scripts.Model.Dto.Fight
 {
-    public enum GameobjectIndex
+    public enum GameObjectTypeIndex
     {
         Player,
         Name,

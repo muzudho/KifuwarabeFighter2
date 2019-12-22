@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using Assets.Scripts.Model.Dto.Fight;
     using Assets.Scripts.Model.Dto.Input;
-    using Assets.Scripts.SceneMain;
     using UnityEngine;
     using UnityEngine.SceneManagement;
     using UnityEngine.UI;
@@ -11,7 +10,7 @@
     /// <summary>
     /// メインシーンのメインカメラのスクリプトだぜ☆
     /// </summary>
-    public class CameraScript : MonoBehaviour
+    public class CameraBehaviour : MonoBehaviour
     {
         /// <summary>
         /// Player dto(Data transfer object).
@@ -51,37 +50,37 @@
         void Start()
         {
             #region UI 表示物
-            fight0 = GameObject.Find(ThisSceneConst.GameObjFight0);
-            fight0.GetComponent<Text>().text = ThisSceneConst.CharacterToFightMessage[(int)CommonScript.UseCharacters[PlayerIndex.Player1]];
-            fight1 = GameObject.Find(ThisSceneConst.GameObjFight1);
-            resign0 = GameObject.Find(ThisSceneConst.GameObjResign0);
+            fight0 = GameObject.Find(ThisSceneDto.GameObjFight0);
+            fight0.GetComponent<Text>().text = ThisSceneDto.CharacterToFightMessage[(int)CommonScript.UseCharacters[PlayerIndex.Player1]];
+            fight1 = GameObject.Find(ThisSceneDto.GameObjFight1);
+            resign0 = GameObject.Find(ThisSceneDto.GameObjResign0);
             resign0.SetActive(false);
 
             this.PlayerDTOs = new Dictionary<PlayerIndex, PlayerDto>()
             {
                 {PlayerIndex.Player1, new PlayerDto(
                     // bar1のRectTransformコンポーネントをキャッシュ
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Bar]).GetComponent<RectTransform>(),
                     // 名前
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Name]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Value]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Player]),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Name]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Value]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Player]),
                     new GameObject[]{ GameObject.Find("ResultP0_0"), GameObject.Find("ResultP0_1") },
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Outline>(),
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Outline>()
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Turn]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Turn]).GetComponent<Outline>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Time]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Time]).GetComponent<Outline>()
                     ) },
                 {PlayerIndex.Player2, new PlayerDto(
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>(),
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Name]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Value]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Player]),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Bar]).GetComponent<RectTransform>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Name]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Value]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Player]),
                     new GameObject[]{ GameObject.Find("ResultP1_0"), GameObject.Find("ResultP1_1") },
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Outline>(),
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Outline>()
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Turn]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Turn]).GetComponent<Outline>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Time]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Time]).GetComponent<Outline>()
                     ) },
             };
             this.PublicPlayerDTOs = new Dictionary<PlayerIndex, PublicPlayerDto>()
@@ -96,10 +95,10 @@
             foreach (var player in PlayerIndexes.All)
             {
                 CharacterIndex character = CommonScript.UseCharacters[player];
-                this.PlayerDTOs[player].PlayerName.text = ThisSceneConst.CharacterToNameRoma[(int)character];
+                this.PlayerDTOs[player].PlayerName.text = ThisSceneDto.CharacterToNameRoma[(int)character];
 
                 // アニメーター
-                this.PlayerDTOs[player].PlayerCharAnimetor.runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(ThisSceneConst.CharacterToAnimationController[(int)character]));
+                this.PlayerDTOs[player].PlayerCharAnimetor.runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(ThisSceneDto.CharacterToAnimationController[(int)character]));
             }
             #endregion
 
@@ -127,7 +126,7 @@
         {
             #region 対局開始表示
             ReadyingTime++;
-            if (ThisSceneConst.ReadyTimeLength == ReadyingTime)
+            if (ThisSceneDto.ReadyTimeLength == ReadyingTime)
             {
                 fight0.SetActive(false);
                 fight1.SetActive(false);
