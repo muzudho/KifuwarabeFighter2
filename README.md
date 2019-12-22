@@ -18,25 +18,6 @@ Configure input.
 * Same `Fire2`, `Fire3`, `Jump`, `Mouse X`, `Mouse Y`, `Mouse ScrollWheel`, `Horizontal`, `Vertical`, `Fire1`, `Fire2`, `Fire3`, `Jump`.
 * Change `Size` 5 to 21.
 * Click new items and input `name` text box. Rename to `P1LightPunch`, `P1MediumPunch`, `P1HardPunch`, `P1LightKick`, `P1MediumKick`, `P1HardKick`, `P1Pause`, `P2Horizontal`, `P2Vertical`, `P2LightPunch`, `P2MediumPunch`, `P2HardPunch`, `P2LightKick`, `P2MediumKick`, `P2HardKick`, `P2Pause`,
-* Configure input.
-    * `Horizontal`      Negative Button = Left, Positive Button = Right                 Alt Negative Button = h,    Alt Positive Button = i,    Gravity = 0,                                    Type = Joystick Axis,           Joy Num = Joystick 1.
-    * `Vertical`        Negative Button = Down, Positive Button = Up                    Alt Negative Button = j,    Alt Positive Button = k,    Gravity = 0,                                    Type = Joystick Axis,           Joy Num = Joystick 1.
-    * `P1LightPunch`                            Positive Button = joystick button 3,                                Alt Positive Button = a,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
-    * `P1MediumPunch`                           Positive Button = joystick button 2,                                Alt Positive Button = b,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
-    * `P1HardPunch`                             Positive Button = joystick button 4,                                Alt Positive Button = c,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
-    * `P1LightKick`                             Positive Button = joystick button 1,                                Alt Positive Button = d,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
-    * `P1MediumKick`                            Positive Button = joystick button 0,                                Alt Positive Button = e,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
-    * `P1HardKick`                              Positive Button = joystick button 5,                                Alt Positive Button = f,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
-    * `P1Pause`                                 Positive Button = joystick button 7,                                Alt Positive Button = g,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
-    * `P2Horizontal`                            Positive Button = '',                                               Alt Positive Button = '',   Gravity = 0,                                    Type = Joystick Axis,           Joy Num = Joystick 2.
-    * `P2Vertical`                              Positive Button = '',                                               Alt Positive Button = '',   Gravity = 0,                                    Type = Joystick Axis,           Joy Num = Joystick 2.
-    * `P2LightPunch`                            Positive Button = joystick button 3,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
-    * `P2MediumPunch`                           Positive Button = joystick button 2,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
-    * `P2HardPunch`                             Positive Button = joystick button 4,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
-    * `P2LightKick`                             Positive Button = joystick button 1,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
-    * `P2MediumKick`                            Positive Button = joystick button 0,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
-    * `P2HardKick`                              Positive Button = joystick button 5,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
-    * `P2Pause`                                 Positive Button = joystick button 7,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
 * Configure scene.
     * Click main menu [File] - [Build Settings...].
     * Double click [Assets] - [Scenes] - [Title] in project view.
@@ -48,6 +29,33 @@ Configure input.
     * Double click [Assets] - [Scenes] - [Result] in project view.
     * Click [Add Open Scenes] button.
     * Right click `Scenes/SampleScene` from `Build Settings/Scene In Build`. and Click [Remove Selection].
+* Configure layer.
+    * Click project view [Scenes] - [Main].
+    * Click Hierarchy view [Main] - [GroundHidden].
+    * Click Inspecter [Layer] - [Add Layer ...].
+    * Key typing `Ground` into `User Layer 9` text box.
+    * Click Hierarchy view [Main] - [GroundHidden].
+    * Click Inspecter [Layer] - [9:Ground].
+* Configure input.
+    * See: [Conventional Game Input](https://docs.unity3d.com/Manual/ConventionalGameInput.html)
+    * `Horizontal`      Negative Button = Left, Positive Button = Right                 Alt Negative Button = h,    Alt Positive Button = i,    Gravity = 0,                                    Snap = [v], Invert = [v],   Type = Joystick Axis,           Axis = X axis,  Joy Num = Joystick 1.
+    * `Vertical`        Negative Button = Down, Positive Button = Up                    Alt Negative Button = j,    Alt Positive Button = k,    Gravity = 0,                                    Snap = [v], Invert = [v],   Type = Joystick Axis,           Axis = Y axis,  Joy Num = Joystick 1.
+    * `P1LightPunch`                            Positive Button = joystick button 3,                                Alt Positive Button = a,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 1.
+    * `P1MediumPunch`                           Positive Button = joystick button 2,                                Alt Positive Button = b,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 1.
+    * `P1HardPunch`                             Positive Button = joystick button 4,                                Alt Positive Button = c,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 1.
+    * `P1LightKick`                             Positive Button = joystick button 1,                                Alt Positive Button = d,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 1.
+    * `P1MediumKick`                            Positive Button = joystick button 0,                                Alt Positive Button = e,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 1.
+    * `P1HardKick`                              Positive Button = joystick button 5,                                Alt Positive Button = f,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 1.
+    * `P1Pause`                                 Positive Button = joystick button 7,                                Alt Positive Button = g,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 1.
+    * `P2Horizontal`                            Positive Button = '',                                               Alt Positive Button = '',   Gravity = 0,                                    Snap = [v], Invert = [v],   Type = Joystick Axis,           Axis = X axis,  Joy Num = Joystick 2.
+    * `P2Vertical`                              Positive Button = '',                                               Alt Positive Button = '',   Gravity = 0,                                    Snap = [v], Invert = [v],   Type = Joystick Axis,           Axis = Y axis,  Joy Num = Joystick 2.
+    * `P2LightPunch`                            Positive Button = joystick button 3,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 2.
+    * `P2MediumPunch`                           Positive Button = joystick button 2,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 2.
+    * `P2HardPunch`                             Positive Button = joystick button 4,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 2.
+    * `P2LightKick`                             Positive Button = joystick button 1,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 2.
+    * `P2MediumKick`                            Positive Button = joystick button 0,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 2.
+    * `P2HardKick`                              Positive Button = joystick button 5,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 2.
+    * `P2Pause`                                 Positive Button = joystick button 7,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,                                Type = Key or Mouse Button,                     Joy Num = Joystick 2.
 
 
 ドキュメント Author's Technical Documents
