@@ -642,7 +642,7 @@
         void Pull_LightPunch()
         {
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
-            mainCameraScript.AttackPowers[player] = 10.0f;
+            mainCameraScript.PublicPlayerDTOs[player].AttackPower = 10.0f;
 
             // アニメーションの開始
             animator.SetTrigger(ThisSceneConst.TriggerAtkLp);
@@ -650,7 +650,7 @@
         void Pull_MediumPunch()
         {
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
-            mainCameraScript.AttackPowers[player] = 50.0f;
+            mainCameraScript.PublicPlayerDTOs[player].AttackPower = 50.0f;
 
             // アニメーションの開始
             animator.SetTrigger(ThisSceneConst.TriggerAtkMp);
@@ -658,7 +658,7 @@
         void Pull_HardPunch()
         {
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
-            mainCameraScript.AttackPowers[player] = 100.0f;
+            mainCameraScript.PublicPlayerDTOs[player].AttackPower = 100.0f;
 
             // アニメーションの開始
             animator.SetTrigger(ThisSceneConst.TriggerAtkHp);
@@ -666,7 +666,7 @@
         void Pull_LightKick()
         {
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
-            mainCameraScript.AttackPowers[player] = 10.0f;
+            mainCameraScript.PublicPlayerDTOs[player].AttackPower = 10.0f;
 
             // アニメーションの開始
             animator.SetTrigger(ThisSceneConst.TriggerAtkLk);
@@ -674,7 +674,7 @@
         void Pull_MediumKick()
         {
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
-            mainCameraScript.AttackPowers[player] = 50.0f;
+            mainCameraScript.PublicPlayerDTOs[player].AttackPower = 50.0f;
 
             // アニメーションの開始
             animator.SetTrigger(ThisSceneConst.TriggerAtkMk);
@@ -682,7 +682,7 @@
         void Pull_HardKick()
         {
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
-            mainCameraScript.AttackPowers[player] = 100.0f;
+            mainCameraScript.PublicPlayerDTOs[player].AttackPower = 100.0f;
 
             // アニメーションの開始
             animator.SetTrigger(ThisSceneConst.TriggerAtkHk);
