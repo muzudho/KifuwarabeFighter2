@@ -24,7 +24,7 @@ Configure input.
     * Click [Add Open Scenes] button.
     * Double click [Assets] - [Scenes] - [Select] in project view.
     * Click [Add Open Scenes] button.
-    * Double click [Assets] - [Scenes] - [Main] in project view.
+    * Double click [Assets] - [Scenes] - [Fight] in project view.
     * Click [Add Open Scenes] button.
     * Double click [Assets] - [Scenes] - [Result] in project view.
     * Click [Add Open Scenes] button.

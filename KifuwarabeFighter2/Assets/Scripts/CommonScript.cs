@@ -6,7 +6,7 @@ public enum SceneIndex
 {
     Title,
     Select,
-    Main,
+    Fight,
     Result,
     Num
 }
@@ -60,7 +60,7 @@ public class CommonScript
         Teban = PlayerIndex.Player1;
     }
 
-    public static string[] Scene_to_name = new[] { "Title", "Select", "Main", "Result" };
+    public static string[] Scene_to_name = new[] { "Title", "Select", "Fight", "Result" };
 
     public static Result Result { get; set; }
     /// <summary>

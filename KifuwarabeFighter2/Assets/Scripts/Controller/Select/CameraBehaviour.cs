@@ -59,7 +59,7 @@
 
                 if (5 == ThisSceneDto.TransitionTime)
                 {
-                    SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Main]);
+                    SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Fight]);
                 }
             }
         }
