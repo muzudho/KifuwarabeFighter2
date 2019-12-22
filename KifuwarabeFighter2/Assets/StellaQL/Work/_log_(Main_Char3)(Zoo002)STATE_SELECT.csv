@@ -1,0 +1,6 @@
+#layerNum#,#machineStateNum#,#stateNum#,#layerName#,#statemachinePath#,name,cycleOffset,cycleOffsetParameter,#hideFlags_string#,iKOnFeet,mirror,mirrorParameter,mirrorParameterActive,#motion_assetPath#,nameHash,speed,speedParameter,speedParameterActive,tag,writeDefaultValues,[EOL],
+0,0,0,,,CAtkMK,0,,HideInHierarchy,False,False,,False,Assets/Resources/AnimationClips/Char3@CAtkMK.anim,1503335106,2.8571,,False,,True,
+0,0,0,,,DAtkMK,0,,HideInHierarchy,False,False,,False,Assets/Resources/AnimationClips/Char3@DAtkMK.anim,1151214202,2.8571,,False,,True,
+0,0,0,,,JAtkMK,0,,HideInHierarchy,False,False,,False,Assets/Resources/AnimationClips/Char3@JAtkMK.anim,2123645706,2.8571,,False,,True,
+0,0,0,,,SAtkMK,0,,HideInHierarchy,False,False,,False,Assets/Resources/AnimationClips/Char3@SAtkMK.anim,1514999897,2.8571,,False,,True,
+[EOF],

@@ -19,24 +19,24 @@ Configure input.
 * Change `Size` 5 to 21.
 * Click new items and input `name` text box. Rename to `P1LightPunch`, `P1MediumPunch`, `P1HardPunch`, `P1LightKick`, `P1MediumKick`, `P1HardKick`, `P1Pause`, `P2Horizontal`, `P2Vertical`, `P2LightPunch`, `P2MediumPunch`, `P2HardPunch`, `P2LightKick`, `P2MediumKick`, `P2HardKick`, `P2Pause`,
 * Configure input.
-    * `Horizontal` Type = Joystick Axis, Joy Num = Joystick 1.
-    * `Vertical` Type = Joystick Axis, Joy Num = Joystick 1.
-    * `P1LightPunch` Type = Joystick Axis, Joy Num = Joystick 1.
-    * `P1MediumPunch` Type = Joystick Axis, Joy Num = Joystick 1.
-    * `P1HardPunch` Type = Joystick Axis, Joy Num = Joystick 1.
-    * `P1LightKick` Type = Joystick Axis, Joy Num = Joystick 1.
-    * `P1MediumKick` Type = Joystick Axis, Joy Num = Joystick 1.
-    * `P1HardKick` Type = Joystick Axis, Joy Num = Joystick 1.
-    * `P1Pause` Type = Joystick Axis, Joy Num = Joystick 1.
-    * `P2Horizontal` Type = Joystick Axis, Joy Num = Joystick 2.
-    * `P2Vertical` Type = Joystick Axis, Joy Num = Joystick 2.
-    * `P2LightPunch` Type = Joystick Axis, Joy Num = Joystick 2.
-    * `P2MediumPunch` Type = Joystick Axis, Joy Num = Joystick 2.
-    * `P2HardPunch` Type = Joystick Axis, Joy Num = Joystick 2.
-    * `P2LightKick` Type = Joystick Axis, Joy Num = Joystick 2.
-    * `P2MediumKick` Type = Joystick Axis, Joy Num = Joystick 2.
-    * `P2HardKick` Type = Joystick Axis, Joy Num = Joystick 2.
-    * `P2Pause` Type = Joystick Axis, Joy Num = Joystick 2.
+    * `Horizontal`      Negative Button = Left, Positive Button = Right                 Alt Negative Button = h,    Alt Positive Button = i,    Gravity = 0,                                    Type = Joystick Axis,           Joy Num = Joystick 1.
+    * `Vertical`        Negative Button = Down, Positive Button = Up                    Alt Negative Button = j,    Alt Positive Button = k,    Gravity = 0,                                    Type = Joystick Axis,           Joy Num = Joystick 1.
+    * `P1LightPunch`                            Positive Button = joystick button 3,                                Alt Positive Button = a,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
+    * `P1MediumPunch`                           Positive Button = joystick button 2,                                Alt Positive Button = b,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
+    * `P1HardPunch`                             Positive Button = joystick button 4,                                Alt Positive Button = c,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
+    * `P1LightKick`                             Positive Button = joystick button 1,                                Alt Positive Button = d,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
+    * `P1MediumKick`                            Positive Button = joystick button 0,                                Alt Positive Button = e,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
+    * `P1HardKick`                              Positive Button = joystick button 5,                                Alt Positive Button = f,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
+    * `P1Pause`                                 Positive Button = joystick button 7,                                Alt Positive Button = g,    Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 1.
+    * `P2Horizontal`                            Positive Button = '',                                               Alt Positive Button = '',   Gravity = 0,                                    Type = Joystick Axis,           Joy Num = Joystick 2.
+    * `P2Vertical`                              Positive Button = '',                                               Alt Positive Button = '',   Gravity = 0,                                    Type = Joystick Axis,           Joy Num = Joystick 2.
+    * `P2LightPunch`                            Positive Button = joystick button 3,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
+    * `P2MediumPunch`                           Positive Button = joystick button 2,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
+    * `P2HardPunch`                             Positive Button = joystick button 4,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
+    * `P2LightKick`                             Positive Button = joystick button 1,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
+    * `P2MediumKick`                            Positive Button = joystick button 0,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
+    * `P2HardKick`                              Positive Button = joystick button 5,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
+    * `P2Pause`                                 Positive Button = joystick button 7,                                Alt Positive Button = '',   Gravity = 0,    Dead = 0.2, Sensitivity = 1,    Type = Key or Mouse Button,     Joy Num = Joystick 2.
 * Configure scene.
     * Click main menu [File] - [Build Settings...].
     * Double click [Assets] - [Scenes] - [Title] in project view.
