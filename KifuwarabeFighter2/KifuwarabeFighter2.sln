@@ -1,9 +1,9 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2008
-
-Project("{EB26B7C0-D882-A55C-A671-958B9C7630B1}") = "KifuwarabeFighter2", "Assembly-CSharp.csproj", "{1E14DB9F-8EAB-1982-F8AE-22F8D5263D4E}"
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{1E14DB9F-8EAB-1982-F8AE-22F8D5263D4E}"
 EndProject
-Project("{EB26B7C0-D882-A55C-A671-958B9C7630B1}") = "KifuwarabeFighter2", "Assembly-CSharp-Editor.csproj", "{3256FBAA-F3C4-DD39-EF85-15B2F02601C6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{3256FBAA-F3C4-DD39-EF85-15B2F02601C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,8 +22,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Assembly-CSharp.csproj
 	EndGlobalSection
 EndGlobal
