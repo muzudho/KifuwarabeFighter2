@@ -56,20 +56,20 @@
         };
 
         public static string[] PlayerToTag = new[] { "Player0", "Player1" };
-        public static Dictionary<PlayerIndex, string[]> GameobjectToPath = new Dictionary<PlayerIndex, string[]>
+        public static Dictionary<PlayerIndex, string[]> GameObjectPaths = new Dictionary<PlayerIndex, string[]>
         {
             {PlayerIndex.Player1, new string[]{ "Player0","Canvas/Name0","Canvas/Bar0","Canvas/Value0","Canvas/Turn0","Canvas/Time0",} },
             {PlayerIndex.Player2, new string[]{ "Player1","Canvas/Name1","Canvas/Bar1","Canvas/Value1","Canvas/Turn1","Canvas/Time1",} },
         };
 
-        public static Dictionary<PlayerIndex, string[]> HitboxToPath = new Dictionary<PlayerIndex, string[]>
+        public static Dictionary<PlayerIndex, string[]> HitboxPaths = new Dictionary<PlayerIndex, string[]>
         {
             {PlayerIndex.Player1,new string[]{ "Hitbox0", "Weakbox0", "Strongbox0", } },
             {PlayerIndex.Player2,new string[]{ "Hitbox1", "Weakbox1", "Strongbox1", } },
         };
-        public static string[,] PlayerAndHitboxToTag = new[,] {
-            { "Hitbox0", "Weakbox0", "Strongbox0", },
-            { "Hitbox1", "Weakbox1", "Strongbox1", },
+        public static Dictionary<PlayerIndex, string[]> HitboxTags = new Dictionary<PlayerIndex, string[]> {
+            {PlayerIndex.Player1,new string[]{ "Hitbox0", "Weakbox0", "Strongbox0", } },
+            {PlayerIndex.Player2,new string[]{ "Hitbox1", "Weakbox1", "Strongbox1", } },
         };
 
         /// <summary>

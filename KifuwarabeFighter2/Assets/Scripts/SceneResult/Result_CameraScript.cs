@@ -1,5 +1,6 @@
 ﻿namespace SceneResult
 {
+    using Assets.Scripts.Model.Dto;
     using Assets.Scripts.Model.Dto.Input;
     using UnityEngine;
     using UnityEngine.SceneManagement;
@@ -83,26 +84,23 @@
         void Update()
         {
             // キャンセル以外の 何かボタンを押したらセレクト画面へ遷移
-            if (Input.GetButton(InputNames.Dictionary[InputIndexes.P1Lp]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P1Mp]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P1Hp]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P1Lk]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P1Mk]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P1Hk]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P1Pause]) ||
-                // Input.GetButton(InputNames.Dictionary[InputIndexes.P1CancelMenu]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P2Lp]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P2Mp]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P2Hp]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P2Lk]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P2Mk]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P2Hp]) ||
-                Input.GetButton(InputNames.Dictionary[InputIndexes.P2Pause])
-            )
+            foreach (var player in PlayerIndexes.All)
             {
-                SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Select]);
-            }
+                // プレイヤーのキー押下状態を確認。
+                InputStateDto state = ApplicationDto.ReadInput(player);
 
+                // キャンセル以外の 何かボタンを押したらセレクト画面へ遷移
+                if (state.Lp.Pressing ||
+                    state.Mp.Pressing ||
+                    state.Hp.Pressing ||
+                    state.Lk.Pressing ||
+                    state.Mk.Pressing ||
+                    state.Hk.Pressing ||
+                    state.Pause.Pressing)
+                {
+                    SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Select]);
+                }
+            }
         }
     }
 }

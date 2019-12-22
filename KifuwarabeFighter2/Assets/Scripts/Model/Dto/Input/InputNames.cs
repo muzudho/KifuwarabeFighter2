@@ -2,8 +2,36 @@
 {
     using System.Collections.Generic;
 
-    public class InputNames
+    public static class InputNames
     {
+        static InputNames()
+        {
+            Dictionary = new Dictionary<InputIndex, string>() {
+                // Player 1.
+                { InputIndexes.P1Horizontal, "Horizontal" },
+                { InputIndexes.P1Vertical, "Vertical"},
+                { InputIndexes.P1Lp,"P1LightPunch"},
+                { InputIndexes.P1Mp,"P1MediumPunch" },
+                { InputIndexes.P1Hp,"P1HardPunch" },
+                { InputIndexes.P1Lk,"P1LightKick" },
+                { InputIndexes.P1Mk,"P1MediumKick" },
+                { InputIndexes.P1Hk,"P1HardKick"},
+                { InputIndexes.P1Pause,"P1Pause" },
+                { InputIndexes.P1CancelMenu,"Cancel" }, // プレイヤー１のみキャンセル可能☆（＾～＾）
+                // Player 2.
+                { InputIndexes.P2Horizontal,"P2Horizontal" },
+                { InputIndexes.P2Vertical, "P2Vertical" },
+                { InputIndexes.P2Lp,"P2LightPunch" },
+                { InputIndexes.P2Mp,"P2MediumPunch" },
+                { InputIndexes.P2Hp,"P2HardPunch" },
+                { InputIndexes.P2Lk,"P2LightKick" },
+                { InputIndexes.P2Mk,"P2MediumKick" },
+                { InputIndexes.P2Hk,"P2HardKick" },
+                { InputIndexes.P2Pause,"P2Pause" },
+                { InputIndexes.P2CancelMenu,"Cancel" }, // これに該当するボタンはありません。
+            };
+        }
+
         /// * Main menu [Edit] - [Project Settings...] - [Input].
         /// * Right click `Fire1` and [Delete Array Eelement].
         /// * Same `Fire2`, `Fire3`, `Jump`, `Mouse X`, `Mouse Y`, `Mouse ScrollWheel`, `Horizontal`, `Vertical`, `Fire1`, `Fire2`, `Fire3`, `Jump`.
@@ -33,28 +61,6 @@
         /// 内部的には　プレイヤー１はP0、プレイヤー２はP1 だぜ☆（＾▽＾）
         /// 入力類は、コンフィグ画面でユーザーの目に触れる☆（＾～＾）
         /// ユーザーの目に見えるところでは 1スタート、内部的には 0スタートだぜ☆（＾▽＾）
-        public static Dictionary<InputIndex, string> Dictionary = new Dictionary<InputIndex, string>() {
-            // Player 1.
-            { InputIndexes.P1Horizontal, "Horizontal" },
-            { InputIndexes.P1Vertical, "Vertical"},
-            { InputIndexes.P1Lp,"P1LightPunch"},
-            { InputIndexes.P1Mp,"P1MediumPunch" },
-            { InputIndexes.P1Hp,"P1HardPunch" },
-            { InputIndexes.P1Lk,"P1LightKick" },
-            { InputIndexes.P1Mk,"P1MediumKick" },
-            { InputIndexes.P1Hk,"P1HardKick"},
-            { InputIndexes.P1Pause,"P1Pause" },
-            { InputIndexes.P1CancelMenu,"Cancel" }, // プレイヤー１のみキャンセル可能☆（＾～＾）
-            // Player 2.
-            { InputIndexes.P2Horizontal,"P2Horizontal" },
-            { InputIndexes.P2Vertical, "P2Vertical" },
-            { InputIndexes.P2Lp,"P2LightPunch" },
-            { InputIndexes.P2Mp,"P2MediumPunch" },
-            { InputIndexes.P2Hp,"P2HardPunch" },
-            { InputIndexes.P2Lk,"P2LightKick" },
-            { InputIndexes.P2Mk,"P2MediumKick" },
-            { InputIndexes.P2Hk,"P2HardKick" },
-            { InputIndexes.P2Pause,"P2Pause" },
-        };
+        public static Dictionary<InputIndex, string> Dictionary;
     }
 }

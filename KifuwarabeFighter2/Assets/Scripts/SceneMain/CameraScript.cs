@@ -101,8 +101,8 @@
             fight1 = GameObject.Find(ThisSceneConst.GameObjFight1);
             resign0 = GameObject.Find(ThisSceneConst.GameObjResign0);
             resign0.SetActive(false);
-            player_to_name = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Name]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Name]).GetComponent<Text>() };
-            player_to_value = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Value]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Value]).GetComponent<Text>() };
+            player_to_name = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Name]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Name]).GetComponent<Text>() };
+            player_to_value = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Value]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Value]).GetComponent<Text>() };
             #endregion
             #region Internal variable 内部変数
             player_to_winCount = new[] { 0, 0 };
@@ -110,8 +110,8 @@
             #region 選択キャラクター
             playerChars = new Dictionary<PlayerIndex, GameObject>()
             {
-                {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Player])},
-                {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Player])},
+                {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Player])},
+                {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Player])},
             };
             charScripts = new Dictionary<PlayerIndex, PlayerScript>()
             {
@@ -132,13 +132,13 @@
             #endregion
 
             //bar1のRectTransformコンポーネントをキャッシュ
-            player_to_barTransform = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>() };
+            player_to_barTransform = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>() };
 
             #region 時間制限
-            player_to_turn = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Text>() };
-            player_to_time = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Text>() };
-            player_to_turnOutline = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Outline>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Outline>() };
-            player_to_timeOutline = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Outline>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Outline>() };
+            player_to_turn = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Text>() };
+            player_to_time = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Text>() };
+            player_to_turnOutline = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Outline>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Outline>() };
+            player_to_timeOutline = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Outline>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Outline>() };
             InitTime();
             #endregion
 

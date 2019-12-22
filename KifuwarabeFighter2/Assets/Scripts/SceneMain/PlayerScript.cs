@@ -56,14 +56,14 @@
             mainCameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
             #region 当たり判定
             opponent = CommonScript.ReverseTeban(player);
-            opponentHitboxTag = ThisSceneConst.PlayerAndHitboxToTag[(int)this.Opponent, (int)HitboxIndex.Hitbox];
+            opponentHitboxTag = ThisSceneConst.HitboxTags[this.Opponent][(int)HitboxIndex.Hitbox];
 
             hitboxsSpriteRenderer = new SpriteRenderer[] {
-                 GameObject.Find(ThisSceneConst.HitboxToPath[player][(int)HitboxIndex.Hitbox]).GetComponent<SpriteRenderer>(),
-                 GameObject.Find(ThisSceneConst.HitboxToPath[player][(int)HitboxIndex.Weakbox]).GetComponent<SpriteRenderer>(),
-                 GameObject.Find(ThisSceneConst.HitboxToPath[player][(int)HitboxIndex.Strongbox]).GetComponent<SpriteRenderer>(),
+                 GameObject.Find(ThisSceneConst.HitboxPaths[player][(int)HitboxIndex.Hitbox]).GetComponent<SpriteRenderer>(),
+                 GameObject.Find(ThisSceneConst.HitboxPaths[player][(int)HitboxIndex.Weakbox]).GetComponent<SpriteRenderer>(),
+                 GameObject.Find(ThisSceneConst.HitboxPaths[player][(int)HitboxIndex.Strongbox]).GetComponent<SpriteRenderer>(),
             };
-            weakboxCollider2D = GameObject.Find(ThisSceneConst.HitboxToPath[player][(int)HitboxIndex.Weakbox]).GetComponent<BoxCollider2D>();
+            weakboxCollider2D = GameObject.Find(ThisSceneConst.HitboxPaths[player][(int)HitboxIndex.Weakbox]).GetComponent<BoxCollider2D>();
             #endregion
             #region ジャンプ
             groundLayer = LayerMask.GetMask("Ground");

@@ -22,5 +22,6 @@
         public static InputIndex P2Mk = new InputIndex(PlayerIndex.Player2, ButtonIndex.MediumKick);
         public static InputIndex P2Hk = new InputIndex(PlayerIndex.Player2, ButtonIndex.HardKick);
         public static InputIndex P2Pause = new InputIndex(PlayerIndex.Player2, ButtonIndex.Pause);
+        public static InputIndex P2CancelMenu = new InputIndex(PlayerIndex.Player2, ButtonIndex.CancelMenu); // プレイヤー２にこのボタンはありません。
     }
 }

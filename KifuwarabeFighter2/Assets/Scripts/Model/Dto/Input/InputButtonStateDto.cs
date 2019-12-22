@@ -31,7 +31,7 @@
         /// ボタン押下状態の簡易表示。
         /// </summary>
         /// <returns></returns>
-        public string toDisplay()
+        public string ToDisplay()
         {
             return $"{(this.Down ? "v" : "")}{(this.Pressing ? "v" : "")}{(this.Up ? "^" : "")}";
         }

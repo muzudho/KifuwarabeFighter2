@@ -14,28 +14,18 @@
             foreach (var player in PlayerIndexes.All)
             {
                 // プレイヤーのキー押下状態を確認。
-                InputStateDto input = ApplicationDto.ReadInput(player);
+                InputStateDto state = ApplicationDto.ReadInput(player);
 
-                // どのキーが押されたか、ここでテストも兼ねます。
-                var Lp = Input.GetButton(InputNames.Dictionary[new InputIndex(player, ButtonIndex.LightPunch)]);
-                var Mp = Input.GetButton(InputNames.Dictionary[new InputIndex(player, ButtonIndex.MediumPunch)]);
-                var Hp = Input.GetButton(InputNames.Dictionary[new InputIndex(player, ButtonIndex.HardPunch)]);
-                var Lk = Input.GetButton(InputNames.Dictionary[new InputIndex(player, ButtonIndex.LightKick)]);
-                var Mk = Input.GetButton(InputNames.Dictionary[new InputIndex(player, ButtonIndex.MediumKick)]);
-                var Hk = Input.GetButton(InputNames.Dictionary[new InputIndex(player, ButtonIndex.HardKick)]);
-                var Pause = Input.GetButton(InputNames.Dictionary[new InputIndex(player, ButtonIndex.Pause)]);
-                // Input.GetButton(InputNames.Dictionary[new InputIndex(PlayerIndex.Player1, ButtonIndex.CancelMenu)])
-
-                if (Lp ||
-                    Mp ||
-                    Hp ||
-                    Lk ||
-                    Mk ||
-                    Hk ||
-                    Pause
+                if (state.Lp.Pressing ||
+                    state.Mp.Pressing ||
+                    state.Hp.Pressing ||
+                    state.Lk.Pressing ||
+                    state.Mk.Pressing ||
+                    state.Hk.Pressing ||
+                    state.Pause.Pressing
                 )
                 {
-                    Debug.Log($"Push key. human={player} Lp={Lp} Mp={Mp} Hp={Hp} Lk={Lk} Mk={Mk} Hk={Hk}");
+                    Debug.Log($"Push key. human={player} input {state.ToDisplay()}");
                     CommonScript.computerFlags[player] = false;
 
                     // * Configure scene.
