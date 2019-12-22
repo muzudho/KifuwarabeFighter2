@@ -1,11 +1,13 @@
-﻿using DojinCircleGrayscale.StellaQL;
-using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
-using DojinCircleGrayscale.StellaQL.Acons.Select_Cursor;
-
-namespace SceneSelect
+﻿namespace SceneSelect
 {
+    using System.Collections;
+    using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Model.Dto.Scene.Common;
+    using DojinCircleGrayscale.StellaQL;
+    using DojinCircleGrayscale.StellaQL.Acons.Select_Cursor;
+    using UnityEngine;
+    using UnityEngine.UI;
+
     public class Select_PlayerScript : MonoBehaviour
     {
         /// <summary>
@@ -87,7 +89,7 @@ namespace SceneSelect
             }
             else
             {
-                input.leverX = Input.GetAxisRaw(CommonInput.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Horizontal]);
+                input.leverX = Input.GetAxisRaw(CommonInput.InputNameDictionary[new InputIndex((PlayerIndex)playerIndex, ButtonIndex.Horizontal)]);
             }
             #endregion
 

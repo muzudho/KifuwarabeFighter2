@@ -1,7 +1,9 @@
 ﻿namespace SceneMain
 {
-    using UnityEngine;
+    using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Model.Dto.Scene.Common;
     using Assets.Scripts.SceneMain;
+    using UnityEngine;
 
     public class WeakboxScript : MonoBehaviour
     {

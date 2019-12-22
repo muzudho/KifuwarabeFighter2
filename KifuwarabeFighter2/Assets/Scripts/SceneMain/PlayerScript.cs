@@ -1,9 +1,11 @@
 ﻿namespace SceneMain
 {
+    using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Model.Dto.Scene.Common;
+    using Assets.Scripts.SceneMain;
     using DojinCircleGrayscale.Hitbox2DLorikeet;
     using DojinCircleGrayscale.StellaQL.Acons.Main_Char3;
     using UnityEngine;
-    using Assets.Scripts.SceneMain;
 
     public class PlayerScript : MonoBehaviour
     {
@@ -562,7 +564,7 @@
             float velocityX = Rigidbody2D.velocity.x;
 
             //左キー: -1、右キー: 1
-            float leverX = Input.GetAxisRaw(CommonInput.PlayerAndInput_to_inputName[playerIndex, (int)InputIndex.Horizontal]);
+            float leverX = Input.GetAxisRaw(CommonInput.InputNameDictionary[new InputIndex((PlayerIndex)playerIndex, ButtonIndex.Horizontal)]);
 
             if (leverX != 0)//左か右を入力したら
             {

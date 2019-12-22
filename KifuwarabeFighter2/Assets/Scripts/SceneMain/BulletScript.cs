@@ -1,8 +1,9 @@
 ﻿namespace SceneMain
 {
-    using UnityEngine;
-    using DojinCircleGrayscale.Hitbox2DLorikeet;
+    using Assets.Scripts.Model.Dto.Input;
     using Assets.Scripts.SceneMain;
+    using DojinCircleGrayscale.Hitbox2DLorikeet;
+    using UnityEngine;
 
     public class BulletScript : MonoBehaviour
     {

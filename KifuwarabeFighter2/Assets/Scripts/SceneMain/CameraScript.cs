@@ -1,9 +1,10 @@
 ﻿namespace SceneMain
 {
+    using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.SceneMain;
     using UnityEngine;
     using UnityEngine.SceneManagement;
     using UnityEngine.UI;
-    using Assets.Scripts.SceneMain;
 
     /// <summary>
     /// メインシーンのメインカメラのスクリプトだぜ☆

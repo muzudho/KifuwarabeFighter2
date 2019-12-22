@@ -1,10 +1,11 @@
-﻿using DojinCircleGrayscale.StellaQL;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using DojinCircleGrayscale.StellaQL.Acons.Select_Cursor;
-
-namespace SceneSelect
+﻿namespace SceneSelect
 {
+    using Assets.Scripts.Model.Dto.Input;
+    using DojinCircleGrayscale.StellaQL;
+    using DojinCircleGrayscale.StellaQL.Acons.Select_Cursor;
+    using UnityEngine;
+    using UnityEngine.SceneManagement;
+
     public class Select_CameraScript : MonoBehaviour
     {
         Animator[] player_to_animator;

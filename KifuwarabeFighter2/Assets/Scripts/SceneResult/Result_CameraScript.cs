@@ -1,9 +1,11 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-
-namespace SceneResult
+﻿namespace SceneResult
 {
+    using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Model.Dto.Scene.Common;
+    using UnityEngine;
+    using UnityEngine.SceneManagement;
+    using UnityEngine.UI;
+
     public class Result_CameraScript : MonoBehaviour
     {
         /// <summary>
@@ -21,7 +23,7 @@ namespace SceneResult
 
             // プレイヤー１、２の顔
             {
-                player_to_face = new Image[] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1,(int)GameobjectIndex.Face]).GetComponent<Image>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Face]).GetComponent<Image>() };
+                player_to_face = new Image[] { GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player1, (int)GameobjectIndex.Face]).GetComponent<Image>(), GameObject.Find(SceneCommon.PlayerAndGameobject_to_path[(int)PlayerIndex.Player2, (int)GameobjectIndex.Face]).GetComponent<Image>() };
 
                 for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
                 {
@@ -79,22 +81,22 @@ namespace SceneResult
         {
 
             // 何かボタンを押したらセレクト画面へ遷移
-            if (Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player1, (int)InputIndex.LightPunch]) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player1, (int)InputIndex.MediumPunch]) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player1, (int)InputIndex.HardPunch]) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player1, (int)InputIndex.LightKick]) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player1, (int)InputIndex.MediumKick]) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player1, (int)InputIndex.HardKick]) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player1, (int)InputIndex.Pause]) ||
-                Input.GetButton(CommonInput.INPUT_10_CA) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player2, (int)InputIndex.LightPunch]) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player2, (int)InputIndex.MediumPunch]) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player2, (int)InputIndex.HardPunch]) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player2, (int)InputIndex.LightKick]) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player2, (int)InputIndex.MediumKick]) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player2, (int)InputIndex.HardPunch]) ||
-                Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)PlayerIndex.Player2, (int)InputIndex.Pause])
-                )
+            if (Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P1Lp]) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P1Mp]) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P1Hp]) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P1Lk]) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P1Mk]) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P1Hk]) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P1Pause]) ||
+                Input.GetButton(CommonInput.Input10Ca) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P2Lp]) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P2Mp]) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P2Hp]) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P2Lk]) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P2Mk]) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P2Hp]) ||
+                Input.GetButton(CommonInput.InputNameDictionary[InputIndexes.P2Pause])
+            )
             {
                 SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Select]);
             }
