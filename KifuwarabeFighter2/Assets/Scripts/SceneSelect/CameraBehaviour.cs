@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Model.Dto.Select;
     using DojinCircleGrayscale.StellaQL;
     using DojinCircleGrayscale.StellaQL.Acons.Select_Cursor;
     using UnityEngine;
@@ -24,8 +25,8 @@
         {
             animators = new Dictionary<PlayerIndex, Animator>
             {
-                { PlayerIndex.Player1, GameObject.Find(SceneCommon.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Player]).GetComponent<Animator>() },
-                { PlayerIndex.Player2, GameObject.Find(SceneCommon.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Player]).GetComponent<Animator>() },
+                { PlayerIndex.Player1, GameObject.Find(GameObjectPaths.All[GameObjectIndexes.P1Player]).GetComponent<Animator>() },
+                { PlayerIndex.Player2, GameObject.Find(GameObjectPaths.All[GameObjectIndexes.P2Player]).GetComponent<Animator>() },
             };
 
             // このシーンのデータベースを用意するぜ☆（＾▽＾）
@@ -47,16 +48,16 @@
                 )
             {
                 // １プレイヤー、２プレイヤー　ともに Ready ステートなら。
-                animators[PlayerIndex.Player1].SetTrigger(SceneCommon.TRIGGER_TIMEOVER);
-                animators[PlayerIndex.Player2].SetTrigger(SceneCommon.TRIGGER_TIMEOVER);
-                SceneCommon.TransitionTime = 1;
+                animators[PlayerIndex.Player1].SetTrigger(ThisSceneDto.TriggerTimeOver);
+                animators[PlayerIndex.Player2].SetTrigger(ThisSceneDto.TriggerTimeOver);
+                ThisSceneDto.TransitionTime = 1;
             }
 
-            if (0 < SceneCommon.TransitionTime)
+            if (0 < ThisSceneDto.TransitionTime)
             {
-                SceneCommon.TransitionTime++;
+                ThisSceneDto.TransitionTime++;
 
-                if (5 == SceneCommon.TransitionTime)
+                if (5 == ThisSceneDto.TransitionTime)
                 {
                     SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Main]);
                 }

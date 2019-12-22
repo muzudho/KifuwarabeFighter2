@@ -3,6 +3,7 @@
     using System.Collections;
     using Assets.Scripts.Model.Dto;
     using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Model.Dto.Select;
     using DojinCircleGrayscale.StellaQL;
     using DojinCircleGrayscale.StellaQL.Acons.Select_Cursor;
     using UnityEngine;
@@ -35,9 +36,9 @@
 
             cursorColumn = 0;
             myRigidbody2D = GetComponent<Rigidbody2D>();
-            playerChar = GameObject.Find(SceneCommon.GameobjectToPath[player][(int)GameobjectIndex.Player]).GetComponent<Text>();
-            face = GameObject.Find(SceneCommon.GameobjectToPath[player][(int)GameobjectIndex.Face]).GetComponent<Image>();
-            myName = GameObject.Find(SceneCommon.GameobjectToPath[player][(int)GameobjectIndex.Name]).GetComponent<Text>();
+            playerChar = GameObject.Find(GameObjectPaths.All[new GameObjectIndex(player, GameObjectTypeIndex.Player)]).GetComponent<Text>();
+            face = GameObject.Find(GameObjectPaths.All[new GameObjectIndex(player, GameObjectTypeIndex.Face)]).GetComponent<Image>();
+            myName = GameObject.Find(GameObjectPaths.All[new GameObjectIndex(player, GameObjectTypeIndex.Name)]).GetComponent<Text>();
 
             ChangeCharacter();
         }
@@ -120,7 +121,7 @@
                     )
                 {
                     // 何かボタンを押したら、キャラクター選択。
-                    animator.SetTrigger(SceneCommon.TRIGGER_SELECT);
+                    animator.SetTrigger(ThisSceneDto.TriggerSelect);
                 }
                 else if (input.LeverX != 0.0f)//左か右を入力したら
                 {
@@ -144,7 +145,7 @@
 
                     //Debug.Log("slide pos = " + cursorColumn[iPlayerIndex]);
 
-                    animator.SetTrigger(SceneCommon.TRIGGER_MOVE);
+                    animator.SetTrigger(ThisSceneDto.TriggerMove);
 
                     ChangeCharacter();
 
@@ -176,7 +177,7 @@
                     ))
                 {
                     // キック・ボタンを押したら、キャンセル☆
-                    animator.SetTrigger(SceneCommon.TRIGGER_STAY);
+                    animator.SetTrigger(ThisSceneDto.TriggerStay);
                 }
             }
         }
@@ -198,8 +199,8 @@
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
 
             Vector3 inPosition = new Vector3(
-                SceneCommon.BoxColumn_to_locationX[cursorColumn],
-                SceneCommon.locationYs[player],
+                ThisSceneDto.Table[cursorColumn].X,
+                ThisSceneDto.PlayerDTOs[player].LocationY,
                 0.0f);// スライドイン後の位置
             float duration = 1.0f;// スライド時間（秒）
 
@@ -216,7 +217,7 @@
             }
             playerChar.transform.localPosition = startPos + moveDistance;
 
-            animator.SetTrigger(SceneCommon.TRIGGER_STAY);
+            animator.SetTrigger(ThisSceneDto.TriggerStay);
         }
 
 
@@ -225,14 +226,14 @@
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
 
             // 選択キャラクター変更
-            CharacterIndex character = SceneCommon.X_To_CharacterInSelectMenu[cursorColumn];
+            CharacterIndex character = ThisSceneDto.Table[cursorColumn].CharacterIndex;
             CommonScript.UseCharacters[player] = character;
             // 顔変更
             Sprite[] sprites = Resources.LoadAll<Sprite>(CommonScript.CharacterAndSlice_to_faceSprites[(int)character, (int)ResultFaceSpriteIndex.All]);
             string slice = CommonScript.CharacterAndSlice_to_faceSprites[(int)character, (int)ResultFaceSpriteIndex.Win];
             face.sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(slice));
             // キャラクター名変更
-            myName.text = SceneCommon.Character_To_Name[(int)CommonScript.UseCharacters[player]];
+            myName.text = ThisSceneDto.Table[(int)CommonScript.UseCharacters[player]].Name;
         }
     }
 }
