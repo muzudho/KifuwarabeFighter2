@@ -51,7 +51,7 @@
             AcStateRecordable astateRecord = AControl.Instance.GetCurrentAcStateRecord(animator);
 
             #region 入力受付と途中参加
-            InputStateDto input = ApplicationDto.OnUpdate(player);
+            InputStateDto input = ApplicationDto.ReadInput(player);
 
             // 人間の途中参加受付
             if (
@@ -60,19 +60,19 @@
                 // レバーはコンピューターもいじっているので、区別できない。
                 // 0 != leverX ||
                 // 0 != leverY ||
-                0 != input.leverX ||
-                0 != input.leverY ||
-                input.pressingLP ||
-                input.pressingMP ||
-                input.pressingHP ||
-                input.pressingLK ||
-                input.pressingMK ||
-                input.pressingHK ||
-                input.pressingPA ||
-                input.pressingCancelMenu
+                0 != input.LeverX ||
+                0 != input.LeverY ||
+                input.Lp.Pressing ||
+                input.Mp.Pressing ||
+                input.Hp.Pressing ||
+                input.Lk.Pressing ||
+                input.Mk.Pressing ||
+                input.Hk.Pressing ||
+                input.Pause.Pressing ||
+                input.CancelMenu.Pressing
                 ))
             {
-                Debug.Log("途中参加 " + player + " プレイヤー" + " leverX = " + input.leverX + " leverY = " + input.leverY);
+                Debug.Log("途中参加 " + player + " プレイヤー" + " leverX = " + input.LeverX + " leverY = " + input.LeverY);
                 // コンピューター・プレイヤー側のゲームパッドで、何かボタンを押したら、人間の参入。
                 CommonScript.computerFlags[player] = false;
                 // FIXME: 硬直時間を入れたい。
@@ -81,19 +81,19 @@
 
             if (CommonScript.computerFlags[player])
             {
-                input.leverX = Random.Range(-1.0f, 1.0f);
-                input.pressingLP = false;
-                input.pressingMP = false;
-                input.pressingHP = false;
-                input.pressingLK = false;
-                input.pressingMK = false;
-                input.pressingHK = false;
-                input.pressingPA = false;
-                input.pressingCancelMenu = false;
+                input.LeverX = Random.Range(-1.0f, 1.0f);
+                input.Lp.Pressing = false;
+                input.Mp.Pressing = false;
+                input.Hp.Pressing = false;
+                input.Lk.Pressing = false;
+                input.Mk.Pressing = false;
+                input.Hk.Pressing = false;
+                input.Pause.Pressing = false;
+                input.CancelMenu.Pressing = false;
             }
             else
             {
-                input.leverX = Input.GetAxisRaw(InputNames.Dictionary[new InputIndex(player, ButtonIndex.Horizontal)]);
+                input.LeverX = Input.GetAxisRaw(InputNames.Dictionary[new InputIndex(player, ButtonIndex.Horizontal)]);
             }
             #endregion
 
@@ -105,27 +105,27 @@
                 {
                     if (CameraBehaviour.READY_TIME_LENGTH < mainCameraScript.ReadyingTime)
                     {
-                        input.pressingLP = (0.5 < Random.Range(0.0f, 1.0f)); // たまにパンチ・キーを押して決定する。
+                        input.Lp.Pressing = (0.5 < Random.Range(0.0f, 1.0f)); // たまにパンチ・キーを押して決定する。
                     }
                 }
 
                 if (
-                    input.pressingLP ||
-                    input.pressingMP ||
-                    input.pressingHP ||
-                    input.pressingLK ||
-                    input.pressingMK ||
-                    input.pressingHK ||
-                    input.pressingPA
+                    input.Lp.Pressing ||
+                    input.Mp.Pressing ||
+                    input.Hp.Pressing ||
+                    input.Lk.Pressing ||
+                    input.Mk.Pressing ||
+                    input.Hk.Pressing ||
+                    input.Pause.Pressing
                     )
                 {
                     // 何かボタンを押したら、キャラクター選択。
                     animator.SetTrigger(SceneCommon.TRIGGER_SELECT);
                 }
-                else if (input.leverX != 0.0f)//左か右を入力したら
+                else if (input.LeverX != 0.0f)//左か右を入力したら
                 {
                     //Debug.Log("slide lever x = " + leverX.ToString());
-                    if (input.leverX < 0.0f)
+                    if (input.LeverX < 0.0f)
                     {
                         cursorColumn--;
                         if (cursorColumn < 0)
@@ -169,10 +169,10 @@
                     !CommonScript.computerFlags[player] // 人間プレイヤーの場合
                     &&
                     (
-                    input.pressingLK ||
-                    input.pressingMK ||
-                    input.pressingHK ||
-                    input.pressingCancelMenu
+                    input.Lk.Pressing ||
+                    input.Mk.Pressing ||
+                    input.Hk.Pressing ||
+                    input.CancelMenu.Pressing
                     ))
                 {
                     // キック・ボタンを押したら、キャンセル☆

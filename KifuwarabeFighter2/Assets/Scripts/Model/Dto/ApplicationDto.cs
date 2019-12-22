@@ -11,7 +11,7 @@
     {
         static ApplicationDto()
         {
-            PlayerInputStates = new Dictionary<PlayerIndex, InputStateDto>()
+            PlayerInputStateDTOs = new Dictionary<PlayerIndex, InputStateDto>()
             {
                 { PlayerIndex.Player1, new InputStateDto() },
                 { PlayerIndex.Player2, new InputStateDto() },
@@ -21,16 +21,17 @@
         /// <summary>
         /// キャストするのがめんどくさいので、マップを使うぜ☆（＾～＾）
         /// </summary>
-        public static Dictionary<PlayerIndex, InputStateDto> PlayerInputStates { get; set; }
+        public static Dictionary<PlayerIndex, InputStateDto> PlayerInputStateDTOs { get; set; }
 
         /// <summary>
-        /// シーンの Update メソッドの中で呼び出されます。
+        /// キーの押下状態を読み取ります。
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public static InputStateDto OnUpdate(PlayerIndex player)
+        public static InputStateDto ReadInput(PlayerIndex player)
         {
-            InputStateDto state = PlayerInputStates[player];
+            // DTOを使い回します。
+            InputStateDto state = PlayerInputStateDTOs[player];
 
             PlayerInputDao.UpdateState(player, state);
 

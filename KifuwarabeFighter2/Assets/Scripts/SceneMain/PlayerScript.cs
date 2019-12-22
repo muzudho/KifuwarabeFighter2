@@ -18,7 +18,8 @@
 
         public bool isComputer;
         public GameObject bullet;
-        Animator animator; public Animator Animator { get { return animator; } }
+        Animator animator;
+        public Animator Animator { get { return animator; } }
         CameraScript mainCameraScript; public CameraScript MainCameraScript { get { return mainCameraScript; } }
 
         #region 当たり判定
@@ -88,92 +89,94 @@
             AcState astateRecord = (AcState)AControl.Instance.GetCurrentAcStateRecord(animator);
 
             #region 入力受付
-            InputStateDto input = ApplicationDto.OnUpdate(player);
+            InputStateDto input = ApplicationDto.ReadInput(player);
 
             if (isComputer)
             {
-                if (input.buttonDownLP || input.buttonDownMP || input.buttonDownHP || input.buttonDownLK || input.buttonDownMK || input.buttonDownHK || input.buttonDownPA)
+                if (input.Lp.Down || input.Mp.Down || input.Hp.Down || input.Lk.Down || input.Mk.Down || input.Hk.Down || input.Pause.Down)
                 {
                     // 人間プレイヤーの乱入☆ 次のフレームから☆
                     isComputer = false;
-                    input.leverX = 0;
-                    input.leverY = 0;
+                    input.LeverX = 0;
+                    input.LeverY = 0;
                 }
                 else
                 {
                     // コンピューター・プレイヤーの場合。
-                    input.leverX = Random.Range(-1.0f, 1.0f);
-                    input.leverY = Random.Range(-1.0f, 1.0f);
-                    if (-0.980f < input.leverX && input.leverX < 0.980f)
+                    input.LeverX = Random.Range(-1.0f, 1.0f);
+                    input.LeverY = Random.Range(-1.0f, 1.0f);
+                    if (-0.980f < input.LeverX && input.LeverX < 0.980f)
                     {
                         // きょろきょろするので落ち着かせるぜ☆（＾～＾）
-                        input.leverX = 0.0f;
+                        input.LeverX = 0.0f;
                     }
 
-                    if (-0.995f < input.leverY && input.leverY < 0.995f)
+                    if (-0.995f < input.LeverY && input.LeverY < 0.995f)
                     {
                         // ジャンプばっかりするので落ち着かせるぜ☆（＾～＾）
-                        input.leverY = 0.0f;
+                        input.LeverY = 0.0f;
                     }
 
-                    if (input.pressingLP)
+                    if (input.Lp.Pressing)
                     {
-                        input.buttonUpLP = (0.900f < Random.Range(0.0f, 1.0f));
+                        // 押しっぱなしなら、いつか放す☆（＾～＾）
+                        input.Lp.Up = (0.900f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        input.buttonUpLP = false;
-                        input.buttonDownLP = (0.900f < Random.Range(0.0f, 1.0f));
+                        // 押してないなら、いつか押す☆（＾～＾）
+                        input.Lp.Up = false;
+                        input.Lp.Down = (0.900f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (input.pressingMP)
+                    if (input.Mp.Pressing)
                     {
-                        input.buttonUpMP = (0.990f < Random.Range(0.0f, 1.0f));
+                        input.Mp.Up = (0.990f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        input.buttonUpMP = false;
-                        input.buttonDownMP = (0.990f < Random.Range(0.0f, 1.0f));
+                        input.Mp.Up = false;
+                        input.Mp.Down = (0.990f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (input.pressingHP)
+                    if (input.Hp.Pressing)
                     {
-                        input.buttonUpHP = (0.995f < Random.Range(0.0f, 1.0f));
+                        input.Hp.Up = (0.995f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        input.buttonUpHP = false;
-                        input.buttonDownHP = (0.995f < Random.Range(0.0f, 1.0f));
+                        input.Hp.Up = false;
+                        input.Hp.Down = (0.995f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (input.pressingLK)
+                    if (input.Lk.Pressing)
                     {
-                        input.buttonUpLK = (0.900f < Random.Range(0.0f, 1.0f));
+                        input.Lk.Up = (0.900f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        input.buttonUpLK = false;
-                        input.buttonDownLK = (0.900f < Random.Range(0.0f, 1.0f));
+                        input.Lk.Up = false;
+                        input.Lk.Down = (0.900f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (input.pressingMK)
+                    if (input.Mk.Pressing)
                     {
-                        input.buttonUpMK = (0.990f < Random.Range(0.0f, 1.0f));
+                        input.Mk.Up = (0.990f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        input.buttonUpMK = false;
-                        input.buttonDownMK = (0.990f < Random.Range(0.0f, 1.0f));
+                        input.Mk.Up= false;
+                        input.Mk.Down = (0.990f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (input.pressingHK)
+                    if (input.Hk.Pressing)
                     {
-                        input.buttonUpHK = (0.995f < Random.Range(0.0f, 1.0f));
+                        input.Hk.Up = (0.995f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        input.buttonUpHK = false;
-                        input.buttonDownHK = (0.995f < Random.Range(0.0f, 1.0f));
+                        input.Hk.Up = false;
+                        input.Hk.Down = (0.995f < Random.Range(0.0f, 1.0f));
                     }
                     //buttonUpPA = (0.999f < Random.Range(0.0f, 1.0f));
                     //buttonDownPA = (0.999f < Random.Range(0.0f, 1.0f));
@@ -181,7 +184,7 @@
             }
             #endregion
 
-            FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(input.leverX);
+            FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(input.LeverX);
 
             if (astateRecord.Tags.Contains((int)Animator.StringToHash(AControl.TAG_BLOCK)))
             {
@@ -220,22 +223,22 @@
                 (3 == animator.GetInteger(ThisSceneConst.IntegerLeverXNeutral) % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
                 &&
                 (
-                    input.buttonDownLP ||
-                    input.buttonDownMP ||
-                    input.buttonDownHP ||
-                    input.buttonDownLK ||
-                    input.buttonDownMK ||
-                    input.buttonDownHK
+                    input.Lp.Down ||
+                    input.Mp.Down ||
+                    input.Hp.Down ||
+                    input.Lk.Down ||
+                    input.Mk.Down ||
+                    input.Hk.Down
                 )
             )
             {
                 float startY;
 
-                if (0 < input.leverY)// 上段だぜ☆
+                if (0 < input.LeverY)// 上段だぜ☆
                 {
                     startY = 1.2f;
                 }
-                else if (0 == input.leverY)// 中段だぜ☆
+                else if (0 == input.LeverY)// 中段だぜ☆
                 {
                     startY = 0.6f;
                 }
@@ -277,7 +280,7 @@
 
             #region レバーの押下時間の更新
             // レバー・ニュートラル時間と、レバー・プレッシング時間は、8フレームほど重複する部分がある。
-            if (input.leverX != 0)//左か右を入力したら
+            if (input.LeverX != 0)//左か右を入力したら
             {
                 animator.SetInteger(ThisSceneConst.IntegerLeverXPressing, animator.GetInteger(ThisSceneConst.IntegerLeverXPressing) + 1);
                 animator.SetInteger(ThisSceneConst.IntegerLeverXNeutral, 0);
@@ -298,7 +301,7 @@
                 }
             }
 
-            if (0 != input.leverY)// 上か下キーを入力していたら
+            if (0 != input.LeverY)// 上か下キーを入力していたら
             {
                 animator.SetInteger(ThisSceneConst.IntegerLeverYPressing, animator.GetInteger(ThisSceneConst.IntegerLeverYPressing) + 1);
                 animator.SetInteger(ThisSceneConst.IntegerLeverYNeutral, 0);
@@ -323,12 +326,12 @@
             #region レバー操作によるアクション
             //if (!anim.GetBool(CommonScript.BOOL_JMOVE0))//ジャンプ時の屈伸中ではないなら
             //{
-            if (input.leverX != 0)//左か右を入力したら
+            if (input.LeverX != 0)//左か右を入力したら
             {
                 if (!astateRecord.Tags.Contains(Animator.StringToHash(AControl.TAG_BUSYX)))
                 {
                     //入力方向へ移動
-                    Rigidbody2D.velocity = new Vector2(Mathf.Sign(input.leverX) * speedX, Rigidbody2D.velocity.y);
+                    Rigidbody2D.velocity = new Vector2(Mathf.Sign(input.LeverX) * speedX, Rigidbody2D.velocity.y);
                 }
 
                 DoFacingOpponent(GetFacingOfOpponentLR());
@@ -403,11 +406,11 @@
 
             //ebug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
 
-            if (0 != input.leverY)// 上か下キーを入力していたら
+            if (0 != input.LeverY)// 上か下キーを入力していたら
             {
                 if (!astateRecord.Tags.Contains(Animator.StringToHash(AControl.TAG_BUSYY)))
                 {
-                    if (0 < input.leverY)// 上キーを入力したら
+                    if (0 < input.LeverY)// 上キーを入力したら
                     {
                         if (isGrounded)// 接地していれば
                         {
@@ -415,7 +418,7 @@
                             Pull_Jump();
                         }
                     }
-                    else if (input.leverY < 0)// 下キーを入力したら
+                    else if (input.LeverY < 0)// 下キーを入力したら
                     {
                         if (isGrounded)// 接地していれば
                         {
@@ -438,37 +441,37 @@
             //    Resign();
             //}
             //else
-            if (input.buttonDownLP)
+            if (input.Lp.Down)
             {
                 //ebug.Log("button BUTTON_03_P1_LP");
                 Pull_LightPunch();
             }
-            else if (input.buttonDownMP)
+            else if (input.Mp.Down)
             {
                 //ebug.Log("button BUTTON_04_P1_MP");
                 Pull_MediumPunch();
             }
-            else if (input.buttonDownHP)
+            else if (input.Hp.Down)
             {
                 //ebug.Log("button BUTTON_05_P1_HP");
                 Pull_HardPunch();
             }
-            else if (input.buttonDownLK)
+            else if (input.Lk.Down)
             {
                 //ebug.Log("button BUTTON_06_P1_LK");
                 Pull_LightKick();
             }
-            else if (input.buttonDownMK)
+            else if (input.Mk.Down)
             {
                 //ebug.Log("button BUTTON_07_P1_MK");
                 Pull_MediumKick();
             }
-            else if (input.buttonDownHK)
+            else if (input.Hk.Down)
             {
                 //ebug.Log("button BUTTON_08_P1_HK");
                 Pull_HardKick();
             }
-            else if (input.buttonDownPA)
+            else if (input.Pause.Down)
             {
                 //ebug.Log("button BUTTON_09_P1_PA");
             }

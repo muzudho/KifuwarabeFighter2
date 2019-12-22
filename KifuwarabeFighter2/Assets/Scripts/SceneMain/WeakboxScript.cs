@@ -40,8 +40,8 @@
 
                 // ブロックしているかどうか判定☆
                 //CommonInput.PlayerInput input = CommonInput.player_to_input[playerIndex];
-                InputStateDto input = ApplicationDto.OnUpdate(player);
-                if (FacingOpponentMoveFwBkSt.Back == playerScript.GetFacingOpponentMoveFwBkSt(input.leverX))
+                InputStateDto input = ApplicationDto.ReadInput(player);
+                if (FacingOpponentMoveFwBkSt.Back == playerScript.GetFacingOpponentMoveFwBkSt(input.LeverX))
                 {
                     //if (PlayerIndex.Player1==player)
                     //{

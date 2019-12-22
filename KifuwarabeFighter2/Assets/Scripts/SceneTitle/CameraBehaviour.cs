@@ -1,5 +1,6 @@
 ﻿namespace SceneTitle
 {
+    using Assets.Scripts.Model.Dto;
     using Assets.Scripts.Model.Dto.Input;
     using UnityEngine;
     using UnityEngine.SceneManagement;
@@ -12,6 +13,9 @@
             // キャンセル以外の 何かボタンを押したらセレクト画面へ遷移
             foreach (var player in PlayerIndexes.All)
             {
+                // プレイヤーのキー押下状態を確認。
+                InputStateDto input = ApplicationDto.ReadInput(player);
+
                 // どのキーが押されたか、ここでテストも兼ねます。
                 var Lp = Input.GetButton(InputNames.Dictionary[new InputIndex(player, ButtonIndex.LightPunch)]);
                 var Mp = Input.GetButton(InputNames.Dictionary[new InputIndex(player, ButtonIndex.MediumPunch)]);
