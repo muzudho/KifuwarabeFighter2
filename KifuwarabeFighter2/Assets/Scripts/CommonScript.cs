@@ -72,7 +72,7 @@ public class CommonScript
         Teban = PlayerIndex.Player1;
     }
 
-    public static string[] Scene_to_name = new [] { "Title", "Select", "Main", "Result" };
+    public static string[] Scene_to_name = new[] { "Title", "Select", "Main", "Result" };
 
     public static Result Result { get; set; }
     /// <summary>
@@ -114,7 +114,7 @@ public abstract class CommonInput
 {
     static CommonInput()
     {
-        player_to_input = new[] { new PlayerInput(), new PlayerInput() };
+        player_to_input = new[] { new InputStateDto(), new InputStateDto() };
     }
 
     /// <summary>
@@ -156,7 +156,10 @@ public abstract class CommonInput
     };
     public const string INPUT_10_CA = "Cancel";
 
-    public struct PlayerInput
+    /// <summary>
+    /// あるプレイヤーのキー入力状態。
+    /// </summary>
+    public struct InputStateDto
     {
         public float leverX;
         public float leverY;
@@ -236,21 +239,29 @@ public abstract class CommonInput
         //    this.buttonUpPA = buttonUpPA;
         //}
     }
-    public static PlayerInput[] player_to_input;
+    public static InputStateDto[] player_to_input;
 
-    public static PlayerInput Update(PlayerIndex player)
+    /// <summary>
+    /// シーンの Update メソッドの中で呼び出されます。
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public static InputStateDto OnUpdate(PlayerIndex player)
     {
-        PlayerInput input = player_to_input[(int)player];
+        InputStateDto input = player_to_input[(int)player];
 
         //左キー: -1、右キー: 1
         input.leverX = Input.GetAxisRaw(CommonInput.PlayerAndInput_to_inputName[(int)player, (int)InputIndex.Horizontal]);
-        //if (PlayerIndex.Player1 == player)
-        //{
-        //    Debug.Log("input.leverX = " + input.leverX);
-        //}
         // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
         input.leverY = Input.GetAxisRaw(CommonInput.PlayerAndInput_to_inputName[(int)player, (int)InputIndex.Vertical]);
         input.pressingLP = Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)player, (int)InputIndex.LightPunch]);
+
+        // プレイヤー１の 入力テストをしたいとき。
+        if (PlayerIndex.Player1 == player)
+        {
+            Debug.Log($"player1 input leverX={input.leverX} leverY={input.leverY} LP={input.pressingLP}");
+        }
+
         input.pressingMP = Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)player, (int)InputIndex.MediumPunch]);
         input.pressingHP = Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)player, (int)InputIndex.HardPunch]);
         input.pressingLK = Input.GetButton(CommonInput.PlayerAndInput_to_inputName[(int)player, (int)InputIndex.LightKick]);

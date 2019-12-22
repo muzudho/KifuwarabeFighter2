@@ -36,7 +36,7 @@ namespace SceneMain
 
                 // ブロックしているかどうか判定☆
                 //CommonInput.PlayerInput input = CommonInput.player_to_input[playerIndex];
-                CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
+                CommonInput.InputStateDto input = CommonInput.OnUpdate((PlayerIndex)playerIndex);
                 if (FacingOpponentMoveFwBkSt.Back == playerScript.GetFacingOpponentMoveFwBkSt(input.leverX))
                 {
                     //if ((int)PlayerIndex.Player1==playerIndex)

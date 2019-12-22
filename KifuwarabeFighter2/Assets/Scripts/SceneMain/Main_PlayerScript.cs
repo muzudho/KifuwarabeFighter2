@@ -81,7 +81,7 @@ namespace SceneMain
             AcState astateRecord = (AcState)AControl.Instance.GetCurrentAcStateRecord(animator);
 
             #region 入力受付
-            CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
+            CommonInput.InputStateDto input = CommonInput.OnUpdate((PlayerIndex)playerIndex);
             
             if (isComputer)
             {

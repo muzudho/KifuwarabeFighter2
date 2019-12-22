@@ -45,7 +45,7 @@ namespace SceneSelect
             AcStateRecordable astateRecord = AControl.Instance.GetCurrentAcStateRecord(animator);
 
             #region 入力受付と途中参加
-            CommonInput.PlayerInput input = CommonInput.Update((PlayerIndex)playerIndex);
+            CommonInput.InputStateDto input = CommonInput.OnUpdate((PlayerIndex)playerIndex);
 
             // 人間の途中参加受付
             if (
