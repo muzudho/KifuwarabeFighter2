@@ -16,7 +16,7 @@
         /// <summary>
         /// Player name on bar. プレイヤー名。
         /// </summary>
-        Text[] player_to_name;
+        Dictionary<PlayerIndex, Text> player_to_name;
         /// <summary>
         /// Ready message 0, 1. 対局開始テキスト。
         /// </summary>
@@ -29,11 +29,11 @@
         /// <summary>
         /// life bar. 評価値メーター
         /// </summary>
-        RectTransform[] player_to_barTransform;
+        Dictionary<PlayerIndex, RectTransform> player_to_barTransform;
         /// <summary>
         /// life point. 評価値。
         /// </summary>
-        Text[] player_to_value;
+        Dictionary<PlayerIndex, Text> player_to_value;
         #endregion
 
         /// <summary>
@@ -63,14 +63,14 @@
         /// <summary>
         /// turn. ターン。
         /// </summary>
-        Text[] player_to_turn;
-        Outline[] player_to_turnOutline;
+        Dictionary<PlayerIndex, Text> player_to_turn;
+        Dictionary<PlayerIndex, Outline> player_to_turnOutline;
         /// <summary>
         /// timer. 残りタイマー。
         /// </summary>
-        Text[] player_to_time;
-        Outline[] player_to_timeOutline;
-        float[] player_to_timeCount;
+        Dictionary<PlayerIndex, Text> player_to_time;
+        Dictionary<PlayerIndex, Outline> player_to_timeOutline;
+        Dictionary<PlayerIndex, float> player_to_timeCount;
         #endregion
         #region 攻撃力
         /// <summary>
@@ -101,8 +101,16 @@
             fight1 = GameObject.Find(ThisSceneConst.GameObjFight1);
             resign0 = GameObject.Find(ThisSceneConst.GameObjResign0);
             resign0.SetActive(false);
-            player_to_name = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Name]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Name]).GetComponent<Text>() };
-            player_to_value = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Value]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Value]).GetComponent<Text>() };
+            player_to_name = new Dictionary<PlayerIndex, Text>()
+            {
+                {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Name]).GetComponent<Text>() },
+                {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Name]).GetComponent<Text>() },
+            };
+            player_to_value = new Dictionary<PlayerIndex, Text>()
+            {
+                {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Value]).GetComponent<Text>() },
+                {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Value]).GetComponent<Text>() },
+            };
             #endregion
             #region Internal variable 内部変数
             player_to_winCount = new[] { 0, 0 };
@@ -124,7 +132,7 @@
             {
                 CharacterIndex character = CommonScript.UseCharacters[player];
                 // 名前
-                player_to_name[PlayerIndexes.ToArrayIndex(player)].text = ThisSceneConst.CharacterToNameRoma[(int)character];
+                player_to_name[player].text = ThisSceneConst.CharacterToNameRoma[(int)character];
 
                 // アニメーター
                 player_to_anime[PlayerIndexes.ToArrayIndex(player)].runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(ThisSceneConst.CharacterToAnimationController[(int)character]));
@@ -132,13 +140,33 @@
             #endregion
 
             //bar1のRectTransformコンポーネントをキャッシュ
-            player_to_barTransform = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>() };
+            player_to_barTransform = new Dictionary<PlayerIndex, RectTransform>()
+            {
+                {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>() },
+                {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>() },
+            };
 
             #region 時間制限
-            player_to_turn = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Text>() };
-            player_to_time = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Text>() };
-            player_to_turnOutline = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Outline>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Outline>() };
-            player_to_timeOutline = new[] { GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Outline>(), GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Outline>() };
+            player_to_turn = new Dictionary<PlayerIndex, Text>()
+            {
+                {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Text>() },
+                {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Text>() },
+            };
+            player_to_time = new Dictionary<PlayerIndex, Text>()
+            {
+                {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Text>() },
+                {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Text>() },
+            };
+            player_to_turnOutline = new Dictionary<PlayerIndex, Outline>()
+            {
+                {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Outline>() },
+                {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Outline>() },
+            };
+            player_to_timeOutline = new Dictionary<PlayerIndex, Outline>()
+            {
+                {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Outline>() },
+                {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Outline>() },
+            };
             InitTime();
             #endregion
 
@@ -270,8 +298,8 @@
             if (!isRoundFinished)
             {
                 // カウントダウン
-                player_to_timeCount[(int)CommonScript.Teban] -= Time.deltaTime; // 前のフレームからの経過時間を引くぜ☆
-                player_to_time[(int)CommonScript.Teban].text = ((int)player_to_timeCount[(int)CommonScript.Teban]).ToString();
+                player_to_timeCount[CommonScript.Teban] -= Time.deltaTime; // 前のフレームからの経過時間を引くぜ☆
+                player_to_time[CommonScript.Teban].text = ((int)player_to_timeCount[CommonScript.Teban]).ToString();
             }
             #endregion
 
@@ -284,14 +312,14 @@
                 //}
                 //else
                 PlayerIndex loser = PlayerIndex.None;
-                if (player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)].sizeDelta.x <= player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta.x
-                    || player_to_timeCount[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)] < 1.0f)
+                if (player_to_barTransform[PlayerIndex.Player2].sizeDelta.x <= player_to_barTransform[PlayerIndex.Player1].sizeDelta.x
+                    || player_to_timeCount[PlayerIndex.Player2] < 1.0f)
                 {
                     // １プレイヤーの勝ち
                     loser = PlayerIndex.Player2;
                 }
-                else if (player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta.x <= 0
-                    || player_to_timeCount[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)] < 1.0f)
+                else if (player_to_barTransform[PlayerIndex.Player1].sizeDelta.x <= 0
+                    || player_to_timeCount[PlayerIndex.Player1] < 1.0f)
                 {
                     // ２プレイヤーの勝ち
                     loser = PlayerIndex.Player1;
@@ -318,14 +346,14 @@
 
             // 先手の色
             {
-                player_to_turn[(int)teban].color = Color.white;
-                player_to_time[(int)teban].color = Color.white;
+                player_to_turn[teban].color = Color.white;
+                player_to_time[teban].color = Color.white;
 
                 Color outlineColor;
                 if (ColorUtility.TryParseHtmlString("#776DC180", out outlineColor))
                 {
-                    player_to_turnOutline[(int)teban].effectColor = outlineColor;
-                    player_to_timeOutline[(int)teban].effectColor = outlineColor;
+                    player_to_turnOutline[teban].effectColor = outlineColor;
+                    player_to_timeOutline[teban].effectColor = outlineColor;
                 }
             }
 
@@ -334,41 +362,45 @@
                 Color fontColor;
                 if (ColorUtility.TryParseHtmlString("#A5A9A9FF", out fontColor))
                 {
-                    player_to_turn[(int)opponent].color = fontColor;
-                    player_to_time[(int)opponent].color = fontColor;
+                    player_to_turn[opponent].color = fontColor;
+                    player_to_time[opponent].color = fontColor;
                 }
 
                 Color outlineColor;
                 if (ColorUtility.TryParseHtmlString("#35298E80", out outlineColor))
                 {
-                    player_to_turnOutline[(int)opponent].effectColor = outlineColor;
-                    player_to_timeOutline[(int)opponent].effectColor = outlineColor;
+                    player_to_turnOutline[opponent].effectColor = outlineColor;
+                    player_to_timeOutline[opponent].effectColor = outlineColor;
                 }
             }
         }
 
         public void InitTime()
         {
-            player_to_timeCount = new float[] { 60.0f, 60.0f };
+            player_to_timeCount = new Dictionary<PlayerIndex, float>()
+            {
+                {PlayerIndex.Player1, 60.0f },
+                {PlayerIndex.Player2, 60.0f },
+            };
         }
         public void InitBar()
         {
-            player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta = new Vector2(
+            player_to_barTransform[PlayerIndex.Player1].sizeDelta = new Vector2(
                 1791.7f,
-                player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta.y
+                player_to_barTransform[PlayerIndex.Player1].sizeDelta.y
                 );
-            player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].text = ((int)0).ToString();
-            player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)].text = ((int)0).ToString();
+            player_to_value[PlayerIndex.Player1].text = ((int)0).ToString();
+            player_to_value[PlayerIndex.Player2].text = ((int)0).ToString();
         }
         public void OffsetBar(float value)
         {
-            player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta = new Vector2(
-                player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta.x + value,
-                player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta.y
+            player_to_barTransform[PlayerIndex.Player1].sizeDelta = new Vector2(
+                player_to_barTransform[PlayerIndex.Player1].sizeDelta.x + value,
+                player_to_barTransform[PlayerIndex.Player1].sizeDelta.y
                 );
 
             // 見えていないところも含めた、bar1 の割合 -0.5～0.5。（真ん中を０とする）
-            float rate = player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta.x / player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)].sizeDelta.x - 0.5f;
+            float rate = player_to_barTransform[PlayerIndex.Player1].sizeDelta.x / player_to_barTransform[PlayerIndex.Player2].sizeDelta.x - 0.5f;
             // 正負
             float sign = 0 <= rate ? 1.0f : -1.0f;
             // bar1 の割合 0～1。（真ん中を０とする絶対値）
@@ -378,20 +410,20 @@
             {
                 score = 9999.0f;
             }
-            player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].text = ((int)score).ToString();
-            player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)].text = ((int)score).ToString();
+            player_to_value[PlayerIndex.Player1].text = ((int)score).ToString();
+            player_to_value[PlayerIndex.Player2].text = ((int)score).ToString();
             // 見えているところの半分で　357px　ぐらい。これが 2000点。
             // 全体を 20000点にしたいので、全体は 3570px か。
 
             if (0 <= sign)
             {
-                player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].color = Color.white;
-                player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)].color = Color.red;
+                player_to_value[PlayerIndex.Player1].color = Color.white;
+                player_to_value[PlayerIndex.Player2].color = Color.red;
             }
             else
             {
-                player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].color = Color.red;
-                player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)].color = Color.white;
+                player_to_value[PlayerIndex.Player1].color = Color.red;
+                player_to_value[PlayerIndex.Player2].color = Color.white;
             }
         }
         /// <summary>

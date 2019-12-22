@@ -87,7 +87,11 @@
         /// player position x for facing opponent.
         /// 相手と向かい合うために使うプレイヤーのX座標だぜ☆（＾▽＾）x位置を共有するためのものだぜ☆
         /// </summary>
-        public static Transform[] PlayerToTransform = new Transform[] { null, null };
+        public static Dictionary<PlayerIndex, Transform> PlayerToTransform = new Dictionary<PlayerIndex, Transform>()
+        {
+            {PlayerIndex.Player1, null },
+            {PlayerIndex.Player2, null },
+        };
 
         public static string PrefabTakoyakiParticle0 = "TakoyakiParticle0";
 

@@ -72,7 +72,7 @@
             #endregion
 
             // x位置を共有できるようにするぜ☆
-            ThisSceneConst.PlayerToTransform[playerIndex] = transform;
+            ThisSceneConst.PlayerToTransform[player] = transform;
         }
 
 
@@ -517,7 +517,7 @@
 
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
 
-            if (Mathf.Sign(ThisSceneConst.PlayerToTransform[(int)CommonScript.ReverseTeban(player)].position.x - transform.position.x)
+            if (Mathf.Sign(ThisSceneConst.PlayerToTransform[CommonScript.ReverseTeban(player)].position.x - transform.position.x)
                 ==
                 Mathf.Sign(leverX)
                 )
@@ -532,7 +532,7 @@
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
 
             // 自分と相手の位置（相手が右側にいるとき正となるようにする）
-            if (0 <= ThisSceneConst.PlayerToTransform[(int)CommonScript.ReverseTeban(player)].position.x - transform.position.x)
+            if (0 <= ThisSceneConst.PlayerToTransform[CommonScript.ReverseTeban(player)].position.x - transform.position.x)
             {
                 return FacingOpponentLR.Right;
             }
