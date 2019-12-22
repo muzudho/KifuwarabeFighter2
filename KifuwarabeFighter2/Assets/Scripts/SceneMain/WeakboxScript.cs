@@ -65,7 +65,7 @@
 
                     // ＨＰメーター
                     {
-                        float damage = playerScript.MainCameraScript.Player_to_attackPower[(int)playerScript.Opponent];
+                        float damage = playerScript.MainCameraScript.AttackPowers[playerScript.Opponent];
 
                         float value = damage * (player == PlayerIndex.Player1 ? -1 : 1);
                         playerScript.MainCameraScript.OffsetBar(value);

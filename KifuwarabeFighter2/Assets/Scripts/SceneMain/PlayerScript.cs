@@ -641,42 +641,48 @@
         }
         void Pull_LightPunch()
         {
-            mainCameraScript.Player_to_attackPower[playerIndex] = 10.0f;
+            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+            mainCameraScript.AttackPowers[player] = 10.0f;
 
             // アニメーションの開始
             animator.SetTrigger(ThisSceneConst.TriggerAtkLp);
         }
         void Pull_MediumPunch()
         {
-            mainCameraScript.Player_to_attackPower[playerIndex] = 50.0f;
+            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+            mainCameraScript.AttackPowers[player] = 50.0f;
 
             // アニメーションの開始
             animator.SetTrigger(ThisSceneConst.TriggerAtkMp);
         }
         void Pull_HardPunch()
         {
-            mainCameraScript.Player_to_attackPower[playerIndex] = 100.0f;
+            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+            mainCameraScript.AttackPowers[player] = 100.0f;
 
             // アニメーションの開始
             animator.SetTrigger(ThisSceneConst.TriggerAtkHp);
         }
         void Pull_LightKick()
         {
-            mainCameraScript.Player_to_attackPower[playerIndex] = 10.0f;
+            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+            mainCameraScript.AttackPowers[player] = 10.0f;
 
             // アニメーションの開始
             animator.SetTrigger(ThisSceneConst.TriggerAtkLk);
         }
         void Pull_MediumKick()
         {
-            mainCameraScript.Player_to_attackPower[playerIndex] = 50.0f;
+            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+            mainCameraScript.AttackPowers[player] = 50.0f;
 
             // アニメーションの開始
             animator.SetTrigger(ThisSceneConst.TriggerAtkMk);
         }
         void Pull_HardKick()
         {
-            mainCameraScript.Player_to_attackPower[playerIndex] = 100.0f;
+            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+            mainCameraScript.AttackPowers[player] = 100.0f;
 
             // アニメーションの開始
             animator.SetTrigger(ThisSceneConst.TriggerAtkHk);

@@ -16,7 +16,7 @@
         /// <summary>
         /// Player name on bar. プレイヤー名。
         /// </summary>
-        Dictionary<PlayerIndex, Text> player_to_name;
+        Dictionary<PlayerIndex, Text> playerNnames;
         /// <summary>
         /// Ready message 0, 1. 対局開始テキスト。
         /// </summary>
@@ -29,17 +29,18 @@
         /// <summary>
         /// life bar. 評価値メーター
         /// </summary>
-        Dictionary<PlayerIndex, RectTransform> player_to_barTransform;
+        Dictionary<PlayerIndex, RectTransform> barTransforms;
         /// <summary>
         /// life point. 評価値。
         /// </summary>
-        Dictionary<PlayerIndex, Text> player_to_value;
+        Dictionary<PlayerIndex, Text> playerValues;
         #endregion
 
         /// <summary>
         /// Ready message presentation time counter; 対局開始メッセージが表示されている時間カウンター。
         /// </summary>
-        int readyingTime; public int ReadyingTime { get { return readyingTime; } set { readyingTime = value; } }
+        int readyingTime;
+        public int ReadyingTime { get { return readyingTime; } set { readyingTime = value; } }
 
         #region 選択キャラクター
         /// <summary>
@@ -53,7 +54,7 @@
         /// <summary>
         /// players animator. アニメーター。
         /// </summary>
-        Animator[] player_to_anime;
+        Dictionary<PlayerIndex, Animator> animetors;
         #endregion
         /// <summary>
         /// win,lose mark. 勝ち星
@@ -63,26 +64,27 @@
         /// <summary>
         /// turn. ターン。
         /// </summary>
-        Dictionary<PlayerIndex, Text> player_to_turn;
-        Dictionary<PlayerIndex, Outline> player_to_turnOutline;
+        Dictionary<PlayerIndex, Text> turns;
+        Dictionary<PlayerIndex, Outline> turnOutlines;
         /// <summary>
         /// timer. 残りタイマー。
         /// </summary>
-        Dictionary<PlayerIndex, Text> player_to_time;
-        Dictionary<PlayerIndex, Outline> player_to_timeOutline;
-        Dictionary<PlayerIndex, float> player_to_timeCount;
+        Dictionary<PlayerIndex, Text> times;
+        Dictionary<PlayerIndex, Outline> timeOutlines;
+        Dictionary<PlayerIndex, float> timeCounts;
         #endregion
         #region 攻撃力
         /// <summary>
         /// point for calculate damage. ダメージ計算のための数字。
         /// </summary>
-        private float[] player_to_attackPower; public float[] Player_to_attackPower { get { return player_to_attackPower; } }
+        private Dictionary<PlayerIndex, float> attackPowers;
+        public Dictionary<PlayerIndex, float> AttackPowers { get { return attackPowers; } }
         #endregion
         #region ラウンド
         /// <summary>
         /// Win count. 勝ち数。２本先取か数える。
         /// </summary>
-        int[] player_to_winCount;
+        Dictionary<PlayerIndex, int> winCounts;
         /// <summary>
         /// flag of end. 終了フラグ
         /// </summary>
@@ -101,19 +103,23 @@
             fight1 = GameObject.Find(ThisSceneConst.GameObjFight1);
             resign0 = GameObject.Find(ThisSceneConst.GameObjResign0);
             resign0.SetActive(false);
-            player_to_name = new Dictionary<PlayerIndex, Text>()
+            playerNnames = new Dictionary<PlayerIndex, Text>()
             {
                 {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Name]).GetComponent<Text>() },
                 {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Name]).GetComponent<Text>() },
             };
-            player_to_value = new Dictionary<PlayerIndex, Text>()
+            playerValues = new Dictionary<PlayerIndex, Text>()
             {
                 {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Value]).GetComponent<Text>() },
                 {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Value]).GetComponent<Text>() },
             };
             #endregion
             #region Internal variable 内部変数
-            player_to_winCount = new[] { 0, 0 };
+            winCounts = new Dictionary<PlayerIndex, int>()
+            {
+                {PlayerIndex.Player1, 0 },
+                {PlayerIndex.Player2, 0 },
+            };
             #endregion
             #region 選択キャラクター
             playerChars = new Dictionary<PlayerIndex, GameObject>()
@@ -126,43 +132,47 @@
                 {PlayerIndex.Player1, playerChars[PlayerIndex.Player1].GetComponent<PlayerScript>() },
                 {PlayerIndex.Player2, playerChars[PlayerIndex.Player2].GetComponent<PlayerScript>() },
             };
-            player_to_anime = new[] { playerChars[PlayerIndex.Player1].GetComponent<Animator>(), playerChars[PlayerIndex.Player2].GetComponent<Animator>() };
+            animetors = new Dictionary<PlayerIndex, Animator>()
+            {
+                {PlayerIndex.Player1, playerChars[PlayerIndex.Player1].GetComponent<Animator>() },
+                {PlayerIndex.Player2, playerChars[PlayerIndex.Player2].GetComponent<Animator>() },
+            };
 
             foreach (var player in PlayerIndexes.All)
             {
                 CharacterIndex character = CommonScript.UseCharacters[player];
                 // 名前
-                player_to_name[player].text = ThisSceneConst.CharacterToNameRoma[(int)character];
+                playerNnames[player].text = ThisSceneConst.CharacterToNameRoma[(int)character];
 
                 // アニメーター
-                player_to_anime[PlayerIndexes.ToArrayIndex(player)].runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(ThisSceneConst.CharacterToAnimationController[(int)character]));
+                animetors[player].runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(ThisSceneConst.CharacterToAnimationController[(int)character]));
             }
             #endregion
 
             //bar1のRectTransformコンポーネントをキャッシュ
-            player_to_barTransform = new Dictionary<PlayerIndex, RectTransform>()
+            barTransforms = new Dictionary<PlayerIndex, RectTransform>()
             {
                 {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>() },
                 {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>() },
             };
 
             #region 時間制限
-            player_to_turn = new Dictionary<PlayerIndex, Text>()
+            turns = new Dictionary<PlayerIndex, Text>()
             {
                 {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Text>() },
                 {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Text>() },
             };
-            player_to_time = new Dictionary<PlayerIndex, Text>()
+            times = new Dictionary<PlayerIndex, Text>()
             {
                 {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Text>() },
                 {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Text>() },
             };
-            player_to_turnOutline = new Dictionary<PlayerIndex, Outline>()
+            turnOutlines = new Dictionary<PlayerIndex, Outline>()
             {
                 {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Outline>() },
                 {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Outline>() },
             };
-            player_to_timeOutline = new Dictionary<PlayerIndex, Outline>()
+            timeOutlines = new Dictionary<PlayerIndex, Outline>()
             {
                 {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Outline>() },
                 {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Outline>() },
@@ -171,7 +181,11 @@
             #endregion
 
             #region 攻撃力
-            player_to_attackPower = new float[] { 0.0f, 0.0f };
+            attackPowers = new Dictionary<PlayerIndex, float>()
+            {
+                {PlayerIndex.Player1, 0.0f },
+                {PlayerIndex.Player2, 0.0f },
+            };
             #endregion
 
             #region ラウンド
@@ -223,7 +237,7 @@
                     charScripts[loser].IsResign = false;
 
                     PlayerIndex winner = CommonScript.ReverseTeban(loser);
-                    player_to_winCount[(int)winner]++;
+                    winCounts[winner]++;
 
                     if (PlayerIndex.Player1 == loser)
                     {
@@ -249,7 +263,7 @@
                     else if (!roundToResult[loser][1].activeSelf)//２ラウンド目の星が表示されていないとき。
                     {
                         round = 1;
-                        if (1 < player_to_winCount[(int)winner])//2本先取
+                        if (1 < winCounts[winner])//2本先取
                         {
                             SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Result]);
                             return;
@@ -298,8 +312,8 @@
             if (!isRoundFinished)
             {
                 // カウントダウン
-                player_to_timeCount[CommonScript.Teban] -= Time.deltaTime; // 前のフレームからの経過時間を引くぜ☆
-                player_to_time[CommonScript.Teban].text = ((int)player_to_timeCount[CommonScript.Teban]).ToString();
+                timeCounts[CommonScript.Teban] -= Time.deltaTime; // 前のフレームからの経過時間を引くぜ☆
+                times[CommonScript.Teban].text = ((int)timeCounts[CommonScript.Teban]).ToString();
             }
             #endregion
 
@@ -312,14 +326,14 @@
                 //}
                 //else
                 PlayerIndex loser = PlayerIndex.None;
-                if (player_to_barTransform[PlayerIndex.Player2].sizeDelta.x <= player_to_barTransform[PlayerIndex.Player1].sizeDelta.x
-                    || player_to_timeCount[PlayerIndex.Player2] < 1.0f)
+                if (barTransforms[PlayerIndex.Player2].sizeDelta.x <= barTransforms[PlayerIndex.Player1].sizeDelta.x
+                    || timeCounts[PlayerIndex.Player2] < 1.0f)
                 {
                     // １プレイヤーの勝ち
                     loser = PlayerIndex.Player2;
                 }
-                else if (player_to_barTransform[PlayerIndex.Player1].sizeDelta.x <= 0
-                    || player_to_timeCount[PlayerIndex.Player1] < 1.0f)
+                else if (barTransforms[PlayerIndex.Player1].sizeDelta.x <= 0
+                    || timeCounts[PlayerIndex.Player1] < 1.0f)
                 {
                     // ２プレイヤーの勝ち
                     loser = PlayerIndex.Player1;
@@ -346,14 +360,14 @@
 
             // 先手の色
             {
-                player_to_turn[teban].color = Color.white;
-                player_to_time[teban].color = Color.white;
+                turns[teban].color = Color.white;
+                times[teban].color = Color.white;
 
                 Color outlineColor;
                 if (ColorUtility.TryParseHtmlString("#776DC180", out outlineColor))
                 {
-                    player_to_turnOutline[teban].effectColor = outlineColor;
-                    player_to_timeOutline[teban].effectColor = outlineColor;
+                    turnOutlines[teban].effectColor = outlineColor;
+                    timeOutlines[teban].effectColor = outlineColor;
                 }
             }
 
@@ -362,22 +376,22 @@
                 Color fontColor;
                 if (ColorUtility.TryParseHtmlString("#A5A9A9FF", out fontColor))
                 {
-                    player_to_turn[opponent].color = fontColor;
-                    player_to_time[opponent].color = fontColor;
+                    turns[opponent].color = fontColor;
+                    times[opponent].color = fontColor;
                 }
 
                 Color outlineColor;
                 if (ColorUtility.TryParseHtmlString("#35298E80", out outlineColor))
                 {
-                    player_to_turnOutline[opponent].effectColor = outlineColor;
-                    player_to_timeOutline[opponent].effectColor = outlineColor;
+                    turnOutlines[opponent].effectColor = outlineColor;
+                    timeOutlines[opponent].effectColor = outlineColor;
                 }
             }
         }
 
         public void InitTime()
         {
-            player_to_timeCount = new Dictionary<PlayerIndex, float>()
+            timeCounts = new Dictionary<PlayerIndex, float>()
             {
                 {PlayerIndex.Player1, 60.0f },
                 {PlayerIndex.Player2, 60.0f },
@@ -385,22 +399,22 @@
         }
         public void InitBar()
         {
-            player_to_barTransform[PlayerIndex.Player1].sizeDelta = new Vector2(
+            barTransforms[PlayerIndex.Player1].sizeDelta = new Vector2(
                 1791.7f,
-                player_to_barTransform[PlayerIndex.Player1].sizeDelta.y
+                barTransforms[PlayerIndex.Player1].sizeDelta.y
                 );
-            player_to_value[PlayerIndex.Player1].text = ((int)0).ToString();
-            player_to_value[PlayerIndex.Player2].text = ((int)0).ToString();
+            playerValues[PlayerIndex.Player1].text = ((int)0).ToString();
+            playerValues[PlayerIndex.Player2].text = ((int)0).ToString();
         }
         public void OffsetBar(float value)
         {
-            player_to_barTransform[PlayerIndex.Player1].sizeDelta = new Vector2(
-                player_to_barTransform[PlayerIndex.Player1].sizeDelta.x + value,
-                player_to_barTransform[PlayerIndex.Player1].sizeDelta.y
+            barTransforms[PlayerIndex.Player1].sizeDelta = new Vector2(
+                barTransforms[PlayerIndex.Player1].sizeDelta.x + value,
+                barTransforms[PlayerIndex.Player1].sizeDelta.y
                 );
 
             // 見えていないところも含めた、bar1 の割合 -0.5～0.5。（真ん中を０とする）
-            float rate = player_to_barTransform[PlayerIndex.Player1].sizeDelta.x / player_to_barTransform[PlayerIndex.Player2].sizeDelta.x - 0.5f;
+            float rate = barTransforms[PlayerIndex.Player1].sizeDelta.x / barTransforms[PlayerIndex.Player2].sizeDelta.x - 0.5f;
             // 正負
             float sign = 0 <= rate ? 1.0f : -1.0f;
             // bar1 の割合 0～1。（真ん中を０とする絶対値）
@@ -410,20 +424,20 @@
             {
                 score = 9999.0f;
             }
-            player_to_value[PlayerIndex.Player1].text = ((int)score).ToString();
-            player_to_value[PlayerIndex.Player2].text = ((int)score).ToString();
+            playerValues[PlayerIndex.Player1].text = ((int)score).ToString();
+            playerValues[PlayerIndex.Player2].text = ((int)score).ToString();
             // 見えているところの半分で　357px　ぐらい。これが 2000点。
             // 全体を 20000点にしたいので、全体は 3570px か。
 
             if (0 <= sign)
             {
-                player_to_value[PlayerIndex.Player1].color = Color.white;
-                player_to_value[PlayerIndex.Player2].color = Color.red;
+                playerValues[PlayerIndex.Player1].color = Color.white;
+                playerValues[PlayerIndex.Player2].color = Color.red;
             }
             else
             {
-                player_to_value[PlayerIndex.Player1].color = Color.red;
-                player_to_value[PlayerIndex.Player2].color = Color.white;
+                playerValues[PlayerIndex.Player1].color = Color.red;
+                playerValues[PlayerIndex.Player2].color = Color.white;
             }
         }
         /// <summary>
