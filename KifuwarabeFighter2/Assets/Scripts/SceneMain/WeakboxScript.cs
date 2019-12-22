@@ -1,7 +1,7 @@
 ﻿namespace SceneMain
 {
+    using Assets.Scripts.Model.Dto;
     using Assets.Scripts.Model.Dto.Input;
-    using Assets.Scripts.Model.Dto.Scene.Common;
     using Assets.Scripts.SceneMain;
     using UnityEngine;
 
@@ -36,13 +36,14 @@
             #region 当たり判定
             if (col.tag == playerScript.OpponentHitboxTag)// 相手の　攻撃当たり判定くん　が重なった時
             {
+                var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
 
                 // ブロックしているかどうか判定☆
                 //CommonInput.PlayerInput input = CommonInput.player_to_input[playerIndex];
-                CommonInput.InputStateDto input = CommonInput.OnUpdate((PlayerIndex)playerIndex);
+                InputStateDto input = ApplicationDto.OnUpdate(player);
                 if (FacingOpponentMoveFwBkSt.Back == playerScript.GetFacingOpponentMoveFwBkSt(input.leverX))
                 {
-                    //if ((int)PlayerIndex.Player1==playerIndex)
+                    //if (PlayerIndex.Player1==player)
                     //{
                     //    Debug.Log("ブロック☆！ col.tag = " + col.tag + " input.leverX = " + input.leverX + " Time.deltaTime = " + Time.deltaTime);
                     //}
@@ -51,7 +52,7 @@
                 }
                 else
                 {
-                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //if (PlayerIndex.Player1 == player)
                     //{
                     //    Debug.Log("痛っ☆！ col.tag = " + col.tag + " input.leverX = " + input.leverX + " Time.deltaTime = " + Time.deltaTime);
                     //}
@@ -66,7 +67,7 @@
                     {
                         float damage = playerScript.MainCameraScript.Player_to_attackPower[(int)playerScript.Opponent];
 
-                        float value = damage * (playerIndex == (int)PlayerIndex.Player1 ? -1 : 1);
+                        float value = damage * (player == PlayerIndex.Player1 ? -1 : 1);
                         playerScript.MainCameraScript.OffsetBar(value);
 
                         if (10 <= playerScript.DamageHitCount)

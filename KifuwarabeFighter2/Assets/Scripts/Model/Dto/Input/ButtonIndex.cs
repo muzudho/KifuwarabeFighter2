@@ -11,6 +11,7 @@
         MediumKick,
         HardKick,
         Pause,
+        CancelMenu,
         Num
     }
 }

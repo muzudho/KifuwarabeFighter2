@@ -1,5 +1,6 @@
 ﻿namespace SceneMain
 {
+    using System.Collections.Generic;
     using Assets.Scripts.Model.Dto.Input;
     using Assets.Scripts.SceneMain;
     using UnityEngine;
@@ -44,11 +45,11 @@
         /// <summary>
         /// player character. プレイヤー・キャラ。
         /// </summary>
-        GameObject[] player_to_playerChar;
+        Dictionary<PlayerIndex,GameObject> playerChars;
         /// <summary>
         /// player character's attached script. プレイヤー・キャラにアタッチされているスクリプト。
         /// </summary>
-        PlayerScript[] player_to_charScript;
+        Dictionary<PlayerIndex, PlayerScript> charScripts;
         /// <summary>
         /// players animator. アニメーター。
         /// </summary>
@@ -57,7 +58,7 @@
         /// <summary>
         /// win,lose mark. 勝ち星
         /// </summary>
-        GameObject[,] playerAndRound_to_result;
+        Dictionary<PlayerIndex, GameObject[]> roundToResult;
         #region 制限時間
         /// <summary>
         /// turn. ターン。
@@ -96,39 +97,48 @@
         {
             #region UI 表示物
             fight0 = GameObject.Find(ThisSceneConst.GameObjFight0);
-            fight0.GetComponent<Text>().text = ThisSceneConst.CharacterToFightMessage[(int)CommonScript.Player_to_useCharacter[(int)PlayerIndex.Player1]];
+            fight0.GetComponent<Text>().text = ThisSceneConst.CharacterToFightMessage[(int)CommonScript.UseCharacters[PlayerIndex.Player1]];
             fight1 = GameObject.Find(ThisSceneConst.GameObjFight1);
             resign0 = GameObject.Find(ThisSceneConst.GameObjResign0);
             resign0.SetActive(false);
-            player_to_name = new[] { GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player1,(int)GameobjectIndex.Name]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player2, (int)GameobjectIndex.Name]).GetComponent<Text>() };
-            player_to_value = new[] { GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player1, (int)GameobjectIndex.Value]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player2, (int)GameobjectIndex.Value]).GetComponent<Text>() };
+            player_to_name = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Name]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Name]).GetComponent<Text>() };
+            player_to_value = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Value]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Value]).GetComponent<Text>() };
             #endregion
             #region Internal variable 内部変数
             player_to_winCount = new[] { 0, 0 };
             #endregion
             #region 選択キャラクター
-            player_to_playerChar = new[] { GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player1, (int)GameobjectIndex.Player]), GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player2, (int)GameobjectIndex.Player]) };
-            player_to_charScript = new[] { player_to_playerChar[(int)PlayerIndex.Player1].GetComponent<PlayerScript>(), player_to_playerChar[(int)PlayerIndex.Player2].GetComponent<PlayerScript>() };
-            player_to_anime = new [] { player_to_playerChar[(int)PlayerIndex.Player1].GetComponent<Animator>(), player_to_playerChar[(int)PlayerIndex.Player2].GetComponent<Animator>() };
-            for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
+            playerChars = new Dictionary<PlayerIndex, GameObject>()
             {
-                CharacterIndex character = CommonScript.Player_to_useCharacter[iPlayer];
+                {PlayerIndex.Player1, GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Player])},
+                {PlayerIndex.Player2, GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Player])},
+            };
+            charScripts = new Dictionary<PlayerIndex, PlayerScript>()
+            {
+                {PlayerIndex.Player1, playerChars[PlayerIndex.Player1].GetComponent<PlayerScript>() },
+                {PlayerIndex.Player2, playerChars[PlayerIndex.Player2].GetComponent<PlayerScript>() },
+            };
+            player_to_anime = new[] { playerChars[PlayerIndex.Player1].GetComponent<Animator>(), playerChars[PlayerIndex.Player2].GetComponent<Animator>() };
+
+            foreach (var player in PlayerIndexes.All)
+            {
+                CharacterIndex character = CommonScript.UseCharacters[player];
                 // 名前
-                player_to_name[iPlayer].text = ThisSceneConst.CharacterToNameRoma[(int)character];
+                player_to_name[PlayerIndexes.ToArrayIndex(player)].text = ThisSceneConst.CharacterToNameRoma[(int)character];
 
                 // アニメーター
-                player_to_anime[iPlayer].runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(ThisSceneConst.CharacterToAnimationController[(int)character]));
+                player_to_anime[PlayerIndexes.ToArrayIndex(player)].runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(ThisSceneConst.CharacterToAnimationController[(int)character]));
             }
             #endregion
 
             //bar1のRectTransformコンポーネントをキャッシュ
-            player_to_barTransform = new[] { GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player1, (int)GameobjectIndex.Bar]).GetComponent<RectTransform>(), GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player2, (int)GameobjectIndex.Bar]).GetComponent<RectTransform>() };
+            player_to_barTransform = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Bar]).GetComponent<RectTransform>() };
 
             #region 時間制限
-            player_to_turn = new [] { GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player1, (int)GameobjectIndex.Turn]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player2, (int)GameobjectIndex.Turn]).GetComponent<Text>() };
-            player_to_time = new [] { GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player1, (int)GameobjectIndex.Time]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player2, (int)GameobjectIndex.Time]).GetComponent<Text>() };
-            player_to_turnOutline = new [] { GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player1, (int)GameobjectIndex.Turn]).GetComponent<Outline>(), GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player2, (int)GameobjectIndex.Turn]).GetComponent<Outline>() };
-            player_to_timeOutline = new [] { GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player1, (int)GameobjectIndex.Time]).GetComponent<Outline>(), GameObject.Find(ThisSceneConst.PlayerAndGameobjectToPath[(int)PlayerIndex.Player2, (int)GameobjectIndex.Time]).GetComponent<Outline>() };
+            player_to_turn = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Text>() };
+            player_to_time = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Text>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Text>() };
+            player_to_turnOutline = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Turn]).GetComponent<Outline>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Turn]).GetComponent<Outline>() };
+            player_to_timeOutline = new[] { GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player1][(int)GameobjectIndex.Time]).GetComponent<Outline>(), GameObject.Find(ThisSceneConst.GameobjectToPath[PlayerIndex.Player2][(int)GameobjectIndex.Time]).GetComponent<Outline>() };
             InitTime();
             #endregion
 
@@ -137,15 +147,16 @@
             #endregion
 
             #region ラウンド
-            playerAndRound_to_result = new GameObject[,] {
-            { GameObject.Find("ResultP0_0"), GameObject.Find("ResultP0_1") },
-            { GameObject.Find("ResultP1_0"), GameObject.Find("ResultP1_1") },
-        };
-            for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
+            roundToResult = new Dictionary<PlayerIndex, GameObject[]>() {
+                {PlayerIndex.Player1, new GameObject[]{ GameObject.Find("ResultP0_0"), GameObject.Find("ResultP0_1") } },
+                { PlayerIndex.Player2, new GameObject[]{ GameObject.Find("ResultP1_0"), GameObject.Find("ResultP1_1") } },
+            };
+
+            foreach (var player in PlayerIndexes.All)
             {
                 for (int iRound = 0; iRound < 2; iRound++)
                 {
-                    playerAndRound_to_result[iPlayer, iRound].SetActive(false);
+                    roundToResult[player][iRound].SetActive(false);
                 }
             }
             #endregion
@@ -155,10 +166,11 @@
             #region リセット（配列やスプライト等の初期設定が終わってから）
             ReadyingTime = 0;
             SetTeban(PlayerIndex.Player1);
+
             // コンピューターかどうか。
-            for (int iPlayer = (int)PlayerIndex.Player1; iPlayer < (int)PlayerIndex.Num; iPlayer++)
+            foreach (var player in PlayerIndexes.All)
             {
-                player_to_charScript[iPlayer].isComputer = CommonScript.Player_to_computer[iPlayer];
+                charScripts[player].isComputer = CommonScript.computerFlags[player];
             }
             #endregion
         }
@@ -176,21 +188,21 @@
             #endregion
 
             #region 投了判定
-            for (int iLoser = (int)PlayerIndex.Player1; iLoser < (int)PlayerIndex.Num; iLoser++)
+            foreach (var loser in PlayerIndexes.All)
             {
-                if (player_to_charScript[iLoser].IsResign)
+                if (charScripts[loser].IsResign)
                 {
-                    player_to_charScript[iLoser].IsResign = false;
+                    charScripts[loser].IsResign = false;
 
-                    PlayerIndex winner = CommonScript.ReverseTeban((PlayerIndex)iLoser);
+                    PlayerIndex winner = CommonScript.ReverseTeban(loser);
                     player_to_winCount[(int)winner]++;
 
-                    if ((int)PlayerIndex.Player1 == iLoser)
+                    if (PlayerIndex.Player1 == loser)
                     {
                         // １プレイヤーの投了
                         CommonScript.Result = Result.Player2_Win;
                     }
-                    else if ((int)PlayerIndex.Player2 == iLoser)
+                    else if (PlayerIndex.Player2 == loser)
                     {
                         // ２プレイヤーの投了
                         CommonScript.Result = Result.Player1_Win;
@@ -202,11 +214,11 @@
 
                     // 現在、何ラウンドか☆
                     int round;
-                    if (!playerAndRound_to_result[iLoser, 0].activeSelf)//１ラウンド目の星が表示されていないとき。
+                    if (!roundToResult[loser][0].activeSelf)//１ラウンド目の星が表示されていないとき。
                     {
                         round = 0;
                     }
-                    else if (!playerAndRound_to_result[iLoser, 1].activeSelf)//２ラウンド目の星が表示されていないとき。
+                    else if (!roundToResult[loser][1].activeSelf)//２ラウンド目の星が表示されていないとき。
                     {
                         round = 1;
                         if (1 < player_to_winCount[(int)winner])//2本先取
@@ -224,19 +236,19 @@
 
                     //if (round < 2)
                     {
-                        playerAndRound_to_result[(int)PlayerIndex.Player1, round].SetActive(true);
-                        playerAndRound_to_result[(int)PlayerIndex.Player2, round].SetActive(true);
+                        roundToResult[PlayerIndex.Player1][round].SetActive(true);
+                        roundToResult[PlayerIndex.Player2][round].SetActive(true);
 
                         Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/ResultMark0");
                         if (PlayerIndex.Player1 == winner)
                         {
-                            playerAndRound_to_result[(int)PlayerIndex.Player1, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_0"));
-                            playerAndRound_to_result[(int)PlayerIndex.Player2, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_1"));
+                            roundToResult[PlayerIndex.Player1][round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_0"));
+                            roundToResult[PlayerIndex.Player2][round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_1"));
                         }
                         else if (PlayerIndex.Player2 == winner)
                         {
-                            playerAndRound_to_result[(int)PlayerIndex.Player1, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_1"));
-                            playerAndRound_to_result[(int)PlayerIndex.Player2, round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_0"));
+                            roundToResult[PlayerIndex.Player1][round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_1"));
+                            roundToResult[PlayerIndex.Player2][round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_0"));
                         }
 
                         InitTime();
@@ -244,8 +256,8 @@
                         isRoundFinished = false;
                         IsResignCalled = false;
                         resign0.SetActive(false);
-                        player_to_playerChar[(int)PlayerIndex.Player1].transform.position = new Vector3(2.52f, 0.0f);
-                        player_to_playerChar[(int)PlayerIndex.Player2].transform.position = new Vector3(-2.52f, 0.0f);
+                        playerChars[PlayerIndex.Player1].transform.position = new Vector3(2.52f, 0.0f);
+                        playerChars[PlayerIndex.Player2].transform.position = new Vector3(-2.52f, 0.0f);
                         ReadyingTime = 0;
                         fight0.SetActive(true);
                         fight1.SetActive(true);
@@ -271,24 +283,24 @@
                 //    // ダブル・ノックアウト
                 //}
                 //else
-                PlayerIndex loser = PlayerIndex.Num;
-                if (player_to_barTransform[(int)PlayerIndex.Player2].sizeDelta.x <= player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta.x
-                    || player_to_timeCount[(int)PlayerIndex.Player2] < 1.0f)
+                PlayerIndex loser = PlayerIndex.None;
+                if (player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)].sizeDelta.x <= player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta.x
+                    || player_to_timeCount[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)] < 1.0f)
                 {
                     // １プレイヤーの勝ち
                     loser = PlayerIndex.Player2;
                 }
-                else if (player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta.x <= 0
-                    || player_to_timeCount[(int)PlayerIndex.Player1] < 1.0f)
+                else if (player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta.x <= 0
+                    || player_to_timeCount[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)] < 1.0f)
                 {
                     // ２プレイヤーの勝ち
-                    loser = (int)PlayerIndex.Player1;
+                    loser = PlayerIndex.Player1;
                 }
 
-                if (PlayerIndex.Num != loser)
+                if (PlayerIndex.None != loser)
                 {
                     isRoundFinished = true;
-                    player_to_charScript[(int)loser].Pull_ResignByLose();
+                    charScripts[loser].Pull_ResignByLose();
                 }
             }
             #endregion
@@ -341,22 +353,22 @@
         }
         public void InitBar()
         {
-            player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta = new Vector2(
+            player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta = new Vector2(
                 1791.7f,
-                player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta.y
+                player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta.y
                 );
-            player_to_value[(int)PlayerIndex.Player1].text = ((int)0).ToString();
-            player_to_value[(int)PlayerIndex.Player2].text = ((int)0).ToString();
+            player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].text = ((int)0).ToString();
+            player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)].text = ((int)0).ToString();
         }
         public void OffsetBar(float value)
         {
-            player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta = new Vector2(
-                player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta.x + value,
-                player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta.y
+            player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta = new Vector2(
+                player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta.x + value,
+                player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta.y
                 );
 
             // 見えていないところも含めた、bar1 の割合 -0.5～0.5。（真ん中を０とする）
-            float rate = player_to_barTransform[(int)PlayerIndex.Player1].sizeDelta.x / player_to_barTransform[(int)PlayerIndex.Player2].sizeDelta.x - 0.5f;
+            float rate = player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].sizeDelta.x / player_to_barTransform[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)].sizeDelta.x - 0.5f;
             // 正負
             float sign = 0 <= rate ? 1.0f : -1.0f;
             // bar1 の割合 0～1。（真ん中を０とする絶対値）
@@ -366,20 +378,20 @@
             {
                 score = 9999.0f;
             }
-            player_to_value[(int)PlayerIndex.Player1].text = ((int)score).ToString();
-            player_to_value[(int)PlayerIndex.Player2].text = ((int)score).ToString();
+            player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].text = ((int)score).ToString();
+            player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)].text = ((int)score).ToString();
             // 見えているところの半分で　357px　ぐらい。これが 2000点。
             // 全体を 20000点にしたいので、全体は 3570px か。
 
             if (0 <= sign)
             {
-                player_to_value[(int)PlayerIndex.Player1].color = Color.white;
-                player_to_value[(int)PlayerIndex.Player2].color = Color.red;
+                player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].color = Color.white;
+                player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)].color = Color.red;
             }
             else
             {
-                player_to_value[(int)PlayerIndex.Player1].color = Color.red;
-                player_to_value[(int)PlayerIndex.Player2].color = Color.white;
+                player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player1)].color = Color.red;
+                player_to_value[PlayerIndexes.ToArrayIndex(PlayerIndex.Player2)].color = Color.white;
             }
         }
         /// <summary>

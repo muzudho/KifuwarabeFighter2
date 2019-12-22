@@ -5,8 +5,8 @@
     /// </summary>
     public enum PlayerIndex
     {
+        None,
         Player1,
-        Player2,
-        Num
+        Player2
     }
 }

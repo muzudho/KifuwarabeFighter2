@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Model.Dto.Input;
+﻿using System.Collections.Generic;
+using Assets.Scripts.Model.Dto.Input;
 using UnityEngine;
 
 public enum SceneIndex
@@ -46,8 +47,16 @@ public class CommonScript
     static CommonScript()
     {
         Result = Result.None;
-        Player_to_computer = new bool[] { true, true };
-        Player_to_useCharacter = new CharacterIndex[] { CharacterIndex.Kifuwarabe, CharacterIndex.Kifuwarabe };
+        computerFlags = new Dictionary<PlayerIndex, bool>
+        {
+            { PlayerIndex.Player1, true },
+            { PlayerIndex.Player2, true },
+        };
+        UseCharacters = new Dictionary<PlayerIndex, CharacterIndex>()
+        {
+            { PlayerIndex.Player1, CharacterIndex.Kifuwarabe },
+            { PlayerIndex.Player2, CharacterIndex.Kifuwarabe },
+        };
         Teban = PlayerIndex.Player1;
     }
 
@@ -57,11 +66,11 @@ public class CommonScript
     /// <summary>
     /// 人間か、コンピューターか。
     /// </summary>
-    public static bool[] Player_to_computer { get; set; }
+    public static Dictionary<PlayerIndex, bool> computerFlags { get; set; }
     /// <summary>
     /// [Player] プレイヤーの使用キャラクター。
     /// </summary>
-    public static CharacterIndex[] Player_to_useCharacter { get; set; }
+    public static Dictionary<PlayerIndex, CharacterIndex> UseCharacters { get; set; }
     public static PlayerIndex Teban { get; set; }
     public static PlayerIndex ReverseTeban(PlayerIndex player)
     {

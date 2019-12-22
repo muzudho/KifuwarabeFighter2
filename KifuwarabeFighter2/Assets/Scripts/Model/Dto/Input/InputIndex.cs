@@ -7,10 +7,10 @@
     {
         private string _mapKey;
 
-        public InputIndex(PlayerIndex playerIndex, ButtonIndex buttonIndex)
+        public InputIndex(PlayerIndex player, ButtonIndex button)
         {
-            this.PlayerIndex = (PlayerIndex)playerIndex;
-            this.ButtonIndex = (ButtonIndex)buttonIndex;
+            this.PlayerIndex = player;
+            this.ButtonIndex = button;
             this._mapKey = $"{(int)this.PlayerIndex},{(int)this.ButtonIndex}";
         }
 
@@ -44,7 +44,7 @@
                 return false;
             }
 
-            return this.PlayerIndex == item.PlayerIndex && item.ButtonIndex == item.ButtonIndex;
+            return this.PlayerIndex == item.PlayerIndex && this.ButtonIndex == item.ButtonIndex;
         }
     }
 }

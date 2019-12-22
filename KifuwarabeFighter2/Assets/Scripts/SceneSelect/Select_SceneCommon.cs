@@ -1,4 +1,7 @@
-﻿namespace SceneSelect
+﻿using System.Collections.Generic;
+using Assets.Scripts.Model.Dto.Input;
+
+namespace SceneSelect
 {
     public enum GameobjectIndex
     {
@@ -22,10 +25,10 @@
         public const string TRIGGER_SELECT = "select";
         public const string TRIGGER_TIMEOVER = "timeover";
 
-        public static string[,] PlayerAndGameobject_to_path = new[,]
+        public static Dictionary<PlayerIndex, string[]> GameobjectToPath = new Dictionary<PlayerIndex, string[]>()
         {
-            { "Canvas/Player0","Canvas/Name0","Canvas/Face0","Canvas/Box0Back","Canvas/Box0","Canvas/Turn0",},
-            { "Canvas/Player1","Canvas/Name1","Canvas/Face1","Canvas/Box1Back","Canvas/Box1","Canvas/Turn1",},
+            {PlayerIndex.Player1,new string[]{ "Canvas/Player0","Canvas/Name0","Canvas/Face0","Canvas/Box0Back","Canvas/Box0","Canvas/Turn0",} },
+            {PlayerIndex.Player2,new string[]{ "Canvas/Player1","Canvas/Name1","Canvas/Face1","Canvas/Box1Back","Canvas/Box1","Canvas/Turn1",} },
         };
 
         /// <summary>
@@ -44,8 +47,13 @@
             "きふわらべ", "パナ彦", "ろぼりん娘", "豆腐マン"
         };
 
-        public static float[] BoxColumn_to_locationX = new [] { -150.0f, 0.0f, 150.0f };
-        public static float[] Player_to_locationY = new float[] { -124.0f, -224.0f };
+        public static float[] BoxColumn_to_locationX = new[] { -150.0f, 0.0f, 150.0f };
+
+        public static Dictionary<PlayerIndex, float> locationYs = new Dictionary<PlayerIndex, float>()
+        {
+            {PlayerIndex.Player1, -124.0f },
+            {PlayerIndex.Player2, -224.0f },
+        };
 
         public static int TransitionTime;
     }

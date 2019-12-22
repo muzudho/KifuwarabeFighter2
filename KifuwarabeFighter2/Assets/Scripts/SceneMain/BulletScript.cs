@@ -52,13 +52,15 @@
             {
                 if (mainCameraScript != null)// なぜかヌルになっていることがあるぜ☆（＾～＾）
                 {
+                    var opponentKey = PlayerIndexes.FromArrayIndex(opponent);
+
                     // 爆発の粒子を作るぜ☆
                     TakoyakiParticleScript.Add(this.transform.position.x, this.transform.position.y);
 
                     // ＨＰメーター
                     {
                         float damage;
-                        switch ((PlayerIndex)opponent)
+                        switch (opponentKey)
                         {
                             case PlayerIndex.Player1: damage = -50.0f; break; // １プレイヤーにダメージの場合マイナス☆
                             case PlayerIndex.Player2: damage = 50.0f; break;
@@ -72,7 +74,7 @@
                     // 手番
                     {
                         // 攻撃を受けた方の手番に変わるぜ☆（＾▽＾）
-                        mainCameraScript.SetTeban((PlayerIndex)opponent);
+                        mainCameraScript.SetTeban(opponentKey);
                     }
 
                     // この弾を消すぜ☆

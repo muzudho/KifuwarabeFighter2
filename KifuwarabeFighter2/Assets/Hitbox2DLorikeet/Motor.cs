@@ -1,4 +1,5 @@
-﻿using DojinCircleGrayscale.StellaQL;
+﻿using Assets.Scripts.Model.Dto.Input;
+using DojinCircleGrayscale.StellaQL;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -133,11 +134,11 @@ namespace DojinCircleGrayscale.Hitbox2DLorikeet
         /// Upadate( ) の最後に呼び出してください。
         /// </summary>
         /// <param name="player"></param>
-        public void Update(Animator animator, AControllable aControl, int playerIndex, Transform transform, SpriteRenderer[] hitboxsSpriteRenderer, BoxCollider2D weakboxCollider2D)
+        public void Update(Animator animator, AControllable aControl, PlayerIndex player, Transform transform, SpriteRenderer[] hitboxsSpriteRenderer, BoxCollider2D weakboxCollider2D)
         {
             if (animator.GetCurrentAnimatorClipInfo(0).Length < 1)
             {
-                Debug.LogError("クリップインフォの配列の範囲外エラー☆ playerIndex = " + playerIndex);
+                Debug.LogError("クリップインフォの配列の範囲外エラー☆ player = " + player);
                 return;
             }
 
@@ -181,7 +182,7 @@ namespace DojinCircleGrayscale.Hitbox2DLorikeet
 
             // 画像分類　スライス番号　取得
             int serialTilesetfile = GetSerialTilesetfileIndex(
-                CommonScript.Player_to_useCharacter[playerIndex], // キャラクター番号
+                CommonScript.UseCharacters[player], // キャラクター番号
                 cliptypeExRecord
                 );
             int slice = GetSlice(

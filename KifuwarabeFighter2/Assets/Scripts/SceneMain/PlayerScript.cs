@@ -1,7 +1,7 @@
 ﻿namespace SceneMain
 {
+    using Assets.Scripts.Model.Dto;
     using Assets.Scripts.Model.Dto.Input;
-    using Assets.Scripts.Model.Dto.Scene.Common;
     using Assets.Scripts.SceneMain;
     using DojinCircleGrayscale.Hitbox2DLorikeet;
     using DojinCircleGrayscale.StellaQL.Acons.Main_Char3;
@@ -12,7 +12,8 @@
 
         #region 敵味方判定
         public int playerIndex;
-        private PlayerIndex opponent; public PlayerIndex Opponent { get { return opponent; } }
+        private PlayerIndex opponent;
+        public PlayerIndex Opponent { get { return opponent; } }
         #endregion
 
         public bool isComputer;
@@ -49,17 +50,19 @@
 
         void Start()
         {
+            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+
             mainCameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
             #region 当たり判定
-            opponent = CommonScript.ReverseTeban((PlayerIndex)playerIndex);
+            opponent = CommonScript.ReverseTeban(player);
             opponentHitboxTag = ThisSceneConst.PlayerAndHitboxToTag[(int)this.Opponent, (int)HitboxIndex.Hitbox];
 
             hitboxsSpriteRenderer = new SpriteRenderer[] {
-                 GameObject.Find(ThisSceneConst.PlayerAndHitboxToPath[playerIndex,(int)HitboxIndex.Hitbox]).GetComponent<SpriteRenderer>(),
-                 GameObject.Find(ThisSceneConst.PlayerAndHitboxToPath[playerIndex,(int)HitboxIndex.Weakbox]).GetComponent<SpriteRenderer>(),
-                 GameObject.Find(ThisSceneConst.PlayerAndHitboxToPath[playerIndex,(int)HitboxIndex.Strongbox]).GetComponent<SpriteRenderer>(),
+                 GameObject.Find(ThisSceneConst.HitboxToPath[player][(int)HitboxIndex.Hitbox]).GetComponent<SpriteRenderer>(),
+                 GameObject.Find(ThisSceneConst.HitboxToPath[player][(int)HitboxIndex.Weakbox]).GetComponent<SpriteRenderer>(),
+                 GameObject.Find(ThisSceneConst.HitboxToPath[player][(int)HitboxIndex.Strongbox]).GetComponent<SpriteRenderer>(),
             };
-            weakboxCollider2D = GameObject.Find(ThisSceneConst.PlayerAndHitboxToPath[playerIndex, (int)HitboxIndex.Weakbox]).GetComponent<BoxCollider2D>();
+            weakboxCollider2D = GameObject.Find(ThisSceneConst.HitboxToPath[player][(int)HitboxIndex.Weakbox]).GetComponent<BoxCollider2D>();
             #endregion
             #region ジャンプ
             groundLayer = LayerMask.GetMask("Ground");
@@ -74,8 +77,9 @@
 
         void Update()
         {
+            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
 
-            //if ((int)PlayerIndex.Player1 == playerIndex)
+            //if (PlayerIndex.Player1 == player)
             //{
             //    //ebug.Log("Update Time.deltaTime = " + Time.deltaTime);
             //}
@@ -84,8 +88,8 @@
             AcState astateRecord = (AcState)AControl.Instance.GetCurrentAcStateRecord(animator);
 
             #region 入力受付
-            CommonInput.InputStateDto input = CommonInput.OnUpdate((PlayerIndex)playerIndex);
-            
+            InputStateDto input = ApplicationDto.OnUpdate(player);
+
             if (isComputer)
             {
                 if (input.buttonDownLP || input.buttonDownMP || input.buttonDownHP || input.buttonDownLK || input.buttonDownMK || input.buttonDownHK || input.buttonDownPA)
@@ -182,7 +186,7 @@
             if (astateRecord.Tags.Contains((int)Animator.StringToHash(AControl.TAG_BLOCK)))
             {
                 // ブロック中
-                if(FacingOpponentMoveFwBkSt.Back != facingOpponentMoveFwBkSt)
+                if (FacingOpponentMoveFwBkSt.Back != facingOpponentMoveFwBkSt)
                 {
                     // バックを解除している場合。
                     animator.SetTrigger(ThisSceneConst.TriggerDeblock);
@@ -198,7 +202,7 @@
                     transform.position - transform.up * 1.1f, // 足元を少しはみ出すぐらい
                     groundLayer // Linecastが判定するレイヤー // LayerMask.GetMask("Water")// 
                     );
-                //if ((int)PlayerIndex.Player1 == playerIndex)
+                //if (PlayerIndex.Player1 == player)
                 //{
                 //    //ebug.Log("B playerIndex = " + playerIndex + " isGrounded = " + isGrounded + " transform.position.y = " + transform.position.y + " Rigidbody2D.velocity.y = " + Rigidbody2D.velocity.y);
                 //}
@@ -332,7 +336,7 @@
 
                 if (FacingOpponentMoveFwBkSt.Forward == facingOpponentMoveFwBkSt)// 相手に向かってレバーを倒したとき
                 {
-                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //if (PlayerIndex.Player1 == player)
                     //{
                     //    //ebug.Log("相手に向かっていくぜ☆ input.leverX = " + input.leverX);
                     //}
@@ -344,7 +348,7 @@
                     //if ((int)ActioningIndex.Dash != anim.GetInteger(CommonScript.INTEGER_ACTIONING))
                     //{
                     //    // ダッシュ・アニメーションの開始
-                    //    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //    //if (PlayerIndex.Player1 == player)
                     //    //{
                     //    //    //ebug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ダッシュ!");
                     //    //}
@@ -356,7 +360,7 @@
                 }
                 else if (FacingOpponentMoveFwBkSt.Back == facingOpponentMoveFwBkSt)// 相手と反対の方向にレバーを倒したとき（バックステップ）
                 {
-                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //if (PlayerIndex.Player1 == player)
                     //{
                     //    //ebug.Log("相手の反対側に向かっていくぜ☆ input.leverX = " + input.leverX);
                     //}
@@ -365,7 +369,7 @@
                 }
                 else // レバーを倒していない時（ここにはこない？）
                 {
-                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //if (PlayerIndex.Player1 == player)
                     //{
                     //    //ebug.Log("止まっているぜ☆ input.leverX = " + input.leverX);
                     //}
@@ -385,7 +389,7 @@
                 // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
                 if (8 < animator.GetInteger(ThisSceneConst.IntegerLeverXNeutral))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
                 {
-                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //if (PlayerIndex.Player1 == player)
                     //{
                     //    //ebug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ストップ!");
                     //}
@@ -473,7 +477,7 @@
             if (ThisSceneConst.ReadyTimeLength < mainCameraScript.ReadyingTime)
             {
                 // 当たり判定くん
-                Motor.Instance.Update(animator, AControl.Instance, playerIndex, transform, hitboxsSpriteRenderer, weakboxCollider2D);
+                Motor.Instance.Update(animator, AControl.Instance, player, transform, hitboxsSpriteRenderer, weakboxCollider2D);
             }
         }
 
@@ -503,11 +507,14 @@
         /// <returns></returns>
         public FacingOpponentMoveFwBkSt GetFacingOpponentMoveFwBkSt(float leverX)
         {
-            if (0.0f==leverX)
+            if (0.0f == leverX)
             {
                 return FacingOpponentMoveFwBkSt.Stay;
             }
-            if (Mathf.Sign(ThisSceneConst.PlayerToTransform[(int)CommonScript.ReverseTeban((PlayerIndex)playerIndex)].position.x - transform.position.x)
+
+            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+
+            if (Mathf.Sign(ThisSceneConst.PlayerToTransform[(int)CommonScript.ReverseTeban(player)].position.x - transform.position.x)
                 ==
                 Mathf.Sign(leverX)
                 )
@@ -516,31 +523,37 @@
             }
             return FacingOpponentMoveFwBkSt.Back;
         }
+
         FacingOpponentLR GetFacingOfOpponentLR()
         {
+            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+
             // 自分と相手の位置（相手が右側にいるとき正となるようにする）
-            if( 0<=ThisSceneConst.PlayerToTransform[(int)CommonScript.ReverseTeban((PlayerIndex)playerIndex)].position.x - transform.position.x)
+            if (0 <= ThisSceneConst.PlayerToTransform[(int)CommonScript.ReverseTeban(player)].position.x - transform.position.x)
             {
                 return FacingOpponentLR.Right;
             }
             return FacingOpponentLR.Left;
         }
+
         void DoFacingOpponent(FacingOpponentLR facingOpponentLR)
         {
+            // var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+
             //localScale.xを-1にすると画像が反転する
             Vector2 temp = transform.localScale;
             switch (facingOpponentLR)
             {
                 case FacingOpponentLR.Left:
                     temp.x = -1 * Common.SCALE;
-                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //if (PlayerIndex.Player1 == player)
                     //{
                     //    //ebug.Log("左を向くぜ☆");
                     //}
                     break;
                 case FacingOpponentLR.Right:
                     temp.x = 1 * Common.SCALE;
-                    //if ((int)PlayerIndex.Player1 == playerIndex)
+                    //if (PlayerIndex.Player1 == player)
                     //{
                     //    //ebug.Log("右を向くぜ☆");
                     //}
@@ -563,8 +576,10 @@
             //ebug.Log("Jump1");
             float velocityX = Rigidbody2D.velocity.x;
 
+            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+
             //左キー: -1、右キー: 1
-            float leverX = Input.GetAxisRaw(CommonInput.InputNameDictionary[new InputIndex((PlayerIndex)playerIndex, ButtonIndex.Horizontal)]);
+            float leverX = Input.GetAxisRaw(InputNames.Dictionary[new InputIndex(player, ButtonIndex.Horizontal)]);
 
             if (leverX != 0)//左か右を入力したら
             {

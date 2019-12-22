@@ -11,6 +11,7 @@
         public static InputIndex P1Mk = new InputIndex(PlayerIndex.Player1, ButtonIndex.MediumKick);
         public static InputIndex P1Hk = new InputIndex(PlayerIndex.Player1, ButtonIndex.HardKick);
         public static InputIndex P1Pause = new InputIndex(PlayerIndex.Player1, ButtonIndex.Pause);
+        public static InputIndex P1CancelMenu = new InputIndex(PlayerIndex.Player1, ButtonIndex.CancelMenu); // プレイヤー１のみキャンセル可能。
 
         public static InputIndex P2Horizontal = new InputIndex(PlayerIndex.Player2, ButtonIndex.Horizontal);
         public static InputIndex P2Vertical = new InputIndex(PlayerIndex.Player2, ButtonIndex.Vertical);

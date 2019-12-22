@@ -1,4 +1,7 @@
-﻿namespace SceneResult
+﻿using System.Collections.Generic;
+using Assets.Scripts.Model.Dto.Input;
+
+namespace SceneResult
 {
     public enum GameobjectIndex
     {
@@ -9,10 +12,10 @@
     {
         public const string GAMEOBJ_TEXT = "Canvas/Text";
 
-        public static string[,] PlayerAndGameobject_to_path = new[,]
+        public static Dictionary<PlayerIndex, string[]> GameobjectToPath = new Dictionary<PlayerIndex, string[]>
         {
-            { "Canvas/Face0", },
-            { "Canvas/Face1", },
+            {PlayerIndex.Player1, new string[]{ "Canvas/Face0", } },
+            {PlayerIndex.Player2, new string[]{ "Canvas/Face1", } },
         };
 
         /// <summary>
