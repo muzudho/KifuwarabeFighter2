@@ -18,7 +18,7 @@ Configure input.
 * Same `Fire2`, `Fire3`, `Jump`, `Mouse X`, `Mouse Y`, `Mouse ScrollWheel`, `Horizontal`, `Vertical`, `Fire1`, `Fire2`, `Fire3`, `Jump`.
 * Change `Size` 5 to 21.
 * Click new items and input `name` text box. Rename to `P1LightPunch`, `P1MediumPunch`, `P1HardPunch`, `P1LightKick`, `P1MediumKick`, `P1HardKick`, `P1Pause`, `P2Horizontal`, `P2Vertical`, `P2LightPunch`, `P2MediumPunch`, `P2HardPunch`, `P2LightKick`, `P2MediumKick`, `P2HardKick`, `P2Pause`,
-* Configure.
+* Configure input.
     * `Horizontal` Type = Joystick Axis, Joy Num = Joystick 1.
     * `Vertical` Type = Joystick Axis, Joy Num = Joystick 1.
     * `P1LightPunch` Type = Joystick Axis, Joy Num = Joystick 1.
@@ -37,6 +37,17 @@ Configure input.
     * `P2MediumKick` Type = Joystick Axis, Joy Num = Joystick 2.
     * `P2HardKick` Type = Joystick Axis, Joy Num = Joystick 2.
     * `P2Pause` Type = Joystick Axis, Joy Num = Joystick 2.
+* Configure scene.
+    * Click main menu [File] - [Build Settings...].
+    * Double click [Assets] - [Scenes] - [Title] in project view.
+    * Click [Add Open Scenes] button.
+    * Double click [Assets] - [Scenes] - [Select] in project view.
+    * Click [Add Open Scenes] button.
+    * Double click [Assets] - [Scenes] - [Main] in project view.
+    * Click [Add Open Scenes] button.
+    * Double click [Assets] - [Scenes] - [Result] in project view.
+    * Click [Add Open Scenes] button.
+    * Right click `Scenes/SampleScene` from `Build Settings/Scene In Build`. and Click [Remove Selection].
 
 
 ドキュメント Author's Technical Documents

@@ -1,62 +1,165 @@
 fileFormatVersion: 2
 guid: 35c3867726bb33e4ab0f2a77327707e8
-timeCreated: 1484135422
-licenseType: Free
 TextureImporter:
-  fileIDToRecycleName:
-    21300000: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_0"
-    21300002: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_1"
-    21300004: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_2"
-    21300006: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_3"
-    21300008: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_4"
-    21300010: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_5"
-    21300012: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_6"
-    21300014: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_7"
-    21300016: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_8"
-    21300018: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_9"
-    21300020: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_10"
-    21300022: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_11"
-    21300024: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_12"
-    21300026: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_13"
-    21300028: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_14"
-    21300030: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_15"
-    21300032: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_16"
-    21300034: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_17"
-    21300036: Bullet1_0
-    21300038: Bullet1_1
-    21300040: Bullet1_2
-    21300042: Bullet1_3
-    21300044: Bullet1_4
-    21300046: Bullet1_5
-    21300048: Bullet1_6
-    21300050: Bullet1_7
-    21300052: Bullet1_8
-    21300054: Bullet1_9
-    21300056: Bullet1_10
-    21300058: Bullet1_11
-    21300060: Bullet1_12
-    21300062: Bullet1_13
-    21300064: Bullet1_14
-    21300066: Bullet1_15
-    21300068: Bullet1_16
-    21300070: Bullet1_17
-    21300072: Bullet0_0
-    21300074: Bullet0_1
-    21300076: Bullet0_2
-    21300078: Bullet0_3
-    21300080: Bullet0_4
-    21300082: Bullet0_5
-    21300084: Bullet0_6
-    21300086: Bullet0_7
-    21300088: Bullet0_8
-    21300090: Bullet0_9
-    21300092: Bullet0_10
-    21300094: Bullet0_11
-    21300096: Bullet0_12
-    21300098: Bullet0_13
-    21300100: Bullet0_14
-    21300102: Bullet0_15
-  serializedVersion: 4
+  internalIDToNameTable:
+  - first:
+      213: 21300000
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_0"
+  - first:
+      213: 21300002
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_1"
+  - first:
+      213: 21300004
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_2"
+  - first:
+      213: 21300006
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_3"
+  - first:
+      213: 21300008
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_4"
+  - first:
+      213: 21300010
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_5"
+  - first:
+      213: 21300012
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_6"
+  - first:
+      213: 21300014
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_7"
+  - first:
+      213: 21300016
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_8"
+  - first:
+      213: 21300018
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_9"
+  - first:
+      213: 21300020
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_10"
+  - first:
+      213: 21300022
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_11"
+  - first:
+      213: 21300024
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_12"
+  - first:
+      213: 21300026
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_13"
+  - first:
+      213: 21300028
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_14"
+  - first:
+      213: 21300030
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_15"
+  - first:
+      213: 21300032
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_16"
+  - first:
+      213: 21300034
+    second: "\u5F3E\uFF11_\u5C06\u68CB\u306E\u99D2_17"
+  - first:
+      213: 21300036
+    second: Bullet1_0
+  - first:
+      213: 21300038
+    second: Bullet1_1
+  - first:
+      213: 21300040
+    second: Bullet1_2
+  - first:
+      213: 21300042
+    second: Bullet1_3
+  - first:
+      213: 21300044
+    second: Bullet1_4
+  - first:
+      213: 21300046
+    second: Bullet1_5
+  - first:
+      213: 21300048
+    second: Bullet1_6
+  - first:
+      213: 21300050
+    second: Bullet1_7
+  - first:
+      213: 21300052
+    second: Bullet1_8
+  - first:
+      213: 21300054
+    second: Bullet1_9
+  - first:
+      213: 21300056
+    second: Bullet1_10
+  - first:
+      213: 21300058
+    second: Bullet1_11
+  - first:
+      213: 21300060
+    second: Bullet1_12
+  - first:
+      213: 21300062
+    second: Bullet1_13
+  - first:
+      213: 21300064
+    second: Bullet1_14
+  - first:
+      213: 21300066
+    second: Bullet1_15
+  - first:
+      213: 21300068
+    second: Bullet1_16
+  - first:
+      213: 21300070
+    second: Bullet1_17
+  - first:
+      213: 21300072
+    second: Bullet0_0
+  - first:
+      213: 21300074
+    second: Bullet0_1
+  - first:
+      213: 21300076
+    second: Bullet0_2
+  - first:
+      213: 21300078
+    second: Bullet0_3
+  - first:
+      213: 21300080
+    second: Bullet0_4
+  - first:
+      213: 21300082
+    second: Bullet0_5
+  - first:
+      213: 21300084
+    second: Bullet0_6
+  - first:
+      213: 21300086
+    second: Bullet0_7
+  - first:
+      213: 21300088
+    second: Bullet0_8
+  - first:
+      213: 21300090
+    second: Bullet0_9
+  - first:
+      213: 21300092
+    second: Bullet0_10
+  - first:
+      213: 21300094
+    second: Bullet0_11
+  - first:
+      213: 21300096
+    second: Bullet0_12
+  - first:
+      213: 21300098
+    second: Bullet0_13
+  - first:
+      213: 21300100
+    second: Bullet0_14
+  - first:
+      213: 21300102
+    second: Bullet0_15
+  externalObjects: {}
+  serializedVersion: 10
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -64,6 +167,8 @@ TextureImporter:
     linearTexture: 0
     fadeOut: 0
     borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
     mipMapFadeDistanceStart: 1
     mipMapFadeDistanceEnd: 3
   bumpmap:
@@ -72,6 +177,8 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
   isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -79,10 +186,13 @@ TextureImporter:
   textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
+    serializedVersion: 2
     filterMode: 0
     aniso: -1
-    mipBias: -1
-    wrapMode: 1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -91,41 +201,55 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1
+  singleChannelComponent: 0
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
   platformSettings:
-  - buildTarget: DefaultTexturePlatform
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
+    resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Standalone
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 3
+    buildTarget: Standalone
     maxTextureSize: 2048
+    resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Android
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 3
+    buildTarget: Android
     maxTextureSize: 2048
+    resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -141,7 +265,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 86305410000000000800000000000000
+      internalID: 21300072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_1
       rect:
@@ -154,7 +286,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: a6305410000000000800000000000000
+      internalID: 21300074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_2
       rect:
@@ -167,7 +307,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: c6305410000000000800000000000000
+      internalID: 21300076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_3
       rect:
@@ -180,7 +328,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: e6305410000000000800000000000000
+      internalID: 21300078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_4
       rect:
@@ -193,7 +349,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 07305410000000000800000000000000
+      internalID: 21300080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_5
       rect:
@@ -206,7 +370,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 27305410000000000800000000000000
+      internalID: 21300082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_6
       rect:
@@ -219,7 +391,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 47305410000000000800000000000000
+      internalID: 21300084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_7
       rect:
@@ -232,7 +412,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 67305410000000000800000000000000
+      internalID: 21300086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_8
       rect:
@@ -245,7 +433,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 87305410000000000800000000000000
+      internalID: 21300088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_9
       rect:
@@ -258,7 +454,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: a7305410000000000800000000000000
+      internalID: 21300090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_10
       rect:
@@ -271,7 +475,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: c7305410000000000800000000000000
+      internalID: 21300092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_11
       rect:
@@ -284,7 +496,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: e7305410000000000800000000000000
+      internalID: 21300094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_12
       rect:
@@ -297,7 +517,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 08305410000000000800000000000000
+      internalID: 21300096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_13
       rect:
@@ -310,7 +538,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 28305410000000000800000000000000
+      internalID: 21300098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_14
       rect:
@@ -323,7 +559,15 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 48305410000000000800000000000000
+      internalID: 21300100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Bullet0_15
       rect:
@@ -336,9 +580,28 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      physicsShape: []
       tessellationDetail: 0
+      bones: []
+      spriteID: 68305410000000000800000000000000
+      internalID: 21300102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
   spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

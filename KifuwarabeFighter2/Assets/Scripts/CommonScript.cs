@@ -118,13 +118,40 @@ public abstract class CommonInput
     }
 
     /// <summary>
+    /// * Main menu [Edit] - [Project Settings...] - [Input].
+    /// * Right click `Fire1` and [Delete Array Eelement].
+    /// * Same `Fire2`, `Fire3`, `Jump`, `Mouse X`, `Mouse Y`, `Mouse ScrollWheel`, `Horizontal`, `Vertical`, `Fire1`, `Fire2`, `Fire3`, `Jump`.
+    /// * Change `Size` 5 to 21.
+    /// * Click new items and input `name` text box. Rename to `P1LightPunch`, `P1MediumPunch`, `P1HardPunch`, `P1LightKick`, `P1MediumKick`, `P1HardKick`, `P1Pause`, `P2Horizontal`, `P2Vertical`, `P2LightPunch`, `P2MediumPunch`, `P2HardPunch`, `P2LightKick`, `P2MediumKick`, `P2HardKick`, `P2Pause`,
+    /// * Configure input.
+    ///     * `Horizontal` Type = Joystick Axis, Joy Num = Joystick 1.
+    ///     * `Vertical` Type = Joystick Axis, Joy Num = Joystick 1.
+    ///     * `P1LightPunch` Type = Joystick Axis, Joy Num = Joystick 1.
+    ///     * `P1MediumPunch` Type = Joystick Axis, Joy Num = Joystick 1.
+    ///     * `P1HardPunch` Type = Joystick Axis, Joy Num = Joystick 1.
+    ///     * `P1LightKick` Type = Joystick Axis, Joy Num = Joystick 1.
+    ///     * `P1MediumKick` Type = Joystick Axis, Joy Num = Joystick 1.
+    ///     * `P1HardKick` Type = Joystick Axis, Joy Num = Joystick 1.
+    ///     * `P1Pause` Type = Joystick Axis, Joy Num = Joystick 1.
+    ///     * `P2Horizontal` Type = Joystick Axis, Joy Num = Joystick 2.
+    ///     * `P2Vertical` Type = Joystick Axis, Joy Num = Joystick 2.
+    ///     * `P2LightPunch` Type = Joystick Axis, Joy Num = Joystick 2.
+    ///     * `P2MediumPunch` Type = Joystick Axis, Joy Num = Joystick 2.
+    ///     * `P2HardPunch` Type = Joystick Axis, Joy Num = Joystick 2.
+    ///     * `P2LightKick` Type = Joystick Axis, Joy Num = Joystick 2.
+    ///     * `P2MediumKick` Type = Joystick Axis, Joy Num = Joystick 2.
+    ///     * `P2HardKick` Type = Joystick Axis, Joy Num = Joystick 2.
+    ///     * `P2Pause` Type = Joystick Axis, Joy Num = Joystick 2.
+    ///     
     /// [player,button]
     /// 内部的には　プレイヤー１はP0、プレイヤー２はP1 だぜ☆（＾▽＾）
     /// 入力類は、コンフィグ画面でユーザーの目に触れる☆（＾～＾）
     /// ユーザーの目に見えるところでは 1スタート、内部的には 0スタートだぜ☆（＾▽＾）
     /// </summary>
     public static string[,] PlayerAndInput_to_inputName = new string[2, (int)InputIndex.Num] {
+        // Player 1.
         { "Horizontal", "Vertical","P1LightPunch","P1MediumPunch","P1HardPunch","P1LightKick","P1MediumKick","P1HardKick","P1Pause"},
+        // Player 2.
         { "P2Horizontal", "P2Vertical","P2LightPunch","P2MediumPunch","P2HardPunch","P2LightKick","P2MediumKick","P2HardKick","P2Pause"},
     };
     public const string INPUT_10_CA = "Cancel";
