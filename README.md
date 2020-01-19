@@ -9,7 +9,7 @@ This page is broken. https://enty.jp/grayscale
 How to use
 ==========
 
-Copy **KifuwarabeFighter2/Assets** directory to Unity assets directory. ユニティにぶちこめだぜ☆  
+Copy **KifuwarabeFighter2/Assets** and **KifuwarabeFighter2/ProjectSettings** directory to new Unity directory. ユニティにぶちこめだぜ☆  
 
 Configure input.
 
