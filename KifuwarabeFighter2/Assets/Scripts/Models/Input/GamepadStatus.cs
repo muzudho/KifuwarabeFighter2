@@ -17,12 +17,8 @@
             ButtonKey pauseKey,
             ButtonKey cancelMenuKey)
         {
-            this.HorizontalKey = horizontalKey;
-            this.HorizontalName = ButtonNames.Dictionary[this.HorizontalKey];
-
-            this.VerticalKey = horizontalKey;
-            this.VerticalName = ButtonNames.Dictionary[this.VerticalKey];
-
+            this.HorizontalLever = new LeverStatus(horizontalKey);
+            this.VerticalLever = new LeverStatus(verticalKey);
             this.Lp = new ButtonStatus(lpKey);
             this.Mp = new ButtonStatus(mpKey);
             this.Hp = new ButtonStatus(hpKey);
@@ -33,21 +29,15 @@
             this.CancelMenu = new ButtonStatus(cancelMenuKey);
         }
 
-        public ButtonKey HorizontalKey { get; private set; }
-        public string HorizontalName { get; private set; }
-
-        public ButtonKey VerticalKey { get; private set; }
-        public string VerticalName { get; private set; }
+        /// <summary>
+        /// レバー（水平方向）
+        /// </summary>
+        public LeverStatus HorizontalLever { get; set; }
 
         /// <summary>
-        /// レバーが水平方向に倒れているか。
+        /// レバー（垂直方向）
         /// </summary>
-        public float LeverX { get; set; }
-
-        /// <summary>
-        /// レバーが垂直方向に倒れているか。
-        /// </summary>
-        public float LeverY { get; set; }
+        public LeverStatus VerticalLever { get; set; }
 
         /// <summary>
         /// 弱パンチボタン押下状態。
@@ -95,7 +85,7 @@
         /// <returns></returns>
         public string ToDisplay()
         {
-            return $"leverX={LeverX} Y={LeverY} Lp={Lp.ToDisplay()} Mp={Mp.ToDisplay()} Hp={Hp.ToDisplay()} Lk={Lk.ToDisplay()} Mk={Mk.ToDisplay()} Hk={Hk.ToDisplay()} Pause={Pause.ToDisplay()} CancelMenu={CancelMenu.ToDisplay()}";
+            return $"leverX={HorizontalLever.Value} Y={VerticalLever.Value} Lp={Lp.ToDisplay()} Mp={Mp.ToDisplay()} Hp={Hp.ToDisplay()} Lk={Lk.ToDisplay()} Mk={Mk.ToDisplay()} Hk={Hk.ToDisplay()} Pause={Pause.ToDisplay()} CancelMenu={CancelMenu.ToDisplay()}";
         }
     }
 }

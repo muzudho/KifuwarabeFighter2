@@ -62,8 +62,8 @@
                 // レバーはコンピューターもいじっているので、区別できない。
                 // 0 != leverX ||
                 // 0 != leverY ||
-                0 != gamepad.LeverX ||
-                0 != gamepad.LeverY ||
+                0 != gamepad.HorizontalLever.Value ||
+                0 != gamepad.VerticalLever.Value ||
                 gamepad.Lp.Pressing ||
                 gamepad.Mp.Pressing ||
                 gamepad.Hp.Pressing ||
@@ -74,7 +74,7 @@
                 gamepad.CancelMenu.Pressing
                 ))
             {
-                Debug.Log("途中参加 " + player + " プレイヤー" + " leverX = " + gamepad.LeverX + " leverY = " + gamepad.LeverY);
+                Debug.Log("途中参加 " + player + " プレイヤー" + " leverX = " + gamepad.HorizontalLever.Value + " leverY = " + gamepad.VerticalLever.Value);
                 // コンピューター・プレイヤー側のゲームパッドで、何かボタンを押したら、人間の参入。
                 AppStatus.IsComputer[player] = false;
                 // FIXME: 硬直時間を入れたい。
@@ -83,7 +83,7 @@
 
             if (AppStatus.IsComputer[player])
             {
-                gamepad.LeverX = Random.Range(-1.0f, 1.0f);
+                gamepad.HorizontalLever.Value = Random.Range(-1.0f, 1.0f);
                 gamepad.Lp.Pressing = false;
                 gamepad.Mp.Pressing = false;
                 gamepad.Hp.Pressing = false;
@@ -95,7 +95,7 @@
             }
             else
             {
-                gamepad.LeverX = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonKey(player, ButtonType.Horizontal)]);
+                gamepad.HorizontalLever.Value = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonKey(player, ButtonType.Horizontal)]);
             }
             #endregion
 
@@ -124,10 +124,10 @@
                     // 何かボタンを押したら、キャラクター選択。
                     animator.SetTrigger(ThisSceneStatus.TriggerSelect);
                 }
-                else if (gamepad.LeverX != 0.0f)//左か右を入力したら
+                else if (gamepad.HorizontalLever.Value != 0.0f)//左か右を入力したら
                 {
                     //Debug.Log("slide lever x = " + leverX.ToString());
-                    if (gamepad.LeverX < 0.0f)
+                    if (gamepad.HorizontalLever.Value < 0.0f)
                     {
                         cursorColumn--;
                         if (cursorColumn < 0)

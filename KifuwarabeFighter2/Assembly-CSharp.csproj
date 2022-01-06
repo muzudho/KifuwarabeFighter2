@@ -83,6 +83,7 @@
      <Compile Include="Assets\Scripts\Models\Input\ButtonType.cs" />
      <Compile Include="Assets\Scripts\Models\Input\GamepadHelper.cs" />
      <Compile Include="Assets\Scripts\Models\Input\GamepadStatus.cs" />
+     <Compile Include="Assets\Scripts\Models\Input\LeverStatus.cs" />
      <Compile Include="Assets\Scripts\Models\Input\Player.cs" />
      <Compile Include="Assets\Scripts\Models\Input\Players.cs" />
      <Compile Include="Assets\Scripts\Models\Scenes\ApplicationStatus.cs" />

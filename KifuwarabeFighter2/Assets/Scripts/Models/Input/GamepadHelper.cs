@@ -7,9 +7,9 @@
         public static void UpdateState(Player player, GamepadStatus gamepad)
         {
             //左キー: -1、右キー: 1
-            gamepad.LeverX = Input.GetAxisRaw(gamepad.HorizontalName);
+            gamepad.HorizontalLever.Value = Input.GetAxisRaw(gamepad.HorizontalLever.Name);
             // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
-            gamepad.LeverY = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonKey(player, ButtonType.Vertical)]);
+            gamepad.VerticalLever.Value = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonKey(player, ButtonType.Vertical)]);
             gamepad.Lp.Set(Input.GetButton(gamepad.Lp.Name), Input.GetButtonDown(gamepad.Lp.Name), Input.GetButtonUp(gamepad.Lp.Name));
             gamepad.Mp.Set(Input.GetButton(gamepad.Mp.Name), Input.GetButtonDown(gamepad.Mp.Name), Input.GetButtonUp(gamepad.Mp.Name));
             gamepad.Hp.Set(Input.GetButton(gamepad.Hp.Name), Input.GetButtonDown(gamepad.Hp.Name), Input.GetButtonUp(gamepad.Hp.Name));

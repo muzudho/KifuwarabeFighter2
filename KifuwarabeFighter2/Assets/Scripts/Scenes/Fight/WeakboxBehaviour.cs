@@ -41,7 +41,7 @@
                 // ブロックしているかどうか判定☆
                 //CommonInput.PlayerInput input = CommonInput.player_to_input[playerIndex];
                 GamepadStatus input = ApplicationStatus.ReadInput(player);
-                if (FacingOpponentMoveFwBkSt.Back == playerScript.GetFacingOpponentMoveFwBkSt(input.LeverX))
+                if (FacingOpponentMoveFwBkSt.Back == playerScript.GetFacingOpponentMoveFwBkSt(input.HorizontalLever.Value))
                 {
                     //if (PlayerSerialId.Player1==player)
                     //{

@@ -98,24 +98,24 @@
                 {
                     // 人間プレイヤーの乱入☆ 次のフレームから☆
                     isComputer = false;
-                    gamepad.LeverX = 0;
-                    gamepad.LeverY = 0;
+                    gamepad.HorizontalLever.Value = 0;
+                    gamepad.VerticalLever.Value = 0;
                 }
                 else
                 {
                     // コンピューター・プレイヤーの場合。
-                    gamepad.LeverX = Random.Range(-1.0f, 1.0f);
-                    gamepad.LeverY = Random.Range(-1.0f, 1.0f);
-                    if (-0.980f < gamepad.LeverX && gamepad.LeverX < 0.980f)
+                    gamepad.HorizontalLever.Value = Random.Range(-1.0f, 1.0f);
+                    gamepad.VerticalLever.Value = Random.Range(-1.0f, 1.0f);
+                    if (-0.980f < gamepad.HorizontalLever.Value && gamepad.HorizontalLever.Value < 0.980f)
                     {
                         // きょろきょろするので落ち着かせるぜ☆（＾～＾）
-                        gamepad.LeverX = 0.0f;
+                        gamepad.HorizontalLever.Value = 0.0f;
                     }
 
-                    if (-0.995f < gamepad.LeverY && gamepad.LeverY < 0.995f)
+                    if (-0.995f < gamepad.VerticalLever.Value && gamepad.VerticalLever.Value < 0.995f)
                     {
                         // ジャンプばっかりするので落ち着かせるぜ☆（＾～＾）
-                        gamepad.LeverY = 0.0f;
+                        gamepad.VerticalLever.Value = 0.0f;
                     }
 
                     if (gamepad.Lp.Pressing)
@@ -185,7 +185,7 @@
             }
             #endregion
 
-            FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(gamepad.LeverX);
+            FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(gamepad.HorizontalLever.Value);
 
             if (astateRecord.Tags.Contains((int)Animator.StringToHash(AControl.TAG_BLOCK)))
             {
@@ -235,11 +235,11 @@
             {
                 float startY;
 
-                if (0 < gamepad.LeverY)// 上段だぜ☆
+                if (0 < gamepad.VerticalLever.Value)// 上段だぜ☆
                 {
                     startY = 1.2f;
                 }
-                else if (0 == gamepad.LeverY)// 中段だぜ☆
+                else if (0 == gamepad.VerticalLever.Value)// 中段だぜ☆
                 {
                     startY = 0.6f;
                 }
@@ -281,7 +281,7 @@
 
             #region レバーの押下時間の更新
             // レバー・ニュートラル時間と、レバー・プレッシング時間は、8フレームほど重複する部分がある。
-            if (gamepad.LeverX != 0)//左か右を入力したら
+            if (gamepad.HorizontalLever.Value != 0)//左か右を入力したら
             {
                 animator.SetInteger(ThisSceneStatus.IntegerLeverXPressing, animator.GetInteger(ThisSceneStatus.IntegerLeverXPressing) + 1);
                 animator.SetInteger(ThisSceneStatus.IntegerLeverXNeutral, 0);
@@ -302,7 +302,7 @@
                 }
             }
 
-            if (0 != gamepad.LeverY)// 上か下キーを入力していたら
+            if (0 != gamepad.VerticalLever.Value)// 上か下キーを入力していたら
             {
                 animator.SetInteger(ThisSceneStatus.IntegerLeverYPressing, animator.GetInteger(ThisSceneStatus.IntegerLeverYPressing) + 1);
                 animator.SetInteger(ThisSceneStatus.IntegerLeverYNeutral, 0);
@@ -327,12 +327,12 @@
             #region レバー操作によるアクション
             //if (!anim.GetBool(CommonScript.BOOL_JMOVE0))//ジャンプ時の屈伸中ではないなら
             //{
-            if (gamepad.LeverX != 0)//左か右を入力したら
+            if (gamepad.HorizontalLever.Value != 0)//左か右を入力したら
             {
                 if (!astateRecord.Tags.Contains(Animator.StringToHash(AControl.TAG_BUSYX)))
                 {
                     //入力方向へ移動
-                    Rigidbody2D.velocity = new Vector2(Mathf.Sign(gamepad.LeverX) * speedX, Rigidbody2D.velocity.y);
+                    Rigidbody2D.velocity = new Vector2(Mathf.Sign(gamepad.HorizontalLever.Value) * speedX, Rigidbody2D.velocity.y);
                 }
 
                 DoFacingOpponent(GetFacingOfOpponentLR());
@@ -407,11 +407,11 @@
 
             //ebug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
 
-            if (0 != gamepad.LeverY)// 上か下キーを入力していたら
+            if (0 != gamepad.VerticalLever.Value)// 上か下キーを入力していたら
             {
                 if (!astateRecord.Tags.Contains(Animator.StringToHash(AControl.TAG_BUSYY)))
                 {
-                    if (0 < gamepad.LeverY)// 上キーを入力したら
+                    if (0 < gamepad.VerticalLever.Value)// 上キーを入力したら
                     {
                         if (isGrounded)// 接地していれば
                         {
@@ -419,7 +419,7 @@
                             Pull_Jump();
                         }
                     }
-                    else if (gamepad.LeverY < 0)// 下キーを入力したら
+                    else if (gamepad.VerticalLever.Value < 0)// 下キーを入力したら
                     {
                         if (isGrounded)// 接地していれば
                         {
