@@ -13,6 +13,8 @@ Copy **KifuwarabeFighter2/Assets** and **KifuwarabeFighter2/ProjectSettings** di
 
 Configure input.
 
+* Project explorer [Assets/Scenes/Title] Scene Double click.
+* Main menu [File] - [Build Settings...] - [Build] Button click.
 * Main menu [Edit] - [Project Settings...] - [Input].
 * Right click `Fire1` and [Delete Array Eelement].
 * Same `Fire2`, `Fire3`, `Jump`, `Mouse X`, `Mouse Y`, `Mouse ScrollWheel`, `Horizontal`, `Vertical`, `Fire1`, `Fire2`, `Fire3`, `Jump`.
