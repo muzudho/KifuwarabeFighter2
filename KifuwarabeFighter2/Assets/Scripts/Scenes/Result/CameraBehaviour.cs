@@ -27,30 +27,30 @@
             {
                 player_to_face = new Image[]
                 {
-                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N1][(int)GameobjectType.Face]).GetComponent<Image>(),
-                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N2][(int)GameobjectType.Face]).GetComponent<Image>()
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[Player.N1][(int)GameobjectType.Face]).GetComponent<Image>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[Player.N2][(int)GameobjectType.Face]).GetComponent<Image>()
                 };
 
-                foreach (var player in PlayerKeys.All)
+                foreach (var player in Players.All)
                 {
-                    int character = (int)AppHelper.UseCharacters[player];
-                    Sprite[] sprites = Resources.LoadAll<Sprite>(AppHelper.CharacterAndSlice_to_faceSprites[character, (int)ResultFacialExpressionKey.All]);
+                    int character = (int)AppStatus.UseCharacters[player];
+                    Sprite[] sprites = Resources.LoadAll<Sprite>(AppConstants.characterAndSliceToFaceSprites[character, (int)KeyOfResultFacialExpression.All]);
                     string slice;
-                    switch (AppHelper.Result)
+                    switch (AppStatus.Result)
                     {
-                        case ResultKey.Player1_Win:
+                        case KeyOfResult.Player1_Win:
                             switch (player)
                             {
-                                case PlayerKey.N1: slice = AppHelper.CharacterAndSlice_to_faceSprites[character, (int)ResultFacialExpressionKey.Win]; break;
-                                case PlayerKey.N2: slice = AppHelper.CharacterAndSlice_to_faceSprites[character, (int)ResultFacialExpressionKey.Lose]; break;
+                                case Player.N1: slice = AppConstants.characterAndSliceToFaceSprites[character, (int)KeyOfResultFacialExpression.Win]; break;
+                                case Player.N2: slice = AppConstants.characterAndSliceToFaceSprites[character, (int)KeyOfResultFacialExpression.Lose]; break;
                                 default: Debug.LogError("未定義のプレイヤー☆"); slice = ""; break;
                             }
                             break;
-                        case ResultKey.Player2_Win:
+                        case KeyOfResult.Player2_Win:
                             switch (player)
                             {
-                                case PlayerKey.N1: slice = AppHelper.CharacterAndSlice_to_faceSprites[character, (int)ResultFacialExpressionKey.Lose]; break;
-                                case PlayerKey.N2: slice = AppHelper.CharacterAndSlice_to_faceSprites[character, (int)ResultFacialExpressionKey.Win]; break;
+                                case Player.N1: slice = AppConstants.characterAndSliceToFaceSprites[character, (int)KeyOfResultFacialExpression.Lose]; break;
+                                case Player.N2: slice = AppConstants.characterAndSliceToFaceSprites[character, (int)KeyOfResultFacialExpression.Win]; break;
                                 default: Debug.LogError("未定義のプレイヤー☆"); slice = ""; break;
                             }
                             break;
@@ -58,20 +58,20 @@
                         //    break;
                         default:
                             // 開発中画面などで☆
-                            slice = AppHelper.CharacterAndSlice_to_faceSprites[character, (int)ResultFacialExpressionKey.Win];
+                            slice = AppConstants.characterAndSliceToFaceSprites[character, (int)KeyOfResultFacialExpression.Win];
                             break;
                     }
-                    player_to_face[PlayerKeys.ToArrayIndex(player)].sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(slice));
+                    player_to_face[Players.ToArrayIndex(player)].sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(slice));
                 }
             }
 
-            switch (AppHelper.Result)
+            switch (AppStatus.Result)
             {
-                case ResultKey.Player1_Win:
-                    text.text = ThisSceneStatus.WinMessageByCharacter[(int)AppHelper.UseCharacters[PlayerKey.N1]];
+                case KeyOfResult.Player1_Win:
+                    text.text = ThisSceneStatus.WinMessageByCharacter[(int)AppStatus.UseCharacters[Player.N1]];
                     break;
-                case ResultKey.Player2_Win:
-                    text.text = ThisSceneStatus.WinMessageByCharacter[(int)AppHelper.UseCharacters[PlayerKey.N2]];
+                case KeyOfResult.Player2_Win:
+                    text.text = ThisSceneStatus.WinMessageByCharacter[(int)AppStatus.UseCharacters[Player.N2]];
                     break;
                 //case Result.Double_KnockOut:
                 //    text.text = "ダブルＫＯ！\n";
@@ -86,21 +86,21 @@
         void Update()
         {
             // キャンセル以外の 何かボタンを押したらセレクト画面へ遷移
-            foreach (var player in PlayerKeys.All)
+            foreach (var player in Players.All)
             {
                 // プレイヤーのキー押下状態を確認。
-                GamepadStatus state = ApplicationStatus.ReadInput(player);
+                GamepadStatus gamepad = ApplicationStatus.ReadInput(player);
 
                 // キャンセル以外の 何かボタンを押したらセレクト画面へ遷移
-                if (state.Lp.Pressing ||
-                    state.Mp.Pressing ||
-                    state.Hp.Pressing ||
-                    state.Lk.Pressing ||
-                    state.Mk.Pressing ||
-                    state.Hk.Pressing ||
-                    state.Pause.Pressing)
+                if (gamepad.Lp.Pressing ||
+                    gamepad.Mp.Pressing ||
+                    gamepad.Hp.Pressing ||
+                    gamepad.Lk.Pressing ||
+                    gamepad.Mk.Pressing ||
+                    gamepad.Hk.Pressing ||
+                    gamepad.Pause.Pressing)
                 {
-                    SceneManager.LoadScene(AppHelper.sceneToName[(int)SceneKey.Select]);
+                    SceneManager.LoadScene(AppConstants.sceneToName[(int)KeyOfScene.Select]);
                 }
             }
         }

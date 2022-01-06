@@ -11,12 +11,13 @@
 
     public class CameraBehaviour : MonoBehaviour
     {
-        Dictionary<PlayerKey, Animator> animators;
+        Dictionary<Player, Animator> animators;
 
         /// <summary>
         /// computer character selecting minimum time; コンピューターがキャラクターセレクトしている最低時間。
         /// </summary>
         public const int READY_TIME_LENGTH = 180;
+
         /// <summary>
         /// computer character selecting minimum time counter; コンピューターがキャラクターセレクトしている最低時間カウンター。
         /// </summary>
@@ -24,10 +25,10 @@
 
         void Start()
         {
-            animators = new Dictionary<PlayerKey, Animator>
+            animators = new Dictionary<Player, Animator>
             {
-                { PlayerKey.N1, GameObject.Find(GameObjectPaths.All[GameObjectKeys.P1Player]).GetComponent<Animator>() },
-                { PlayerKey.N2, GameObject.Find(GameObjectPaths.All[GameObjectKeys.P2Player]).GetComponent<Animator>() },
+                { Player.N1, GameObject.Find(GameObjectPaths.All[GameObjectKeys.P1Player]).GetComponent<Animator>() },
+                { Player.N2, GameObject.Find(GameObjectPaths.All[GameObjectKeys.P2Player]).GetComponent<Animator>() },
             };
 
             // このシーンのデータベースを用意するぜ☆（＾▽＾）
@@ -40,8 +41,8 @@
             ReadyingTime++;
 
             // 現在のアニメーター・ステートに紐づいたデータ
-            AcStateRecordable astateRecord0 = AControl.Instance.GetCurrentAcStateRecord(animators[PlayerKey.N1]);
-            AcStateRecordable astateRecord1 = AControl.Instance.GetCurrentAcStateRecord(animators[PlayerKey.N2]);
+            AcStateRecordable astateRecord0 = AControl.Instance.GetCurrentAcStateRecord(animators[Player.N1]);
+            AcStateRecordable astateRecord1 = AControl.Instance.GetCurrentAcStateRecord(animators[Player.N2]);
             if (
                 AControl.Instance.StateHash_to_record[Animator.StringToHash(Select_Cursor_AbstractAControl.BASELAYER_READY)].Name == astateRecord0.Name
                 &&
@@ -49,8 +50,8 @@
                 )
             {
                 // １プレイヤー、２プレイヤー　ともに Ready ステートなら。
-                animators[PlayerKey.N1].SetTrigger(ThisSceneStatus.TriggerTimeOver);
-                animators[PlayerKey.N2].SetTrigger(ThisSceneStatus.TriggerTimeOver);
+                animators[Player.N1].SetTrigger(ThisSceneStatus.TriggerTimeOver);
+                animators[Player.N2].SetTrigger(ThisSceneStatus.TriggerTimeOver);
                 ThisSceneStatus.TransitionTime = 1;
             }
 
@@ -60,7 +61,7 @@
 
                 if (5 == ThisSceneStatus.TransitionTime)
                 {
-                    SceneManager.LoadScene(AppHelper.sceneToName[(int)SceneKey.Fight]);
+                    SceneManager.LoadScene(AppConstants.sceneToName[(int)KeyOfScene.Fight]);
                 }
             }
         }

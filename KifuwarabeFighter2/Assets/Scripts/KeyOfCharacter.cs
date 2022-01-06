@@ -3,7 +3,7 @@
     /// <summary>
     /// 使用キャラクターを識別します
     /// </summary>
-    public enum CharacterKey
+    public enum KeyOfCharacter
     {
         Kifuwarabe,
         Ponahiko,

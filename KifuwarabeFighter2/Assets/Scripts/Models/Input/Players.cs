@@ -3,12 +3,12 @@
     /// <summary>
     /// プレイヤー番号の一覧
     /// </summary>
-    public static class PlayerKeys
+    public static class Players
     {
-        public static PlayerKey[] All = new[]
+        public static Player[] All = new[]
         {
-            PlayerKey.N1,
-            PlayerKey.N2,
+            Player.N1,
+            Player.N2,
         };
 
         /// <summary>
@@ -16,7 +16,7 @@
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public static int ToArrayIndex(PlayerKey player)
+        public static int ToArrayIndex(Player player)
         {
             return ((int)player) - 1;
         }
@@ -26,9 +26,9 @@
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public static PlayerKey FromArrayIndex(int playerIndex)
+        public static Player FromArrayIndex(int playerIndex)
         {
-            return (PlayerKey)(playerIndex + 1);
+            return (Player)(playerIndex + 1);
         }
     }
 }

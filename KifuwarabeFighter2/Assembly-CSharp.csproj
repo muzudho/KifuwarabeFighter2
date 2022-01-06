@@ -68,9 +68,14 @@
      <Compile Include="Assets\Resources\StellaQLUserSettings.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\Main_Char3_Behaviour.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\SampleBehaviour.cs" />
+     <Compile Include="Assets\Scripts\AppConstants.cs" />
      <Compile Include="Assets\Scripts\AppHelper.cs" />
-     <Compile Include="Assets\Scripts\CharacterKey.cs" />
+     <Compile Include="Assets\Scripts\AppStatus.cs" />
      <Compile Include="Assets\Scripts\EnumExtensions.cs" />
+     <Compile Include="Assets\Scripts\KeyOfCharacter.cs" />
+     <Compile Include="Assets\Scripts\KeyOfResult.cs" />
+     <Compile Include="Assets\Scripts\KeyOfResultFacialExpression.cs" />
+     <Compile Include="Assets\Scripts\KeyOfScene.cs" />
      <Compile Include="Assets\Scripts\Models\Input\ButtonKey.cs" />
      <Compile Include="Assets\Scripts\Models\Input\ButtonKeys.cs" />
      <Compile Include="Assets\Scripts\Models\Input\ButtonNames.cs" />
@@ -78,8 +83,8 @@
      <Compile Include="Assets\Scripts\Models\Input\ButtonType.cs" />
      <Compile Include="Assets\Scripts\Models\Input\GamepadHelper.cs" />
      <Compile Include="Assets\Scripts\Models\Input\GamepadStatus.cs" />
-     <Compile Include="Assets\Scripts\Models\Input\PlayerKey.cs" />
-     <Compile Include="Assets\Scripts\Models\Input\PlayerKeys.cs" />
+     <Compile Include="Assets\Scripts\Models\Input\Player.cs" />
+     <Compile Include="Assets\Scripts\Models\Input\Players.cs" />
      <Compile Include="Assets\Scripts\Models\Scenes\ApplicationStatus.cs" />
      <Compile Include="Assets\Scripts\Models\Scenes\Fight\FacingOpponentLR.cs" />
      <Compile Include="Assets\Scripts\Models\Scenes\Fight\FacingOpponentMoveFwBkSt.cs" />
@@ -97,9 +102,6 @@
      <Compile Include="Assets\Scripts\Models\Scenes\Select\GameObjectType.cs" />
      <Compile Include="Assets\Scripts\Models\Scenes\Select\PlayerStatus.cs" />
      <Compile Include="Assets\Scripts\Models\Scenes\Select\ThisSceneStatus.cs" />
-     <Compile Include="Assets\Scripts\ResultFacialExpressionKey.cs" />
-     <Compile Include="Assets\Scripts\ResultKey.cs" />
-     <Compile Include="Assets\Scripts\SceneKey.cs" />
      <Compile Include="Assets\Scripts\Scenes\Fight\BulletBehaviour.cs" />
      <Compile Include="Assets\Scripts\Scenes\Fight\CameraBehaviour.cs" />
      <Compile Include="Assets\Scripts\Scenes\Fight\PlayerBehaviour.cs" />

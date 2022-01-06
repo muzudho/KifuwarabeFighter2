@@ -39,9 +39,9 @@
 
             #region 弾作成
             // 味方キャラから 敵キャラに向かって弾を飛ばします
-            GameObject me = GameObject.FindWithTag(ThisSceneStatus.PlayerToTag[friend]);   // 自キャラ
-            Rigidbody2D bullet = GetComponent<Rigidbody2D>();                           // 弾
-            bullet.velocity = new Vector2(                                              // 自キャラの向いている向きに弾を飛ばす
+            GameObject me = GameObject.FindWithTag(ThisSceneStatus.PlayerToTag[friend]);    // 自キャラ
+            Rigidbody2D bullet = GetComponent<Rigidbody2D>();                               // 弾
+            bullet.velocity = new Vector2(                                                  // 自キャラの向いている向きに弾を飛ばす
                 speed * me.transform.localScale.x, bullet.velocity.y);
             
             // 弾の画像の向きを　味方キャラクター　に合わせる
@@ -61,7 +61,7 @@
             {
                 if (mainCameraScript != null)// なぜかヌルになっていることがあるぜ☆（＾～＾）
                 {
-                    var opponentKey = PlayerKeys.FromArrayIndex(opponent);
+                    var opponentKey = Players.FromArrayIndex(opponent);
 
                     // 爆発の粒子を作るぜ☆
                     TakoyakiParticleScript.Add(this.transform.position.x, this.transform.position.y);
@@ -71,8 +71,8 @@
                         float damage;
                         switch (opponentKey)
                         {
-                            case PlayerKey.N1: damage = -50.0f; break; // １プレイヤーにダメージの場合マイナス☆
-                            case PlayerKey.N2: damage = 50.0f; break;
+                            case Player.N1: damage = -50.0f; break; // １プレイヤーにダメージの場合マイナス☆
+                            case Player.N2: damage = 50.0f; break;
                             default: Debug.LogError("Bullet / HP meter / opponent"); damage = 0.0f; break;
                         }
 

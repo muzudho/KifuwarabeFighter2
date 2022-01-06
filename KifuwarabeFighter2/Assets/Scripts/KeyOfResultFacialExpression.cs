@@ -3,7 +3,7 @@
     /// <summary>
     /// 結果画面の表情の種類
     /// </summary>
-    public enum ResultFacialExpressionKey
+    public enum KeyOfResultFacialExpression
     {
         All,
         Win,

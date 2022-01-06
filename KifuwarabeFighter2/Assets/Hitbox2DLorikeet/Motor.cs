@@ -110,7 +110,7 @@
         /// <param name="character"></param>
         /// <param name="motion"></param>
         /// <param name="currentMotionFrame"></param>
-        public static int GetSerialTilesetfileIndex(CharacterKey character, FramedMotionable cliptypeExRecord)
+        public static int GetSerialTilesetfileIndex(KeyOfCharacter character, FramedMotionable cliptypeExRecord)
         {
             // キャラクターと画像種類番号から、通し画像番号を取得。
             return (int)character * (int)TilesetfileType.Num + cliptypeExRecord.TilesetfileType;
@@ -135,7 +135,7 @@
         /// Upadate( ) の最後に呼び出してください。
         /// </summary>
         /// <param name="player"></param>
-        public void Update(Animator animator, AControllable aControl, PlayerKey player, Transform transform, SpriteRenderer[] hitboxsSpriteRenderer, BoxCollider2D weakboxCollider2D)
+        public void Update(Animator animator, AControllable aControl, Player player, Transform transform, SpriteRenderer[] hitboxsSpriteRenderer, BoxCollider2D weakboxCollider2D)
         {
             if (animator.GetCurrentAnimatorClipInfo(0).Length < 1)
             {
@@ -183,7 +183,7 @@
 
             // 画像分類　スライス番号　取得
             int serialTilesetfile = GetSerialTilesetfileIndex(
-                AppHelper.UseCharacters[player], // キャラクター番号
+                AppStatus.UseCharacters[player], // キャラクター番号
                 cliptypeExRecord
                 );
             int slice = GetSlice(

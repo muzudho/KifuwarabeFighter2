@@ -17,14 +17,14 @@
         }
         #endregion
 
-        public ButtonKey(PlayerKey player, ButtonType button)
+        public ButtonKey(Player player, ButtonType button)
         {
             this.PlayerNum = player;
             this.ButtonType = button;
             this._flat = $"{(int)this.PlayerNum},{(int)this.ButtonType}";
         }
 
-        public PlayerKey PlayerNum { get; set; }
+        public Player PlayerNum { get; set; }
         public ButtonType ButtonType { get; set; }
 
         /// <summary>

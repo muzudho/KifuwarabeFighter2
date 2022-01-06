@@ -3,7 +3,7 @@
     /// <summary>
     /// 対局の結果☆
     /// </summary>
-    public enum ResultKey
+    public enum KeyOfResult
     {
         Player1_Win,
         Player2_Win,

@@ -10,20 +10,20 @@
     {
         static ThisSceneStatus()
         {
-            ThisSceneStatus.PlayerStatusDict = new Dictionary<PlayerKey, PlayerStatus>()
+            ThisSceneStatus.PlayerStatusDict = new Dictionary<Player, PlayerStatus>()
             {
-                {PlayerKey.N1, new PlayerStatus(-124.0f)},
-                {PlayerKey.N2, new PlayerStatus(-224.0f)},
+                {Player.N1, new PlayerStatus(-124.0f)},
+                {Player.N2, new PlayerStatus(-224.0f)},
             };
 
             // セレクト画面でのキャラクターの並び順。
             // 見えるのは３列。残りの１つは見えない。
             ThisSceneStatus.Table = new CharacterCell[]
             {
-                new CharacterCell("きふわらべ", CharacterKey.Kifuwarabe, -150.0f),
-                new CharacterCell("パナ彦", CharacterKey.Roborinko, 0.0f),
-                new CharacterCell("ろぼりん娘",CharacterKey.Ponahiko, 150.0f),
-                new CharacterCell("豆腐マン",CharacterKey.TofuMan,0.0f),
+                new CharacterCell("きふわらべ", KeyOfCharacter.Kifuwarabe, -150.0f),
+                new CharacterCell("パナ彦", KeyOfCharacter.Roborinko, 0.0f),
+                new CharacterCell("ろぼりん娘",KeyOfCharacter.Ponahiko, 150.0f),
+                new CharacterCell("豆腐マン",KeyOfCharacter.TofuMan,0.0f),
             };
 
             TransitionTime = 0;
@@ -36,7 +36,7 @@
 
         public static int TransitionTime;
 
-        public static Dictionary<PlayerKey, PlayerStatus> PlayerStatusDict { get; set; }
+        public static Dictionary<Player, PlayerStatus> PlayerStatusDict { get; set; }
         public static CharacterCell[] Table { get; set; }
     }
 }

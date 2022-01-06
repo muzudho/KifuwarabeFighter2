@@ -4,7 +4,7 @@
 
     public static class GamepadHelper
     {
-        public static void UpdateState(PlayerKey player, GamepadStatus gamepad)
+        public static void UpdateState(Player player, GamepadStatus gamepad)
         {
             //左キー: -1、右キー: 1
             gamepad.LeverX = Input.GetAxisRaw(gamepad.HorizontalName);
@@ -19,13 +19,13 @@
             gamepad.Pause.set(Input.GetButton(gamepad.PauseName), Input.GetButtonDown(gamepad.PauseName), Input.GetButtonUp(gamepad.PauseName));
 
             // プレイヤー１のみキャンセル可能
-            if (player == PlayerKey.N1)
+            if (player == Player.N1)
             {
                 gamepad.CancelMenu.set(Input.GetButton(gamepad.CancelMenuName), Input.GetButtonDown(gamepad.CancelMenuName), Input.GetButtonUp(gamepad.CancelMenuName));
             }
 
             // プレイヤー１だけテストで表示します。
-            if (PlayerKey.N1 == player)
+            if (Player.N1 == player)
             {
                 Debug.Log($"player1 input {gamepad.ToDisplay()}");
             }

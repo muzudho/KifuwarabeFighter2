@@ -13,8 +13,8 @@
 
         #region 敵味方判定
         public int playerIndex;
-        private PlayerKey opponent;
-        public PlayerKey Opponent { get { return opponent; } }
+        private Player opponent;
+        public Player Opponent { get { return opponent; } }
         #endregion
 
         public bool isComputer;
@@ -52,7 +52,7 @@
 
         void Start()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
 
             mainCameraScript = GameObject.Find("Main Camera").GetComponent<CameraBehaviour>();
             #region 当たり判定
@@ -79,7 +79,7 @@
 
         void Update()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
 
             //if (PlayerSerialId.Player1 == player)
             //{
@@ -90,94 +90,94 @@
             AcState astateRecord = (AcState)AControl.Instance.GetCurrentAcStateRecord(animator);
 
             #region 入力受付
-            GamepadStatus input = ApplicationStatus.ReadInput(player);
+            GamepadStatus gamepad = ApplicationStatus.ReadInput(player);
 
             if (isComputer)
             {
-                if (input.Lp.Down || input.Mp.Down || input.Hp.Down || input.Lk.Down || input.Mk.Down || input.Hk.Down || input.Pause.Down)
+                if (gamepad.Lp.Down || gamepad.Mp.Down || gamepad.Hp.Down || gamepad.Lk.Down || gamepad.Mk.Down || gamepad.Hk.Down || gamepad.Pause.Down)
                 {
                     // 人間プレイヤーの乱入☆ 次のフレームから☆
                     isComputer = false;
-                    input.LeverX = 0;
-                    input.LeverY = 0;
+                    gamepad.LeverX = 0;
+                    gamepad.LeverY = 0;
                 }
                 else
                 {
                     // コンピューター・プレイヤーの場合。
-                    input.LeverX = Random.Range(-1.0f, 1.0f);
-                    input.LeverY = Random.Range(-1.0f, 1.0f);
-                    if (-0.980f < input.LeverX && input.LeverX < 0.980f)
+                    gamepad.LeverX = Random.Range(-1.0f, 1.0f);
+                    gamepad.LeverY = Random.Range(-1.0f, 1.0f);
+                    if (-0.980f < gamepad.LeverX && gamepad.LeverX < 0.980f)
                     {
                         // きょろきょろするので落ち着かせるぜ☆（＾～＾）
-                        input.LeverX = 0.0f;
+                        gamepad.LeverX = 0.0f;
                     }
 
-                    if (-0.995f < input.LeverY && input.LeverY < 0.995f)
+                    if (-0.995f < gamepad.LeverY && gamepad.LeverY < 0.995f)
                     {
                         // ジャンプばっかりするので落ち着かせるぜ☆（＾～＾）
-                        input.LeverY = 0.0f;
+                        gamepad.LeverY = 0.0f;
                     }
 
-                    if (input.Lp.Pressing)
+                    if (gamepad.Lp.Pressing)
                     {
                         // 押しっぱなしなら、いつか放す☆（＾～＾）
-                        input.Lp.Up = (0.900f < Random.Range(0.0f, 1.0f));
+                        gamepad.Lp.Up = (0.900f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
                         // 押してないなら、いつか押す☆（＾～＾）
-                        input.Lp.Up = false;
-                        input.Lp.Down = (0.900f < Random.Range(0.0f, 1.0f));
+                        gamepad.Lp.Up = false;
+                        gamepad.Lp.Down = (0.900f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (input.Mp.Pressing)
+                    if (gamepad.Mp.Pressing)
                     {
-                        input.Mp.Up = (0.990f < Random.Range(0.0f, 1.0f));
+                        gamepad.Mp.Up = (0.990f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        input.Mp.Up = false;
-                        input.Mp.Down = (0.990f < Random.Range(0.0f, 1.0f));
+                        gamepad.Mp.Up = false;
+                        gamepad.Mp.Down = (0.990f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (input.Hp.Pressing)
+                    if (gamepad.Hp.Pressing)
                     {
-                        input.Hp.Up = (0.995f < Random.Range(0.0f, 1.0f));
+                        gamepad.Hp.Up = (0.995f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        input.Hp.Up = false;
-                        input.Hp.Down = (0.995f < Random.Range(0.0f, 1.0f));
+                        gamepad.Hp.Up = false;
+                        gamepad.Hp.Down = (0.995f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (input.Lk.Pressing)
+                    if (gamepad.Lk.Pressing)
                     {
-                        input.Lk.Up = (0.900f < Random.Range(0.0f, 1.0f));
+                        gamepad.Lk.Up = (0.900f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        input.Lk.Up = false;
-                        input.Lk.Down = (0.900f < Random.Range(0.0f, 1.0f));
+                        gamepad.Lk.Up = false;
+                        gamepad.Lk.Down = (0.900f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (input.Mk.Pressing)
+                    if (gamepad.Mk.Pressing)
                     {
-                        input.Mk.Up = (0.990f < Random.Range(0.0f, 1.0f));
+                        gamepad.Mk.Up = (0.990f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        input.Mk.Up= false;
-                        input.Mk.Down = (0.990f < Random.Range(0.0f, 1.0f));
+                        gamepad.Mk.Up= false;
+                        gamepad.Mk.Down = (0.990f < Random.Range(0.0f, 1.0f));
                     }
 
-                    if (input.Hk.Pressing)
+                    if (gamepad.Hk.Pressing)
                     {
-                        input.Hk.Up = (0.995f < Random.Range(0.0f, 1.0f));
+                        gamepad.Hk.Up = (0.995f < Random.Range(0.0f, 1.0f));
                     }
                     else
                     {
-                        input.Hk.Up = false;
-                        input.Hk.Down = (0.995f < Random.Range(0.0f, 1.0f));
+                        gamepad.Hk.Up = false;
+                        gamepad.Hk.Down = (0.995f < Random.Range(0.0f, 1.0f));
                     }
                     //buttonUpPA = (0.999f < Random.Range(0.0f, 1.0f));
                     //buttonDownPA = (0.999f < Random.Range(0.0f, 1.0f));
@@ -185,7 +185,7 @@
             }
             #endregion
 
-            FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(input.LeverX);
+            FacingOpponentMoveFwBkSt facingOpponentMoveFwBkSt = GetFacingOpponentMoveFwBkSt(gamepad.LeverX);
 
             if (astateRecord.Tags.Contains((int)Animator.StringToHash(AControl.TAG_BLOCK)))
             {
@@ -224,22 +224,22 @@
                 (3 == animator.GetInteger(ThisSceneStatus.IntegerLeverXNeutral) % (30)) // レバーを放して、タイミングよく攻撃ボタンを押したとき
                 &&
                 (
-                    input.Lp.Down ||
-                    input.Mp.Down ||
-                    input.Hp.Down ||
-                    input.Lk.Down ||
-                    input.Mk.Down ||
-                    input.Hk.Down
+                    gamepad.Lp.Down ||
+                    gamepad.Mp.Down ||
+                    gamepad.Hp.Down ||
+                    gamepad.Lk.Down ||
+                    gamepad.Mk.Down ||
+                    gamepad.Hk.Down
                 )
             )
             {
                 float startY;
 
-                if (0 < input.LeverY)// 上段だぜ☆
+                if (0 < gamepad.LeverY)// 上段だぜ☆
                 {
                     startY = 1.2f;
                 }
-                else if (0 == input.LeverY)// 中段だぜ☆
+                else if (0 == gamepad.LeverY)// 中段だぜ☆
                 {
                     startY = 0.6f;
                 }
@@ -281,7 +281,7 @@
 
             #region レバーの押下時間の更新
             // レバー・ニュートラル時間と、レバー・プレッシング時間は、8フレームほど重複する部分がある。
-            if (input.LeverX != 0)//左か右を入力したら
+            if (gamepad.LeverX != 0)//左か右を入力したら
             {
                 animator.SetInteger(ThisSceneStatus.IntegerLeverXPressing, animator.GetInteger(ThisSceneStatus.IntegerLeverXPressing) + 1);
                 animator.SetInteger(ThisSceneStatus.IntegerLeverXNeutral, 0);
@@ -302,7 +302,7 @@
                 }
             }
 
-            if (0 != input.LeverY)// 上か下キーを入力していたら
+            if (0 != gamepad.LeverY)// 上か下キーを入力していたら
             {
                 animator.SetInteger(ThisSceneStatus.IntegerLeverYPressing, animator.GetInteger(ThisSceneStatus.IntegerLeverYPressing) + 1);
                 animator.SetInteger(ThisSceneStatus.IntegerLeverYNeutral, 0);
@@ -327,12 +327,12 @@
             #region レバー操作によるアクション
             //if (!anim.GetBool(CommonScript.BOOL_JMOVE0))//ジャンプ時の屈伸中ではないなら
             //{
-            if (input.LeverX != 0)//左か右を入力したら
+            if (gamepad.LeverX != 0)//左か右を入力したら
             {
                 if (!astateRecord.Tags.Contains(Animator.StringToHash(AControl.TAG_BUSYX)))
                 {
                     //入力方向へ移動
-                    Rigidbody2D.velocity = new Vector2(Mathf.Sign(input.LeverX) * speedX, Rigidbody2D.velocity.y);
+                    Rigidbody2D.velocity = new Vector2(Mathf.Sign(gamepad.LeverX) * speedX, Rigidbody2D.velocity.y);
                 }
 
                 DoFacingOpponent(GetFacingOfOpponentLR());
@@ -407,11 +407,11 @@
 
             //ebug.Log("leverY = "+ leverY + " player_to_rigidbody2D[" + iPlayer  + "].velocity = " + player_to_rigidbody2D[iPlayer].velocity);
 
-            if (0 != input.LeverY)// 上か下キーを入力していたら
+            if (0 != gamepad.LeverY)// 上か下キーを入力していたら
             {
                 if (!astateRecord.Tags.Contains(Animator.StringToHash(AControl.TAG_BUSYY)))
                 {
-                    if (0 < input.LeverY)// 上キーを入力したら
+                    if (0 < gamepad.LeverY)// 上キーを入力したら
                     {
                         if (isGrounded)// 接地していれば
                         {
@@ -419,7 +419,7 @@
                             Pull_Jump();
                         }
                     }
-                    else if (input.LeverY < 0)// 下キーを入力したら
+                    else if (gamepad.LeverY < 0)// 下キーを入力したら
                     {
                         if (isGrounded)// 接地していれば
                         {
@@ -442,37 +442,37 @@
             //    Resign();
             //}
             //else
-            if (input.Lp.Down)
+            if (gamepad.Lp.Down)
             {
                 //ebug.Log("button BUTTON_03_P1_LP");
                 Pull_LightPunch();
             }
-            else if (input.Mp.Down)
+            else if (gamepad.Mp.Down)
             {
                 //ebug.Log("button BUTTON_04_P1_MP");
                 Pull_MediumPunch();
             }
-            else if (input.Hp.Down)
+            else if (gamepad.Hp.Down)
             {
                 //ebug.Log("button BUTTON_05_P1_HP");
                 Pull_HardPunch();
             }
-            else if (input.Lk.Down)
+            else if (gamepad.Lk.Down)
             {
                 //ebug.Log("button BUTTON_06_P1_LK");
                 Pull_LightKick();
             }
-            else if (input.Mk.Down)
+            else if (gamepad.Mk.Down)
             {
                 //ebug.Log("button BUTTON_07_P1_MK");
                 Pull_MediumKick();
             }
-            else if (input.Hk.Down)
+            else if (gamepad.Hk.Down)
             {
                 //ebug.Log("button BUTTON_08_P1_HK");
                 Pull_HardKick();
             }
-            else if (input.Pause.Down)
+            else if (gamepad.Pause.Down)
             {
                 //ebug.Log("button BUTTON_09_P1_PA");
             }
@@ -516,7 +516,7 @@
                 return FacingOpponentMoveFwBkSt.Stay;
             }
 
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
 
             if (Mathf.Sign(ThisSceneStatus.PlayerToTransform[AppHelper.ReverseTeban(player)].position.x - transform.position.x)
                 ==
@@ -530,7 +530,7 @@
 
         FacingOpponentLR GetFacingOfOpponentLR()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
 
             // 自分と相手の位置（相手が右側にいるとき正となるようにする）
             if (0 <= ThisSceneStatus.PlayerToTransform[AppHelper.ReverseTeban(player)].position.x - transform.position.x)
@@ -580,7 +580,7 @@
             //ebug.Log("Jump1");
             float velocityX = Rigidbody2D.velocity.x;
 
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
 
             //左キー: -1、右キー: 1
             float leverX = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonKey(player, ButtonType.Horizontal)]);
@@ -642,7 +642,7 @@
         }
         void Pull_LightPunch()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 10.0f;
 
             // アニメーションの開始
@@ -650,7 +650,7 @@
         }
         void Pull_MediumPunch()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 50.0f;
 
             // アニメーションの開始
@@ -658,7 +658,7 @@
         }
         void Pull_HardPunch()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 100.0f;
 
             // アニメーションの開始
@@ -666,7 +666,7 @@
         }
         void Pull_LightKick()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 10.0f;
 
             // アニメーションの開始
@@ -674,7 +674,7 @@
         }
         void Pull_MediumKick()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 50.0f;
 
             // アニメーションの開始
@@ -682,7 +682,7 @@
         }
         void Pull_HardKick()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 100.0f;
 
             // アニメーションの開始

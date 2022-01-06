@@ -10,9 +10,9 @@
     {
         static ApplicationStatus()
         {
-            PlayerInputStateDict = new Dictionary<PlayerKey, GamepadStatus>()
+            PlayerInputStateDict = new Dictionary<Player, GamepadStatus>()
             {
-                { PlayerKey.N1, new GamepadStatus(
+                { Player.N1, new GamepadStatus(
                     ButtonKeys.P1Horizontal,
                     ButtonKeys.P1Vertical,
                     ButtonKeys.P1Lp,
@@ -23,7 +23,7 @@
                     ButtonKeys.P1Hk,
                     ButtonKeys.P1Pause,
                     ButtonKeys.P1CancelMenu) },
-                { PlayerKey.N2, new GamepadStatus(
+                { Player.N2, new GamepadStatus(
                     ButtonKeys.P2Horizontal,
                     ButtonKeys.P2Vertical,
                     ButtonKeys.P2Lp,
@@ -40,14 +40,14 @@
         /// <summary>
         /// キャストするのがめんどくさいので、マップを使うぜ☆（＾～＾）
         /// </summary>
-        public static Dictionary<PlayerKey, GamepadStatus> PlayerInputStateDict { get; set; }
+        public static Dictionary<Player, GamepadStatus> PlayerInputStateDict { get; set; }
 
         /// <summary>
         /// キーの押下状態を読み取ります。
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public static GamepadStatus ReadInput(PlayerKey player)
+        public static GamepadStatus ReadInput(Player player)
         {
             // DTOを使い回します。
             GamepadStatus gamepad = PlayerInputStateDict[player];

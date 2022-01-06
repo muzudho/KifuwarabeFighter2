@@ -30,7 +30,7 @@
         // Use this for initialization
         void Start()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
 
             animator = GetComponent<Animator>();
             mainCameraScript = GameObject.Find("Main Camera").GetComponent<CameraBehaviour>();
@@ -47,55 +47,55 @@
         // Update is called once per frame
         void Update()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
 
             // 現在のアニメーター・ステートに紐づいたデータ
             AcStateRecordable astateRecord = AControl.Instance.GetCurrentAcStateRecord(animator);
 
             #region 入力受付と途中参加
-            GamepadStatus input = ApplicationStatus.ReadInput(player);
+            GamepadStatus gamepad = ApplicationStatus.ReadInput(player);
 
             // 人間の途中参加受付
             if (
-                AppHelper.ComputerFlags[player] && // コンピュータープレイヤーの場合
+                AppStatus.IsComputer[player] && // コンピュータープレイヤーの場合
                 (
                 // レバーはコンピューターもいじっているので、区別できない。
                 // 0 != leverX ||
                 // 0 != leverY ||
-                0 != input.LeverX ||
-                0 != input.LeverY ||
-                input.Lp.Pressing ||
-                input.Mp.Pressing ||
-                input.Hp.Pressing ||
-                input.Lk.Pressing ||
-                input.Mk.Pressing ||
-                input.Hk.Pressing ||
-                input.Pause.Pressing ||
-                input.CancelMenu.Pressing
+                0 != gamepad.LeverX ||
+                0 != gamepad.LeverY ||
+                gamepad.Lp.Pressing ||
+                gamepad.Mp.Pressing ||
+                gamepad.Hp.Pressing ||
+                gamepad.Lk.Pressing ||
+                gamepad.Mk.Pressing ||
+                gamepad.Hk.Pressing ||
+                gamepad.Pause.Pressing ||
+                gamepad.CancelMenu.Pressing
                 ))
             {
-                Debug.Log("途中参加 " + player + " プレイヤー" + " leverX = " + input.LeverX + " leverY = " + input.LeverY);
+                Debug.Log("途中参加 " + player + " プレイヤー" + " leverX = " + gamepad.LeverX + " leverY = " + gamepad.LeverY);
                 // コンピューター・プレイヤー側のゲームパッドで、何かボタンを押したら、人間の参入。
-                AppHelper.ComputerFlags[player] = false;
+                AppStatus.IsComputer[player] = false;
                 // FIXME: 硬直時間を入れたい。
                 return;
             }
 
-            if (AppHelper.ComputerFlags[player])
+            if (AppStatus.IsComputer[player])
             {
-                input.LeverX = Random.Range(-1.0f, 1.0f);
-                input.Lp.Pressing = false;
-                input.Mp.Pressing = false;
-                input.Hp.Pressing = false;
-                input.Lk.Pressing = false;
-                input.Mk.Pressing = false;
-                input.Hk.Pressing = false;
-                input.Pause.Pressing = false;
-                input.CancelMenu.Pressing = false;
+                gamepad.LeverX = Random.Range(-1.0f, 1.0f);
+                gamepad.Lp.Pressing = false;
+                gamepad.Mp.Pressing = false;
+                gamepad.Hp.Pressing = false;
+                gamepad.Lk.Pressing = false;
+                gamepad.Mk.Pressing = false;
+                gamepad.Hk.Pressing = false;
+                gamepad.Pause.Pressing = false;
+                gamepad.CancelMenu.Pressing = false;
             }
             else
             {
-                input.LeverX = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonKey(player, ButtonType.Horizontal)]);
+                gamepad.LeverX = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonKey(player, ButtonType.Horizontal)]);
             }
             #endregion
 
@@ -103,31 +103,31 @@
             {
                 //カーソル移動中でなければ。
 
-                if (AppHelper.ComputerFlags[player])// コンピュータープレイヤーの場合
+                if (AppStatus.IsComputer[player])// コンピュータープレイヤーの場合
                 {
                     if (CameraBehaviour.READY_TIME_LENGTH < mainCameraScript.ReadyingTime)
                     {
-                        input.Lp.Pressing = (0.5 < Random.Range(0.0f, 1.0f)); // たまにパンチ・キーを押して決定する。
+                        gamepad.Lp.Pressing = (0.5 < Random.Range(0.0f, 1.0f)); // たまにパンチ・キーを押して決定する。
                     }
                 }
 
                 if (
-                    input.Lp.Pressing ||
-                    input.Mp.Pressing ||
-                    input.Hp.Pressing ||
-                    input.Lk.Pressing ||
-                    input.Mk.Pressing ||
-                    input.Hk.Pressing ||
-                    input.Pause.Pressing
+                    gamepad.Lp.Pressing ||
+                    gamepad.Mp.Pressing ||
+                    gamepad.Hp.Pressing ||
+                    gamepad.Lk.Pressing ||
+                    gamepad.Mk.Pressing ||
+                    gamepad.Hk.Pressing ||
+                    gamepad.Pause.Pressing
                     )
                 {
                     // 何かボタンを押したら、キャラクター選択。
                     animator.SetTrigger(ThisSceneStatus.TriggerSelect);
                 }
-                else if (input.LeverX != 0.0f)//左か右を入力したら
+                else if (gamepad.LeverX != 0.0f)//左か右を入力したら
                 {
                     //Debug.Log("slide lever x = " + leverX.ToString());
-                    if (input.LeverX < 0.0f)
+                    if (gamepad.LeverX < 0.0f)
                     {
                         cursorColumn--;
                         if (cursorColumn < 0)
@@ -168,13 +168,13 @@
                 // キャラクター選択済みのとき
 
                 if (
-                    !AppHelper.ComputerFlags[player] // 人間プレイヤーの場合
+                    !AppStatus.IsComputer[player] // 人間プレイヤーの場合
                     &&
                     (
-                    input.Lk.Pressing ||
-                    input.Mk.Pressing ||
-                    input.Hk.Pressing ||
-                    input.CancelMenu.Pressing
+                    gamepad.Lk.Pressing ||
+                    gamepad.Mk.Pressing ||
+                    gamepad.Hk.Pressing ||
+                    gamepad.CancelMenu.Pressing
                     ))
                 {
                     // キック・ボタンを押したら、キャンセル☆
@@ -197,7 +197,7 @@
         /// </summary>
         private IEnumerator StartSlideCoroutine()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
 
             Vector3 inPosition = new Vector3(
                 ThisSceneStatus.Table[cursorColumn].X,
@@ -224,17 +224,17 @@
 
         private void ChangeCharacter()
         {
-            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+            var player = Players.FromArrayIndex(this.playerIndex);
 
             // 選択キャラクター変更
-            CharacterKey character = ThisSceneStatus.Table[cursorColumn].CharacterIndex;
-            AppHelper.UseCharacters[player] = character;
+            KeyOfCharacter character = ThisSceneStatus.Table[cursorColumn].CharacterIndex;
+            AppStatus.UseCharacters[player] = character;
             // 顔変更
-            Sprite[] sprites = Resources.LoadAll<Sprite>(AppHelper.CharacterAndSlice_to_faceSprites[(int)character, (int)ResultFacialExpressionKey.All]);
-            string slice = AppHelper.CharacterAndSlice_to_faceSprites[(int)character, (int)ResultFacialExpressionKey.Win];
+            Sprite[] sprites = Resources.LoadAll<Sprite>(AppConstants.characterAndSliceToFaceSprites[(int)character, (int)KeyOfResultFacialExpression.All]);
+            string slice = AppConstants.characterAndSliceToFaceSprites[(int)character, (int)KeyOfResultFacialExpression.Win];
             face.sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(slice));
             // キャラクター名変更
-            myName.text = ThisSceneStatus.Table[(int)AppHelper.UseCharacters[player]].Name;
+            myName.text = ThisSceneStatus.Table[(int)AppStatus.UseCharacters[player]].Name;
         }
     }
 }

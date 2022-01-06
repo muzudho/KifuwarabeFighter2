@@ -56,20 +56,20 @@
         };
 
         public static string[] PlayerToTag = new[] { "Player0", "Player1" };
-        public static Dictionary<PlayerKey, string[]> GameObjectPaths = new Dictionary<PlayerKey, string[]>
+        public static Dictionary<Player, string[]> GameObjectPaths = new Dictionary<Player, string[]>
         {
-            {PlayerKey.N1, new string[]{ "Player0","Canvas/Name0","Canvas/Bar0","Canvas/Value0","Canvas/Turn0","Canvas/Time0",} },
-            {PlayerKey.N2, new string[]{ "Player1","Canvas/Name1","Canvas/Bar1","Canvas/Value1","Canvas/Turn1","Canvas/Time1",} },
+            {Player.N1, new string[]{ "Player0","Canvas/Name0","Canvas/Bar0","Canvas/Value0","Canvas/Turn0","Canvas/Time0",} },
+            {Player.N2, new string[]{ "Player1","Canvas/Name1","Canvas/Bar1","Canvas/Value1","Canvas/Turn1","Canvas/Time1",} },
         };
 
-        public static Dictionary<PlayerKey, string[]> HitboxPaths = new Dictionary<PlayerKey, string[]>
+        public static Dictionary<Player, string[]> HitboxPaths = new Dictionary<Player, string[]>
         {
-            {PlayerKey.N1,new string[]{ "Hitbox0", "Weakbox0", "Strongbox0", } },
-            {PlayerKey.N2,new string[]{ "Hitbox1", "Weakbox1", "Strongbox1", } },
+            {Player.N1,new string[]{ "Hitbox0", "Weakbox0", "Strongbox0", } },
+            {Player.N2,new string[]{ "Hitbox1", "Weakbox1", "Strongbox1", } },
         };
-        public static Dictionary<PlayerKey, string[]> HitboxTags = new Dictionary<PlayerKey, string[]> {
-            {PlayerKey.N1,new string[]{ "Hitbox0", "Weakbox0", "Strongbox0", } },
-            {PlayerKey.N2,new string[]{ "Hitbox1", "Weakbox1", "Strongbox1", } },
+        public static Dictionary<Player, string[]> HitboxTags = new Dictionary<Player, string[]> {
+            {Player.N1,new string[]{ "Hitbox0", "Weakbox0", "Strongbox0", } },
+            {Player.N2,new string[]{ "Hitbox1", "Weakbox1", "Strongbox1", } },
         };
 
         /// <summary>
@@ -87,10 +87,10 @@
         /// player position x for facing opponent.
         /// 相手と向かい合うために使うプレイヤーのX座標だぜ☆（＾▽＾）x位置を共有するためのものだぜ☆
         /// </summary>
-        public static Dictionary<PlayerKey, Transform> PlayerToTransform = new Dictionary<PlayerKey, Transform>()
+        public static Dictionary<Player, Transform> PlayerToTransform = new Dictionary<Player, Transform>()
         {
-            {PlayerKey.N1, null },
-            {PlayerKey.N2, null },
+            {Player.N1, null },
+            {Player.N2, null },
         };
 
         public static string PrefabTakoyakiParticle0 = "TakoyakiParticle0";

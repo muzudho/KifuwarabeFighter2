@@ -36,7 +36,7 @@
             #region 当たり判定
             if (col.tag == playerScript.OpponentHitboxTag)// 相手の　攻撃当たり判定くん　が重なった時
             {
-                var player = PlayerKeys.FromArrayIndex(this.playerIndex);
+                var player = Players.FromArrayIndex(this.playerIndex);
 
                 // ブロックしているかどうか判定☆
                 //CommonInput.PlayerInput input = CommonInput.player_to_input[playerIndex];
@@ -67,7 +67,7 @@
                     {
                         float damage = playerScript.MainCameraScript.PublicPlayerDTOs[playerScript.Opponent].AttackPower;
 
-                        float value = damage * (player == PlayerKey.N1 ? -1 : 1);
+                        float value = damage * (player == Player.N1 ? -1 : 1);
                         playerScript.MainCameraScript.OffsetBar(value);
 
                         if (10 <= playerScript.DamageHitCount)

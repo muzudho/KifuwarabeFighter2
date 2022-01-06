@@ -16,14 +16,14 @@
         }
         #endregion
 
-        public GameObjectKey(PlayerKey player, GameObjectType objectType)
+        public GameObjectKey(Player player, GameObjectType objectType)
         {
             this.PlayerNum = player;
             this.GameObjectType = objectType;
             this._flat = $"{(int)this.PlayerNum},{(int)this.GameObjectType}";
         }
 
-        public PlayerKey PlayerNum { get; set; }
+        public Player PlayerNum { get; set; }
         public GameObjectType GameObjectType { get; set; }
 
         /// <summary>

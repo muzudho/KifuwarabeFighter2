@@ -3,7 +3,7 @@
     /// <summary>
     /// シーンを識別します
     /// </summary>
-    public enum SceneKey
+    public enum KeyOfScene
     {
         Title,
         Select,
