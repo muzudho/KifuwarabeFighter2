@@ -5,12 +5,15 @@
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
+    /// <summary>
+    /// [Title]シーンのカメラの振る舞い
+    /// </summary>
     public class CameraBehaviour : MonoBehaviour
     {
         // Update is called once per frame
         void Update()
         {
-            // キャンセル以外の 何かボタンを押したらセレクト画面へ遷移
+            // 各プレイヤーについて、キャンセル以外の 何かボタンを押したらセレクト画面へ遷移
             foreach (var player in PlayerIndexes.All)
             {
                 // プレイヤーのキー押下状態を確認。

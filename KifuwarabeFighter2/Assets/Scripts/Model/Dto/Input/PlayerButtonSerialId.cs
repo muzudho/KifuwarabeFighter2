@@ -1,22 +1,24 @@
 ﻿namespace Assets.Scripts.Model.Dto.Input
 {
     /// <summary>
-    /// 入力キーのインデックス。
+    /// [プレイヤー，入力ボタン]の一意のインデックス。
     /// </summary>
     public class InputIndex
     {
+        #region [プレイヤー, 入力ボタン]で一意のキー
         private string _mapKey;
+
+        public string MapKey
+        {
+            get { return this._mapKey; }
+        }
+        #endregion
 
         public InputIndex(PlayerIndex player, ButtonIndex button)
         {
             this.PlayerIndex = player;
             this.ButtonIndex = button;
             this._mapKey = $"{(int)this.PlayerIndex},{(int)this.ButtonIndex}";
-        }
-
-        public string MapKey
-        {
-            get { return this._mapKey; }
         }
 
         public PlayerIndex PlayerIndex { get; set; }
