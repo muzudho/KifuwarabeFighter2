@@ -23,38 +23,14 @@
             this.VerticalKey = horizontalKey;
             this.VerticalName = ButtonNames.Dictionary[this.VerticalKey];
 
-            this.LpKey = lpKey;
-            this.LpName = ButtonNames.Dictionary[this.LpKey];
-
-            this.MpKey = mpKey;
-            this.MpName = ButtonNames.Dictionary[this.MpKey];
-
-            this.HpKey = hpKey;
-            this.HpName = ButtonNames.Dictionary[this.HpKey];
-
-            this.LkKey = lkKey;
-            this.LkName = ButtonNames.Dictionary[this.LkKey];
-
-            this.MkKey = mkKey;
-            this.MkName = ButtonNames.Dictionary[this.MkKey];
-
-            this.HkKey = hkKey;
-            this.HkName = ButtonNames.Dictionary[this.HkKey];
-
-            this.PauseKey = pauseKey;
-            this.PauseName = ButtonNames.Dictionary[this.PauseKey];
-
-            this.CancelMenuKey = cancelMenuKey;
-            this.CancelMenuName = ButtonNames.Dictionary[this.CancelMenuKey];
-
-            this.Lp = new ButtonStatus();
-            this.Mp = new ButtonStatus();
-            this.Hp = new ButtonStatus();
-            this.Lk = new ButtonStatus();
-            this.Mk = new ButtonStatus();
-            this.Hk = new ButtonStatus();
-            this.Pause = new ButtonStatus();
-            this.CancelMenu = new ButtonStatus();
+            this.Lp = new ButtonStatus(lpKey);
+            this.Mp = new ButtonStatus(mpKey);
+            this.Hp = new ButtonStatus(hpKey);
+            this.Lk = new ButtonStatus(lkKey);
+            this.Mk = new ButtonStatus(mkKey);
+            this.Hk = new ButtonStatus(hkKey);
+            this.Pause = new ButtonStatus(pauseKey);
+            this.CancelMenu = new ButtonStatus(cancelMenuKey);
         }
 
         public ButtonKey HorizontalKey { get; private set; }
@@ -62,30 +38,6 @@
 
         public ButtonKey VerticalKey { get; private set; }
         public string VerticalName { get; private set; }
-
-        public ButtonKey LpKey { get; private set; }
-        public string LpName { get; private set; }
-
-        public ButtonKey MpKey { get; private set; }
-        public string MpName { get; private set; }
-
-        public ButtonKey HpKey { get; private set; }
-        public string HpName { get; private set; }
-
-        public ButtonKey LkKey { get; private set; }
-        public string LkName { get; private set; }
-
-        public ButtonKey MkKey { get; private set; }
-        public string MkName { get; private set; }
-
-        public ButtonKey HkKey { get; private set; }
-        public string HkName { get; private set; }
-
-        public ButtonKey PauseKey { get; private set; }
-        public string PauseName { get; private set; }
-
-        public ButtonKey CancelMenuKey { get; private set; }
-        public string CancelMenuName { get; private set; }
 
         /// <summary>
         /// レバーが水平方向に倒れているか。

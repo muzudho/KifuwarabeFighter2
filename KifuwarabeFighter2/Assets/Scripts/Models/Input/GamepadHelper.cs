@@ -10,18 +10,18 @@
             gamepad.LeverX = Input.GetAxisRaw(gamepad.HorizontalName);
             // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
             gamepad.LeverY = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonKey(player, ButtonType.Vertical)]);
-            gamepad.Lp.set(Input.GetButton(gamepad.LpName), Input.GetButtonDown(gamepad.LpName), Input.GetButtonUp(gamepad.LpName));
-            gamepad.Mp.set(Input.GetButton(gamepad.MpName), Input.GetButtonDown(gamepad.MpName), Input.GetButtonUp(gamepad.MpName));
-            gamepad.Hp.set(Input.GetButton(gamepad.HpName), Input.GetButtonDown(gamepad.HpName), Input.GetButtonUp(gamepad.HpName));
-            gamepad.Lk.set(Input.GetButton(gamepad.LkName), Input.GetButtonDown(gamepad.LkName), Input.GetButtonUp(gamepad.LkName));
-            gamepad.Mk.set(Input.GetButton(gamepad.MkName), Input.GetButtonDown(gamepad.MkName), Input.GetButtonUp(gamepad.MkName));
-            gamepad.Hk.set(Input.GetButton(gamepad.HkName), Input.GetButtonDown(gamepad.HkName), Input.GetButtonUp(gamepad.HkName));
-            gamepad.Pause.set(Input.GetButton(gamepad.PauseName), Input.GetButtonDown(gamepad.PauseName), Input.GetButtonUp(gamepad.PauseName));
+            gamepad.Lp.Set(Input.GetButton(gamepad.Lp.Name), Input.GetButtonDown(gamepad.Lp.Name), Input.GetButtonUp(gamepad.Lp.Name));
+            gamepad.Mp.Set(Input.GetButton(gamepad.Mp.Name), Input.GetButtonDown(gamepad.Mp.Name), Input.GetButtonUp(gamepad.Mp.Name));
+            gamepad.Hp.Set(Input.GetButton(gamepad.Hp.Name), Input.GetButtonDown(gamepad.Hp.Name), Input.GetButtonUp(gamepad.Hp.Name));
+            gamepad.Lk.Set(Input.GetButton(gamepad.Lk.Name), Input.GetButtonDown(gamepad.Lk.Name), Input.GetButtonUp(gamepad.Lk.Name));
+            gamepad.Mk.Set(Input.GetButton(gamepad.Mk.Name), Input.GetButtonDown(gamepad.Mk.Name), Input.GetButtonUp(gamepad.Mk.Name));
+            gamepad.Hk.Set(Input.GetButton(gamepad.Hk.Name), Input.GetButtonDown(gamepad.Hk.Name), Input.GetButtonUp(gamepad.Hk.Name));
+            gamepad.Pause.Set(Input.GetButton(gamepad.Pause.Name), Input.GetButtonDown(gamepad.Pause.Name), Input.GetButtonUp(gamepad.Pause.Name));
 
             // プレイヤー１のみキャンセル可能
             if (player == Player.N1)
             {
-                gamepad.CancelMenu.set(Input.GetButton(gamepad.CancelMenuName), Input.GetButtonDown(gamepad.CancelMenuName), Input.GetButtonUp(gamepad.CancelMenuName));
+                gamepad.CancelMenu.Set(Input.GetButton(gamepad.CancelMenu.Name), Input.GetButtonDown(gamepad.CancelMenu.Name), Input.GetButtonUp(gamepad.CancelMenu.Name));
             }
 
             // プレイヤー１だけテストで表示します。

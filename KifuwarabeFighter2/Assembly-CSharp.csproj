@@ -77,8 +77,8 @@
      <Compile Include="Assets\Scripts\KeyOfResultFacialExpression.cs" />
      <Compile Include="Assets\Scripts\KeyOfScene.cs" />
      <Compile Include="Assets\Scripts\Models\Input\ButtonKey.cs" />
-     <Compile Include="Assets\Scripts\Models\Input\ButtonKeys.cs" />
      <Compile Include="Assets\Scripts\Models\Input\ButtonNames.cs" />
+     <Compile Include="Assets\Scripts\Models\Input\Buttons.cs" />
      <Compile Include="Assets\Scripts\Models\Input\ButtonStatus.cs" />
      <Compile Include="Assets\Scripts\Models\Input\ButtonType.cs" />
      <Compile Include="Assets\Scripts\Models\Input\GamepadHelper.cs" />

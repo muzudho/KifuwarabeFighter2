@@ -3,7 +3,7 @@
     /// <summary>
     /// [プレイヤー番号, ボタン型]の通し番号一覧
     /// </summary>
-    public static class ButtonKeys
+    public static class Buttons
     {
         public static ButtonKey P1Horizontal = new ButtonKey(Player.N1, ButtonType.Horizontal);
         public static ButtonKey P1Vertical = new ButtonKey(Player.N1, ButtonType.Vertical);

@@ -11,27 +11,27 @@
         {
             Dictionary = new Dictionary<ButtonKey, string>() {
                 // Player 1.
-                { ButtonKeys.P1Horizontal, "Horizontal" },
-                { ButtonKeys.P1Vertical, "Vertical"},
-                { ButtonKeys.P1Lp,"P1LightPunch"},
-                { ButtonKeys.P1Mp,"P1MediumPunch" },
-                { ButtonKeys.P1Hp,"P1HardPunch" },
-                { ButtonKeys.P1Lk,"P1LightKick" },
-                { ButtonKeys.P1Mk,"P1MediumKick" },
-                { ButtonKeys.P1Hk,"P1HardKick"},
-                { ButtonKeys.P1Pause,"P1Pause" },
-                { ButtonKeys.P1CancelMenu,"Cancel" }, // プレイヤー１のみキャンセル可能☆（＾～＾）
+                { Buttons.P1Horizontal, "Horizontal" },
+                { Buttons.P1Vertical, "Vertical"},
+                { Buttons.P1Lp,"P1LightPunch"},
+                { Buttons.P1Mp,"P1MediumPunch" },
+                { Buttons.P1Hp,"P1HardPunch" },
+                { Buttons.P1Lk,"P1LightKick" },
+                { Buttons.P1Mk,"P1MediumKick" },
+                { Buttons.P1Hk,"P1HardKick"},
+                { Buttons.P1Pause,"P1Pause" },
+                { Buttons.P1CancelMenu,"Cancel" }, // プレイヤー１のみキャンセル可能☆（＾～＾）
                 // Player 2.
-                { ButtonKeys.P2Horizontal,"P2Horizontal" },
-                { ButtonKeys.P2Vertical, "P2Vertical" },
-                { ButtonKeys.P2Lp,"P2LightPunch" },
-                { ButtonKeys.P2Mp,"P2MediumPunch" },
-                { ButtonKeys.P2Hp,"P2HardPunch" },
-                { ButtonKeys.P2Lk,"P2LightKick" },
-                { ButtonKeys.P2Mk,"P2MediumKick" },
-                { ButtonKeys.P2Hk,"P2HardKick" },
-                { ButtonKeys.P2Pause,"P2Pause" },
-                { ButtonKeys.P2CancelMenu,"Cancel" }, // これに該当するボタンはありません。
+                { Buttons.P2Horizontal,"P2Horizontal" },
+                { Buttons.P2Vertical, "P2Vertical" },
+                { Buttons.P2Lp,"P2LightPunch" },
+                { Buttons.P2Mp,"P2MediumPunch" },
+                { Buttons.P2Hp,"P2HardPunch" },
+                { Buttons.P2Lk,"P2LightKick" },
+                { Buttons.P2Mk,"P2MediumKick" },
+                { Buttons.P2Hk,"P2HardKick" },
+                { Buttons.P2Pause,"P2Pause" },
+                { Buttons.P2CancelMenu,"Cancel" }, // これに該当するボタンはありません。
             };
         }
 
