@@ -61,7 +61,7 @@
             {
                 if (mainCameraScript != null)// なぜかヌルになっていることがあるぜ☆（＾～＾）
                 {
-                    var opponentKey = PlayerIndexes.FromArrayIndex(opponent);
+                    var opponentKey = PlayerNums.FromArrayIndex(opponent);
 
                     // 爆発の粒子を作るぜ☆
                     TakoyakiParticleScript.Add(this.transform.position.x, this.transform.position.y);

@@ -1,9 +1,9 @@
 ﻿namespace Assets.Scripts.Model.Dto.Input
 {
     /// <summary>
-    /// ボタンの通し番号
+    /// ボタンを識別します
     /// </summary>
-    public enum ButtonNum
+    public enum ButtonType
     {
         Horizontal,
         Vertical,

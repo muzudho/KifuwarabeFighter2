@@ -36,11 +36,11 @@
             #region 当たり判定
             if (col.tag == playerScript.OpponentHitboxTag)// 相手の　攻撃当たり判定くん　が重なった時
             {
-                var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+                var player = PlayerNums.FromArrayIndex(this.playerIndex);
 
                 // ブロックしているかどうか判定☆
                 //CommonInput.PlayerInput input = CommonInput.player_to_input[playerIndex];
-                InputStateDto input = ApplicationDto.ReadInput(player);
+                GamepadStatus input = ApplicationDto.ReadInput(player);
                 if (FacingOpponentMoveFwBkSt.Back == playerScript.GetFacingOpponentMoveFwBkSt(input.LeverX))
                 {
                     //if (PlayerSerialId.Player1==player)

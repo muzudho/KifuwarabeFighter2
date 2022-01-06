@@ -29,7 +29,7 @@
         // Use this for initialization
         void Start()
         {
-            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+            var player = PlayerNums.FromArrayIndex(this.playerIndex);
 
             animator = GetComponent<Animator>();
             mainCameraScript = GameObject.Find("Main Camera").GetComponent<CameraBehaviour>();
@@ -46,13 +46,13 @@
         // Update is called once per frame
         void Update()
         {
-            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+            var player = PlayerNums.FromArrayIndex(this.playerIndex);
 
             // 現在のアニメーター・ステートに紐づいたデータ
             AcStateRecordable astateRecord = AControl.Instance.GetCurrentAcStateRecord(animator);
 
             #region 入力受付と途中参加
-            InputStateDto input = ApplicationDto.ReadInput(player);
+            GamepadStatus input = ApplicationDto.ReadInput(player);
 
             // 人間の途中参加受付
             if (
@@ -94,7 +94,7 @@
             }
             else
             {
-                input.LeverX = Input.GetAxisRaw(InputNames.Dictionary[new PlayerButtonNum(player, ButtonNum.Horizontal)]);
+                input.LeverX = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonNum(player, ButtonType.Horizontal)]);
             }
             #endregion
 
@@ -196,7 +196,7 @@
         /// </summary>
         private IEnumerator StartSlideCoroutine()
         {
-            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+            var player = PlayerNums.FromArrayIndex(this.playerIndex);
 
             Vector3 inPosition = new Vector3(
                 ThisSceneDto.Table[cursorColumn].X,
@@ -223,7 +223,7 @@
 
         private void ChangeCharacter()
         {
-            var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
+            var player = PlayerNums.FromArrayIndex(this.playerIndex);
 
             // 選択キャラクター変更
             CharacterIndex character = ThisSceneDto.Table[cursorColumn].CharacterIndex;

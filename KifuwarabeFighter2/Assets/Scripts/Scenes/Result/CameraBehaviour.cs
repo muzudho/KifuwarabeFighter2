@@ -30,7 +30,7 @@
                     GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N2][(int)GameobjectIndex.Face]).GetComponent<Image>()
                 };
 
-                foreach (var player in PlayerIndexes.All)
+                foreach (var player in PlayerNums.All)
                 {
                     int character = (int)CommonScript.UseCharacters[player];
                     Sprite[] sprites = Resources.LoadAll<Sprite>(CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.All]);
@@ -60,7 +60,7 @@
                             slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win];
                             break;
                     }
-                    player_to_face[PlayerIndexes.ToArrayIndex(player)].sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(slice));
+                    player_to_face[PlayerNums.ToArrayIndex(player)].sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(slice));
                 }
             }
 
@@ -85,10 +85,10 @@
         void Update()
         {
             // キャンセル以外の 何かボタンを押したらセレクト画面へ遷移
-            foreach (var player in PlayerIndexes.All)
+            foreach (var player in PlayerNums.All)
             {
                 // プレイヤーのキー押下状態を確認。
-                InputStateDto state = ApplicationDto.ReadInput(player);
+                GamepadStatus state = ApplicationDto.ReadInput(player);
 
                 // キャンセル以外の 何かボタンを押したらセレクト画面へ遷移
                 if (state.Lp.Pressing ||

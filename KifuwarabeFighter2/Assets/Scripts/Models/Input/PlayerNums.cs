@@ -1,6 +1,9 @@
 ﻿namespace Assets.Scripts.Model.Dto.Input
 {
-    public static class PlayerIndexes
+    /// <summary>
+    /// プレイヤー番号の一覧
+    /// </summary>
+    public static class PlayerNums
     {
         public static PlayerNum[] All = new[]
         {

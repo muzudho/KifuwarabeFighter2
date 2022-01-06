@@ -1,9 +1,9 @@
 ﻿namespace Assets.Scripts.Model.Dto.Input
 {
     /// <summary>
-    /// ボタン押下状態。
+    /// ボタン１つ分の状況
     /// </summary>
-    public class InputButtonStateDto
+    public class ButtonStatus
     {
         /// <summary>
         /// ボタンが、押し下がっているか。

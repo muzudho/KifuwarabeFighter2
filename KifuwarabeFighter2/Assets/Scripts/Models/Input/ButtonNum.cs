@@ -1,9 +1,9 @@
 ﻿namespace Assets.Scripts.Model.Dto.Input
 {
     /// <summary>
-    /// [プレイヤー，入力ボタン]の一意のインデックス。
+    /// [プレイヤー, ボタン型]で一意
     /// </summary>
-    public class PlayerButtonNum
+    public class ButtonNum
     {
         #region [プレイヤー, 入力ボタン]で一意のキー
         private string _flatNum;
@@ -17,15 +17,15 @@
         }
         #endregion
 
-        public PlayerButtonNum(PlayerNum player, ButtonNum button)
+        public ButtonNum(PlayerNum player, ButtonType button)
         {
             this.PlayerNum = player;
-            this.ButtonNum = button;
-            this._flatNum = $"{(int)this.PlayerNum},{(int)this.ButtonNum}";
+            this.ButtonType = button;
+            this._flatNum = $"{(int)this.PlayerNum},{(int)this.ButtonType}";
         }
 
         public PlayerNum PlayerNum { get; set; }
-        public ButtonNum ButtonNum { get; set; }
+        public ButtonType ButtonType { get; set; }
 
         /// <summary>
         /// 同じ内容あれば同じ値を返すように変更
@@ -33,7 +33,7 @@
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return this.PlayerNum.GetHashCode() + this.ButtonNum.GetHashCode();
+            return this.PlayerNum.GetHashCode() + this.ButtonType.GetHashCode();
         }
 
         /// <summary>
@@ -43,13 +43,13 @@
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            var item = obj as PlayerButtonNum;
+            var item = obj as ButtonNum;
             if (item == null)
             {
                 return false;
             }
 
-            return this.PlayerNum == item.PlayerNum && this.ButtonNum == item.ButtonNum;
+            return this.PlayerNum == item.PlayerNum && this.ButtonType == item.ButtonType;
         }
     }
 }

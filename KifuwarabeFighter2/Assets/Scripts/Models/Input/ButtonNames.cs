@@ -2,33 +2,36 @@
 {
     using System.Collections.Generic;
 
-    public static class InputNames
+    /// <summary>
+    /// [プレイヤー番号, ボタン型]の組みに紐づく名前
+    /// </summary>
+    public static class ButtonNames
     {
-        static InputNames()
+        static ButtonNames()
         {
-            Dictionary = new Dictionary<PlayerButtonNum, string>() {
+            Dictionary = new Dictionary<ButtonNum, string>() {
                 // Player 1.
-                { InputIndexes.P1Horizontal, "Horizontal" },
-                { InputIndexes.P1Vertical, "Vertical"},
-                { InputIndexes.P1Lp,"P1LightPunch"},
-                { InputIndexes.P1Mp,"P1MediumPunch" },
-                { InputIndexes.P1Hp,"P1HardPunch" },
-                { InputIndexes.P1Lk,"P1LightKick" },
-                { InputIndexes.P1Mk,"P1MediumKick" },
-                { InputIndexes.P1Hk,"P1HardKick"},
-                { InputIndexes.P1Pause,"P1Pause" },
-                { InputIndexes.P1CancelMenu,"Cancel" }, // プレイヤー１のみキャンセル可能☆（＾～＾）
+                { ButtonNums.P1Horizontal, "Horizontal" },
+                { ButtonNums.P1Vertical, "Vertical"},
+                { ButtonNums.P1Lp,"P1LightPunch"},
+                { ButtonNums.P1Mp,"P1MediumPunch" },
+                { ButtonNums.P1Hp,"P1HardPunch" },
+                { ButtonNums.P1Lk,"P1LightKick" },
+                { ButtonNums.P1Mk,"P1MediumKick" },
+                { ButtonNums.P1Hk,"P1HardKick"},
+                { ButtonNums.P1Pause,"P1Pause" },
+                { ButtonNums.P1CancelMenu,"Cancel" }, // プレイヤー１のみキャンセル可能☆（＾～＾）
                 // Player 2.
-                { InputIndexes.P2Horizontal,"P2Horizontal" },
-                { InputIndexes.P2Vertical, "P2Vertical" },
-                { InputIndexes.P2Lp,"P2LightPunch" },
-                { InputIndexes.P2Mp,"P2MediumPunch" },
-                { InputIndexes.P2Hp,"P2HardPunch" },
-                { InputIndexes.P2Lk,"P2LightKick" },
-                { InputIndexes.P2Mk,"P2MediumKick" },
-                { InputIndexes.P2Hk,"P2HardKick" },
-                { InputIndexes.P2Pause,"P2Pause" },
-                { InputIndexes.P2CancelMenu,"Cancel" }, // これに該当するボタンはありません。
+                { ButtonNums.P2Horizontal,"P2Horizontal" },
+                { ButtonNums.P2Vertical, "P2Vertical" },
+                { ButtonNums.P2Lp,"P2LightPunch" },
+                { ButtonNums.P2Mp,"P2MediumPunch" },
+                { ButtonNums.P2Hp,"P2HardPunch" },
+                { ButtonNums.P2Lk,"P2LightKick" },
+                { ButtonNums.P2Mk,"P2MediumKick" },
+                { ButtonNums.P2Hk,"P2HardKick" },
+                { ButtonNums.P2Pause,"P2Pause" },
+                { ButtonNums.P2CancelMenu,"Cancel" }, // これに該当するボタンはありません。
             };
         }
 
@@ -62,6 +65,6 @@
         /// 内部的には　プレイヤー１はP0、プレイヤー２はP1 だぜ☆（＾▽＾）
         /// 入力類は、コンフィグ画面でユーザーの目に触れる☆（＾～＾）
         /// ユーザーの目に見えるところでは 1スタート、内部的には 0スタートだぜ☆（＾▽＾）
-        public static Dictionary<PlayerButtonNum, string> Dictionary;
+        public static Dictionary<ButtonNum, string> Dictionary;
     }
 }

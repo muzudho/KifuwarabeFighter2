@@ -92,7 +92,7 @@
             #endregion
 
             #region 選択キャラクター
-            foreach (var player in PlayerIndexes.All)
+            foreach (var player in PlayerNums.All)
             {
                 CharacterIndex character = CommonScript.UseCharacters[player];
                 this.PlayerDTOs[player].PlayerName.text = ThisSceneDto.CharacterToNameRoma[(int)character];
@@ -114,7 +114,7 @@
             SetTeban(PlayerNum.N1);
 
             // コンピューターかどうか。
-            foreach (var player in PlayerIndexes.All)
+            foreach (var player in PlayerNums.All)
             {
                 this.PlayerDTOs[player].PlayerCharScript.isComputer = CommonScript.computerFlags[player];
             }
@@ -134,7 +134,7 @@
             #endregion
 
             #region 投了判定
-            foreach (var loser in PlayerIndexes.All)
+            foreach (var loser in PlayerNums.All)
             {
                 if (this.PlayerDTOs[loser].PlayerCharScript.IsResign)
                 {
