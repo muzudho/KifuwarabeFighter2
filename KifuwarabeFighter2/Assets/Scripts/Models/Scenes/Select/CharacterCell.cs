@@ -1,8 +1,11 @@
 ﻿namespace Assets.Scripts.Model.Dto.Select
 {
-    public class CellDto
+    /// <summary>
+    /// キャラクターの欄
+    /// </summary>
+    public class CharacterCell
     {
-        public CellDto(
+        public CharacterCell(
             string name,
             CharacterIndex characterIndex,
             float x)

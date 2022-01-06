@@ -3,7 +3,7 @@
     /// <summary>
     /// プレイヤーの通し番号
     /// </summary>
-    public enum PlayerNum
+    public enum PlayerKey
     {
         None,
         /// <summary>

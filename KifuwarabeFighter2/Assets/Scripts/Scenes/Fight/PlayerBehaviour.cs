@@ -12,8 +12,8 @@
 
         #region 敵味方判定
         public int playerIndex;
-        private PlayerNum opponent;
-        public PlayerNum Opponent { get { return opponent; } }
+        private PlayerKey opponent;
+        public PlayerKey Opponent { get { return opponent; } }
         #endregion
 
         public bool isComputer;
@@ -51,7 +51,7 @@
 
         void Start()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
 
             mainCameraScript = GameObject.Find("Main Camera").GetComponent<CameraBehaviour>();
             #region 当たり判定
@@ -78,7 +78,7 @@
 
         void Update()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
 
             //if (PlayerSerialId.Player1 == player)
             //{
@@ -515,7 +515,7 @@
                 return FacingOpponentMoveFwBkSt.Stay;
             }
 
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
 
             if (Mathf.Sign(ThisSceneDto.PlayerToTransform[CommonScript.ReverseTeban(player)].position.x - transform.position.x)
                 ==
@@ -529,7 +529,7 @@
 
         FacingOpponentLR GetFacingOfOpponentLR()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
 
             // 自分と相手の位置（相手が右側にいるとき正となるようにする）
             if (0 <= ThisSceneDto.PlayerToTransform[CommonScript.ReverseTeban(player)].position.x - transform.position.x)
@@ -579,10 +579,10 @@
             //ebug.Log("Jump1");
             float velocityX = Rigidbody2D.velocity.x;
 
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
 
             //左キー: -1、右キー: 1
-            float leverX = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonNum(player, ButtonType.Horizontal)]);
+            float leverX = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonKey(player, ButtonType.Horizontal)]);
 
             if (leverX != 0)//左か右を入力したら
             {
@@ -641,7 +641,7 @@
         }
         void Pull_LightPunch()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 10.0f;
 
             // アニメーションの開始
@@ -649,7 +649,7 @@
         }
         void Pull_MediumPunch()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 50.0f;
 
             // アニメーションの開始
@@ -657,7 +657,7 @@
         }
         void Pull_HardPunch()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 100.0f;
 
             // アニメーションの開始
@@ -665,7 +665,7 @@
         }
         void Pull_LightKick()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 10.0f;
 
             // アニメーションの開始
@@ -673,7 +673,7 @@
         }
         void Pull_MediumKick()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 50.0f;
 
             // アニメーションの開始
@@ -681,7 +681,7 @@
         }
         void Pull_HardKick()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
             mainCameraScript.PublicPlayerDTOs[player].AttackPower = 100.0f;
 
             // アニメーションの開始

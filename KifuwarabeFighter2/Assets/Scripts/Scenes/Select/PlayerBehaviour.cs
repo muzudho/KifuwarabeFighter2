@@ -29,16 +29,16 @@
         // Use this for initialization
         void Start()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
 
             animator = GetComponent<Animator>();
             mainCameraScript = GameObject.Find("Main Camera").GetComponent<CameraBehaviour>();
 
             cursorColumn = 0;
             myRigidbody2D = GetComponent<Rigidbody2D>();
-            playerChar = GameObject.Find(GameObjectPaths.All[new GameObjectIndex(player, GameObjectTypeIndex.Player)]).GetComponent<Text>();
-            face = GameObject.Find(GameObjectPaths.All[new GameObjectIndex(player, GameObjectTypeIndex.Face)]).GetComponent<Image>();
-            myName = GameObject.Find(GameObjectPaths.All[new GameObjectIndex(player, GameObjectTypeIndex.Name)]).GetComponent<Text>();
+            playerChar = GameObject.Find(GameObjectPaths.All[new GameObjectKey(player, GameObjectType.Player)]).GetComponent<Text>();
+            face = GameObject.Find(GameObjectPaths.All[new GameObjectKey(player, GameObjectType.Face)]).GetComponent<Image>();
+            myName = GameObject.Find(GameObjectPaths.All[new GameObjectKey(player, GameObjectType.Name)]).GetComponent<Text>();
 
             ChangeCharacter();
         }
@@ -46,7 +46,7 @@
         // Update is called once per frame
         void Update()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
 
             // 現在のアニメーター・ステートに紐づいたデータ
             AcStateRecordable astateRecord = AControl.Instance.GetCurrentAcStateRecord(animator);
@@ -94,7 +94,7 @@
             }
             else
             {
-                input.LeverX = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonNum(player, ButtonType.Horizontal)]);
+                input.LeverX = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonKey(player, ButtonType.Horizontal)]);
             }
             #endregion
 
@@ -121,7 +121,7 @@
                     )
                 {
                     // 何かボタンを押したら、キャラクター選択。
-                    animator.SetTrigger(ThisSceneDto.TriggerSelect);
+                    animator.SetTrigger(ThisSceneStatus.TriggerSelect);
                 }
                 else if (input.LeverX != 0.0f)//左か右を入力したら
                 {
@@ -145,7 +145,7 @@
 
                     //Debug.Log("slide pos = " + cursorColumn[iPlayerIndex]);
 
-                    animator.SetTrigger(ThisSceneDto.TriggerMove);
+                    animator.SetTrigger(ThisSceneStatus.TriggerMove);
 
                     ChangeCharacter();
 
@@ -177,7 +177,7 @@
                     ))
                 {
                     // キック・ボタンを押したら、キャンセル☆
-                    animator.SetTrigger(ThisSceneDto.TriggerStay);
+                    animator.SetTrigger(ThisSceneStatus.TriggerStay);
                 }
             }
         }
@@ -196,11 +196,11 @@
         /// </summary>
         private IEnumerator StartSlideCoroutine()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
 
             Vector3 inPosition = new Vector3(
-                ThisSceneDto.Table[cursorColumn].X,
-                ThisSceneDto.PlayerDTOs[player].LocationY,
+                ThisSceneStatus.Table[cursorColumn].X,
+                ThisSceneStatus.PlayerStatusDict[player].LocationY,
                 0.0f);// スライドイン後の位置
             float duration = 1.0f;// スライド時間（秒）
 
@@ -217,23 +217,23 @@
             }
             playerChar.transform.localPosition = startPos + moveDistance;
 
-            animator.SetTrigger(ThisSceneDto.TriggerStay);
+            animator.SetTrigger(ThisSceneStatus.TriggerStay);
         }
 
 
         private void ChangeCharacter()
         {
-            var player = PlayerNums.FromArrayIndex(this.playerIndex);
+            var player = PlayerKeys.FromArrayIndex(this.playerIndex);
 
             // 選択キャラクター変更
-            CharacterIndex character = ThisSceneDto.Table[cursorColumn].CharacterIndex;
+            CharacterIndex character = ThisSceneStatus.Table[cursorColumn].CharacterIndex;
             CommonScript.UseCharacters[player] = character;
             // 顔変更
             Sprite[] sprites = Resources.LoadAll<Sprite>(CommonScript.CharacterAndSlice_to_faceSprites[(int)character, (int)ResultFaceSpriteIndex.All]);
             string slice = CommonScript.CharacterAndSlice_to_faceSprites[(int)character, (int)ResultFaceSpriteIndex.Win];
             face.sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(slice));
             // キャラクター名変更
-            myName.text = ThisSceneDto.Table[(int)CommonScript.UseCharacters[player]].Name;
+            myName.text = ThisSceneStatus.Table[(int)CommonScript.UseCharacters[player]].Name;
         }
     }
 }

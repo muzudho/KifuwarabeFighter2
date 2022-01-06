@@ -14,7 +14,7 @@
         void Update()
         {
             // 各プレイヤーについて、キャンセル以外の 何かボタンを押したらセレクト画面へ遷移
-            foreach (var player in PlayerNums.All)
+            foreach (var player in PlayerKeys.All)
             {
                 // プレイヤーのキー押下状態を確認。
                 GamepadStatus state = ApplicationDto.ReadInput(player);

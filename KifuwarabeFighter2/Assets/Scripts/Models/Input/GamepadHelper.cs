@@ -5,12 +5,12 @@
 
     public static class GamepadHelper
     {
-        public static void UpdateState(PlayerNum player, GamepadStatus gamepad)
+        public static void UpdateState(PlayerKey player, GamepadStatus gamepad)
         {
             //左キー: -1、右キー: 1
             gamepad.LeverX = Input.GetAxisRaw(gamepad.HorizontalName);
             // 下キー: -1、上キー: 1 (Input設定でVerticalの入力にはInvertをチェックしておく）
-            gamepad.LeverY = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonNum(player, ButtonType.Vertical)]);
+            gamepad.LeverY = Input.GetAxisRaw(ButtonNames.Dictionary[new ButtonKey(player, ButtonType.Vertical)]);
             gamepad.Lp.set(Input.GetButton(gamepad.LpName), Input.GetButtonDown(gamepad.LpName), Input.GetButtonUp(gamepad.LpName));
             gamepad.Mp.set(Input.GetButton(gamepad.MpName), Input.GetButtonDown(gamepad.MpName), Input.GetButtonUp(gamepad.MpName));
             gamepad.Hp.set(Input.GetButton(gamepad.HpName), Input.GetButtonDown(gamepad.HpName), Input.GetButtonUp(gamepad.HpName));
@@ -20,13 +20,13 @@
             gamepad.Pause.set(Input.GetButton(gamepad.PauseName), Input.GetButtonDown(gamepad.PauseName), Input.GetButtonUp(gamepad.PauseName));
 
             // プレイヤー１のみキャンセル可能
-            if (player == PlayerNum.N1)
+            if (player == PlayerKey.N1)
             {
                 gamepad.CancelMenu.set(Input.GetButton(gamepad.CancelMenuName), Input.GetButtonDown(gamepad.CancelMenuName), Input.GetButtonUp(gamepad.CancelMenuName));
             }
 
             // プレイヤー１だけテストで表示します。
-            if (PlayerNum.N1 == player)
+            if (PlayerKey.N1 == player)
             {
                 Debug.Log($"player1 input {gamepad.ToDisplay()}");
             }

@@ -26,11 +26,11 @@
             {
                 player_to_face = new Image[]
                 {
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N1][(int)GameobjectIndex.Face]).GetComponent<Image>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N2][(int)GameobjectIndex.Face]).GetComponent<Image>()
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N1][(int)GameobjectIndex.Face]).GetComponent<Image>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N2][(int)GameobjectIndex.Face]).GetComponent<Image>()
                 };
 
-                foreach (var player in PlayerNums.All)
+                foreach (var player in PlayerKeys.All)
                 {
                     int character = (int)CommonScript.UseCharacters[player];
                     Sprite[] sprites = Resources.LoadAll<Sprite>(CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.All]);
@@ -40,16 +40,16 @@
                         case Result.Player1_Win:
                             switch (player)
                             {
-                                case PlayerNum.N1: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win]; break;
-                                case PlayerNum.N2: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Lose]; break;
+                                case PlayerKey.N1: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win]; break;
+                                case PlayerKey.N2: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Lose]; break;
                                 default: Debug.LogError("未定義のプレイヤー☆"); slice = ""; break;
                             }
                             break;
                         case Result.Player2_Win:
                             switch (player)
                             {
-                                case PlayerNum.N1: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Lose]; break;
-                                case PlayerNum.N2: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win]; break;
+                                case PlayerKey.N1: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Lose]; break;
+                                case PlayerKey.N2: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win]; break;
                                 default: Debug.LogError("未定義のプレイヤー☆"); slice = ""; break;
                             }
                             break;
@@ -60,17 +60,17 @@
                             slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win];
                             break;
                     }
-                    player_to_face[PlayerNums.ToArrayIndex(player)].sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(slice));
+                    player_to_face[PlayerKeys.ToArrayIndex(player)].sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(slice));
                 }
             }
 
             switch (CommonScript.Result)
             {
                 case Result.Player1_Win:
-                    text.text = ThisSceneDto.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerNum.N1]];
+                    text.text = ThisSceneDto.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerKey.N1]];
                     break;
                 case Result.Player2_Win:
-                    text.text = ThisSceneDto.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerNum.N2]];
+                    text.text = ThisSceneDto.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerKey.N2]];
                     break;
                 //case Result.Double_KnockOut:
                 //    text.text = "ダブルＫＯ！\n";
@@ -85,7 +85,7 @@
         void Update()
         {
             // キャンセル以外の 何かボタンを押したらセレクト画面へ遷移
-            foreach (var player in PlayerNums.All)
+            foreach (var player in PlayerKeys.All)
             {
                 // プレイヤーのキー押下状態を確認。
                 GamepadStatus state = ApplicationDto.ReadInput(player);

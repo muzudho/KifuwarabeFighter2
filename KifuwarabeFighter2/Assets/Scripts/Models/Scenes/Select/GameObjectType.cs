@@ -1,6 +1,9 @@
 ﻿namespace Assets.Scripts.Model.Dto.Select
 {
-    public enum GameObjectTypeIndex
+    /// <summary>
+    /// ゲームオブジェクトを識別します
+    /// </summary>
+    public enum GameObjectType
     {
         Player,
         Name,

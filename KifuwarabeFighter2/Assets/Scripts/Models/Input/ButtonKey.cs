@@ -3,28 +3,28 @@
     /// <summary>
     /// [プレイヤー, ボタン型]で一意
     /// </summary>
-    public class ButtonNum
+    public class ButtonKey
     {
         #region [プレイヤー, 入力ボタン]で一意のキー
-        private string _flatNum;
+        private string _flat;
 
         /// <summary>
         /// [プレイヤー, 入力ボタン]で一意のキー
         /// </summary>
-        public string FlatNum
+        public string Flat
         {
-            get { return this._flatNum; }
+            get { return this._flat; }
         }
         #endregion
 
-        public ButtonNum(PlayerNum player, ButtonType button)
+        public ButtonKey(PlayerKey player, ButtonType button)
         {
             this.PlayerNum = player;
             this.ButtonType = button;
-            this._flatNum = $"{(int)this.PlayerNum},{(int)this.ButtonType}";
+            this._flat = $"{(int)this.PlayerNum},{(int)this.ButtonType}";
         }
 
-        public PlayerNum PlayerNum { get; set; }
+        public PlayerKey PlayerNum { get; set; }
         public ButtonType ButtonType { get; set; }
 
         /// <summary>
@@ -43,7 +43,7 @@
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            var item = obj as ButtonNum;
+            var item = obj as ButtonKey;
             if (item == null)
             {
                 return false;

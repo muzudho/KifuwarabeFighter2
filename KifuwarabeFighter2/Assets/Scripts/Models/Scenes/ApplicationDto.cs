@@ -11,44 +11,44 @@
     {
         static ApplicationDto()
         {
-            PlayerInputStateDTOs = new Dictionary<PlayerNum, GamepadStatus>()
+            PlayerInputStateDTOs = new Dictionary<PlayerKey, GamepadStatus>()
             {
-                { PlayerNum.N1, new GamepadStatus(
-                    ButtonNums.P1Horizontal,
-                    ButtonNums.P1Vertical,
-                    ButtonNums.P1Lp,
-                    ButtonNums.P1Mp,
-                    ButtonNums.P1Hp,
-                    ButtonNums.P1Lk,
-                    ButtonNums.P1Mk,
-                    ButtonNums.P1Hk,
-                    ButtonNums.P1Pause,
-                    ButtonNums.P1CancelMenu) },
-                { PlayerNum.N2, new GamepadStatus(
-                    ButtonNums.P2Horizontal,
-                    ButtonNums.P2Vertical,
-                    ButtonNums.P2Lp,
-                    ButtonNums.P2Mp,
-                    ButtonNums.P2Hp,
-                    ButtonNums.P2Lk,
-                    ButtonNums.P2Mk,
-                    ButtonNums.P2Hk,
-                    ButtonNums.P2Pause,
-                    ButtonNums.P2CancelMenu) },
+                { PlayerKey.N1, new GamepadStatus(
+                    ButtonKeys.P1Horizontal,
+                    ButtonKeys.P1Vertical,
+                    ButtonKeys.P1Lp,
+                    ButtonKeys.P1Mp,
+                    ButtonKeys.P1Hp,
+                    ButtonKeys.P1Lk,
+                    ButtonKeys.P1Mk,
+                    ButtonKeys.P1Hk,
+                    ButtonKeys.P1Pause,
+                    ButtonKeys.P1CancelMenu) },
+                { PlayerKey.N2, new GamepadStatus(
+                    ButtonKeys.P2Horizontal,
+                    ButtonKeys.P2Vertical,
+                    ButtonKeys.P2Lp,
+                    ButtonKeys.P2Mp,
+                    ButtonKeys.P2Hp,
+                    ButtonKeys.P2Lk,
+                    ButtonKeys.P2Mk,
+                    ButtonKeys.P2Hk,
+                    ButtonKeys.P2Pause,
+                    ButtonKeys.P2CancelMenu) },
             };
         }
 
         /// <summary>
         /// キャストするのがめんどくさいので、マップを使うぜ☆（＾～＾）
         /// </summary>
-        public static Dictionary<PlayerNum, GamepadStatus> PlayerInputStateDTOs { get; set; }
+        public static Dictionary<PlayerKey, GamepadStatus> PlayerInputStateDTOs { get; set; }
 
         /// <summary>
         /// キーの押下状態を読み取ります。
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public static GamepadStatus ReadInput(PlayerNum player)
+        public static GamepadStatus ReadInput(PlayerKey player)
         {
             // DTOを使い回します。
             GamepadStatus state = PlayerInputStateDTOs[player];

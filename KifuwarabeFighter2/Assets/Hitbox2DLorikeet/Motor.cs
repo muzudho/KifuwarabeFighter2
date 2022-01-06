@@ -134,7 +134,7 @@ namespace DojinCircleGrayscale.Hitbox2DLorikeet
         /// Upadate( ) の最後に呼び出してください。
         /// </summary>
         /// <param name="player"></param>
-        public void Update(Animator animator, AControllable aControl, PlayerNum player, Transform transform, SpriteRenderer[] hitboxsSpriteRenderer, BoxCollider2D weakboxCollider2D)
+        public void Update(Animator animator, AControllable aControl, PlayerKey player, Transform transform, SpriteRenderer[] hitboxsSpriteRenderer, BoxCollider2D weakboxCollider2D)
         {
             if (animator.GetCurrentAnimatorClipInfo(0).Length < 1)
             {

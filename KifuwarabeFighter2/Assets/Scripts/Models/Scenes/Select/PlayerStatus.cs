@@ -1,8 +1,11 @@
 ﻿namespace Assets.Scripts.Model.Dto.Select
 {
-    public class PlayerDto
+    /// <summary>
+    /// プレイヤーの状況
+    /// </summary>
+    public class PlayerStatus
     {
-        public PlayerDto(float locationY)
+        public PlayerStatus(float locationY)
         {
             this.LocationY = locationY;
         }

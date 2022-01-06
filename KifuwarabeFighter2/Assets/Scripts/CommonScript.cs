@@ -47,17 +47,17 @@ public class CommonScript
     static CommonScript()
     {
         Result = Result.None;
-        computerFlags = new Dictionary<PlayerNum, bool>
+        computerFlags = new Dictionary<PlayerKey, bool>
         {
-            { PlayerNum.N1, true },
-            { PlayerNum.N2, true },
+            { PlayerKey.N1, true },
+            { PlayerKey.N2, true },
         };
-        UseCharacters = new Dictionary<PlayerNum, CharacterIndex>()
+        UseCharacters = new Dictionary<PlayerKey, CharacterIndex>()
         {
-            { PlayerNum.N1, CharacterIndex.Kifuwarabe },
-            { PlayerNum.N2, CharacterIndex.Kifuwarabe },
+            { PlayerKey.N1, CharacterIndex.Kifuwarabe },
+            { PlayerKey.N2, CharacterIndex.Kifuwarabe },
         };
-        Teban = PlayerNum.N1;
+        Teban = PlayerKey.N1;
     }
 
     public static string[] Scene_to_name = new[] { "Title", "Select", "Fight", "Result" };
@@ -66,18 +66,18 @@ public class CommonScript
     /// <summary>
     /// 人間か、コンピューターか。
     /// </summary>
-    public static Dictionary<PlayerNum, bool> computerFlags { get; set; }
+    public static Dictionary<PlayerKey, bool> computerFlags { get; set; }
     /// <summary>
     /// [Player] プレイヤーの使用キャラクター。
     /// </summary>
-    public static Dictionary<PlayerNum, CharacterIndex> UseCharacters { get; set; }
-    public static PlayerNum Teban { get; set; }
-    public static PlayerNum ReverseTeban(PlayerNum player)
+    public static Dictionary<PlayerKey, CharacterIndex> UseCharacters { get; set; }
+    public static PlayerKey Teban { get; set; }
+    public static PlayerKey ReverseTeban(PlayerKey player)
     {
         switch (player)
         {
-            case PlayerNum.N1: return PlayerNum.N2;
-            case PlayerNum.N2: return PlayerNum.N1;
+            case PlayerKey.N1: return PlayerKey.N2;
+            case PlayerKey.N2: return PlayerKey.N1;
             default: Debug.LogError("未定義のプレイヤー☆"); return player;
         }
     }

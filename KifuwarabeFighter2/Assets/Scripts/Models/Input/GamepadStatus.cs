@@ -6,16 +6,16 @@
     public class GamepadStatus
     {
         public GamepadStatus(
-            ButtonNum horizontalKey,
-            ButtonNum verticalKey,
-            ButtonNum lpKey,
-            ButtonNum mpKey,
-            ButtonNum hpKey,
-            ButtonNum lkKey,
-            ButtonNum mkKey,
-            ButtonNum hkKey,
-            ButtonNum pauseKey,
-            ButtonNum cancelMenuKey)
+            ButtonKey horizontalKey,
+            ButtonKey verticalKey,
+            ButtonKey lpKey,
+            ButtonKey mpKey,
+            ButtonKey hpKey,
+            ButtonKey lkKey,
+            ButtonKey mkKey,
+            ButtonKey hkKey,
+            ButtonKey pauseKey,
+            ButtonKey cancelMenuKey)
         {
             this.HorizontalKey = horizontalKey;
             this.HorizontalName = ButtonNames.Dictionary[this.HorizontalKey];
@@ -57,34 +57,34 @@
             this.CancelMenu = new ButtonStatus();
         }
 
-        public ButtonNum HorizontalKey { get; private set; }
+        public ButtonKey HorizontalKey { get; private set; }
         public string HorizontalName { get; private set; }
 
-        public ButtonNum VerticalKey { get; private set; }
+        public ButtonKey VerticalKey { get; private set; }
         public string VerticalName { get; private set; }
 
-        public ButtonNum LpKey { get; private set; }
+        public ButtonKey LpKey { get; private set; }
         public string LpName { get; private set; }
 
-        public ButtonNum MpKey { get; private set; }
+        public ButtonKey MpKey { get; private set; }
         public string MpName { get; private set; }
 
-        public ButtonNum HpKey { get; private set; }
+        public ButtonKey HpKey { get; private set; }
         public string HpName { get; private set; }
 
-        public ButtonNum LkKey { get; private set; }
+        public ButtonKey LkKey { get; private set; }
         public string LkName { get; private set; }
 
-        public ButtonNum MkKey { get; private set; }
+        public ButtonKey MkKey { get; private set; }
         public string MkName { get; private set; }
 
-        public ButtonNum HkKey { get; private set; }
+        public ButtonKey HkKey { get; private set; }
         public string HkName { get; private set; }
 
-        public ButtonNum PauseKey { get; private set; }
+        public ButtonKey PauseKey { get; private set; }
         public string PauseName { get; private set; }
 
-        public ButtonNum CancelMenuKey { get; private set; }
+        public ButtonKey CancelMenuKey { get; private set; }
         public string CancelMenuName { get; private set; }
 
         /// <summary>

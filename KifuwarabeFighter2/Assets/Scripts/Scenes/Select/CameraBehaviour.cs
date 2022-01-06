@@ -10,7 +10,7 @@
 
     public class CameraBehaviour : MonoBehaviour
     {
-        Dictionary<PlayerNum, Animator> animators;
+        Dictionary<PlayerKey, Animator> animators;
 
         /// <summary>
         /// computer character selecting minimum time; コンピューターがキャラクターセレクトしている最低時間。
@@ -23,10 +23,10 @@
 
         void Start()
         {
-            animators = new Dictionary<PlayerNum, Animator>
+            animators = new Dictionary<PlayerKey, Animator>
             {
-                { PlayerNum.N1, GameObject.Find(GameObjectPaths.All[GameObjectIndexes.P1Player]).GetComponent<Animator>() },
-                { PlayerNum.N2, GameObject.Find(GameObjectPaths.All[GameObjectIndexes.P2Player]).GetComponent<Animator>() },
+                { PlayerKey.N1, GameObject.Find(GameObjectPaths.All[GameObjectKeys.P1Player]).GetComponent<Animator>() },
+                { PlayerKey.N2, GameObject.Find(GameObjectPaths.All[GameObjectKeys.P2Player]).GetComponent<Animator>() },
             };
 
             // このシーンのデータベースを用意するぜ☆（＾▽＾）
@@ -39,8 +39,8 @@
             ReadyingTime++;
 
             // 現在のアニメーター・ステートに紐づいたデータ
-            AcStateRecordable astateRecord0 = AControl.Instance.GetCurrentAcStateRecord(animators[PlayerNum.N1]);
-            AcStateRecordable astateRecord1 = AControl.Instance.GetCurrentAcStateRecord(animators[PlayerNum.N2]);
+            AcStateRecordable astateRecord0 = AControl.Instance.GetCurrentAcStateRecord(animators[PlayerKey.N1]);
+            AcStateRecordable astateRecord1 = AControl.Instance.GetCurrentAcStateRecord(animators[PlayerKey.N2]);
             if (
                 AControl.Instance.StateHash_to_record[Animator.StringToHash(Select_Cursor_AbstractAControl.BASELAYER_READY)].Name == astateRecord0.Name
                 &&
@@ -48,16 +48,16 @@
                 )
             {
                 // １プレイヤー、２プレイヤー　ともに Ready ステートなら。
-                animators[PlayerNum.N1].SetTrigger(ThisSceneDto.TriggerTimeOver);
-                animators[PlayerNum.N2].SetTrigger(ThisSceneDto.TriggerTimeOver);
-                ThisSceneDto.TransitionTime = 1;
+                animators[PlayerKey.N1].SetTrigger(ThisSceneStatus.TriggerTimeOver);
+                animators[PlayerKey.N2].SetTrigger(ThisSceneStatus.TriggerTimeOver);
+                ThisSceneStatus.TransitionTime = 1;
             }
 
-            if (0 < ThisSceneDto.TransitionTime)
+            if (0 < ThisSceneStatus.TransitionTime)
             {
-                ThisSceneDto.TransitionTime++;
+                ThisSceneStatus.TransitionTime++;
 
-                if (5 == ThisSceneDto.TransitionTime)
+                if (5 == ThisSceneStatus.TransitionTime)
                 {
                     SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Fight]);
                 }
