@@ -1,5 +1,6 @@
 ﻿namespace SceneTitle
 {
+    using Assets.Scripts;
     using Assets.Scripts.Models;
     using Assets.Scripts.Models.Input;
     using UnityEngine;
@@ -29,7 +30,7 @@
                 )
                 {
                     Debug.Log($"Push key. human={player} input {state.ToDisplay()}");
-                    CommonScript.computerFlags[player] = false;
+                    AppHelper.ComputerFlags[player] = false;
 
                     // * Configure scene.
                     //     * Click main menu [File] - [Build Settings...].
@@ -42,7 +43,7 @@
                     //     * Double click [Assets] - [Scenes] - [Result] in project view.
                     //     * Click [Add Open Scenes] button.
                     //     * Right click `Scenes/SampleScene` from `Build Settings/Scene In Build`. and Click [Remove Selection].
-                    SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Select]);
+                    SceneManager.LoadScene(AppHelper.sceneToName[(int)SceneKey.Select]);
                 }
             }
         }

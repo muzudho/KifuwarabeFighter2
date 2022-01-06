@@ -6,6 +6,7 @@
     using UnityEngine;
     using UnityEngine.SceneManagement;
     using UnityEngine.UI;
+    using Assets.Scripts;
 
     /// <summary>
     /// メインシーンのメインカメラのスクリプトだぜ☆
@@ -51,7 +52,7 @@
         {
             #region UI 表示物
             fight0 = GameObject.Find(ThisSceneStatus.GameObjFight0);
-            fight0.GetComponent<Text>().text = ThisSceneStatus.CharacterToFightMessage[(int)CommonScript.UseCharacters[PlayerKey.N1]];
+            fight0.GetComponent<Text>().text = ThisSceneStatus.CharacterToFightMessage[(int)AppHelper.UseCharacters[PlayerKey.N1]];
             fight1 = GameObject.Find(ThisSceneStatus.GameObjFight1);
             resign0 = GameObject.Find(ThisSceneStatus.GameObjResign0);
             resign0.SetActive(false);
@@ -94,7 +95,7 @@
             #region 選択キャラクター
             foreach (var player in PlayerKeys.All)
             {
-                CharacterIndex character = CommonScript.UseCharacters[player];
+                CharacterKey character = AppHelper.UseCharacters[player];
                 this.PlayerDTOs[player].PlayerName.text = ThisSceneStatus.CharacterToNameRoma[(int)character];
 
                 // アニメーター
@@ -116,7 +117,7 @@
             // コンピューターかどうか。
             foreach (var player in PlayerKeys.All)
             {
-                this.PlayerDTOs[player].PlayerCharScript.isComputer = CommonScript.computerFlags[player];
+                this.PlayerDTOs[player].PlayerCharScript.isComputer = AppHelper.ComputerFlags[player];
             }
             #endregion
         }
@@ -140,18 +141,18 @@
                 {
                     this.PlayerDTOs[loser].PlayerCharScript.IsResign = false;
 
-                    PlayerKey winner = CommonScript.ReverseTeban(loser);
+                    PlayerKey winner = AppHelper.ReverseTeban(loser);
                     this.PlayerDTOs[winner].WinCount++;
 
                     if (PlayerKey.N1 == loser)
                     {
                         // １プレイヤーの投了
-                        CommonScript.Result = Result.Player2_Win;
+                        AppHelper.Result = ResultKey.Player2_Win;
                     }
                     else if (PlayerKey.N2 == loser)
                     {
                         // ２プレイヤーの投了
-                        CommonScript.Result = Result.Player1_Win;
+                        AppHelper.Result = ResultKey.Player1_Win;
                     }
                     else
                     {
@@ -169,14 +170,14 @@
                         round = 1;
                         if (1 < this.PlayerDTOs[winner].WinCount)//2本先取
                         {
-                            SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Result]);
+                            SceneManager.LoadScene(AppHelper.sceneToName[(int)SceneKey.Result]);
                             return;
                         }
                     }
                     else//星が２ラウンド目まで表示されているとき☆
                     {
                         round = 2;
-                        SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Result]);
+                        SceneManager.LoadScene(AppHelper.sceneToName[(int)SceneKey.Result]);
                         return;
                     }
 
@@ -217,8 +218,8 @@
             if (!isRoundFinished)
             {
                 // カウントダウン
-                this.PlayerDTOs[CommonScript.Teban].TimeCount -= Time.deltaTime; // 前のフレームからの経過時間を引くぜ☆
-                this.PlayerDTOs[CommonScript.Teban].Time.text = ((int)this.PlayerDTOs[CommonScript.Teban].TimeCount).ToString();
+                this.PlayerDTOs[AppHelper.Teban].TimeCount -= Time.deltaTime; // 前のフレームからの経過時間を引くぜ☆
+                this.PlayerDTOs[AppHelper.Teban].Time.text = ((int)this.PlayerDTOs[AppHelper.Teban].TimeCount).ToString();
             }
             #endregion
 
@@ -259,8 +260,8 @@
         /// <param name="teban"></param>
         public void SetTeban(PlayerKey teban)
         {
-            CommonScript.Teban = teban;
-            PlayerKey opponent = CommonScript.ReverseTeban(teban);
+            AppHelper.Teban = teban;
+            PlayerKey opponent = AppHelper.ReverseTeban(teban);
             //Debug.Log("Teban = " + teban.ToString() + " Opponent = " + opponent.ToString());
 
             // 先手の色

@@ -20,10 +20,10 @@
             // 見えるのは３列。残りの１つは見えない。
             ThisSceneStatus.Table = new CharacterCell[]
             {
-                new CharacterCell("きふわらべ", CharacterIndex.Kifuwarabe, -150.0f),
-                new CharacterCell("パナ彦", CharacterIndex.Roborinko, 0.0f),
-                new CharacterCell("ろぼりん娘",CharacterIndex.Ponahiko, 150.0f),
-                new CharacterCell("豆腐マン",CharacterIndex.TofuMan,0.0f),
+                new CharacterCell("きふわらべ", CharacterKey.Kifuwarabe, -150.0f),
+                new CharacterCell("パナ彦", CharacterKey.Roborinko, 0.0f),
+                new CharacterCell("ろぼりん娘",CharacterKey.Ponahiko, 150.0f),
+                new CharacterCell("豆腐マン",CharacterKey.TofuMan,0.0f),
             };
 
             TransitionTime = 0;

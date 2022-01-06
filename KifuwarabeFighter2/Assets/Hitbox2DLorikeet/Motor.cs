@@ -1,5 +1,6 @@
 ﻿namespace DojinCircleGrayscale.Hitbox2DLorikeet
 {
+    using Assets.Scripts;
     using Assets.Scripts.Models.Input;
     using DojinCircleGrayscale.StellaQL;
     using System.Collections.Generic;
@@ -109,7 +110,7 @@
         /// <param name="character"></param>
         /// <param name="motion"></param>
         /// <param name="currentMotionFrame"></param>
-        public static int GetSerialTilesetfileIndex(CharacterIndex character, FramedMotionable cliptypeExRecord)
+        public static int GetSerialTilesetfileIndex(CharacterKey character, FramedMotionable cliptypeExRecord)
         {
             // キャラクターと画像種類番号から、通し画像番号を取得。
             return (int)character * (int)TilesetfileType.Num + cliptypeExRecord.TilesetfileType;
@@ -182,7 +183,7 @@
 
             // 画像分類　スライス番号　取得
             int serialTilesetfile = GetSerialTilesetfileIndex(
-                CommonScript.UseCharacters[player], // キャラクター番号
+                AppHelper.UseCharacters[player], // キャラクター番号
                 cliptypeExRecord
                 );
             int slice = GetSlice(

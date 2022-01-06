@@ -6,6 +6,7 @@
     using DojinCircleGrayscale.Hitbox2DLorikeet;
     using DojinCircleGrayscale.StellaQL.Acons.Main_Char3;
     using UnityEngine;
+    using Assets.Scripts;
 
     public class PlayerBehaviour : MonoBehaviour
     {
@@ -55,7 +56,7 @@
 
             mainCameraScript = GameObject.Find("Main Camera").GetComponent<CameraBehaviour>();
             #region 当たり判定
-            opponent = CommonScript.ReverseTeban(player);
+            opponent = AppHelper.ReverseTeban(player);
             opponentHitboxTag = ThisSceneStatus.HitboxTags[this.Opponent][(int)HitboxIndex.Hitbox];
 
             hitboxsSpriteRenderer = new SpriteRenderer[] {
@@ -517,7 +518,7 @@
 
             var player = PlayerKeys.FromArrayIndex(this.playerIndex);
 
-            if (Mathf.Sign(ThisSceneStatus.PlayerToTransform[CommonScript.ReverseTeban(player)].position.x - transform.position.x)
+            if (Mathf.Sign(ThisSceneStatus.PlayerToTransform[AppHelper.ReverseTeban(player)].position.x - transform.position.x)
                 ==
                 Mathf.Sign(leverX)
                 )
@@ -532,7 +533,7 @@
             var player = PlayerKeys.FromArrayIndex(this.playerIndex);
 
             // 自分と相手の位置（相手が右側にいるとき正となるようにする）
-            if (0 <= ThisSceneStatus.PlayerToTransform[CommonScript.ReverseTeban(player)].position.x - transform.position.x)
+            if (0 <= ThisSceneStatus.PlayerToTransform[AppHelper.ReverseTeban(player)].position.x - transform.position.x)
             {
                 return FacingOpponentLR.Right;
             }

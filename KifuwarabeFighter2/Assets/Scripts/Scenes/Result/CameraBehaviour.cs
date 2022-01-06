@@ -1,5 +1,6 @@
 ﻿namespace SceneResult
 {
+    using Assets.Scripts;
     using Assets.Scripts.Models;
     using Assets.Scripts.Models.Input;
     using Assets.Scripts.Models.Scenes.Result;
@@ -32,24 +33,24 @@
 
                 foreach (var player in PlayerKeys.All)
                 {
-                    int character = (int)CommonScript.UseCharacters[player];
-                    Sprite[] sprites = Resources.LoadAll<Sprite>(CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.All]);
+                    int character = (int)AppHelper.UseCharacters[player];
+                    Sprite[] sprites = Resources.LoadAll<Sprite>(AppHelper.CharacterAndSlice_to_faceSprites[character, (int)ResultFacialExpressionKey.All]);
                     string slice;
-                    switch (CommonScript.Result)
+                    switch (AppHelper.Result)
                     {
-                        case Result.Player1_Win:
+                        case ResultKey.Player1_Win:
                             switch (player)
                             {
-                                case PlayerKey.N1: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win]; break;
-                                case PlayerKey.N2: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Lose]; break;
+                                case PlayerKey.N1: slice = AppHelper.CharacterAndSlice_to_faceSprites[character, (int)ResultFacialExpressionKey.Win]; break;
+                                case PlayerKey.N2: slice = AppHelper.CharacterAndSlice_to_faceSprites[character, (int)ResultFacialExpressionKey.Lose]; break;
                                 default: Debug.LogError("未定義のプレイヤー☆"); slice = ""; break;
                             }
                             break;
-                        case Result.Player2_Win:
+                        case ResultKey.Player2_Win:
                             switch (player)
                             {
-                                case PlayerKey.N1: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Lose]; break;
-                                case PlayerKey.N2: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win]; break;
+                                case PlayerKey.N1: slice = AppHelper.CharacterAndSlice_to_faceSprites[character, (int)ResultFacialExpressionKey.Lose]; break;
+                                case PlayerKey.N2: slice = AppHelper.CharacterAndSlice_to_faceSprites[character, (int)ResultFacialExpressionKey.Win]; break;
                                 default: Debug.LogError("未定義のプレイヤー☆"); slice = ""; break;
                             }
                             break;
@@ -57,20 +58,20 @@
                         //    break;
                         default:
                             // 開発中画面などで☆
-                            slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win];
+                            slice = AppHelper.CharacterAndSlice_to_faceSprites[character, (int)ResultFacialExpressionKey.Win];
                             break;
                     }
                     player_to_face[PlayerKeys.ToArrayIndex(player)].sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(slice));
                 }
             }
 
-            switch (CommonScript.Result)
+            switch (AppHelper.Result)
             {
-                case Result.Player1_Win:
-                    text.text = ThisSceneStatus.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerKey.N1]];
+                case ResultKey.Player1_Win:
+                    text.text = ThisSceneStatus.WinMessageByCharacter[(int)AppHelper.UseCharacters[PlayerKey.N1]];
                     break;
-                case Result.Player2_Win:
-                    text.text = ThisSceneStatus.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerKey.N2]];
+                case ResultKey.Player2_Win:
+                    text.text = ThisSceneStatus.WinMessageByCharacter[(int)AppHelper.UseCharacters[PlayerKey.N2]];
                     break;
                 //case Result.Double_KnockOut:
                 //    text.text = "ダブルＫＯ！\n";
@@ -99,7 +100,7 @@
                     state.Hk.Pressing ||
                     state.Pause.Pressing)
                 {
-                    SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Select]);
+                    SceneManager.LoadScene(AppHelper.sceneToName[(int)SceneKey.Select]);
                 }
             }
         }

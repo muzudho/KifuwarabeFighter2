@@ -7,7 +7,7 @@
     {
         public CharacterCell(
             string name,
-            CharacterIndex characterIndex,
+            CharacterKey characterIndex,
             float x)
         {
             this.Name = name;
@@ -16,7 +16,7 @@
         }
 
         public string Name { get; set; }
-        public CharacterIndex CharacterIndex { get; set; }
+        public CharacterKey CharacterIndex { get; set; }
         public float X { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace SceneSelect
 {
     using System.Collections;
+    using Assets.Scripts;
     using Assets.Scripts.Models;
     using Assets.Scripts.Models.Input;
     using Assets.Scripts.Models.Scene.Select;
@@ -56,7 +57,7 @@
 
             // 人間の途中参加受付
             if (
-                CommonScript.computerFlags[player] && // コンピュータープレイヤーの場合
+                AppHelper.ComputerFlags[player] && // コンピュータープレイヤーの場合
                 (
                 // レバーはコンピューターもいじっているので、区別できない。
                 // 0 != leverX ||
@@ -75,12 +76,12 @@
             {
                 Debug.Log("途中参加 " + player + " プレイヤー" + " leverX = " + input.LeverX + " leverY = " + input.LeverY);
                 // コンピューター・プレイヤー側のゲームパッドで、何かボタンを押したら、人間の参入。
-                CommonScript.computerFlags[player] = false;
+                AppHelper.ComputerFlags[player] = false;
                 // FIXME: 硬直時間を入れたい。
                 return;
             }
 
-            if (CommonScript.computerFlags[player])
+            if (AppHelper.ComputerFlags[player])
             {
                 input.LeverX = Random.Range(-1.0f, 1.0f);
                 input.Lp.Pressing = false;
@@ -102,7 +103,7 @@
             {
                 //カーソル移動中でなければ。
 
-                if (CommonScript.computerFlags[player])// コンピュータープレイヤーの場合
+                if (AppHelper.ComputerFlags[player])// コンピュータープレイヤーの場合
                 {
                     if (CameraBehaviour.READY_TIME_LENGTH < mainCameraScript.ReadyingTime)
                     {
@@ -167,7 +168,7 @@
                 // キャラクター選択済みのとき
 
                 if (
-                    !CommonScript.computerFlags[player] // 人間プレイヤーの場合
+                    !AppHelper.ComputerFlags[player] // 人間プレイヤーの場合
                     &&
                     (
                     input.Lk.Pressing ||
@@ -226,14 +227,14 @@
             var player = PlayerKeys.FromArrayIndex(this.playerIndex);
 
             // 選択キャラクター変更
-            CharacterIndex character = ThisSceneStatus.Table[cursorColumn].CharacterIndex;
-            CommonScript.UseCharacters[player] = character;
+            CharacterKey character = ThisSceneStatus.Table[cursorColumn].CharacterIndex;
+            AppHelper.UseCharacters[player] = character;
             // 顔変更
-            Sprite[] sprites = Resources.LoadAll<Sprite>(CommonScript.CharacterAndSlice_to_faceSprites[(int)character, (int)ResultFaceSpriteIndex.All]);
-            string slice = CommonScript.CharacterAndSlice_to_faceSprites[(int)character, (int)ResultFaceSpriteIndex.Win];
+            Sprite[] sprites = Resources.LoadAll<Sprite>(AppHelper.CharacterAndSlice_to_faceSprites[(int)character, (int)ResultFacialExpressionKey.All]);
+            string slice = AppHelper.CharacterAndSlice_to_faceSprites[(int)character, (int)ResultFacialExpressionKey.Win];
             face.sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(slice));
             // キャラクター名変更
-            myName.text = ThisSceneStatus.Table[(int)CommonScript.UseCharacters[player]].Name;
+            myName.text = ThisSceneStatus.Table[(int)AppHelper.UseCharacters[player]].Name;
         }
     }
 }

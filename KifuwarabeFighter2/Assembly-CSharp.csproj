@@ -68,7 +68,8 @@
      <Compile Include="Assets\Resources\StellaQLUserSettings.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\Main_Char3_Behaviour.cs" />
      <Compile Include="Assets\Scripts\AnimatorBehaviours\SampleBehaviour.cs" />
-     <Compile Include="Assets\Scripts\CommonScript.cs" />
+     <Compile Include="Assets\Scripts\AppHelper.cs" />
+     <Compile Include="Assets\Scripts\CharacterKey.cs" />
      <Compile Include="Assets\Scripts\EnumExtensions.cs" />
      <Compile Include="Assets\Scripts\Models\Input\ButtonKey.cs" />
      <Compile Include="Assets\Scripts\Models\Input\ButtonKeys.cs" />
@@ -96,6 +97,9 @@
      <Compile Include="Assets\Scripts\Models\Scenes\Select\GameObjectType.cs" />
      <Compile Include="Assets\Scripts\Models\Scenes\Select\PlayerStatus.cs" />
      <Compile Include="Assets\Scripts\Models\Scenes\Select\ThisSceneStatus.cs" />
+     <Compile Include="Assets\Scripts\ResultFacialExpressionKey.cs" />
+     <Compile Include="Assets\Scripts\ResultKey.cs" />
+     <Compile Include="Assets\Scripts\SceneKey.cs" />
      <Compile Include="Assets\Scripts\Scenes\Fight\BulletBehaviour.cs" />
      <Compile Include="Assets\Scripts\Scenes\Fight\CameraBehaviour.cs" />
      <Compile Include="Assets\Scripts\Scenes\Fight\PlayerBehaviour.cs" />

@@ -1,6 +1,7 @@
 ﻿namespace SceneSelect
 {
     using System.Collections.Generic;
+    using Assets.Scripts;
     using Assets.Scripts.Models.Input;
     using Assets.Scripts.Models.Scene.Select;
     using DojinCircleGrayscale.StellaQL;
@@ -59,7 +60,7 @@
 
                 if (5 == ThisSceneStatus.TransitionTime)
                 {
-                    SceneManager.LoadScene(CommonScript.Scene_to_name[(int)SceneIndex.Fight]);
+                    SceneManager.LoadScene(AppHelper.sceneToName[(int)SceneKey.Fight]);
                 }
             }
         }
