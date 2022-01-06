@@ -5,6 +5,9 @@
     using DojinCircleGrayscale.Hitbox2DLorikeet;
     using UnityEngine;
 
+    /// <summary>
+    /// 弾の振る舞い
+    /// </summary>
     public class BulletBehaviour : MonoBehaviour
     {
         #region 弾作成
@@ -14,6 +17,7 @@
         public int friend;
         int speed = 10;
         #endregion
+
         #region 当たり判定
         /// <summary>
         /// この弾が当たるプレイヤー☆ １プレイヤーは 0 と指定☆
@@ -23,23 +27,28 @@
         CameraBehaviour mainCameraScript;
         #endregion
 
+        /// <summary>
+        /// 生成から破棄まで
+        /// </summary>
         void Start()
         {
             #region 当たり判定
             mainCamera = GameObject.Find("Main Camera");
             mainCameraScript = mainCamera.GetComponent<CameraBehaviour>();
             #endregion
+
             #region 弾作成
-            // 味方キャラクター　のオブジェクトを取得
-            GameObject friendChar = GameObject.FindWithTag(ThisSceneDto.PlayerToTag[friend]);
-            // 弾のrigidbody2Dコンポーネントを取得
-            Rigidbody2D rigidbody2D = GetComponent<Rigidbody2D>();
-            // 味方キャラクター　の向いている向きに弾を飛ばす
-            rigidbody2D.velocity = new Vector2(speed * friendChar.transform.localScale.x, rigidbody2D.velocity.y);
+            // 味方キャラから 敵キャラに向かって弾を飛ばします
+            GameObject me = GameObject.FindWithTag(ThisSceneDto.PlayerToTag[friend]);   // 自キャラ
+            Rigidbody2D bullet = GetComponent<Rigidbody2D>();                           // 弾
+            bullet.velocity = new Vector2(                                              // 自キャラの向いている向きに弾を飛ばす
+                speed * me.transform.localScale.x, bullet.velocity.y);
+            
             // 弾の画像の向きを　味方キャラクター　に合わせる
             Vector2 temp = transform.localScale;
-            temp.x = friendChar.transform.localScale.x / Common.SCALE;
+            temp.x = me.transform.localScale.x / Common.SCALE;
             transform.localScale = temp;
+
             // 5秒後に消滅
             Destroy(gameObject, 5);
             #endregion
@@ -47,7 +56,7 @@
 
         void OnTriggerEnter2D(Collider2D col)
         {
-            // 相手キャラクター　に当たったら、この弾を消すぜ☆
+            // 敵キャラ　に当たったら、この弾を消すぜ☆
             if (col.gameObject.tag == ThisSceneDto.PlayerToTag[opponent])
             {
                 if (mainCameraScript != null)// なぜかヌルになっていることがあるぜ☆（＾～＾）
