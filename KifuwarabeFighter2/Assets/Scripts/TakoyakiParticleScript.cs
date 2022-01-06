@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using Assets.Scripts.Model.Dto.Fight;
+using Assets.Scripts.Models.Scenes.Fight;
 /// The license of this file is unknown. Author: 2dgames_jp
 /// 出典 http://qiita.com/2dgames_jp/items/11bb76167fb44bb5af5f
 using UnityEngine;
@@ -13,7 +13,7 @@ public class TakoyakiParticleScript : TakoyakiTokenScript
     public static TakoyakiParticleScript Add(float x, float y)
     {
         // プレハブを取得
-        m_prefab_ = GetPrefab(m_prefab_, ThisSceneDto.PrefabTakoyakiParticle0);
+        m_prefab_ = GetPrefab(m_prefab_, ThisSceneStatus.PrefabTakoyakiParticle0);
         // プレハブからインスタンスを生成
         return CreateInstance2<TakoyakiParticleScript>(m_prefab_, x, y);
     }

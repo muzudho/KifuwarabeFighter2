@@ -1,4 +1,4 @@
-﻿namespace Assets.Scripts.Model.Dto.Input
+﻿namespace Assets.Scripts.Models.Input
 {
     /// <summary>
     /// ゲームパッド１人分の入力状態

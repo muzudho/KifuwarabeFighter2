@@ -1,6 +1,5 @@
-﻿namespace Assets.Scripts.Model.Dao.Input
+﻿namespace Assets.Scripts.Models.Input
 {
-    using Assets.Scripts.Model.Dto.Input;
     using UnityEngine;
 
     public static class GamepadHelper

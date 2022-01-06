@@ -1,8 +1,8 @@
 ﻿namespace SceneMain
 {
-    using Assets.Scripts.Model.Dto;
-    using Assets.Scripts.Model.Dto.Fight;
-    using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Models;
+    using Assets.Scripts.Models.Scenes.Fight;
+    using Assets.Scripts.Models.Input;
     using UnityEngine;
 
     public class WeakboxBehaviour : MonoBehaviour
@@ -17,7 +17,7 @@
         // Use this for initialization
         void Start()
         {
-            playerScript = GameObject.Find(ThisSceneDto.PlayerToTag[playerIndex]).GetComponent<PlayerBehaviour>();
+            playerScript = GameObject.Find(ThisSceneStatus.PlayerToTag[playerIndex]).GetComponent<PlayerBehaviour>();
             #region 効果音
             audioSources = GetComponents<AudioSource>();
             #endregion
@@ -40,7 +40,7 @@
 
                 // ブロックしているかどうか判定☆
                 //CommonInput.PlayerInput input = CommonInput.player_to_input[playerIndex];
-                GamepadStatus input = ApplicationDto.ReadInput(player);
+                GamepadStatus input = ApplicationStatus.ReadInput(player);
                 if (FacingOpponentMoveFwBkSt.Back == playerScript.GetFacingOpponentMoveFwBkSt(input.LeverX))
                 {
                     //if (PlayerSerialId.Player1==player)
@@ -48,7 +48,7 @@
                     //    Debug.Log("ブロック☆！ col.tag = " + col.tag + " input.leverX = " + input.leverX + " Time.deltaTime = " + Time.deltaTime);
                     //}
                     audioSources[1].PlayOneShot(audioSources[1].clip);// 効果音を鳴らすぜ☆
-                    playerScript.Animator.SetTrigger(ThisSceneDto.TriggerBlock);
+                    playerScript.Animator.SetTrigger(ThisSceneStatus.TriggerBlock);
                 }
                 else
                 {

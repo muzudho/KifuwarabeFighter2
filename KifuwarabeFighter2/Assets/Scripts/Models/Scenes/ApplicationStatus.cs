@@ -1,17 +1,16 @@
-﻿namespace Assets.Scripts.Model.Dto
+﻿namespace Assets.Scripts.Models
 {
     using System.Collections.Generic;
-    using Assets.Scripts.Model.Dao.Input;
-    using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Models.Input;
 
     /// <summary>
     /// 共有する入力関連はこちらに。
     /// </summary>
-    public abstract class ApplicationDto
+    public abstract class ApplicationStatus
     {
-        static ApplicationDto()
+        static ApplicationStatus()
         {
-            PlayerInputStateDTOs = new Dictionary<PlayerKey, GamepadStatus>()
+            PlayerInputStateDict = new Dictionary<PlayerKey, GamepadStatus>()
             {
                 { PlayerKey.N1, new GamepadStatus(
                     ButtonKeys.P1Horizontal,
@@ -41,7 +40,7 @@
         /// <summary>
         /// キャストするのがめんどくさいので、マップを使うぜ☆（＾～＾）
         /// </summary>
-        public static Dictionary<PlayerKey, GamepadStatus> PlayerInputStateDTOs { get; set; }
+        public static Dictionary<PlayerKey, GamepadStatus> PlayerInputStateDict { get; set; }
 
         /// <summary>
         /// キーの押下状態を読み取ります。
@@ -51,11 +50,11 @@
         public static GamepadStatus ReadInput(PlayerKey player)
         {
             // DTOを使い回します。
-            GamepadStatus state = PlayerInputStateDTOs[player];
+            GamepadStatus gamepad = PlayerInputStateDict[player];
 
-            GamepadHelper.UpdateState(player, state);
+            GamepadHelper.UpdateState(player, gamepad);
 
-            return state;
+            return gamepad;
         }
     }
 }

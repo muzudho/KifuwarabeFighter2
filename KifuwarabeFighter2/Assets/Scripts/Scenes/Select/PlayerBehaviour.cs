@@ -1,9 +1,9 @@
 ﻿namespace SceneSelect
 {
     using System.Collections;
-    using Assets.Scripts.Model.Dto;
-    using Assets.Scripts.Model.Dto.Input;
-    using Assets.Scripts.Model.Dto.Select;
+    using Assets.Scripts.Models;
+    using Assets.Scripts.Models.Input;
+    using Assets.Scripts.Models.Scene.Select;
     using DojinCircleGrayscale.StellaQL;
     using DojinCircleGrayscale.StellaQL.Acons.Select_Cursor;
     using UnityEngine;
@@ -52,7 +52,7 @@
             AcStateRecordable astateRecord = AControl.Instance.GetCurrentAcStateRecord(animator);
 
             #region 入力受付と途中参加
-            GamepadStatus input = ApplicationDto.ReadInput(player);
+            GamepadStatus input = ApplicationStatus.ReadInput(player);
 
             // 人間の途中参加受付
             if (

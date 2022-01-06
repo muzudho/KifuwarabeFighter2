@@ -1,4 +1,4 @@
-﻿namespace Assets.Scripts.Model.Dto.Fight
+﻿namespace Assets.Scripts.Models.Scenes.Fight
 {
     /// <summary>
     /// 相手に向かっていっているかどうか。動いていないときは Stay で☆

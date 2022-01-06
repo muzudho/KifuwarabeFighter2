@@ -1,12 +1,12 @@
-﻿namespace Assets.Scripts.Model.Dto.Fight
+﻿namespace Assets.Scripts.Models.Scenes.Fight
 {
     using global::SceneMain;
     using UnityEngine;
     using UnityEngine.UI;
 
-    public class PlayerDto
+    public class PlayerStatus
     {
-        public PlayerDto(
+        public PlayerStatus(
             RectTransform barTransform,
             Text playerName,
             Text value,

@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Model.Dto.Input;
+﻿using Assets.Scripts.Models.Input;
 /// The license of this file is unknown. Author: 2dgames_jp
 /// 出典 http://qiita.com/2dgames_jp/items/11bb76167fb44bb5af5f
 using UnityEngine;

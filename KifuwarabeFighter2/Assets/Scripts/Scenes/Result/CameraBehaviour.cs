@@ -1,8 +1,8 @@
 ﻿namespace SceneResult
 {
-    using Assets.Scripts.Model.Dto;
-    using Assets.Scripts.Model.Dto.Input;
-    using Assets.Scripts.Model.Dto.Result;
+    using Assets.Scripts.Models;
+    using Assets.Scripts.Models.Input;
+    using Assets.Scripts.Models.Scenes.Result;
     using UnityEngine;
     using UnityEngine.SceneManagement;
     using UnityEngine.UI;
@@ -20,14 +20,14 @@
 
         void Start()
         {
-            text = GameObject.Find(ThisSceneDto.GameObjText).GetComponent<Text>();
+            text = GameObject.Find(ThisSceneStatus.GameObjText).GetComponent<Text>();
 
             // プレイヤー１、２の顔
             {
                 player_to_face = new Image[]
                 {
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N1][(int)GameobjectIndex.Face]).GetComponent<Image>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N2][(int)GameobjectIndex.Face]).GetComponent<Image>()
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N1][(int)GameobjectType.Face]).GetComponent<Image>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N2][(int)GameobjectType.Face]).GetComponent<Image>()
                 };
 
                 foreach (var player in PlayerKeys.All)
@@ -67,10 +67,10 @@
             switch (CommonScript.Result)
             {
                 case Result.Player1_Win:
-                    text.text = ThisSceneDto.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerKey.N1]];
+                    text.text = ThisSceneStatus.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerKey.N1]];
                     break;
                 case Result.Player2_Win:
-                    text.text = ThisSceneDto.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerKey.N2]];
+                    text.text = ThisSceneStatus.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerKey.N2]];
                     break;
                 //case Result.Double_KnockOut:
                 //    text.text = "ダブルＫＯ！\n";
@@ -88,7 +88,7 @@
             foreach (var player in PlayerKeys.All)
             {
                 // プレイヤーのキー押下状態を確認。
-                GamepadStatus state = ApplicationDto.ReadInput(player);
+                GamepadStatus state = ApplicationStatus.ReadInput(player);
 
                 // キャンセル以外の 何かボタンを押したらセレクト画面へ遷移
                 if (state.Lp.Pressing ||

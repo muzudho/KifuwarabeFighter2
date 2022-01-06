@@ -1,4 +1,4 @@
-﻿namespace Assets.Scripts.Model.Dto.Input
+﻿namespace Assets.Scripts.Models.Input
 {
     /// <summary>
     /// [プレイヤー番号, ボタン型]の通し番号一覧

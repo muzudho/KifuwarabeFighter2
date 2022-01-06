@@ -1,4 +1,4 @@
-﻿namespace Assets.Scripts.Model.Dto.Input
+﻿namespace Assets.Scripts.Models.Input
 {
     /// <summary>
     /// プレイヤーの通し番号

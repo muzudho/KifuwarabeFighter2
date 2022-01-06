@@ -1,8 +1,8 @@
 ﻿namespace SceneSelect
 {
     using System.Collections.Generic;
-    using Assets.Scripts.Model.Dto.Input;
-    using Assets.Scripts.Model.Dto.Select;
+    using Assets.Scripts.Models.Input;
+    using Assets.Scripts.Models.Scene.Select;
     using DojinCircleGrayscale.StellaQL;
     using DojinCircleGrayscale.StellaQL.Acons.Select_Cursor;
     using UnityEngine;

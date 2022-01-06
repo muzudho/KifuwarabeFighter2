@@ -1,6 +1,6 @@
-﻿namespace Assets.Scripts.Model.Dto.Select
+﻿namespace Assets.Scripts.Models.Scene.Select
 {
-    using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Models.Input;
 
     public static class GameObjectKeys
     {

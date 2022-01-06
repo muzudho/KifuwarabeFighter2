@@ -1,7 +1,7 @@
 ﻿namespace SceneMain
 {
-    using Assets.Scripts.Model.Dto.Fight;
-    using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Models.Scenes.Fight;
+    using Assets.Scripts.Models.Input;
     using DojinCircleGrayscale.Hitbox2DLorikeet;
     using UnityEngine;
 
@@ -39,7 +39,7 @@
 
             #region 弾作成
             // 味方キャラから 敵キャラに向かって弾を飛ばします
-            GameObject me = GameObject.FindWithTag(ThisSceneDto.PlayerToTag[friend]);   // 自キャラ
+            GameObject me = GameObject.FindWithTag(ThisSceneStatus.PlayerToTag[friend]);   // 自キャラ
             Rigidbody2D bullet = GetComponent<Rigidbody2D>();                           // 弾
             bullet.velocity = new Vector2(                                              // 自キャラの向いている向きに弾を飛ばす
                 speed * me.transform.localScale.x, bullet.velocity.y);
@@ -57,7 +57,7 @@
         void OnTriggerEnter2D(Collider2D col)
         {
             // 敵キャラ　に当たったら、この弾を消すぜ☆
-            if (col.gameObject.tag == ThisSceneDto.PlayerToTag[opponent])
+            if (col.gameObject.tag == ThisSceneStatus.PlayerToTag[opponent])
             {
                 if (mainCameraScript != null)// なぜかヌルになっていることがあるぜ☆（＾～＾）
                 {

@@ -1,7 +1,7 @@
 ﻿namespace SceneTitle
 {
-    using Assets.Scripts.Model.Dto;
-    using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Models;
+    using Assets.Scripts.Models.Input;
     using UnityEngine;
     using UnityEngine.SceneManagement;
 
@@ -17,7 +17,7 @@
             foreach (var player in PlayerKeys.All)
             {
                 // プレイヤーのキー押下状態を確認。
-                GamepadStatus state = ApplicationDto.ReadInput(player);
+                GamepadStatus state = ApplicationStatus.ReadInput(player);
 
                 if (state.Lp.Pressing ||
                     state.Mp.Pressing ||

@@ -1,8 +1,8 @@
-﻿namespace Assets.Scripts.Model.Dto.Fight
+﻿namespace Assets.Scripts.Models.Scenes.Fight
 {
-    public class PublicPlayerDto
+    public class PublicPlayerStatus
     {
-        public PublicPlayerDto()
+        public PublicPlayerStatus()
         {
         }
 

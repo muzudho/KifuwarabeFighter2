@@ -1,8 +1,8 @@
 ﻿namespace SceneMain
 {
     using System.Collections.Generic;
-    using Assets.Scripts.Model.Dto.Fight;
-    using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Models.Scenes.Fight;
+    using Assets.Scripts.Models.Input;
     using UnityEngine;
     using UnityEngine.SceneManagement;
     using UnityEngine.UI;
@@ -15,8 +15,8 @@
         /// <summary>
         /// Player dto(Data transfer object).
         /// </summary>
-        Dictionary<PlayerKey, PlayerDto> PlayerDTOs { get; set; }
-        public Dictionary<PlayerKey, PublicPlayerDto> PublicPlayerDTOs { get; set; }
+        Dictionary<PlayerKey, PlayerStatus> PlayerDTOs { get; set; }
+        public Dictionary<PlayerKey, PublicPlayerStatus> PublicPlayerDTOs { get; set; }
 
         #region UI 表示物
         /// <summary>
@@ -50,43 +50,43 @@
         void Start()
         {
             #region UI 表示物
-            fight0 = GameObject.Find(ThisSceneDto.GameObjFight0);
-            fight0.GetComponent<Text>().text = ThisSceneDto.CharacterToFightMessage[(int)CommonScript.UseCharacters[PlayerKey.N1]];
-            fight1 = GameObject.Find(ThisSceneDto.GameObjFight1);
-            resign0 = GameObject.Find(ThisSceneDto.GameObjResign0);
+            fight0 = GameObject.Find(ThisSceneStatus.GameObjFight0);
+            fight0.GetComponent<Text>().text = ThisSceneStatus.CharacterToFightMessage[(int)CommonScript.UseCharacters[PlayerKey.N1]];
+            fight1 = GameObject.Find(ThisSceneStatus.GameObjFight1);
+            resign0 = GameObject.Find(ThisSceneStatus.GameObjResign0);
             resign0.SetActive(false);
 
-            this.PlayerDTOs = new Dictionary<PlayerKey, PlayerDto>()
+            this.PlayerDTOs = new Dictionary<PlayerKey, PlayerStatus>()
             {
-                {PlayerKey.N1, new PlayerDto(
+                {PlayerKey.N1, new PlayerStatus(
                     // bar1のRectTransformコンポーネントをキャッシュ
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N1][(int)GameObjectTypeIndex.Bar]).GetComponent<RectTransform>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N1][(int)GameObjectType.Bar]).GetComponent<RectTransform>(),
                     // 名前
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N1][(int)GameObjectTypeIndex.Name]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N1][(int)GameObjectTypeIndex.Value]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N1][(int)GameObjectTypeIndex.Player]),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N1][(int)GameObjectType.Name]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N1][(int)GameObjectType.Value]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N1][(int)GameObjectType.Player]),
                     new GameObject[]{ GameObject.Find("ResultP0_0"), GameObject.Find("ResultP0_1") },
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N1][(int)GameObjectTypeIndex.Turn]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N1][(int)GameObjectTypeIndex.Turn]).GetComponent<Outline>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N1][(int)GameObjectTypeIndex.Time]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N1][(int)GameObjectTypeIndex.Time]).GetComponent<Outline>()
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N1][(int)GameObjectType.Turn]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N1][(int)GameObjectType.Turn]).GetComponent<Outline>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N1][(int)GameObjectType.Time]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N1][(int)GameObjectType.Time]).GetComponent<Outline>()
                     ) },
-                {PlayerKey.N2, new PlayerDto(
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N2][(int)GameObjectTypeIndex.Bar]).GetComponent<RectTransform>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N2][(int)GameObjectTypeIndex.Name]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N2][(int)GameObjectTypeIndex.Value]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N2][(int)GameObjectTypeIndex.Player]),
+                {PlayerKey.N2, new PlayerStatus(
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N2][(int)GameObjectType.Bar]).GetComponent<RectTransform>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N2][(int)GameObjectType.Name]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N2][(int)GameObjectType.Value]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N2][(int)GameObjectType.Player]),
                     new GameObject[]{ GameObject.Find("ResultP1_0"), GameObject.Find("ResultP1_1") },
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N2][(int)GameObjectTypeIndex.Turn]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N2][(int)GameObjectTypeIndex.Turn]).GetComponent<Outline>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N2][(int)GameObjectTypeIndex.Time]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerKey.N2][(int)GameObjectTypeIndex.Time]).GetComponent<Outline>()
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N2][(int)GameObjectType.Turn]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N2][(int)GameObjectType.Turn]).GetComponent<Outline>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N2][(int)GameObjectType.Time]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneStatus.GameObjectPaths[PlayerKey.N2][(int)GameObjectType.Time]).GetComponent<Outline>()
                     ) },
             };
-            this.PublicPlayerDTOs = new Dictionary<PlayerKey, PublicPlayerDto>()
+            this.PublicPlayerDTOs = new Dictionary<PlayerKey, PublicPlayerStatus>()
             {
-                {PlayerKey.N1, new PublicPlayerDto() },
-                {PlayerKey.N2, new PublicPlayerDto() },
+                {PlayerKey.N1, new PublicPlayerStatus() },
+                {PlayerKey.N2, new PublicPlayerStatus() },
             };
 
             #endregion
@@ -95,10 +95,10 @@
             foreach (var player in PlayerKeys.All)
             {
                 CharacterIndex character = CommonScript.UseCharacters[player];
-                this.PlayerDTOs[player].PlayerName.text = ThisSceneDto.CharacterToNameRoma[(int)character];
+                this.PlayerDTOs[player].PlayerName.text = ThisSceneStatus.CharacterToNameRoma[(int)character];
 
                 // アニメーター
-                this.PlayerDTOs[player].PlayerCharAnimetor.runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(ThisSceneDto.CharacterToAnimationController[(int)character]));
+                this.PlayerDTOs[player].PlayerCharAnimetor.runtimeAnimatorController = (RuntimeAnimatorController)RuntimeAnimatorController.Instantiate(Resources.Load(ThisSceneStatus.CharacterToAnimationController[(int)character]));
             }
             #endregion
 
@@ -126,7 +126,7 @@
         {
             #region 対局開始表示
             ReadyingTime++;
-            if (ThisSceneDto.ReadyTimeLength == ReadyingTime)
+            if (ThisSceneStatus.ReadyTimeLength == ReadyingTime)
             {
                 fight0.SetActive(false);
                 fight1.SetActive(false);

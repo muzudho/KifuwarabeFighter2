@@ -1,7 +1,7 @@
-﻿namespace Assets.Scripts.Model.Dto.Select
+﻿namespace Assets.Scripts.Models.Scene.Select
 {
     using System.Collections.Generic;
-    using Assets.Scripts.Model.Dto.Input;
+    using Assets.Scripts.Models.Input;
 
     /// <summary>
     /// セレクトシーンの状況

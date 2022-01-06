@@ -1,10 +1,10 @@
-﻿using Assets.Scripts.Model.Dto.Input;
-using DojinCircleGrayscale.StellaQL;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace DojinCircleGrayscale.Hitbox2DLorikeet
+﻿namespace DojinCircleGrayscale.Hitbox2DLorikeet
 {
+    using Assets.Scripts.Models.Input;
+    using DojinCircleGrayscale.StellaQL;
+    using System.Collections.Generic;
+    using UnityEngine;
+
     public enum HitboxIndex
     {
         Hitbox,

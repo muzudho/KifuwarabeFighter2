@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Assets.Scripts.Model.Dto.Input;
+using Assets.Scripts.Models.Input;
 using UnityEngine;
 
 public enum SceneIndex

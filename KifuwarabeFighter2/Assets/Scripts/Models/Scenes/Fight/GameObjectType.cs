@@ -1,4 +1,4 @@
-﻿namespace Assets.Scripts.Models.Scene.Select
+﻿namespace Assets.Scripts.Models.Scenes.Fight
 {
     /// <summary>
     /// ゲームオブジェクトを識別します
@@ -7,9 +7,9 @@
     {
         Player,
         Name,
-        Face,
-        BoxBack,
-        Box,
-        Turn
+        Bar,
+        Value,
+        Turn,
+        Time,
     }
 }

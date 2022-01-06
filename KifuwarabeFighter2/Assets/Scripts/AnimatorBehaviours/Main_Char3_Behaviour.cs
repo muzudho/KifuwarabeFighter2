@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Model.Dto.Fight;
+﻿using Assets.Scripts.Models.Scenes.Fight;
 using DojinCircleGrayscale.Hitbox2DLorikeet;
 using DojinCircleGrayscale.StellaQL.Acons.Main_Char3;
 using SceneMain;
@@ -12,14 +12,14 @@ public class Main_Char3_Behaviour : StateMachineBehaviour {
         #region 立ち
         if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_SWAIT)].Name)) // 立ち待機
         {
-            animator.SetInteger(ThisSceneDto.IntegerActioning, (int)TilesetfileType.Stand);
+            animator.SetInteger(ThisSceneStatus.IntegerActioning, (int)TilesetfileType.Stand);
         }
         #endregion
         #region ジャンプ
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_JMOVE_JMOVE0)].Name)) // ジャンプに着手した。
         {
-            animator.SetInteger(ThisSceneDto.IntegerActioning, (int)TilesetfileType.Jump);
-            animator.SetBool(ThisSceneDto.BoolJMove0, true);
+            animator.SetInteger(ThisSceneStatus.IntegerActioning, (int)TilesetfileType.Jump);
+            animator.SetBool(ThisSceneStatus.BoolJMove0, true);
         }
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_JMOVE_JMOVE1)].Name)) // 上昇
         {
@@ -30,17 +30,17 @@ public class Main_Char3_Behaviour : StateMachineBehaviour {
         #region 屈み
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_CWAIT)].Name)) // かがみ待機
         {
-            animator.SetInteger(ThisSceneDto.IntegerActioning, (int)TilesetfileType.Crouch);
+            animator.SetInteger(ThisSceneStatus.IntegerActioning, (int)TilesetfileType.Crouch);
         }
         #endregion
         #region その他
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_OBACKSTEP)].Name)) // バックステップ
         {
-            animator.SetInteger(ThisSceneDto.IntegerActioning, (int)TilesetfileType.Stand);
+            animator.SetInteger(ThisSceneStatus.IntegerActioning, (int)TilesetfileType.Stand);
         }
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_OGIVEUP)].Name))
         {
-            animator.SetBool(ThisSceneDto.BoolGiveUping, true);
+            animator.SetBool(ThisSceneStatus.BoolGiveUping, true);
         }
         #endregion
     }
@@ -73,7 +73,7 @@ public class Main_Char3_Behaviour : StateMachineBehaviour {
         else if (stateInfo.IsName(AControl.Instance.StateHash_to_record[Animator.StringToHash(Main_Char3_AbstractAControl.BASELAYER_OGIVEUP)].Name))
         {
             // 投了モーションが終わった時。
-            animator.SetBool(ThisSceneDto.BoolGiveUping, false);
+            animator.SetBool(ThisSceneStatus.BoolGiveUping, false);
 
             PlayerBehaviour script = animator.gameObject.GetComponent<PlayerBehaviour>();
             script.IsResign = true;

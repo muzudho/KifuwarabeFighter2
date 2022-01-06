@@ -1,4 +1,4 @@
-﻿namespace Assets.Scripts.Model.Dto.Select
+﻿namespace Assets.Scripts.Models.Scene.Select
 {
     /// <summary>
     /// キャラクターの欄
