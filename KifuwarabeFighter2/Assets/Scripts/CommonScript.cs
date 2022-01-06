@@ -47,17 +47,17 @@ public class CommonScript
     static CommonScript()
     {
         Result = Result.None;
-        computerFlags = new Dictionary<PlayerIndex, bool>
+        computerFlags = new Dictionary<PlayerNum, bool>
         {
-            { PlayerIndex.Player1, true },
-            { PlayerIndex.Player2, true },
+            { PlayerNum.N1, true },
+            { PlayerNum.N2, true },
         };
-        UseCharacters = new Dictionary<PlayerIndex, CharacterIndex>()
+        UseCharacters = new Dictionary<PlayerNum, CharacterIndex>()
         {
-            { PlayerIndex.Player1, CharacterIndex.Kifuwarabe },
-            { PlayerIndex.Player2, CharacterIndex.Kifuwarabe },
+            { PlayerNum.N1, CharacterIndex.Kifuwarabe },
+            { PlayerNum.N2, CharacterIndex.Kifuwarabe },
         };
-        Teban = PlayerIndex.Player1;
+        Teban = PlayerNum.N1;
     }
 
     public static string[] Scene_to_name = new[] { "Title", "Select", "Fight", "Result" };
@@ -66,18 +66,18 @@ public class CommonScript
     /// <summary>
     /// 人間か、コンピューターか。
     /// </summary>
-    public static Dictionary<PlayerIndex, bool> computerFlags { get; set; }
+    public static Dictionary<PlayerNum, bool> computerFlags { get; set; }
     /// <summary>
     /// [Player] プレイヤーの使用キャラクター。
     /// </summary>
-    public static Dictionary<PlayerIndex, CharacterIndex> UseCharacters { get; set; }
-    public static PlayerIndex Teban { get; set; }
-    public static PlayerIndex ReverseTeban(PlayerIndex player)
+    public static Dictionary<PlayerNum, CharacterIndex> UseCharacters { get; set; }
+    public static PlayerNum Teban { get; set; }
+    public static PlayerNum ReverseTeban(PlayerNum player)
     {
         switch (player)
         {
-            case PlayerIndex.Player1: return PlayerIndex.Player2;
-            case PlayerIndex.Player2: return PlayerIndex.Player1;
+            case PlayerNum.N1: return PlayerNum.N2;
+            case PlayerNum.N2: return PlayerNum.N1;
             default: Debug.LogError("未定義のプレイヤー☆"); return player;
         }
     }

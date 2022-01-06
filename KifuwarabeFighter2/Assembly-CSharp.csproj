@@ -80,14 +80,14 @@
      <Compile Include="Assets\Scripts\Model\Dto\Fight\PlayerDto.cs" />
      <Compile Include="Assets\Scripts\Model\Dto\Fight\PublicPlayerDto.cs" />
      <Compile Include="Assets\Scripts\Model\Dto\Fight\ThisSceneDto.cs" />
-     <Compile Include="Assets\Scripts\Model\Dto\Input\ButtonIndex.cs" />
+     <Compile Include="Assets\Scripts\Model\Dto\Input\ButtonNum.cs" />
      <Compile Include="Assets\Scripts\Model\Dto\Input\InputButtonStateDto.cs" />
      <Compile Include="Assets\Scripts\Model\Dto\Input\InputIndexes.cs" />
      <Compile Include="Assets\Scripts\Model\Dto\Input\InputNames.cs" />
      <Compile Include="Assets\Scripts\Model\Dto\Input\InputStateDto.cs" />
-     <Compile Include="Assets\Scripts\Model\Dto\Input\PlayerButtonSerialId.cs" />
-     <Compile Include="Assets\Scripts\Model\Dto\Input\PlayerIndex.cs" />
+     <Compile Include="Assets\Scripts\Model\Dto\Input\PlayerButtonNum.cs" />
      <Compile Include="Assets\Scripts\Model\Dto\Input\PlayerIndexes.cs" />
+     <Compile Include="Assets\Scripts\Model\Dto\Input\PlayerNum.cs" />
      <Compile Include="Assets\Scripts\Model\Dto\Result\ThisSceneDto.cs" />
      <Compile Include="Assets\Scripts\Model\Dto\Select\CellDto.cs" />
      <Compile Include="Assets\Scripts\Model\Dto\Select\GameObjectIndex.cs" />

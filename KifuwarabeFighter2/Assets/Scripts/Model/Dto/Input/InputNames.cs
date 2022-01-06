@@ -6,7 +6,7 @@
     {
         static InputNames()
         {
-            Dictionary = new Dictionary<InputIndex, string>() {
+            Dictionary = new Dictionary<PlayerButtonNum, string>() {
                 // Player 1.
                 { InputIndexes.P1Horizontal, "Horizontal" },
                 { InputIndexes.P1Vertical, "Vertical"},
@@ -62,6 +62,6 @@
         /// 内部的には　プレイヤー１はP0、プレイヤー２はP1 だぜ☆（＾▽＾）
         /// 入力類は、コンフィグ画面でユーザーの目に触れる☆（＾～＾）
         /// ユーザーの目に見えるところでは 1スタート、内部的には 0スタートだぜ☆（＾▽＾）
-        public static Dictionary<InputIndex, string> Dictionary;
+        public static Dictionary<PlayerButtonNum, string> Dictionary;
     }
 }

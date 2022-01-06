@@ -12,8 +12,8 @@
 
         #region 敵味方判定
         public int playerIndex;
-        private PlayerIndex opponent;
-        public PlayerIndex Opponent { get { return opponent; } }
+        private PlayerNum opponent;
+        public PlayerNum Opponent { get { return opponent; } }
         #endregion
 
         public bool isComputer;
@@ -80,7 +80,7 @@
         {
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
 
-            //if (PlayerIndex.Player1 == player)
+            //if (PlayerSerialId.Player1 == player)
             //{
             //    //ebug.Log("Update Time.deltaTime = " + Time.deltaTime);
             //}
@@ -205,7 +205,7 @@
                     transform.position - transform.up * 1.1f, // 足元を少しはみ出すぐらい
                     groundLayer // Linecastが判定するレイヤー // LayerMask.GetMask("Water")// 
                     );
-                //if (PlayerIndex.Player1 == player)
+                //if (PlayerSerialId.Player1 == player)
                 //{
                 //    //ebug.Log("B playerIndex = " + playerIndex + " isGrounded = " + isGrounded + " transform.position.y = " + transform.position.y + " Rigidbody2D.velocity.y = " + Rigidbody2D.velocity.y);
                 //}
@@ -339,7 +339,7 @@
 
                 if (FacingOpponentMoveFwBkSt.Forward == facingOpponentMoveFwBkSt)// 相手に向かってレバーを倒したとき
                 {
-                    //if (PlayerIndex.Player1 == player)
+                    //if (PlayerSerialId.Player1 == player)
                     //{
                     //    //ebug.Log("相手に向かっていくぜ☆ input.leverX = " + input.leverX);
                     //}
@@ -351,7 +351,7 @@
                     //if ((int)ActioningIndex.Dash != anim.GetInteger(CommonScript.INTEGER_ACTIONING))
                     //{
                     //    // ダッシュ・アニメーションの開始
-                    //    //if (PlayerIndex.Player1 == player)
+                    //    //if (PlayerSerialId.Player1 == player)
                     //    //{
                     //    //    //ebug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ダッシュ!");
                     //    //}
@@ -363,7 +363,7 @@
                 }
                 else if (FacingOpponentMoveFwBkSt.Back == facingOpponentMoveFwBkSt)// 相手と反対の方向にレバーを倒したとき（バックステップ）
                 {
-                    //if (PlayerIndex.Player1 == player)
+                    //if (PlayerSerialId.Player1 == player)
                     //{
                     //    //ebug.Log("相手の反対側に向かっていくぜ☆ input.leverX = " + input.leverX);
                     //}
@@ -372,7 +372,7 @@
                 }
                 else // レバーを倒していない時（ここにはこない？）
                 {
-                    //if (PlayerIndex.Player1 == player)
+                    //if (PlayerSerialId.Player1 == player)
                     //{
                     //    //ebug.Log("止まっているぜ☆ input.leverX = " + input.leverX);
                     //}
@@ -392,7 +392,7 @@
                 // 入力装置的には、左から右（その逆も）に切り替える瞬間、どちらも押していない瞬間が発生する。
                 if (8 < animator.GetInteger(ThisSceneDto.IntegerLeverXNeutral))// レバーを放した 数フレーム目から、レバーが離れた判定をすることにする。
                 {
-                    //if (PlayerIndex.Player1 == player)
+                    //if (PlayerSerialId.Player1 == player)
                     //{
                     //    //ebug.Log("Rigidbody2D.velocity.x = " + Rigidbody2D.velocity.x + " ストップ!");
                     //}
@@ -549,14 +549,14 @@
             {
                 case FacingOpponentLR.Left:
                     temp.x = -1 * Common.SCALE;
-                    //if (PlayerIndex.Player1 == player)
+                    //if (PlayerSerialId.Player1 == player)
                     //{
                     //    //ebug.Log("左を向くぜ☆");
                     //}
                     break;
                 case FacingOpponentLR.Right:
                     temp.x = 1 * Common.SCALE;
-                    //if (PlayerIndex.Player1 == player)
+                    //if (PlayerSerialId.Player1 == player)
                     //{
                     //    //ebug.Log("右を向くぜ☆");
                     //}
@@ -582,7 +582,7 @@
             var player = PlayerIndexes.FromArrayIndex(this.playerIndex);
 
             //左キー: -1、右キー: 1
-            float leverX = Input.GetAxisRaw(InputNames.Dictionary[new InputIndex(player, ButtonIndex.Horizontal)]);
+            float leverX = Input.GetAxisRaw(InputNames.Dictionary[new PlayerButtonNum(player, ButtonNum.Horizontal)]);
 
             if (leverX != 0)//左か右を入力したら
             {

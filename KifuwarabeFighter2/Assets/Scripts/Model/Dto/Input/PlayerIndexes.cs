@@ -2,10 +2,10 @@
 {
     public static class PlayerIndexes
     {
-        public static PlayerIndex[] All = new[]
+        public static PlayerNum[] All = new[]
         {
-            PlayerIndex.Player1,
-            PlayerIndex.Player2,
+            PlayerNum.N1,
+            PlayerNum.N2,
         };
 
         /// <summary>
@@ -13,7 +13,7 @@
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public static int ToArrayIndex(PlayerIndex player)
+        public static int ToArrayIndex(PlayerNum player)
         {
             return ((int)player) - 1;
         }
@@ -23,9 +23,9 @@
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public static PlayerIndex FromArrayIndex(int playerIndex)
+        public static PlayerNum FromArrayIndex(int playerIndex)
         {
-            return (PlayerIndex)(playerIndex + 1);
+            return (PlayerNum)(playerIndex + 1);
         }
     }
 }

@@ -43,7 +43,7 @@
                 InputStateDto input = ApplicationDto.ReadInput(player);
                 if (FacingOpponentMoveFwBkSt.Back == playerScript.GetFacingOpponentMoveFwBkSt(input.LeverX))
                 {
-                    //if (PlayerIndex.Player1==player)
+                    //if (PlayerSerialId.Player1==player)
                     //{
                     //    Debug.Log("ブロック☆！ col.tag = " + col.tag + " input.leverX = " + input.leverX + " Time.deltaTime = " + Time.deltaTime);
                     //}
@@ -52,7 +52,7 @@
                 }
                 else
                 {
-                    //if (PlayerIndex.Player1 == player)
+                    //if (PlayerSerialId.Player1 == player)
                     //{
                     //    Debug.Log("痛っ☆！ col.tag = " + col.tag + " input.leverX = " + input.leverX + " Time.deltaTime = " + Time.deltaTime);
                     //}
@@ -67,7 +67,7 @@
                     {
                         float damage = playerScript.MainCameraScript.PublicPlayerDTOs[playerScript.Opponent].AttackPower;
 
-                        float value = damage * (player == PlayerIndex.Player1 ? -1 : 1);
+                        float value = damage * (player == PlayerNum.N1 ? -1 : 1);
                         playerScript.MainCameraScript.OffsetBar(value);
 
                         if (10 <= playerScript.DamageHitCount)

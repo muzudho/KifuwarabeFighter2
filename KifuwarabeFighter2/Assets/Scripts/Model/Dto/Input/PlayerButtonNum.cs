@@ -3,26 +3,29 @@
     /// <summary>
     /// [プレイヤー，入力ボタン]の一意のインデックス。
     /// </summary>
-    public class InputIndex
+    public class PlayerButtonNum
     {
         #region [プレイヤー, 入力ボタン]で一意のキー
-        private string _mapKey;
+        private string _flatNum;
 
-        public string MapKey
+        /// <summary>
+        /// [プレイヤー, 入力ボタン]で一意のキー
+        /// </summary>
+        public string FlatNum
         {
-            get { return this._mapKey; }
+            get { return this._flatNum; }
         }
         #endregion
 
-        public InputIndex(PlayerIndex player, ButtonIndex button)
+        public PlayerButtonNum(PlayerNum player, ButtonNum button)
         {
-            this.PlayerIndex = player;
-            this.ButtonIndex = button;
-            this._mapKey = $"{(int)this.PlayerIndex},{(int)this.ButtonIndex}";
+            this.PlayerNum = player;
+            this.ButtonNum = button;
+            this._flatNum = $"{(int)this.PlayerNum},{(int)this.ButtonNum}";
         }
 
-        public PlayerIndex PlayerIndex { get; set; }
-        public ButtonIndex ButtonIndex { get; set; }
+        public PlayerNum PlayerNum { get; set; }
+        public ButtonNum ButtonNum { get; set; }
 
         /// <summary>
         /// 同じ内容あれば同じ値を返すように変更
@@ -30,7 +33,7 @@
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return this.PlayerIndex.GetHashCode() + this.ButtonIndex.GetHashCode();
+            return this.PlayerNum.GetHashCode() + this.ButtonNum.GetHashCode();
         }
 
         /// <summary>
@@ -40,13 +43,13 @@
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            var item = obj as InputIndex;
+            var item = obj as PlayerButtonNum;
             if (item == null)
             {
                 return false;
             }
 
-            return this.PlayerIndex == item.PlayerIndex && this.ButtonIndex == item.ButtonIndex;
+            return this.PlayerNum == item.PlayerNum && this.ButtonNum == item.ButtonNum;
         }
     }
 }

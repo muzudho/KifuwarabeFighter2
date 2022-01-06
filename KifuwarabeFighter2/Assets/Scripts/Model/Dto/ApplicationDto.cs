@@ -11,9 +11,9 @@
     {
         static ApplicationDto()
         {
-            PlayerInputStateDTOs = new Dictionary<PlayerIndex, InputStateDto>()
+            PlayerInputStateDTOs = new Dictionary<PlayerNum, InputStateDto>()
             {
-                { PlayerIndex.Player1, new InputStateDto(
+                { PlayerNum.N1, new InputStateDto(
                     InputIndexes.P1Horizontal,
                     InputIndexes.P1Vertical,
                     InputIndexes.P1Lp,
@@ -24,7 +24,7 @@
                     InputIndexes.P1Hk,
                     InputIndexes.P1Pause,
                     InputIndexes.P1CancelMenu) },
-                { PlayerIndex.Player2, new InputStateDto(
+                { PlayerNum.N2, new InputStateDto(
                     InputIndexes.P2Horizontal,
                     InputIndexes.P2Vertical,
                     InputIndexes.P2Lp,
@@ -41,14 +41,14 @@
         /// <summary>
         /// キャストするのがめんどくさいので、マップを使うぜ☆（＾～＾）
         /// </summary>
-        public static Dictionary<PlayerIndex, InputStateDto> PlayerInputStateDTOs { get; set; }
+        public static Dictionary<PlayerNum, InputStateDto> PlayerInputStateDTOs { get; set; }
 
         /// <summary>
         /// キーの押下状態を読み取ります。
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public static InputStateDto ReadInput(PlayerIndex player)
+        public static InputStateDto ReadInput(PlayerNum player)
         {
             // DTOを使い回します。
             InputStateDto state = PlayerInputStateDTOs[player];

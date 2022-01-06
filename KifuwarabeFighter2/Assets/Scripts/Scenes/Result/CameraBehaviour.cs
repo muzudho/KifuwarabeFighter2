@@ -26,8 +26,8 @@
             {
                 player_to_face = new Image[]
                 {
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameobjectIndex.Face]).GetComponent<Image>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameobjectIndex.Face]).GetComponent<Image>()
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N1][(int)GameobjectIndex.Face]).GetComponent<Image>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N2][(int)GameobjectIndex.Face]).GetComponent<Image>()
                 };
 
                 foreach (var player in PlayerIndexes.All)
@@ -40,16 +40,16 @@
                         case Result.Player1_Win:
                             switch (player)
                             {
-                                case PlayerIndex.Player1: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win]; break;
-                                case PlayerIndex.Player2: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Lose]; break;
+                                case PlayerNum.N1: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win]; break;
+                                case PlayerNum.N2: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Lose]; break;
                                 default: Debug.LogError("未定義のプレイヤー☆"); slice = ""; break;
                             }
                             break;
                         case Result.Player2_Win:
                             switch (player)
                             {
-                                case PlayerIndex.Player1: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Lose]; break;
-                                case PlayerIndex.Player2: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win]; break;
+                                case PlayerNum.N1: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Lose]; break;
+                                case PlayerNum.N2: slice = CommonScript.CharacterAndSlice_to_faceSprites[character, (int)ResultFaceSpriteIndex.Win]; break;
                                 default: Debug.LogError("未定義のプレイヤー☆"); slice = ""; break;
                             }
                             break;
@@ -67,10 +67,10 @@
             switch (CommonScript.Result)
             {
                 case Result.Player1_Win:
-                    text.text = ThisSceneDto.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerIndex.Player1]];
+                    text.text = ThisSceneDto.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerNum.N1]];
                     break;
                 case Result.Player2_Win:
-                    text.text = ThisSceneDto.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerIndex.Player2]];
+                    text.text = ThisSceneDto.WinMessageByCharacter[(int)CommonScript.UseCharacters[PlayerNum.N2]];
                     break;
                 //case Result.Double_KnockOut:
                 //    text.text = "ダブルＫＯ！\n";

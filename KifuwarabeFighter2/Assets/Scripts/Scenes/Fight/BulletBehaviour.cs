@@ -71,8 +71,8 @@
                         float damage;
                         switch (opponentKey)
                         {
-                            case PlayerIndex.Player1: damage = -50.0f; break; // １プレイヤーにダメージの場合マイナス☆
-                            case PlayerIndex.Player2: damage = 50.0f; break;
+                            case PlayerNum.N1: damage = -50.0f; break; // １プレイヤーにダメージの場合マイナス☆
+                            case PlayerNum.N2: damage = 50.0f; break;
                             default: Debug.LogError("Bullet / HP meter / opponent"); damage = 0.0f; break;
                         }
 

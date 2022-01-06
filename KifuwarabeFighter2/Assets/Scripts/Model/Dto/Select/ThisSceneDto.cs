@@ -7,10 +7,10 @@
     {
         static ThisSceneDto()
         {
-            ThisSceneDto.PlayerDTOs = new Dictionary<PlayerIndex, PlayerDto>()
+            ThisSceneDto.PlayerDTOs = new Dictionary<PlayerNum, PlayerDto>()
             {
-                {PlayerIndex.Player1, new PlayerDto(-124.0f)},
-                {PlayerIndex.Player2, new PlayerDto(-224.0f)},
+                {PlayerNum.N1, new PlayerDto(-124.0f)},
+                {PlayerNum.N2, new PlayerDto(-224.0f)},
             };
 
             // セレクト画面でのキャラクターの並び順。
@@ -33,7 +33,7 @@
 
         public static int TransitionTime;
 
-        public static Dictionary<PlayerIndex, PlayerDto> PlayerDTOs { get; set; }
+        public static Dictionary<PlayerNum, PlayerDto> PlayerDTOs { get; set; }
         public static CellDto[] Table { get; set; }
     }
 }

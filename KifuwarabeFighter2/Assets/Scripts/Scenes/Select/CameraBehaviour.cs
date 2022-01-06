@@ -10,7 +10,7 @@
 
     public class CameraBehaviour : MonoBehaviour
     {
-        Dictionary<PlayerIndex, Animator> animators;
+        Dictionary<PlayerNum, Animator> animators;
 
         /// <summary>
         /// computer character selecting minimum time; コンピューターがキャラクターセレクトしている最低時間。
@@ -23,10 +23,10 @@
 
         void Start()
         {
-            animators = new Dictionary<PlayerIndex, Animator>
+            animators = new Dictionary<PlayerNum, Animator>
             {
-                { PlayerIndex.Player1, GameObject.Find(GameObjectPaths.All[GameObjectIndexes.P1Player]).GetComponent<Animator>() },
-                { PlayerIndex.Player2, GameObject.Find(GameObjectPaths.All[GameObjectIndexes.P2Player]).GetComponent<Animator>() },
+                { PlayerNum.N1, GameObject.Find(GameObjectPaths.All[GameObjectIndexes.P1Player]).GetComponent<Animator>() },
+                { PlayerNum.N2, GameObject.Find(GameObjectPaths.All[GameObjectIndexes.P2Player]).GetComponent<Animator>() },
             };
 
             // このシーンのデータベースを用意するぜ☆（＾▽＾）
@@ -39,8 +39,8 @@
             ReadyingTime++;
 
             // 現在のアニメーター・ステートに紐づいたデータ
-            AcStateRecordable astateRecord0 = AControl.Instance.GetCurrentAcStateRecord(animators[PlayerIndex.Player1]);
-            AcStateRecordable astateRecord1 = AControl.Instance.GetCurrentAcStateRecord(animators[PlayerIndex.Player2]);
+            AcStateRecordable astateRecord0 = AControl.Instance.GetCurrentAcStateRecord(animators[PlayerNum.N1]);
+            AcStateRecordable astateRecord1 = AControl.Instance.GetCurrentAcStateRecord(animators[PlayerNum.N2]);
             if (
                 AControl.Instance.StateHash_to_record[Animator.StringToHash(Select_Cursor_AbstractAControl.BASELAYER_READY)].Name == astateRecord0.Name
                 &&
@@ -48,8 +48,8 @@
                 )
             {
                 // １プレイヤー、２プレイヤー　ともに Ready ステートなら。
-                animators[PlayerIndex.Player1].SetTrigger(ThisSceneDto.TriggerTimeOver);
-                animators[PlayerIndex.Player2].SetTrigger(ThisSceneDto.TriggerTimeOver);
+                animators[PlayerNum.N1].SetTrigger(ThisSceneDto.TriggerTimeOver);
+                animators[PlayerNum.N2].SetTrigger(ThisSceneDto.TriggerTimeOver);
                 ThisSceneDto.TransitionTime = 1;
             }
 

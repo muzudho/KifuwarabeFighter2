@@ -2,26 +2,26 @@
 {
     public static class InputIndexes
     {
-        public static InputIndex P1Horizontal = new InputIndex(PlayerIndex.Player1, ButtonIndex.Horizontal);
-        public static InputIndex P1Vertical = new InputIndex(PlayerIndex.Player1, ButtonIndex.Vertical);
-        public static InputIndex P1Lp = new InputIndex(PlayerIndex.Player1, ButtonIndex.LightPunch);
-        public static InputIndex P1Mp = new InputIndex(PlayerIndex.Player1, ButtonIndex.MediumPunch);
-        public static InputIndex P1Hp = new InputIndex(PlayerIndex.Player1, ButtonIndex.HardPunch);
-        public static InputIndex P1Lk = new InputIndex(PlayerIndex.Player1, ButtonIndex.LightKick);
-        public static InputIndex P1Mk = new InputIndex(PlayerIndex.Player1, ButtonIndex.MediumKick);
-        public static InputIndex P1Hk = new InputIndex(PlayerIndex.Player1, ButtonIndex.HardKick);
-        public static InputIndex P1Pause = new InputIndex(PlayerIndex.Player1, ButtonIndex.Pause);
-        public static InputIndex P1CancelMenu = new InputIndex(PlayerIndex.Player1, ButtonIndex.CancelMenu); // プレイヤー１のみキャンセル可能。
+        public static PlayerButtonNum P1Horizontal = new PlayerButtonNum(PlayerNum.N1, ButtonNum.Horizontal);
+        public static PlayerButtonNum P1Vertical = new PlayerButtonNum(PlayerNum.N1, ButtonNum.Vertical);
+        public static PlayerButtonNum P1Lp = new PlayerButtonNum(PlayerNum.N1, ButtonNum.LightPunch);
+        public static PlayerButtonNum P1Mp = new PlayerButtonNum(PlayerNum.N1, ButtonNum.MediumPunch);
+        public static PlayerButtonNum P1Hp = new PlayerButtonNum(PlayerNum.N1, ButtonNum.HardPunch);
+        public static PlayerButtonNum P1Lk = new PlayerButtonNum(PlayerNum.N1, ButtonNum.LightKick);
+        public static PlayerButtonNum P1Mk = new PlayerButtonNum(PlayerNum.N1, ButtonNum.MediumKick);
+        public static PlayerButtonNum P1Hk = new PlayerButtonNum(PlayerNum.N1, ButtonNum.HardKick);
+        public static PlayerButtonNum P1Pause = new PlayerButtonNum(PlayerNum.N1, ButtonNum.Pause);
+        public static PlayerButtonNum P1CancelMenu = new PlayerButtonNum(PlayerNum.N1, ButtonNum.CancelMenu); // プレイヤー１のみキャンセル可能。
 
-        public static InputIndex P2Horizontal = new InputIndex(PlayerIndex.Player2, ButtonIndex.Horizontal);
-        public static InputIndex P2Vertical = new InputIndex(PlayerIndex.Player2, ButtonIndex.Vertical);
-        public static InputIndex P2Lp = new InputIndex(PlayerIndex.Player2, ButtonIndex.LightPunch);
-        public static InputIndex P2Mp = new InputIndex(PlayerIndex.Player2, ButtonIndex.MediumPunch);
-        public static InputIndex P2Hp = new InputIndex(PlayerIndex.Player2, ButtonIndex.HardPunch);
-        public static InputIndex P2Lk = new InputIndex(PlayerIndex.Player2, ButtonIndex.LightKick);
-        public static InputIndex P2Mk = new InputIndex(PlayerIndex.Player2, ButtonIndex.MediumKick);
-        public static InputIndex P2Hk = new InputIndex(PlayerIndex.Player2, ButtonIndex.HardKick);
-        public static InputIndex P2Pause = new InputIndex(PlayerIndex.Player2, ButtonIndex.Pause);
-        public static InputIndex P2CancelMenu = new InputIndex(PlayerIndex.Player2, ButtonIndex.CancelMenu); // プレイヤー２にこのボタンはありません。
+        public static PlayerButtonNum P2Horizontal = new PlayerButtonNum(PlayerNum.N2, ButtonNum.Horizontal);
+        public static PlayerButtonNum P2Vertical = new PlayerButtonNum(PlayerNum.N2, ButtonNum.Vertical);
+        public static PlayerButtonNum P2Lp = new PlayerButtonNum(PlayerNum.N2, ButtonNum.LightPunch);
+        public static PlayerButtonNum P2Mp = new PlayerButtonNum(PlayerNum.N2, ButtonNum.MediumPunch);
+        public static PlayerButtonNum P2Hp = new PlayerButtonNum(PlayerNum.N2, ButtonNum.HardPunch);
+        public static PlayerButtonNum P2Lk = new PlayerButtonNum(PlayerNum.N2, ButtonNum.LightKick);
+        public static PlayerButtonNum P2Mk = new PlayerButtonNum(PlayerNum.N2, ButtonNum.MediumKick);
+        public static PlayerButtonNum P2Hk = new PlayerButtonNum(PlayerNum.N2, ButtonNum.HardKick);
+        public static PlayerButtonNum P2Pause = new PlayerButtonNum(PlayerNum.N2, ButtonNum.Pause);
+        public static PlayerButtonNum P2CancelMenu = new PlayerButtonNum(PlayerNum.N2, ButtonNum.CancelMenu); // プレイヤー２にこのボタンはありません。
     }
 }

@@ -94,7 +94,7 @@
             }
             else
             {
-                input.LeverX = Input.GetAxisRaw(InputNames.Dictionary[new InputIndex(player, ButtonIndex.Horizontal)]);
+                input.LeverX = Input.GetAxisRaw(InputNames.Dictionary[new PlayerButtonNum(player, ButtonNum.Horizontal)]);
             }
             #endregion
 

@@ -1,6 +1,9 @@
 ﻿namespace Assets.Scripts.Model.Dto.Input
 {
-    public enum ButtonIndex
+    /// <summary>
+    /// ボタンの通し番号
+    /// </summary>
+    public enum ButtonNum
     {
         Horizontal,
         Vertical,

@@ -9,11 +9,11 @@
     {
         private string _mapKey;
 
-        public GameObjectIndex(PlayerIndex player, GameObjectTypeIndex objectType)
+        public GameObjectIndex(PlayerNum player, GameObjectTypeIndex objectType)
         {
-            this.PlayerIndex = player;
+            this.PlayerSerialId = player;
             this.GameObjectTypeIndex = objectType;
-            this._mapKey = $"{(int)this.PlayerIndex},{(int)this.GameObjectTypeIndex}";
+            this._mapKey = $"{(int)this.PlayerSerialId},{(int)this.GameObjectTypeIndex}";
         }
 
         public string MapKey
@@ -21,7 +21,7 @@
             get { return this._mapKey; }
         }
 
-        public PlayerIndex PlayerIndex { get; set; }
+        public PlayerNum PlayerSerialId { get; set; }
         public GameObjectTypeIndex GameObjectTypeIndex { get; set; }
 
         /// <summary>
@@ -30,7 +30,7 @@
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return this.PlayerIndex.GetHashCode() + this.GameObjectTypeIndex.GetHashCode();
+            return this.PlayerSerialId.GetHashCode() + this.GameObjectTypeIndex.GetHashCode();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@
                 return false;
             }
 
-            return this.PlayerIndex == item.PlayerIndex && this.GameObjectTypeIndex == item.GameObjectTypeIndex;
+            return this.PlayerSerialId == item.PlayerSerialId && this.GameObjectTypeIndex == item.GameObjectTypeIndex;
         }
     }
 }

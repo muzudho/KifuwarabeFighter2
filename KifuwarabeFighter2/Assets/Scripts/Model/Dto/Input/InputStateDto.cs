@@ -6,16 +6,16 @@
     public class InputStateDto
     {
         public InputStateDto(
-            InputIndex horizontalKey,
-            InputIndex verticalKey,
-            InputIndex lpKey,
-            InputIndex mpKey,
-            InputIndex hpKey,
-            InputIndex lkKey,
-            InputIndex mkKey,
-            InputIndex hkKey,
-            InputIndex pauseKey,
-            InputIndex cancelMenuKey)
+            PlayerButtonNum horizontalKey,
+            PlayerButtonNum verticalKey,
+            PlayerButtonNum lpKey,
+            PlayerButtonNum mpKey,
+            PlayerButtonNum hpKey,
+            PlayerButtonNum lkKey,
+            PlayerButtonNum mkKey,
+            PlayerButtonNum hkKey,
+            PlayerButtonNum pauseKey,
+            PlayerButtonNum cancelMenuKey)
         {
             this.HorizontalKey = horizontalKey;
             this.HorizontalName = InputNames.Dictionary[this.HorizontalKey];
@@ -57,34 +57,34 @@
             this.CancelMenu = new InputButtonStateDto();
         }
 
-        public InputIndex HorizontalKey { get; private set; }
+        public PlayerButtonNum HorizontalKey { get; private set; }
         public string HorizontalName { get; private set; }
 
-        public InputIndex VerticalKey { get; private set; }
+        public PlayerButtonNum VerticalKey { get; private set; }
         public string VerticalName { get; private set; }
 
-        public InputIndex LpKey { get; private set; }
+        public PlayerButtonNum LpKey { get; private set; }
         public string LpName { get; private set; }
 
-        public InputIndex MpKey { get; private set; }
+        public PlayerButtonNum MpKey { get; private set; }
         public string MpName { get; private set; }
 
-        public InputIndex HpKey { get; private set; }
+        public PlayerButtonNum HpKey { get; private set; }
         public string HpName { get; private set; }
 
-        public InputIndex LkKey { get; private set; }
+        public PlayerButtonNum LkKey { get; private set; }
         public string LkName { get; private set; }
 
-        public InputIndex MkKey { get; private set; }
+        public PlayerButtonNum MkKey { get; private set; }
         public string MkName { get; private set; }
 
-        public InputIndex HkKey { get; private set; }
+        public PlayerButtonNum HkKey { get; private set; }
         public string HkName { get; private set; }
 
-        public InputIndex PauseKey { get; private set; }
+        public PlayerButtonNum PauseKey { get; private set; }
         public string PauseName { get; private set; }
 
-        public InputIndex CancelMenuKey { get; private set; }
+        public PlayerButtonNum CancelMenuKey { get; private set; }
         public string CancelMenuName { get; private set; }
 
         /// <summary>

@@ -15,8 +15,8 @@
         /// <summary>
         /// Player dto(Data transfer object).
         /// </summary>
-        Dictionary<PlayerIndex, PlayerDto> PlayerDTOs { get; set; }
-        public Dictionary<PlayerIndex, PublicPlayerDto> PublicPlayerDTOs { get; set; }
+        Dictionary<PlayerNum, PlayerDto> PlayerDTOs { get; set; }
+        public Dictionary<PlayerNum, PublicPlayerDto> PublicPlayerDTOs { get; set; }
 
         #region UI 表示物
         /// <summary>
@@ -51,42 +51,42 @@
         {
             #region UI 表示物
             fight0 = GameObject.Find(ThisSceneDto.GameObjFight0);
-            fight0.GetComponent<Text>().text = ThisSceneDto.CharacterToFightMessage[(int)CommonScript.UseCharacters[PlayerIndex.Player1]];
+            fight0.GetComponent<Text>().text = ThisSceneDto.CharacterToFightMessage[(int)CommonScript.UseCharacters[PlayerNum.N1]];
             fight1 = GameObject.Find(ThisSceneDto.GameObjFight1);
             resign0 = GameObject.Find(ThisSceneDto.GameObjResign0);
             resign0.SetActive(false);
 
-            this.PlayerDTOs = new Dictionary<PlayerIndex, PlayerDto>()
+            this.PlayerDTOs = new Dictionary<PlayerNum, PlayerDto>()
             {
-                {PlayerIndex.Player1, new PlayerDto(
+                {PlayerNum.N1, new PlayerDto(
                     // bar1のRectTransformコンポーネントをキャッシュ
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Bar]).GetComponent<RectTransform>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N1][(int)GameObjectTypeIndex.Bar]).GetComponent<RectTransform>(),
                     // 名前
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Name]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Value]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Player]),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N1][(int)GameObjectTypeIndex.Name]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N1][(int)GameObjectTypeIndex.Value]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N1][(int)GameObjectTypeIndex.Player]),
                     new GameObject[]{ GameObject.Find("ResultP0_0"), GameObject.Find("ResultP0_1") },
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Turn]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Turn]).GetComponent<Outline>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Time]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player1][(int)GameObjectTypeIndex.Time]).GetComponent<Outline>()
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N1][(int)GameObjectTypeIndex.Turn]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N1][(int)GameObjectTypeIndex.Turn]).GetComponent<Outline>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N1][(int)GameObjectTypeIndex.Time]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N1][(int)GameObjectTypeIndex.Time]).GetComponent<Outline>()
                     ) },
-                {PlayerIndex.Player2, new PlayerDto(
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Bar]).GetComponent<RectTransform>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Name]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Value]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Player]),
+                {PlayerNum.N2, new PlayerDto(
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N2][(int)GameObjectTypeIndex.Bar]).GetComponent<RectTransform>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N2][(int)GameObjectTypeIndex.Name]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N2][(int)GameObjectTypeIndex.Value]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N2][(int)GameObjectTypeIndex.Player]),
                     new GameObject[]{ GameObject.Find("ResultP1_0"), GameObject.Find("ResultP1_1") },
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Turn]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Turn]).GetComponent<Outline>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Time]).GetComponent<Text>(),
-                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerIndex.Player2][(int)GameObjectTypeIndex.Time]).GetComponent<Outline>()
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N2][(int)GameObjectTypeIndex.Turn]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N2][(int)GameObjectTypeIndex.Turn]).GetComponent<Outline>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N2][(int)GameObjectTypeIndex.Time]).GetComponent<Text>(),
+                    GameObject.Find(ThisSceneDto.GameObjectPaths[PlayerNum.N2][(int)GameObjectTypeIndex.Time]).GetComponent<Outline>()
                     ) },
             };
-            this.PublicPlayerDTOs = new Dictionary<PlayerIndex, PublicPlayerDto>()
+            this.PublicPlayerDTOs = new Dictionary<PlayerNum, PublicPlayerDto>()
             {
-                {PlayerIndex.Player1, new PublicPlayerDto() },
-                {PlayerIndex.Player2, new PublicPlayerDto() },
+                {PlayerNum.N1, new PublicPlayerDto() },
+                {PlayerNum.N2, new PublicPlayerDto() },
             };
 
             #endregion
@@ -104,14 +104,14 @@
 
             // 初期化。
             InitTime();
-            this.PublicPlayerDTOs[PlayerIndex.Player1].AttackPower = 0.0f;
-            this.PublicPlayerDTOs[PlayerIndex.Player2].AttackPower = 0.0f;
+            this.PublicPlayerDTOs[PlayerNum.N1].AttackPower = 0.0f;
+            this.PublicPlayerDTOs[PlayerNum.N2].AttackPower = 0.0f;
 
             //StateExTable.Instance.InsertAllStates();
 
             #region リセット（配列やスプライト等の初期設定が終わってから）
             ReadyingTime = 0;
-            SetTeban(PlayerIndex.Player1);
+            SetTeban(PlayerNum.N1);
 
             // コンピューターかどうか。
             foreach (var player in PlayerIndexes.All)
@@ -140,15 +140,15 @@
                 {
                     this.PlayerDTOs[loser].PlayerCharScript.IsResign = false;
 
-                    PlayerIndex winner = CommonScript.ReverseTeban(loser);
+                    PlayerNum winner = CommonScript.ReverseTeban(loser);
                     this.PlayerDTOs[winner].WinCount++;
 
-                    if (PlayerIndex.Player1 == loser)
+                    if (PlayerNum.N1 == loser)
                     {
                         // １プレイヤーの投了
                         CommonScript.Result = Result.Player2_Win;
                     }
-                    else if (PlayerIndex.Player2 == loser)
+                    else if (PlayerNum.N2 == loser)
                     {
                         // ２プレイヤーの投了
                         CommonScript.Result = Result.Player1_Win;
@@ -182,19 +182,19 @@
 
                     //if (round < 2)
                     {
-                        this.PlayerDTOs[PlayerIndex.Player1].RoundsResult[round].SetActive(true);
-                        this.PlayerDTOs[PlayerIndex.Player2].RoundsResult[round].SetActive(true);
+                        this.PlayerDTOs[PlayerNum.N1].RoundsResult[round].SetActive(true);
+                        this.PlayerDTOs[PlayerNum.N2].RoundsResult[round].SetActive(true);
 
                         Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/ResultMark0");
-                        if (PlayerIndex.Player1 == winner)
+                        if (PlayerNum.N1 == winner)
                         {
-                            this.PlayerDTOs[PlayerIndex.Player1].RoundsResult[round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_0"));
-                            this.PlayerDTOs[PlayerIndex.Player2].RoundsResult[round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_1"));
+                            this.PlayerDTOs[PlayerNum.N1].RoundsResult[round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_0"));
+                            this.PlayerDTOs[PlayerNum.N2].RoundsResult[round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_1"));
                         }
-                        else if (PlayerIndex.Player2 == winner)
+                        else if (PlayerNum.N2 == winner)
                         {
-                            this.PlayerDTOs[PlayerIndex.Player1].RoundsResult[round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_1"));
-                            this.PlayerDTOs[PlayerIndex.Player2].RoundsResult[round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_0"));
+                            this.PlayerDTOs[PlayerNum.N1].RoundsResult[round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_1"));
+                            this.PlayerDTOs[PlayerNum.N2].RoundsResult[round].GetComponent<Image>().sprite = System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals("ResultMark0_0"));
                         }
 
                         InitTime();
@@ -202,8 +202,8 @@
                         isRoundFinished = false;
                         IsResignCalled = false;
                         resign0.SetActive(false);
-                        this.PlayerDTOs[PlayerIndex.Player1].PlayerChar.transform.position = new Vector3(2.52f, 0.0f);
-                        this.PlayerDTOs[PlayerIndex.Player2].PlayerChar.transform.position = new Vector3(-2.52f, 0.0f);
+                        this.PlayerDTOs[PlayerNum.N1].PlayerChar.transform.position = new Vector3(2.52f, 0.0f);
+                        this.PlayerDTOs[PlayerNum.N2].PlayerChar.transform.position = new Vector3(-2.52f, 0.0f);
                         ReadyingTime = 0;
                         fight0.SetActive(true);
                         fight1.SetActive(true);
@@ -230,21 +230,21 @@
                 //    // ダブル・ノックアウト
                 //}
                 //else
-                PlayerIndex loser = PlayerIndex.None;
-                if (this.PlayerDTOs[PlayerIndex.Player2].BarTransform.sizeDelta.x <= this.PlayerDTOs[PlayerIndex.Player1].BarTransform.sizeDelta.x
-                    || this.PlayerDTOs[PlayerIndex.Player2].TimeCount < 1.0f)
+                PlayerNum loser = PlayerNum.None;
+                if (this.PlayerDTOs[PlayerNum.N2].BarTransform.sizeDelta.x <= this.PlayerDTOs[PlayerNum.N1].BarTransform.sizeDelta.x
+                    || this.PlayerDTOs[PlayerNum.N2].TimeCount < 1.0f)
                 {
                     // １プレイヤーの勝ち
-                    loser = PlayerIndex.Player2;
+                    loser = PlayerNum.N2;
                 }
-                else if (this.PlayerDTOs[PlayerIndex.Player1].BarTransform.sizeDelta.x <= 0
-                    || this.PlayerDTOs[PlayerIndex.Player1].TimeCount < 1.0f)
+                else if (this.PlayerDTOs[PlayerNum.N1].BarTransform.sizeDelta.x <= 0
+                    || this.PlayerDTOs[PlayerNum.N1].TimeCount < 1.0f)
                 {
                     // ２プレイヤーの勝ち
-                    loser = PlayerIndex.Player1;
+                    loser = PlayerNum.N1;
                 }
 
-                if (PlayerIndex.None != loser)
+                if (PlayerNum.None != loser)
                 {
                     isRoundFinished = true;
                     this.PlayerDTOs[loser].PlayerCharScript.Pull_ResignByLose();
@@ -257,10 +257,10 @@
         /// 手番を変えるぜ☆
         /// </summary>
         /// <param name="teban"></param>
-        public void SetTeban(PlayerIndex teban)
+        public void SetTeban(PlayerNum teban)
         {
             CommonScript.Teban = teban;
-            PlayerIndex opponent = CommonScript.ReverseTeban(teban);
+            PlayerNum opponent = CommonScript.ReverseTeban(teban);
             //Debug.Log("Teban = " + teban.ToString() + " Opponent = " + opponent.ToString());
 
             // 先手の色
@@ -299,28 +299,28 @@
         /// </summary>
         public void InitTime()
         {
-            this.PlayerDTOs[PlayerIndex.Player1].TimeCount = 60.0f;
-            this.PlayerDTOs[PlayerIndex.Player2].TimeCount = 60.0f;
+            this.PlayerDTOs[PlayerNum.N1].TimeCount = 60.0f;
+            this.PlayerDTOs[PlayerNum.N2].TimeCount = 60.0f;
         }
 
         public void InitBar()
         {
-            this.PlayerDTOs[PlayerIndex.Player1].BarTransform.sizeDelta = new Vector2(
+            this.PlayerDTOs[PlayerNum.N1].BarTransform.sizeDelta = new Vector2(
                 1791.7f,
-                this.PlayerDTOs[PlayerIndex.Player1].BarTransform.sizeDelta.y
+                this.PlayerDTOs[PlayerNum.N1].BarTransform.sizeDelta.y
                 );
-            this.PlayerDTOs[PlayerIndex.Player1].Value.text = ((int)0).ToString();
-            this.PlayerDTOs[PlayerIndex.Player2].Value.text = ((int)0).ToString();
+            this.PlayerDTOs[PlayerNum.N1].Value.text = ((int)0).ToString();
+            this.PlayerDTOs[PlayerNum.N2].Value.text = ((int)0).ToString();
         }
         public void OffsetBar(float value)
         {
-            this.PlayerDTOs[PlayerIndex.Player1].BarTransform.sizeDelta = new Vector2(
-                this.PlayerDTOs[PlayerIndex.Player1].BarTransform.sizeDelta.x + value,
-                this.PlayerDTOs[PlayerIndex.Player1].BarTransform.sizeDelta.y
+            this.PlayerDTOs[PlayerNum.N1].BarTransform.sizeDelta = new Vector2(
+                this.PlayerDTOs[PlayerNum.N1].BarTransform.sizeDelta.x + value,
+                this.PlayerDTOs[PlayerNum.N1].BarTransform.sizeDelta.y
                 );
 
             // 見えていないところも含めた、bar1 の割合 -0.5～0.5。（真ん中を０とする）
-            float rate = this.PlayerDTOs[PlayerIndex.Player1].BarTransform.sizeDelta.x / this.PlayerDTOs[PlayerIndex.Player2].BarTransform.sizeDelta.x - 0.5f;
+            float rate = this.PlayerDTOs[PlayerNum.N1].BarTransform.sizeDelta.x / this.PlayerDTOs[PlayerNum.N2].BarTransform.sizeDelta.x - 0.5f;
             // 正負
             float sign = 0 <= rate ? 1.0f : -1.0f;
             // bar1 の割合 0～1。（真ん中を０とする絶対値）
@@ -330,20 +330,20 @@
             {
                 score = 9999.0f;
             }
-            this.PlayerDTOs[PlayerIndex.Player1].Value.text = ((int)score).ToString();
-            this.PlayerDTOs[PlayerIndex.Player2].Value.text = ((int)score).ToString();
+            this.PlayerDTOs[PlayerNum.N1].Value.text = ((int)score).ToString();
+            this.PlayerDTOs[PlayerNum.N2].Value.text = ((int)score).ToString();
             // 見えているところの半分で　357px　ぐらい。これが 2000点。
             // 全体を 20000点にしたいので、全体は 3570px か。
 
             if (0 <= sign)
             {
-                this.PlayerDTOs[PlayerIndex.Player1].Value.color = Color.white;
-                this.PlayerDTOs[PlayerIndex.Player2].Value.color = Color.red;
+                this.PlayerDTOs[PlayerNum.N1].Value.color = Color.white;
+                this.PlayerDTOs[PlayerNum.N2].Value.color = Color.red;
             }
             else
             {
-                this.PlayerDTOs[PlayerIndex.Player1].Value.color = Color.red;
-                this.PlayerDTOs[PlayerIndex.Player2].Value.color = Color.white;
+                this.PlayerDTOs[PlayerNum.N1].Value.color = Color.red;
+                this.PlayerDTOs[PlayerNum.N2].Value.color = Color.white;
             }
         }
         /// <summary>

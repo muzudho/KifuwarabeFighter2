@@ -134,7 +134,7 @@ namespace DojinCircleGrayscale.Hitbox2DLorikeet
         /// Upadate( ) の最後に呼び出してください。
         /// </summary>
         /// <param name="player"></param>
-        public void Update(Animator animator, AControllable aControl, PlayerIndex player, Transform transform, SpriteRenderer[] hitboxsSpriteRenderer, BoxCollider2D weakboxCollider2D)
+        public void Update(Animator animator, AControllable aControl, PlayerNum player, Transform transform, SpriteRenderer[] hitboxsSpriteRenderer, BoxCollider2D weakboxCollider2D)
         {
             if (animator.GetCurrentAnimatorClipInfo(0).Length < 1)
             {
@@ -189,7 +189,7 @@ namespace DojinCircleGrayscale.Hitbox2DLorikeet
                 cliptypeExRecord,
                 currentMotionFrame
                 );
-            //if((int)PlayerIndex.Player1==iPlayer && MotionDatabaseScript.AclipTypeIndex.Num != aclipType)
+            //if((int)PlayerSerialId.Player1==iPlayer && MotionDatabaseScript.AclipTypeIndex.Num != aclipType)
             //{
             //    //ebug.Log( " iPlayer = " + iPlayer + " character = " + character + " aclipType = "+ aclipType + " currentMotionFrame = " + currentMotionFrame + " / serialImage = " + serialImage + " slice = " + slice);
             //    // + " motion = " + motion
@@ -219,7 +219,7 @@ namespace DojinCircleGrayscale.Hitbox2DLorikeet
                         weakboxCollider2D.transform.localScale = new Vector3(scaleX, scaleY);
                     }
 
-                    //if ((int)PlayerIndex.Player1 == iPlayer)
+                    //if ((int)PlayerSerialId.Player1 == iPlayer)
                     //{
                     //ebug.Log("stateSpeed = " + stateSpeed + " clip.frameRate = " + clip.frameRate + " normalizedTime = " + normalizedTime + " currentMotionFrame = " + currentMotionFrame + " 当たり判定くん.position.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.x + " 当たり判定くん.position.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.position.y + " scale.x = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.x + " scale.y = " + player_to_charAttackImgSpriteRenderer[iPlayer].transform.localScale.y);
                     //    //" clip.length = " + clip.length +

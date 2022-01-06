@@ -12,10 +12,10 @@
     {
         public const string GameObjText = "Canvas/Text";
 
-        public static Dictionary<PlayerIndex, string[]> GameObjectPaths = new Dictionary<PlayerIndex, string[]>
+        public static Dictionary<PlayerNum, string[]> GameObjectPaths = new Dictionary<PlayerNum, string[]>
         {
-            {PlayerIndex.Player1, new string[]{ "Canvas/Face0", } },
-            {PlayerIndex.Player2, new string[]{ "Canvas/Face1", } },
+            {PlayerNum.N1, new string[]{ "Canvas/Face0", } },
+            {PlayerNum.N2, new string[]{ "Canvas/Face1", } },
         };
 
         /// <summary>
