@@ -10,7 +10,7 @@
     /// PNG画像の幅の格納場所 : 16バイト～19バイト(長さ4バイト)
     /// PNG画像の高さの格納場所 : 20バイト～23バイト(長さ4バイト)
     /// </summary>
-    public class PngReaderDao
+    public static class PngReaderHelper
     {
         public static Texture2D FromPngFile(string path)
         {

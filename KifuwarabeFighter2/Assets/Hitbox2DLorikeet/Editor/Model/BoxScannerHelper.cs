@@ -5,32 +5,37 @@
     using Assets.Hitbox2DLorikeet.Editor.Maker.Helper;
     using UnityEngine;
 
-    public abstract class BoxScannerDao
+    /// <summary>
+    /// 弱点箱（Weakbox） 青色
+    /// 強い箱（Strongbox） 黄色
+    /// 当たり判定箱（Hitbox）赤色
+    /// </summary>
+    public static class BoxScannerHelper
     {
         /// <summary>
         /// 青箱　太さ２
         /// </summary>
-        public static ColorBoxDto m_blueBox = ColorBoxDto.FromRGB_0to255("WeakboxData", 0, 0, 255, 2);
+        public static ColorBoxStatus m_blueBox = ColorBoxStatus.FromRGB_0to255("WeakboxData", 0, 0, 255, 2);
         /// <summary>
         /// 黄箱　太さ４
         /// </summary>
-        public static ColorBoxDto m_yellowBox = ColorBoxDto.FromRGB_0to255("StrongboxData", 255, 255, 0, 4);
+        public static ColorBoxStatus m_yellowBox = ColorBoxStatus.FromRGB_0to255("StrongboxData", 255, 255, 0, 4);
         /// <summary>
         /// 赤箱　太さ６
         /// </summary>
-        public static ColorBoxDto m_redBox = ColorBoxDto.FromRGB_0to255("HitboxData", 255,0,0,6);
+        public static ColorBoxStatus m_redBox = ColorBoxStatus.FromRGB_0to255("HitboxData", 255,0,0,6);
         /// <summary>
         /// １ピクセルずらしたい。
         /// 図解： http://qiita.com/muzudho1/items/7de6e450e1762b993a63
         /// </summary>
         public const int DELETE_SPACE = 1;
 
-        public static void Execute_1Image(ColorBoxDto boxSettings, List<List<SliceRectangleDto>> imageList, string filepath, StringBuilder info_message)
+        public static void Execute_1Image(ColorBoxStatus boxSettings, List<List<SliceRectangleStatus>> imageList, string filepath, StringBuilder info_message)
         {
-            List<SliceRectangleDto> sliceList = new List<SliceRectangleDto>();
+            List<SliceRectangleStatus> sliceList = new List<SliceRectangleStatus>();
 
             // 座標系は左下隅スタート
-            Texture2D texture2D = PngReaderDao.FromPngFile(filepath);
+            Texture2D texture2D = PngReaderHelper.FromPngFile(filepath);
             //info_message.AppendLine("DataGenerator.SLICE_WIDTH = " + DataGenerator.SLICE_WIDTH + " DataGenerator.SLICE_HEIGHT = " + DataGenerator.SLICE_HEIGHT);
             //info_message.AppendLine("texture2D.width = " + texture2D.width + " texture2D.height = " + texture2D.height);
             //info_message.AppendLine("overX = " + (texture2D.width - DataGenerator.SLICE_WIDTH + 1) + " overY = " + (DataGenerator.SLICE_HEIGHT - 1));
@@ -71,7 +76,7 @@
         /// <param name="texture2D"></param>
         /// <param name="file"></param>
         /// <returns></returns>
-        public static SliceRectangleDto Execute_1Slice(ColorBoxDto boxSettings, List<SliceRectangleDto> rectList, int thisX_slice, int thisY_slice, int sliceNumber, Texture2D texture2D, string file, StringBuilder info_message)
+        public static SliceRectangleStatus Execute_1Slice(ColorBoxStatus boxSettings, List<SliceRectangleStatus> rectList, int thisX_slice, int thisY_slice, int sliceNumber, Texture2D texture2D, string file, StringBuilder info_message)
         {
 
             int nextX_slice = thisX_slice + DataClassFile.SLICE_WIDTH;
@@ -135,7 +140,7 @@
                                 }
                             }
 
-                            return new SliceRectangleDto(thisX_slice, thisY_slice, DataClassFile.SLICE_WIDTH, DataClassFile.SLICE_HEIGHT, tickX1, tickY1, tickX2_onGrid - tickX1, tickY1 - tickY2_onGrid);
+                            return new SliceRectangleStatus(thisX_slice, thisY_slice, DataClassFile.SLICE_WIDTH, DataClassFile.SLICE_HEIGHT, tickX1, tickY1, tickX2_onGrid - tickX1, tickY1 - tickY2_onGrid);
                         }
                     }
                     else
@@ -148,12 +153,12 @@
                 }
             }//画像スキャン終わり
 
-            return new SliceRectangleDto();
+            return new SliceRectangleStatus();
         }
 
-        private static bool ContainsLocation(int x, int y, List<SliceRectangleDto> rectList)
+        private static bool ContainsLocation(int x, int y, List<SliceRectangleStatus> rectList)
         {
-            foreach (SliceRectangleDto rect in rectList)
+            foreach (SliceRectangleStatus rect in rectList)
             {
                 if (rect.Collider.Contains(new Vector2(x, y)))
                 {
@@ -167,7 +172,7 @@
         /// 図解： http://qiita.com/muzudho1/items/7de6e450e1762b993a63
         /// </summary>
         /// <returns></returns>
-        public static bool IsStarting_ByWinningStairs(int x, int y, ColorBoxDto boxSettings, Texture2D texture2D, StringBuilder info_message)
+        public static bool IsStarting_ByWinningStairs(int x, int y, ColorBoxStatus boxSettings, Texture2D texture2D, StringBuilder info_message)
         {
             Color color = texture2D.GetPixel(
                 x + boxSettings.GetWinnerStairsDistance()
@@ -184,7 +189,7 @@
         /// 図解： http://qiita.com/muzudho1/items/7de6e450e1762b993a63
         /// </summary>
         /// <returns></returns>
-        public static bool HasColor_Horizontal_ByWinningStairs(int x, int y, ColorBoxDto boxSettings, Texture2D texture2D)
+        public static bool HasColor_Horizontal_ByWinningStairs(int x, int y, ColorBoxStatus boxSettings, Texture2D texture2D)
         {
             // 画像の外か判定
             if (texture2D.width <= x || y < 0)
@@ -201,7 +206,7 @@
         /// 図解： http://qiita.com/muzudho1/items/7de6e450e1762b993a63
         /// </summary>
         /// <returns></returns>
-        public static bool HasColor_Vertical_WinningStairs(int x, int y, ColorBoxDto boxSettings, Texture2D texture2D)
+        public static bool HasColor_Vertical_WinningStairs(int x, int y, ColorBoxStatus boxSettings, Texture2D texture2D)
         {
             // 画像の外か判定
             if (texture2D.width <= x || y < 0)

@@ -76,31 +76,31 @@
     }
 ");
 
-            ColorBoxDto[] boxesSettings = new ColorBoxDto[]
+            ColorBoxStatus[] boxesSettings = new ColorBoxStatus[]
             {
                 //Utility_BoxScanner.m_blueBox,
                 //Utility_BoxScanner.m_yellowBox,
                 //Utility_BoxScanner.m_redBox,
-                BoxScannerDao.m_redBox,
-                BoxScannerDao.m_blueBox,
-                BoxScannerDao.m_yellowBox,
+                BoxScannerHelper.m_redBox,
+                BoxScannerHelper.m_blueBox,
+                BoxScannerHelper.m_yellowBox,
             };
 
-            foreach(ColorBoxDto boxSettings in boxesSettings)
+            foreach(ColorBoxStatus boxSettings in boxesSettings)
             {
-                List<List<SliceRectangleDto>> image_to_slice_to_rectangleList = new List<List<SliceRectangleDto>>();
+                List<List<SliceRectangleStatus>> image_to_slice_to_rectangleList = new List<List<SliceRectangleStatus>>();
                 foreach (string filepath in filepaths)
                 {
                     info_message.AppendLine("画像読込 : " + filepath);
-                    BoxScannerDao.Execute_1Image(boxSettings, image_to_slice_to_rectangleList, filepath, info_message);
+                    BoxScannerHelper.Execute_1Image(boxSettings, image_to_slice_to_rectangleList, filepath, info_message);
                     info_message.AppendLine("list.Count : " + image_to_slice_to_rectangleList.Count);
                 }
 
                 {
                     StringBuilder sb_dammy = new StringBuilder();
-                    foreach (List<SliceRectangleDto> list in image_to_slice_to_rectangleList)
+                    foreach (List<SliceRectangleStatus> list in image_to_slice_to_rectangleList)
                     {
-                        foreach (SliceRectangleDto rect in list)
+                        foreach (SliceRectangleStatus rect in list)
                         {
                             info_message.AppendLine("確認 : rect.SliceNumber=[" + rect.SliceNumber+ "] rect.Slice=[" + rect.Slice+ "] rect.Collider=[" + rect.Collider+ "] rect.GetOffsetX()=[" + rect.GetOffsetX(sb_dammy) + "] rect.GetOffsetY()=[" + rect.GetOffsetY(sb_dammy) + "] rect.GetScaleX()=[" + rect.GetScaleX()+ "] rect.GetScaleY()=[" + rect.GetScaleY()+"]" );
                         }

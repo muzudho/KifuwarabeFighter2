@@ -5,7 +5,7 @@
 
     public abstract class Hitbox2DClassFile
     {
-        public static string ToText(string className, List<List<SliceRectangleDto>> image_to_slice_to_rectangleList, StringBuilder info_message)
+        public static string ToText(string className, List<List<SliceRectangleStatus>> image_to_slice_to_rectangleList, StringBuilder info_message)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("    public class "); sb.Append(className); sb.Append(@" : LorikeetBox
@@ -27,13 +27,13 @@
             imageAndSlice_To_OffsetX = new float[,]
             {
 ");
-            foreach (List<SliceRectangleDto> slice_to_rectangleList in image_to_slice_to_rectangleList)
+            foreach (List<SliceRectangleStatus> slice_to_rectangleList in image_to_slice_to_rectangleList)
             {
                 // コメント行
                 {
                     sb.Append("                //");
                     int slice = 0;
-                    foreach (SliceRectangleDto rect in slice_to_rectangleList)
+                    foreach (SliceRectangleStatus rect in slice_to_rectangleList)
                     {
                         sb.Append(string.Format("{0,12}, ", slice));
                         slice++;
@@ -42,10 +42,10 @@
                 }
                 break;
             }
-            foreach (List<SliceRectangleDto> sliceList in image_to_slice_to_rectangleList)
+            foreach (List<SliceRectangleStatus> sliceList in image_to_slice_to_rectangleList)
             {
                 sb.Append("                { ");
-                foreach (SliceRectangleDto rect in sliceList)
+                foreach (SliceRectangleStatus rect in sliceList)
                 {
                     sb.Append(string.Format("{0,11:F6}f, ", rect.GetOffsetX(info_message)));
                 }
@@ -56,13 +56,13 @@
             imageAndSlice_To_OffsetY = new float[,]
             {
 ");
-            foreach (List<SliceRectangleDto> sliceList in image_to_slice_to_rectangleList)
+            foreach (List<SliceRectangleStatus> sliceList in image_to_slice_to_rectangleList)
             {
                 // コメント行
                 {
                     sb.Append("                //");
                     int slice = 0;
-                    foreach (SliceRectangleDto rect in sliceList)
+                    foreach (SliceRectangleStatus rect in sliceList)
                     {
                         sb.Append(string.Format("{0,12}, ", slice));
                         slice++;
@@ -71,10 +71,10 @@
                 }
                 break;
             }
-            foreach (List<SliceRectangleDto> sliceList in image_to_slice_to_rectangleList)
+            foreach (List<SliceRectangleStatus> sliceList in image_to_slice_to_rectangleList)
             {
                 sb.Append("                { ");
-                foreach (SliceRectangleDto rect in sliceList)
+                foreach (SliceRectangleStatus rect in sliceList)
                 {
                     sb.Append(string.Format("{0,11:F6}f, ", rect.GetOffsetY(info_message)));
                 }
@@ -85,13 +85,13 @@
             imageAndSlice_To_ScaleX = new float[,]
             {
 ");
-            foreach (List<SliceRectangleDto> sliceList in image_to_slice_to_rectangleList)
+            foreach (List<SliceRectangleStatus> sliceList in image_to_slice_to_rectangleList)
             {
                 // コメント行
                 {
                     sb.Append("                //");
                     int slice = 0;
-                    foreach (SliceRectangleDto rect in sliceList)
+                    foreach (SliceRectangleStatus rect in sliceList)
                     {
                         sb.Append(string.Format("{0,12}, ", slice));
                         slice++;
@@ -100,10 +100,10 @@
                 }
                 break;
             }
-            foreach (List<SliceRectangleDto> sliceList in image_to_slice_to_rectangleList)
+            foreach (List<SliceRectangleStatus> sliceList in image_to_slice_to_rectangleList)
             {
                 sb.Append("                { ");
-                foreach (SliceRectangleDto rect in sliceList)
+                foreach (SliceRectangleStatus rect in sliceList)
                 {
                     sb.Append(string.Format("{0,11:F6}f, ", rect.GetScaleX()));
                 }
@@ -114,13 +114,13 @@
             imageAndSlice_To_ScaleY = new float[,]
             {
 ");
-            foreach (List<SliceRectangleDto> sliceList in image_to_slice_to_rectangleList)
+            foreach (List<SliceRectangleStatus> sliceList in image_to_slice_to_rectangleList)
             {
                 // コメント行
                 {
                     sb.Append("                //");
                     int slice = 0;
-                    foreach (SliceRectangleDto rect in sliceList)
+                    foreach (SliceRectangleStatus rect in sliceList)
                     {
                         sb.Append(string.Format("{0,12}, ", slice));
                         slice++;
@@ -129,10 +129,10 @@
                 }
                 break;
             }
-            foreach (List<SliceRectangleDto> sliceList in image_to_slice_to_rectangleList)
+            foreach (List<SliceRectangleStatus> sliceList in image_to_slice_to_rectangleList)
             {
                 sb.Append("                { ");
-                foreach (SliceRectangleDto rect in sliceList)
+                foreach (SliceRectangleStatus rect in sliceList)
                 {
                     sb.Append(string.Format("{0,11:F6}f, ", rect.GetScaleY()));
                 }

@@ -6,14 +6,14 @@
     /// <summary>
     /// どのスライス画像（１枚の画像を格子状に分割した１コマ）の中の、更に どのあたりの矩形か。
     /// </summary>
-    public class SliceRectangleDto
+    public class SliceRectangleStatus
     {
-        public SliceRectangleDto()
+        public SliceRectangleStatus()
         {
             this.Collider = Rect.zero;
             this.Slice = Rect.zero;
         }
-        public SliceRectangleDto(int sliceX, int sliceY, int sliceWidth, int sliceHeight, int colliderX, int colliderY, int colliderWidth, int colliderHeight)
+        public SliceRectangleStatus(int sliceX, int sliceY, int sliceWidth, int sliceHeight, int colliderX, int colliderY, int colliderWidth, int colliderHeight)
         {
             this.Collider = new Rect(colliderX, colliderY, colliderWidth, colliderHeight);
             this.Slice = new Rect(sliceX, sliceY, sliceWidth, sliceHeight);

@@ -56,10 +56,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Hitbox2DLorikeet\Editor\Hitbox2DLorikeetWindow.cs" />
-     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Model\Dao\BoxScannerDao.cs" />
-     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Model\Dao\PngReaderDao.cs" />
-     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Model\Dto\ColorBoxDto.cs" />
-     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Model\Dto\SliceRectangleDto.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Model\BoxScannerHelper.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Model\ColorBoxStatus.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Model\PngReaderHelper.cs" />
+     <Compile Include="Assets\Hitbox2DLorikeet\Editor\Model\SliceRectangleStatus.cs" />
      <Compile Include="Assets\Hitbox2DLorikeet\Editor\View\DataClassFile.cs" />
      <Compile Include="Assets\Hitbox2DLorikeet\Editor\View\Hitbox2DClassFile.cs" />
      <Compile Include="Assets\Hitbox2DLorikeet\Editor\View\MotorClassFile.cs" />
