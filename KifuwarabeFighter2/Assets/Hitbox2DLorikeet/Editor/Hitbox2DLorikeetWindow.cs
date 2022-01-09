@@ -24,7 +24,7 @@
         #endregion
 
         /// <summary>
-        /// メニューからクリックしたとき。
+        /// Unityのメインメニューからクリックしたとき。
         /// </summary>
         [MenuItem("Tool/Dojin Circle Grayscale/Hitbox 2D Lorikeet")]
         static void Init()
@@ -44,13 +44,39 @@
                 // アニメーター・コントローラーを再取得。
                 m_ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(oldPath_animatorController);
             }
-            bool repaint_allWindow = false;
 
-            #region Drag and drop area
+            MakeDragAndDropArea(out bool isRepaintAllWindow, out string droppedPathAnimatorController);
+            MakeAnimatorControllerPath(droppedPathAnimatorController);
+            MakeGenerateCSharpMotorButton();
+            MakeGenerateCSharpDataButton();
+            RefreshMessage(isRepaintAllWindow);
+            MakeInfoField();
+        }
+
+        /// <summary>
+        /// ┌─────────────────────┐
+        /// │Animator controller 　　　　　　　　　　　│ … (1) Label
+        /// │　　　　　　　　　　　　　　　　　　　　　│
+        /// │　┌─────────────────┐　│
+        /// │　│Animator Controller Drag & Drop 　│　│ … (2) Drop area
+        /// │　└─────────────────┘　│
+        /// │　　　　　　　　　　　　　　　　　　　　　│
+        /// └─────────────────────┘
+        /// </summary>
+        /// <param name="outIsRepaintAllWindow"></param>
+        /// <param name="outDroppedPathAnimatorController"></param>
+        void MakeDragAndDropArea(out bool outIsRepaintAllWindow, out string outDroppedPathAnimatorController)
+        {
+            outIsRepaintAllWindow = false;
+
+            // (1)
             GUILayout.Label("Animator controller", EditorStyles.boldLabel);
+
+            // (2)
             var dropArea = GUILayoutUtility.GetRect(0.0f, 20.0f, GUILayout.ExpandWidth(true));
             GUI.Box(dropArea, "Animator Controller Drag & Drop");
-            string droppedPath_animatorController = "";
+
+            outDroppedPathAnimatorController = "";
             // マウス位置が GUI の範囲内であれば
             if (dropArea.Contains(Event.current.mousePosition))
             {
@@ -85,9 +111,9 @@
                                     AnimatorController ac_temp = draggedObject as AnimatorController;
                                     if (null != ac_temp)
                                     {
-                                        droppedPath_animatorController = AssetDatabase.GetAssetPath(ac_temp.GetInstanceID());
+                                        outDroppedPathAnimatorController = AssetDatabase.GetAssetPath(ac_temp.GetInstanceID());
                                         Repaint();
-                                        repaint_allWindow = true;
+                                        outIsRepaintAllWindow = true;
                                     }
                                 }
                             }
@@ -97,9 +123,10 @@
                         //case EventType.DragExited: // ?
                 }
             }
-            #endregion
+        }
 
-            #region Animator controller path
+        void MakeAnimatorControllerPath(string droppedPath_animatorController)
+        {
             bool isChanged_animatorController = false;
             if ("" != droppedPath_animatorController && oldPath_animatorController != droppedPath_animatorController)
             {
@@ -123,54 +150,83 @@
                 // アニメーター・コントローラーを再取得。
                 m_ac = AssetDatabase.LoadAssetAtPath<AnimatorController>(oldPath_animatorController);
             }
-            #endregion
+        }
 
-            #region Create full path constant button
+        /// <summary>
+        /// モーションクラスを生成するボタン
+        /// ┌───────────────┐
+        /// │　　　　　　　　　　　　　　　│
+        /// │　┌───────────┐　│
+        /// │　│Generate C# (Motor) 　│　│ … Button
+        /// │　└───────────┘　│
+        /// │　　　　　　　　　　　　　　　│
+        /// └───────────────┘
+        /// </summary>
+        void MakeGenerateCSharpMotorButton()
+        {
             if (GUILayout.Button("Generate C# (Motor)"))
             {
                 MotorClassFile.WriteCshapScript(m_ac, info_message);
             }
             GUILayout.Space(4.0f);
-            #endregion
+        }
 
-            #region Create full path constant button
+        /// <summary>
+        /// ┌───────────────┐
+        /// │　　　　　　　　　　　　　　　│
+        /// │　┌───────────┐　│
+        /// │　│Generate C# (Data)　　│　│ … Button
+        /// │　└───────────┘　│
+        /// │　　　　　　　　　　　　　　　│
+        /// └───────────────┘
+        /// </summary>
+        void MakeGenerateCSharpDataButton()
+        {
             if (GUILayout.Button("Generate C# (Data)"))
             {
                 DataClassFile.Generate(info_message);
             }
             GUILayout.Space(4.0f);
-            #endregion
+        }
 
-            #region Various Refresh
+        void RefreshMessage(bool repaint_allWindow)
+        {
+            if (repaint_allWindow)
             {
-                if (repaint_allWindow)
-                {
-                    EditorApplication.isPlaying = true; // Play.
-                    info_message.AppendLine("I'm sorry!");
-                    info_message.AppendLine("    I clickeded the play button!");
-                    info_message.AppendLine("Because, This is for");
-                    info_message.AppendLine("    refreshing the animator window!");
-                    info_message.AppendLine("Please, Push back the play button.");
-                }
+                EditorApplication.isPlaying = true; // Play.
+                info_message.AppendLine("I'm sorry!");
+                info_message.AppendLine("    I clickeded the play button!");
+                info_message.AppendLine("Because, This is for");
+                info_message.AppendLine("    refreshing the animator window!");
+                info_message.AppendLine("Please, Push back the play button.");
             }
-            #endregion
+        }
 
-            #region Message output field
+        /// <summary>
+        /// Info フィールド
+        /// ┌───────────────┐
+        /// │　　　　　　　　　　　　　　　│
+        /// │　┌───────────┐　│
+        /// │　│　　　　　　　　　　　│　│
+        /// │　│　　　　　　　　　　　│　│ … Textarea
+        /// │　│　　　　　　　　　　　│　│
+        /// │　└───────────┘　│
+        /// │　　　　　　　　　　　　　　　│
+        /// └───────────────┘
+        /// </summary>
+        void MakeInfoField()
+        {
+            GUILayout.Label("Info");
+            if (0 < info_message.Length)
             {
-                GUILayout.Label("Info");
-                if (0 < info_message.Length)
-                {
-                    // 更新
-                    info_message_ofTextbox = info_message.ToString();
-                    info_message.Length = 0;
-                }
-
-                scroll_infoBox = EditorGUILayout.BeginScrollView(scroll_infoBox);
-                info_message_ofTextbox = EditorGUILayout.TextArea(info_message_ofTextbox);
-                EditorGUILayout.EndScrollView();
+                // 更新
+                info_message_ofTextbox = info_message.ToString();
+                info_message.Length = 0;
             }
-            #endregion
 
+            scroll_infoBox = EditorGUILayout.BeginScrollView(scroll_infoBox);
+            info_message_ofTextbox = EditorGUILayout.TextArea(info_message_ofTextbox);
+            EditorGUILayout.EndScrollView();
         }
     }
 }

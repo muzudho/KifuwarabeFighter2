@@ -7,8 +7,16 @@
     using DojinCircleGrayscale.StellaQL;
     using System.IO;
 
+    /// <summary>
+    /// モーションクラスのファイル
+    /// </summary>
     public abstract class MotorClassFile
     {
+        /// <summary>
+        /// モーションクラス.cs(C#)スクリプト出力
+        /// </summary>
+        /// <param name="ac"></param>
+        /// <param name="info_message"></param>
         public static void WriteCshapScript(AnimatorController ac, StringBuilder info_message)
         {
             AconStateNameScanner aconScanner = new AconStateNameScanner();
@@ -37,36 +45,19 @@ namespace DojinCircleGrayscale.StellaQL.Acons."); contents.AppendLine(className)
     {
         #region Motion tags
 ");
+
             HashSet<MotionRecord> motionRecords = new HashSet<MotionRecord>(aconScanner.Motions);
-            if(0< motionRecords.Count)
+            if (0 < motionRecords.Count)
             {
-                #region list and sort motionAssetPath
-                // 重複は削除し、文字列の配列に移し替えてソートします
-                string[] array_motionAssetPath;
-                {
-                    HashSet<string> hashSet_motionAssetPath = new HashSet<string>();
-                    foreach (MotionRecord record in motionRecords)
-                    {
-                        hashSet_motionAssetPath.Add((string)record.Fields[MotionRecord.ASSET_PATH]);
-                    }
-                    StringComparer cmp = StringComparer.OrdinalIgnoreCase;
-                    array_motionAssetPath = new string[hashSet_motionAssetPath.Count];
-                    int i = 0;
-                    foreach (string item in hashSet_motionAssetPath)
-                    {
-                        array_motionAssetPath[i] = item;
-                        i++;
-                    }
-                    Array.Sort(array_motionAssetPath, cmp);
-                }
-                #endregion
+                string[] motionAssetPathArray = MakeArrayMotionAssetPath(motionRecords);
+
                 contents.Append("        public const string");
-                foreach (string motionAssetPath in array_motionAssetPath)
+                foreach (string motionAssetPath in motionAssetPathArray)
                 {
                     string motionFilename = Path.GetFileNameWithoutExtension(motionAssetPath);
 
                     // 先に改行を持ってくる。最後のセミコロンを付ける処理を簡単にする。
-                    contents.AppendLine(); 
+                    contents.AppendLine();
 
                     contents.Append("            MOTION_");
                     contents.Append(FullpathConstantGenerator.String_split_toUppercaseAlphabetFigureOnly_join(motionFilename, "@", "_"));
@@ -91,6 +82,29 @@ namespace DojinCircleGrayscale.StellaQL.Acons."); contents.AppendLine(className)
 }");
 
             FileUtility_Editor.Write(FileUtility_Editor.Filepath_GenerateMotor(ac), contents, info_message);
+        }
+
+        static string[] MakeArrayMotionAssetPath(HashSet<MotionRecord> motionRecords)
+        {
+            // 重複は削除し、文字列の配列に移し替えてソートします
+            string[] motionAssetPathArray;
+
+            HashSet<string> hashSet_motionAssetPath = new HashSet<string>();
+            foreach (MotionRecord record in motionRecords)
+            {
+                hashSet_motionAssetPath.Add((string)record.Fields[MotionRecord.ASSET_PATH]);
+            }
+            StringComparer cmp = StringComparer.OrdinalIgnoreCase;
+            motionAssetPathArray = new string[hashSet_motionAssetPath.Count];
+            int i = 0;
+            foreach (string item in hashSet_motionAssetPath)
+            {
+                motionAssetPathArray[i] = item;
+                i++;
+            }
+            Array.Sort(motionAssetPathArray, cmp);
+
+            return motionAssetPathArray;
         }
     }
 }
